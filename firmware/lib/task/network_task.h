@@ -36,8 +36,8 @@ namespace OxApp
   class NetworkTask : public OxCore::Task {
   public:
     // DEBUG_UDP == 1 means debug logging,
-    // DEBUG_UDP == 2 means debug script retreival
-    int DEBUG_UDP = 0;
+    // DEBUG_UDP == 2 means debug script retrieval
+    int DEBUG_UDP = 2;
     NetworkUDP net_udp;
     bool _init() override;
     bool _run() override;

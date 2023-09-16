@@ -34,7 +34,7 @@
 
 class NetworkUDP  {
  public:
-    int DEBUG_UDP = 0;
+    int DEBUG_UDP = 2;
     unsigned long epoch = 0;
     uint8_t networkDown = 1;
 

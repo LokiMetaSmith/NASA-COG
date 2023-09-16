@@ -29,7 +29,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <SPI.h>         // needed for Arduino versions later than 0018
 #include <Ethernet.h>
 #include <EthernetUdp.h>         // UDP library from: bjoern@cs.stanford.edu 12/30/2008
-#include "utility/w5100.h"
+//#include "utility/w5100.h"
 #include <network_udp.h>
 
 // This is defined in network_udp.h. It is true global;
