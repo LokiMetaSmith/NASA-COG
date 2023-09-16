@@ -17,7 +17,6 @@
 #include <SPI.h>         // needed for Arduino versions later than 0018
 #include <Ethernet.h>
 #include <EthernetUdp.h>         // UDP library from: bjoern@cs.stanford.edu 12/30/2008
-#include "utility/w5100.h"
 #include <network_udp.h>
 
 
@@ -387,23 +386,28 @@ EthernetUDP Udp;
   NetworkUDP::networkStart() {
     Ethernet.init(10);
 
-    if (W5100.init() == 0) return 1;
+IPAddress ip(192, 168, 1, 177);
+   // if (W5100.init() == 0) return 1;
+	// start the Ethernet
+	//uint32_t add = 0;
+	//Ethernet.begin(mac, (uint8_t *) &add);
+	Ethernet.begin(mac, ip);
+	
+    if (!Ethernet.hardwareStatus() == EthernetNoHardware) return 2;
 
-    if (!Ethernet.hardwareStatus()) return 2;
+    //SPI.beginTransaction(SPI_ETHERNET_SETTINGS);
+    //W5100.setMACAddress(mac);
 
-    SPI.beginTransaction(SPI_ETHERNET_SETTINGS);
-    W5100.setMACAddress(mac);
-    uint32_t add = 0;
-    W5100.setIPAddress((uint8_t *) &add);
-    SPI.endTransaction();
+    //W5100.setIPAddress((uint8_t *) &add);
+    //SPI.endTransaction();
 
     uint32_t startMs = millis();
-    while (W5100.getLinkStatus() != LINK_ON && (millis() - startMs) < 3000) {
+    while (Ethernet.linkStatus() != LinkON && (millis() - startMs) < 3000) {
       delay(100);
       watchdogReset();
     }
 
-    if (W5100.getLinkStatus() != LINK_ON) return 3;
+    if (Ethernet.linkStatus() != LinkON) return 3;
 
     if (setGlobalMacAddress()) {
       mac[0] = 0xFE;
