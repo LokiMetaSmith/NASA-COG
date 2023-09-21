@@ -4,6 +4,7 @@
    Date: 20230921
    Use the serial plotter to view results
    This program forked from Dallas_Tester.ino on 20230921
+   Set D9 PWM for about 50% to test PWM on MOM (Mock up of Maryville hardware)
 */
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "MAX31850_Tester"
@@ -31,6 +32,8 @@ int numberOfDevices; // Number of temperature devices found
 
 DeviceAddress tempDeviceAddress; // We'll use this variable to store a found device address
 
+#define nFAN1_PWM 9 // The pin D9 for driving the Blower.
+
 void setup(void)
 {
   // start serial port
@@ -40,30 +43,33 @@ void setup(void)
   Serial.print(PROG_NAME);
   Serial.println(VERSION);
 
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH);  //Signal start of setup.
+
   // Start up the library
   sensors.begin();
 
   // Grab a count of devices on the wire
   numberOfDevices = sensors.getDeviceCount();
 
-//Print some status
-//  // locate devices on the bus
-//  Serial.print("Locating devices...");
-//  Serial.print("Found ");
-//  Serial.print(numberOfDevices, DEC);
-//  Serial.println(" devices.");
-//
-//  // report parasite power requirements
-//  Serial.print("Parasite power is: ");
-//  if (sensors.isParasitePowerMode()) Serial.println("ON");
-//  else Serial.println("OFF");
+  //Print some status
+  //  // locate devices on the bus
+  //  Serial.print("Locating devices...");
+  //  Serial.print("Found ");
+  //  Serial.print(numberOfDevices, DEC);
+  //  Serial.println(" devices.");
+  //
+  //  // report parasite power requirements
+  //  Serial.print("Parasite power is: ");
+  //  if (sensors.isParasitePowerMode()) Serial.println("ON");
+  //  else Serial.println("OFF");
 
   // Loop through each device, print out address
   for (int i = 0; i < numberOfDevices; i++)
   {
     // Search the wire for address
 
-//    if (sensors.getAddress(tempDeviceAddress, i))
+    //    if (sensors.getAddress(tempDeviceAddress, i))
 
     if (false)
     {
@@ -83,13 +89,13 @@ void setup(void)
       Serial.print(sensors.getResolution(tempDeviceAddress), DEC);
       Serial.println();
     } else {
-//      Serial.print("Found ghost device at ");
-//      Serial.print(i, DEC);
-//      Serial.print(" but could not detect address. Check power and cabling");
+      //      Serial.print("Found ghost device at ");
+      //      Serial.print(i, DEC);
+      //      Serial.print(" but could not detect address. Check power and cabling");
     }
   }
-
-}
+  digitalWrite(LED_BUILTIN, LOW);   //Signal end of setup.
+}// end setup()
 
 // function to print the temperature for a device
 void printTemperature(DeviceAddress deviceAddress)
@@ -120,6 +126,7 @@ void loop(void)
   //  Serial.print("Requesting temperatures...");
   sensors.requestTemperatures(); // Send the command to get temperatures
   //  Serial.println("DONE");
+  digitalWrite(LED_BUILTIN, HIGH);   //Signal end of temp request.
 
 
   // Loop through each device, print out temperature data
@@ -140,6 +147,7 @@ void loop(void)
     //else ghost device! Check your power requirements and cabling
   }
   Serial.println(); //end of line
+  digitalWrite(LED_BUILTIN, LOW);   //Signal end of print temp.
 
 }//end loop()
 
