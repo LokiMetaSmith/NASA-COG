@@ -94,6 +94,10 @@ void setup(void)
       //      Serial.print(" but could not detect address. Check power and cabling");
     }
   }
+
+//  analogWrite(nFAN1_PWM, 127);  // Set for 50%
+  analogWrite(nFAN1_PWM, 200);  // Set for low RPM
+  
   digitalWrite(LED_BUILTIN, LOW);   //Signal end of setup.
 }// end setup()
 
