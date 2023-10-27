@@ -8,7 +8,7 @@
 */
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "MAX31850_Tester"
-#define VERSION ";_Rev_0.1"
+#define VERSION ";_Rev_0.2"
 #define DEVICE_UNDER_TEST "Hardware: Mockup Of Maryville"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -39,18 +39,28 @@ void setup(void)
   // start serial port
   Serial.begin(115200);
   delay(500);
-  Serial.print("TC0, TC1, ");
+
+    // Start up the library
+  sensors.begin();
+   // Grab a count of devices on the wire
+  numberOfDevices = sensors.getDeviceCount();
+  //Serial.print("TC0, TC1, ");
+  //for (int i = 0; i <= 255; i++)
+  for (int i = 0; i <= numberOfDevices; i++){
+    Serial.print("TC");
+    Serial.print(i);
+    Serial.print(", ");
+  }
+
+  
   Serial.print(PROG_NAME);
   Serial.println(VERSION);
 
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);  //Signal start of setup.
 
-  // Start up the library
-  sensors.begin();
 
-  // Grab a count of devices on the wire
-  numberOfDevices = sensors.getDeviceCount();
+ 
 
   //Print some status
   //  // locate devices on the bus
