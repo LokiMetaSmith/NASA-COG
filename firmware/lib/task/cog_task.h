@@ -101,6 +101,7 @@ namespace OxApp
   public:
     int PERIOD_MS = 10000;
     int DEBUG_LEVEL = 0;
+    int DEBUG_LEVEL_OBA = 0;
 
     OneButtonControl c;
     PreSetParameters p;
@@ -111,8 +112,6 @@ namespace OxApp
     const static int NUM_TEMP_SENSORS = 3;
     const static int NUM_TEMP_INDICES = 2;
     const static int NUM_FANS = 1;
-
-
 
     float getTemperatureReadingA_C();
     float getTemperatureReadingB_C();

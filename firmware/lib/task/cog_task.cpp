@@ -65,7 +65,8 @@ namespace OxApp
   }
 
   void CogTask::printGenericInstructions() {
-    Serial.println("Enter s:1 to Turn On, s:0 to Turn Off.");
+    Serial.println("Enter s:1 to Turn On Manual Control, s:0 to Turn Off.");
+    Serial.println("Enter s:2 to Turn Enter Automatic Control.");
     Serial.println("Enter a:XX.X to set (a)mperage, (w)attage, (f)an speed (h)eater set p., and (r)amp rate.");
 
   }
@@ -305,8 +306,8 @@ namespace OxApp
            getConfig()->MAX_STACK_WATTAGE /
            getConfig()->report->stack_ohms);
 
-    if (DEBUG_LEVEL > 0) {
-      Serial.print("max_a_from_raw , max_a_from_wattage");
+    if (DEBUG_LEVEL > 2) {
+      Serial.print("max_a_from_raw , max_a_from_wattage :");
       Serial.print(max_a_from_raw);
       Serial.print(" ");
       Serial.println(max_a_from_wattage);
@@ -367,12 +368,30 @@ bool CogTask::updatePowerMonitor()
       min(1.0,heaterWattage_w/getConfig()->HEATER_MAXIMUM_WATTAGE);
   }
   void CogTask::runOneButtonAlgorithm() {
+      if (DEBUG_LEVEL_OBA > 2) {
+        OxCore::DebugLn<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+      }
+
       float totalWattage_w;
       float stackWattage_w;
       float heaterWattage_w;
       float fanSpeed_p;
 
       oneButtonAlgorithm(totalWattage_w,stackWattage_w,heaterWattage_w,fanSpeed_p);
+        float dc = computeHeaterDutyCycleFromWattage(heaterWattage_w);
+      if (DEBUG_LEVEL_OBA > 0) {
+        OxCore::DebugLn<const char *>("One Button Summary ");
+        OxCore::Debug<const char *>("Total Wattage : ");
+        OxCore::DebugLn<float>(totalWattage_w);
+        OxCore::Debug<const char *>("Stack Wattage : ");
+        OxCore::DebugLn<float>(stackWattage_w);
+        OxCore::Debug<const char *>("Heater Wattage: ");
+        OxCore::DebugLn<float>(heaterWattage_w);
+        OxCore::Debug<const char *>("Fan Speed   % : ");
+        OxCore::DebugLn<float>(fanSpeed_p);
+        OxCore::Debug<const char *>("DC          % : ");
+        OxCore::DebugLn<float>(dc * 100.0);
+      }
 
       getConfig()->report->total_wattage_W = totalWattage_w;
 
@@ -380,10 +399,10 @@ bool CogTask::updatePowerMonitor()
 
       getConfig()->CURRENT_STACK_WATTAGE_W = stackWattage_w;
       _updateStackWattage(stackWattage_w);
+
       _updateFanSpeed(fanSpeed_p);
       getConfig()->CURRENT_HEATER_WATTAGE_W = heaterWattage_w;
 
-      float dc = computeHeaterDutyCycleFromWattage(heaterWattage_w);
       dutyCycleTask->dutyCycle = dc;
   }
 
@@ -394,7 +413,7 @@ bool CogTask::updatePowerMonitor()
       float fs = getFanSpeed(t);
       float a = computeAmperage(t);
 
-      if (DEBUG_LEVEL > 0) {
+      if (DEBUG_LEVEL > 2) {
         OxCore::Debug<const char *>("fan speed, amperage\n");
         OxCore::Debug<float>(fs);
         OxCore::Debug<const char *>(" ");
@@ -454,6 +473,7 @@ bool CogTask::updatePowerMonitor()
   // TODO: These would go better in the HAL
   void CogTask::_updateFanSpeed(float percentage) {
     float pwm = percentage / 100.0;
+    getConfig()->FAN_SPEED = pwm;
     getHAL()->_updateFanPWM(pwm);
     getConfig()->report->fan_pwm = pwm;
   }

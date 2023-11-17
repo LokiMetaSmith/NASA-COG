@@ -33,7 +33,6 @@ namespace OxApp
   class StateMachineManager : public OxCore::Task {
   public:
     int DEBUG_LEVEL = 0;
-    bool USE_ONE_BUTTON = false;
     HeaterPIDTask* heaterPIDTask;
 
     MachineState _executeBasedOnState(MachineState ms);

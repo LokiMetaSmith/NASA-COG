@@ -285,7 +285,7 @@ void _reportFanSpeed();
 
 
   // Here are new parameters associated with the "One Button" algorithm
-  static const int USE_ONE_BUTTON = 1; // if false, use the 5-knob approach
+  bool USE_ONE_BUTTON = true; // if false, use the 5-knob approach
   const float DECREASE_STACK_WATTAGE_INCREMENT_W = 1.0;
 
   const float FAN_SPEED_MAX_p = 60;
@@ -297,6 +297,7 @@ void _reportFanSpeed();
   float CURRENT_TOTAL_WATTAGE_W;
   float CURRENT_HEATER_WATTAGE_W;
   float CURRENT_STACK_WATTAGE_W;
+
 
   static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;
 

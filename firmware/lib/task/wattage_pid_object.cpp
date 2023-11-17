@@ -111,5 +111,5 @@ float WattagePIDObject::compute(float controlTemp)
     Serial.println(this->final_totalWattage_W,5);
   }
 
-  return true;
+  return  this->final_totalWattage_W;
 }

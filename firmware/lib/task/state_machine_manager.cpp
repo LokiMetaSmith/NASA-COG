@@ -202,8 +202,9 @@ namespace OxApp
       return new_ms;
     }
 
-
-    if (USE_ONE_BUTTON) {
+    OxCore::Debug<const char *>("Run One Button YYYY : ");
+    OxCore::DebugLn<bool>(getConfig()->USE_ONE_BUTTON);
+    if (getConfig()->USE_ONE_BUTTON) {
       runOneButtonAlgorithm();
     } else {
       // These also are dependent on which heater we are using
@@ -238,7 +239,7 @@ namespace OxApp
       return new_ms;
     }
 
-    if (USE_ONE_BUTTON) {
+    if (getConfig()->USE_ONE_BUTTON) {
       runOneButtonAlgorithm();
     } else {
 
@@ -263,7 +264,7 @@ namespace OxApp
 
   MachineState StateMachineManager::_updatePowerComponentsOperation(IdleOrOperateSubState i_or_o) {
     MachineState new_ms = NormalOperation;
-    if (USE_ONE_BUTTON) {
+    if (getConfig()->USE_ONE_BUTTON) {
       runOneButtonAlgorithm();
     } else {
 
