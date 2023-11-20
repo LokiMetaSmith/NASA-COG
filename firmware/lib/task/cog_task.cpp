@@ -137,8 +137,11 @@ namespace OxApp
     float f = z - a;
     float ambient = getConfig()->NOMINAL_AMBIENT_c;
     float min_speed_temp = getConfig()->FAN_SPEED_TEMP_FOR_MIN_SPEED_c;
-    float r = max(0,min_speed_temp - temp)/
-      (min_speed_temp - ambient);
+    float r = min(1.0,
+                  max(0,
+                      min_speed_temp - temp)/
+                  (min_speed_temp - ambient));
+
     return r*f + a;
   }
   bool CogTask::heaterWattsAtFullPowerPred(float watts) {
@@ -270,6 +273,25 @@ namespace OxApp
     fanSpeed_p = computeFanSpeedTarget(getConfig()->SETPOINT_TEMP_C, T_c,heaterWattage_w);
   }
 
+  // Note: This is ms since the LAST TIME
+  void CogTask::changeRamps(unsigned long delta_ms) {
+      if (DEBUG_LEVEL_OBA > 2) {
+        OxCore::DebugLn<const char *>("Change Ramps Run!");
+      }
+
+    // delta_ms it the number of mount that we want to do...
+    // but all of our ramp rates are in terms of minutes
+    const float minutes = delta_ms / (60.0 * 1000.0);
+    c.W_w += (((c.tW_w - c.W_w) > 0) ? 1.0 : -1.0) * c.Wr_Wdm * minutes;
+
+    c.S_p += (((c.tS_p - c.S_p) > 0) ? 1.0 : -1.0) * c.Sr_Pdm * minutes;
+    c.S_p = max(0,c.S_p);
+
+    if (c.pause_substate == 0) {
+        c.T_c += (((c.tT_c - c.T_c) > 0) ? 1.0 : -1.0) * c.Hr_Cdm * minutes;
+    }
+    c.W_w = max(c.W_w,0);
+  }
 
   bool CogTask::_run()
   {
@@ -282,6 +304,14 @@ namespace OxApp
     getConfig()->report->fan_rpm =
       getHAL()->_fans[0]._calcRPM(0);
 
+    unsigned long now_ms = millis();
+    unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
+    changeRamps(delta_ms);
+
+    OxCore::Debug<const char *>("delta_ms: ");
+    OxCore::DebugLn<long>(delta_ms);
+
+    last_time_ramp_changed_ms = now_ms;
 
     this->StateMachineManager::run_generic();
 
@@ -372,6 +402,15 @@ bool CogTask::updatePowerMonitor()
         OxCore::DebugLn<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
       }
 
+      unsigned long now_ms = millis();
+      unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
+      changeRamps(delta_ms);
+
+      OxCore::Debug<const char *>("delta_ms: ");
+      OxCore::DebugLn<long>(delta_ms);
+
+      last_time_ramp_changed_ms = now_ms;
+
       float totalWattage_w;
       float stackWattage_w;
       float heaterWattage_w;
@@ -404,6 +443,9 @@ bool CogTask::updatePowerMonitor()
       getConfig()->CURRENT_HEATER_WATTAGE_W = heaterWattage_w;
 
       dutyCycleTask->dutyCycle = dc;
+      getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
+      Serial.println("spud");
+      Serial.println(getConfig()->report->heater_duty_cycle);
   }
 
   void CogTask::_updateCOGSpecificComponents() {
@@ -419,7 +461,6 @@ bool CogTask::updatePowerMonitor()
         OxCore::Debug<const char *>(" ");
         OxCore::DebugLn<float>(a);
       }
-
       getHAL()->_updateFanPWM(fs);
       getConfig()->report->fan_pwm = fs;
       _updateStackAmperage(a);
@@ -427,18 +468,47 @@ bool CogTask::updatePowerMonitor()
   }
   MachineState CogTask::_updatePowerComponentsWarmup() {
     MachineState new_ms = Warmup;
-    new_ms = StateMachineManager::_updatePowerComponentsWarmup();
-    if (new_ms == Warmup) {
-      _updateCOGSpecificComponents();
+
+    float t = getTemperatureReadingA_C();
+    getConfig()->GLOBAL_RECENT_TEMP = t;
+
+    // if we've reached operating temperature, we switch
+    // states
+    if (t >= getConfig()->TARGET_TEMP_C) {
+      new_ms = NormalOperation;
+      return new_ms;
+    }
+
+    //    new_ms = StateMachineManager::_updatePowerComponentsWarmup();
+    if (getConfig()->USE_ONE_BUTTON) {
+      runOneButtonAlgorithm();
+    } else {
+      if (new_ms == Warmup) {
+        _updateCOGSpecificComponents();
+      }
     }
     return new_ms;
   }
 
   MachineState CogTask::_updatePowerComponentsCooldown() {
     MachineState new_ms = Cooldown;
-    new_ms = StateMachineManager::_updatePowerComponentsCooldown();
-    if (new_ms == Cooldown) {
-      _updateCOGSpecificComponents();
+
+    if (DEBUG_LEVEL > 0) {
+      OxCore::Debug<const char *>("Cooldown Mode!\n");
+    }
+    float t = getTemperatureReadingA_C();
+    getConfig()->GLOBAL_RECENT_TEMP = t;
+
+    if (t <= getConfig()->TARGET_TEMP_C) {
+      new_ms = NormalOperation;
+      return new_ms;
+    }
+    if (getConfig()->USE_ONE_BUTTON) {
+      runOneButtonAlgorithm();
+    } else {
+      if (new_ms == Cooldown) {
+        _updateCOGSpecificComponents();
+      }
     }
     return new_ms;
   }
@@ -472,6 +542,8 @@ bool CogTask::updatePowerMonitor()
 
   // TODO: These would go better in the HAL
   void CogTask::_updateFanSpeed(float percentage) {
+
+    OxCore::Debug<const char *>("calling update Fan Speed!\n");
     float pwm = percentage / 100.0;
     getConfig()->FAN_SPEED = pwm;
     getHAL()->_updateFanPWM(pwm);
@@ -503,9 +575,8 @@ bool CogTask::updatePowerMonitor()
 
   MachineState CogTask::_updatePowerComponentsOperation(IdleOrOperateSubState i_or_o) {
     MachineState new_ms = NormalOperation;
-    StateMachineManager::_updatePowerComponentsOperation(i_or_o);
-    _updateCOGSpecificComponents();
-
+    //    StateMachineManager::_updatePowerComponentsOperation(i_or_o);
+    runOneButtonAlgorithm();
     return new_ms;
   }
 }

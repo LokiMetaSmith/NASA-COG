@@ -204,6 +204,8 @@ namespace OxApp
 
     OxCore::Debug<const char *>("Run One Button YYYY : ");
     OxCore::DebugLn<bool>(getConfig()->USE_ONE_BUTTON);
+
+    // TODO: this should really be in the cog_task, not here.
     if (getConfig()->USE_ONE_BUTTON) {
       runOneButtonAlgorithm();
     } else {

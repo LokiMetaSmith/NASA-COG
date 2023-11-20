@@ -65,7 +65,7 @@ namespace OxApp
     // Current Heater Wattage
     float H_w = 0;
     // Current Temperature
-    const float T_c = MachineConfig::NOMINAL_AMBIENT_c;
+    float T_c = MachineConfig::NOMINAL_AMBIENT_c;
     // Operating Temperature
     const float OT_c = MachineConfig::OPERATING_TEMPERATURE_C;
     // Target Stack Wattage
@@ -103,6 +103,8 @@ namespace OxApp
     int DEBUG_LEVEL = 0;
     int DEBUG_LEVEL_OBA = 0;
 
+    unsigned long last_time_ramp_changed_ms = 0;
+
     OneButtonControl c;
     PreSetParameters p;
     DutyCycleTask *dutyCycleTask;
@@ -129,6 +131,7 @@ namespace OxApp
     void runOneButtonAlgorithm();
     float computeNernstVoltage(float T_K);
     float computePumpingWork(float T_k,float V,float R_O, float I_A);
+    void changeRamps(unsigned long ms);
 
     // TODO: I think we should separate all of this
     // computation from state machine by creating a new
