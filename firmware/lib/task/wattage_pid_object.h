@@ -30,7 +30,7 @@
   public:
     WattagePIDObject();
     PID *pidControllerWattage;
-    int DEBUG_PID = 0;
+    int DEBUG_PID = 2;
 
     double totalWattage_Output_W = 0.0;
     double final_totalWattage_W = 0.0;

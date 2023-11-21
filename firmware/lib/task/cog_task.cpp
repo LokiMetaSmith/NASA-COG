@@ -288,9 +288,9 @@ namespace OxApp
     c.S_p = max(0,c.S_p);
 
     if (c.pause_substate == 0) {
-        c.T_c += (((c.tT_c - c.T_c) > 0) ? 1.0 : -1.0) * c.Hr_Cdm * minutes;
+        getConfig()->SETPOINT_TEMP_C += (((c.tT_c - getConfig()->SETPOINT_TEMP_C) > 0) ? 1.0 : -1.0) * c.Hr_Cdm * minutes;
     }
-    Serial.println(c.T_c);
+    Serial.println(getConfig()->SETPOINT_TEMP_C);
     c.W_w = max(c.W_w,0);
   }
 
@@ -434,11 +434,14 @@ bool CogTask::updatePowerMonitor()
         OxCore::DebugLn<float>(fanSpeed_p);
         OxCore::Debug<const char *>("DC          % : ");
         OxCore::DebugLn<float>(dc * 100.0);
+        OxCore::Debug<const char *>("SetPoint: ");
+        OxCore::DebugLn<float>(getConfig()->SETPOINT_TEMP_C);
       }
 
       // This is setting the target...
-      getConfig()->SETPOINT_TEMP_C = c.T_c;
       wattagePIDObject->temperatureSetPoint_C = getConfig()->SETPOINT_TEMP_C;
+      OxCore::Debug<const char *>("SetPoint: ");
+      OxCore::DebugLn<float>(getConfig()->SETPOINT_TEMP_C);
 
       getConfig()->report->total_wattage_W = totalWattage_w;
 

@@ -64,8 +64,6 @@ namespace OxApp
     float TW_w = 0;
     // Current Heater Wattage
     float H_w = 0;
-    // Current Temperature
-    float T_c = MachineConfig::NOMINAL_AMBIENT_c;
     // Operating Temperature
     const float OT_c = MachineConfig::OPERATING_TEMPERATURE_C;
     // Target Stack Wattage
