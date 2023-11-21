@@ -98,6 +98,12 @@ void HeaterPIDTask::shutHeaterDown() {
 }
 bool HeaterPIDTask::_run()
 {
+  // if we are running the One Button Algorithm
+  if (getConfig()->USE_ONE_BUTTON) {
+    // I'm not sure what the return value should be
+    return true;
+  }
+
   if (DEBUG_PID > 1) {
     OxCore::Debug<const char *>("HeaterPIDTask run\n");
     double test_spud = getConfig()->report->post_heater_C;

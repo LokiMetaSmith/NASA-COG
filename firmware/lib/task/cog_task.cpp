@@ -220,8 +220,6 @@ namespace OxApp
         }
     }
 
-    // This is setting the target...
-    wattagePIDObject->temperatureSetPoint_C = getConfig()->SETPOINT_TEMP_C;
 
     totalWattage_w = computeTotalWattage(A);
     const float cur_heater_w = getConfig()->CURRENT_HEATER_WATTAGE_W;
@@ -275,13 +273,15 @@ namespace OxApp
 
   // Note: This is ms since the LAST TIME
   void CogTask::changeRamps(unsigned long delta_ms) {
-      if (DEBUG_LEVEL_OBA > 2) {
-        OxCore::DebugLn<const char *>("Change Ramps Run!");
-      }
 
     // delta_ms it the number of mount that we want to do...
     // but all of our ramp rates are in terms of minutes
-    const float minutes = delta_ms / (60.0 * 1000.0);
+    const float minutes = ((float)delta_ms) / (60.0 * 1000.0);
+      if (DEBUG_LEVEL_OBA > 2) {
+        OxCore::DebugLn<const char *>("Change Ramps Run! Minutes: ");
+        OxCore::DebugLn<float>(minutes);
+        OxCore::DebugLn<int>(c.pause_substate);
+      }
     c.W_w += (((c.tW_w - c.W_w) > 0) ? 1.0 : -1.0) * c.Wr_Wdm * minutes;
 
     c.S_p += (((c.tS_p - c.S_p) > 0) ? 1.0 : -1.0) * c.Sr_Pdm * minutes;
@@ -290,6 +290,7 @@ namespace OxApp
     if (c.pause_substate == 0) {
         c.T_c += (((c.tT_c - c.T_c) > 0) ? 1.0 : -1.0) * c.Hr_Cdm * minutes;
     }
+    Serial.println(c.T_c);
     c.W_w = max(c.W_w,0);
   }
 
@@ -307,6 +308,8 @@ namespace OxApp
     unsigned long now_ms = millis();
     unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
     changeRamps(delta_ms);
+
+
 
     OxCore::Debug<const char *>("delta_ms: ");
     OxCore::DebugLn<long>(delta_ms);
@@ -397,6 +400,7 @@ bool CogTask::updatePowerMonitor()
       0.0 :
       min(1.0,heaterWattage_w/getConfig()->HEATER_MAXIMUM_WATTAGE);
   }
+
   void CogTask::runOneButtonAlgorithm() {
       if (DEBUG_LEVEL_OBA > 2) {
         OxCore::DebugLn<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -432,6 +436,10 @@ bool CogTask::updatePowerMonitor()
         OxCore::DebugLn<float>(dc * 100.0);
       }
 
+      // This is setting the target...
+      getConfig()->SETPOINT_TEMP_C = c.T_c;
+      wattagePIDObject->temperatureSetPoint_C = getConfig()->SETPOINT_TEMP_C;
+
       getConfig()->report->total_wattage_W = totalWattage_w;
 
       getConfig()->CURRENT_TOTAL_WATTAGE_W = totalWattage_w;
@@ -444,8 +452,6 @@ bool CogTask::updatePowerMonitor()
 
       dutyCycleTask->dutyCycle = dc;
       getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
-      Serial.println("spud");
-      Serial.println(getConfig()->report->heater_duty_cycle);
   }
 
   void CogTask::_updateCOGSpecificComponents() {

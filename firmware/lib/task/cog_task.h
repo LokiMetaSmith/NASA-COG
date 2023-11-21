@@ -79,9 +79,9 @@ namespace OxApp
     // Heater ramp rate (degrees C per minute)
     const float Hr_Cdm =0.5;
     // Stack Watts ramp rate (watts per minute)
-    const float Wr_Wdm = 1;
+    const float Wr_Wdm = 1.0;
     // Fan speed ramp rate (% cent per minute)
-    const float Sr_Pdm = 2;
+    const float Sr_Pdm = 2.0;
     // Substate in terms of pausing due to problems
     // This is an integer representing "how paused" we are.
     // At 1 or more, we are pausing increasting the target temperature.
