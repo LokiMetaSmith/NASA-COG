@@ -1,4 +1,4 @@
-# NASA-COG
+# NASA-MCOG
 
 ## Final Report
 
@@ -35,11 +35,21 @@ As this develops, it will use a specific Due hardware configuration,
 please see the [documentation](https://github.com/PubInv/NASA-COG/blob/develop/RibbonFish.md) for details to build your own.  
 
 ### Windows
+With Powershell
+Navigate to the firmware folder. 
+Type: pio run -e due_ribbonfish
+![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/64b54bb9-6897-4341-a521-b6b59b02acb4)
+
+
 With Visual Studio Code.  
 Install the Plateform IO extention  
 To open he project in Visual Studio Code.  
 Open Project. Navigate to the firmware folder.   
 Select the file platformio.ini  
+Press the build check mark on the bottom of the window.
+![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/c45a9ee8-3679-4824-b779-ef118a4d9f82)
+
+To disable the automatic load and serial monitor comment out the lines with "targets = upload, monitor" in the file "platformio.ini"
 
 
 ## Annoyances
