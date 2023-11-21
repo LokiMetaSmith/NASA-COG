@@ -128,6 +128,7 @@ namespace OxApp
 
   void SerialInputTask::processStateChange(InputCommand ic,MachineConfig *mc,StateMachineManager *smm) {
     if (ic.value_c == '1') {
+        mc->USE_ONE_BUTTON = false;
       if (mc->ms == Off) {
         mc->clearErrors();
         smm->changeTargetTemp(mc->TARGET_TEMP_C);
@@ -142,6 +143,11 @@ namespace OxApp
       } else {
         Debug<const char *>("Already Off.");
       }
+    } else if (ic.value_c == '2') {
+        Debug<const char *>("Enterring Automatic One-Button Algorithm.");
+        mc->clearErrors();
+        smm->changeTargetTemp(mc->TARGET_TEMP_C);
+        mc->USE_ONE_BUTTON = true;
     } else {
     }
   }

@@ -33,33 +33,127 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <OnePinHeater.h>
 #include <MAX31850.h>
 
-// #include <temp_refresh_task.h>
 #include <heater_pid_task.h>
 #include <state_machine_manager.h>
-
+#include <PID_v1.h>
+#include <wattage_pid_object.h>
+#include <duty_cycle_task.h>
+#include <log_recorder_task.h>
 
 namespace OxApp
 {
+
+  // These are the controllable pre-set parameters to the algorithm
+// that can be tuned (before the algorithm is running).
+   class PreSetParameters  {
+   public:
+     const float L_w = 180.0; // max stack wattage
+     const float M_w = 200.0; // stack wattage at 0 wafer difference
+     const float Q_c = 30.0;  // maximum wafer difference
+   };
+  class OneButtonControl {
+  public:
+    // Current Stack Wattage
+    float W_w = 0;
+    // Stack Input Heat (actual wattage - pumping wattage)
+    float SIH_w= 0;
+    // Computing Pumping Wattage
+    float PW_w = 0;
+    // Current Fan Speed
+    float S_p = 0;
+    // Current Total Wattage
+    float TW_w = 0;
+    // Current Heater Wattage
+    float H_w = 0;
+    // Operating Temperature
+    const float OT_c = MachineConfig::OPERATING_TEMPERATURE_C;
+    // Target Stack Wattage
+    float tW_w = 0;
+    // Target Heater Wattage
+    float tH_w = 0;
+    // Target Heater Temperature
+    const float tT_c = MachineConfig::OPERATING_TEMPERATURE_C;
+    // Target Fan Speed
+    float tS_p = 100.0;
+    // Heater ramp rate (degrees C per minute)
+    const float Hr_Cdm =0.5;
+    // Stack Watts ramp rate (watts per minute)
+    const float Wr_Wdm = 1.0;
+    // Fan speed ramp rate (% cent per minute)
+    const float Sr_Pdm = 2.0;
+    // Substate in terms of pausing due to problems
+    // This is an integer representing "how paused" we are.
+    // At 1 or more, we are pausing increasting the target temperature.
+    // At 2 or more, we are decreasing the fan speed on a schedule.
+    int pause_substate = 0;
+    unsigned long current_pause_began = 0;
+
+    const float DT_PAUSE_LIMIT_K = 20.0;
+    const float PAUSE_TIME_S = 10*60;
+    // These are our ohms in the cable and the leads.
+    // I'm not entirely sure what this should be.
+    const float CABLE_O = 0.1;
+    const float NUM_WAFERS = 30;
+  };
   class CogTask : public StateMachineManager
   {
   public:
     int PERIOD_MS = 10000;
     int DEBUG_LEVEL = 0;
+    int DEBUG_LEVEL_OBA = 0;
+
+    unsigned long last_time_ramp_changed_ms = 0;
+
+    OneButtonControl c;
+    PreSetParameters p;
+    DutyCycleTask *dutyCycleTask;
+    WattagePIDObject *wattagePIDObject;
 
     // There are really several senosrs, but they are indexed!
     const static int NUM_TEMP_SENSORS = 3;
     const static int NUM_TEMP_INDICES = 2;
     const static int NUM_FANS = 1;
 
-    float getTemperatureReading();
+    float getTemperatureReadingA_C();
+    float getTemperatureReadingB_C();
+    float getTemperatureReadingC_C();
     bool updatePowerMonitor();
+
+    // "OneButton Routines"
+    float computeHeaterDutyCycleFromWattage(float heaterWattage_w);
+    float computeTotalWattage(float controlTemp);
+    float computeTargetStackWattage(float targetTotalWattage, float heaterWatts, float currentTemp, float B, float C, float targetStackWatts);
+    float computeFanSpeedTargetFromSchedule(float temp);
+    float computeFanSpeedTarget(float currentTargetTemp,float temp, float heaterWatts);
+    bool heaterWattsAtFullPowerPred(float watts);
+    void oneButtonAlgorithm(float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p);
+    void runOneButtonAlgorithm();
+    float computeNernstVoltage(float T_K);
+    float computePumpingWork(float T_k,float V,float R_O, float I_A);
+    void changeRamps(unsigned long ms);
+
+    // TODO: I think we should separate all of this
+    // computation from state machine by creating a new
+    // class for this.
+
+    // The PID controller for OneButton Routine
+    PID *pidControllerWattage;
+    double totalWattage_Output_W = 0.0;
+    double final_totalWattage_W = 0.0;
+    double temperatureSetPoint_C = 25.0;
+    double input_temperature_C = 25.0;
+
+    // Other "OneButton" stuff
+    const int USE_PAUSING = 1;
+    int pause_substate = 0;
+    const unsigned long curent_pause_began = 0;
 
     COG_HAL* getHAL();
 
     void turnOff() override;
     void printGenericInstructions() override;
 
-    float computeFanSpeed(float t);
+    float getFanSpeed(float t);
     float computeAmperage(float t);
 
     void _updateCOGSpecificComponents();
@@ -69,7 +163,7 @@ namespace OxApp
     void _updateFanSpeed(float percentage);
     void _updateStackVoltage(float voltage);
     void _updateStackAmperage(float amperage);
-
+    void _updateStackWattage(float wattage);
 
     MachineState _updatePowerComponentsOperation(IdleOrOperateSubState i_or_o) override;
     MachineState _updatePowerComponentsOff() override;
