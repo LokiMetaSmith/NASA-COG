@@ -38,6 +38,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <PID_v1.h>
 #include <wattage_pid_object.h>
 #include <duty_cycle_task.h>
+#include <log_recorder_task.h>
 
 namespace OxApp
 {

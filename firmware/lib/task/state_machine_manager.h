@@ -25,8 +25,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <core.h>
 #include <heater_pid_task.h>
 #include <log_recorder_task.h>
-// #include <temp_refresh_task.h>   
-
+// #include <temp_refresh_task.h>
+#include <log_recorder_task.h>
 
 namespace OxApp
 {
@@ -35,6 +35,7 @@ namespace OxApp
   public:
     int DEBUG_LEVEL = 0;
     HeaterPIDTask* heaterPIDTask;
+    Log_Recorder_Task *logRecorderTask;
 
     MachineState _executeBasedOnState(MachineState ms);
     virtual MachineState _updatePowerComponentsOperation(IdleOrOperateSubState i_or_o);
