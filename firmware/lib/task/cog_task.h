@@ -89,7 +89,7 @@ namespace OxApp
     unsigned long current_pause_began = 0;
 
     const float DT_PAUSE_LIMIT_K = 20.0;
-    const float PAUSE_TIME_S = 10*60;
+    const float PAUSE_TIME_S = 5*60;
     // These are our ohms in the cable and the leads.
     // I'm not entirely sure what this should be.
     const float CABLE_O = 0.1;

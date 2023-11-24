@@ -234,7 +234,7 @@ namespace OxApp
   MachineState StateMachineManager::_updatePowerComponentsEmergencyShutdown() {
 	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
   }
-  
+
   MachineState StateMachineManager::_updatePowerComponentsCooldown() {
     MachineState new_ms = Cooldown;
     if (DEBUG_LEVEL > 0) {

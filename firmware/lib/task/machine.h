@@ -288,8 +288,8 @@ void _reportFanSpeed();
   bool USE_ONE_BUTTON = true; // if false, use the 5-knob approach
   const float DECREASE_STACK_WATTAGE_INCREMENT_W = 1.0;
 
-  const float FAN_SPEED_MAX_p = 60;
-  const float FAN_SPEED_MIN_p = 20;
+  const float FAN_SPEED_MAX_p = 80;
+  const float FAN_SPEED_MIN_p = 60;
   const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 600.0;
   const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
   const float FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c = 20.0;

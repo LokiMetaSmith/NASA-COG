@@ -68,7 +68,6 @@ namespace OxApp
     Serial.println("Enter s:1 to Turn On Manual Control, s:0 to Turn Off.");
     Serial.println("Enter s:2 to Turn Enter Automatic Control.");
     Serial.println("Enter a:XX.X to set (a)mperage, (w)attage, (f)an speed (h)eater set p., and (r)amp rate.");
-
   }
 
   COG_HAL* CogTask::getHAL() {
@@ -214,8 +213,11 @@ namespace OxApp
         } else {
             if ((c.pause_substate != 0) && (time > (c.current_pause_began + c.PAUSE_TIME_S * 1000)))
             {
-                    c.pause_substate--;
-                    c.current_pause_began = time;
+              // Note: In the JavaScript simulation, we use this
+              // to simulate a decrease in stack temperature over time, but that has no meaning on a real system,
+              // so we set this to 0 instead of decrementing it.
+              c.pause_substate = 0;
+              c.current_pause_began = time;
             }
         }
     }
@@ -277,9 +279,10 @@ namespace OxApp
     // delta_ms it the number of mount that we want to do...
     // but all of our ramp rates are in terms of minutes
     const float minutes = ((float)delta_ms) / (60.0 * 1000.0);
-      if (DEBUG_LEVEL_OBA > 2) {
+      if (DEBUG_LEVEL_OBA > 0) {
         OxCore::DebugLn<const char *>("Change Ramps Run! Minutes: ");
         OxCore::DebugLn<float>(minutes);
+        OxCore::DebugLn<const char *>("pause substate: ");
         OxCore::DebugLn<int>(c.pause_substate);
       }
     c.W_w += (((c.tW_w - c.W_w) > 0) ? 1.0 : -1.0) * c.Wr_Wdm * minutes;
@@ -288,9 +291,9 @@ namespace OxApp
     c.S_p = max(0,c.S_p);
 
     if (c.pause_substate == 0) {
-        getConfig()->SETPOINT_TEMP_C += (((c.tT_c - getConfig()->SETPOINT_TEMP_C) > 0) ? 1.0 : -1.0) * c.Hr_Cdm * minutes;
+      getConfig()->SETPOINT_TEMP_C += min((((c.tT_c - getConfig()->SETPOINT_TEMP_C) > 0) ? 1.0 : -1.0) * c.Hr_Cdm * minutes,
+                                          c.tT_c);
     }
-    Serial.println(getConfig()->SETPOINT_TEMP_C);
     c.W_w = max(c.W_w,0);
   }
 
@@ -355,6 +358,8 @@ namespace OxApp
     getConfig()->FAN_SPEED = 0.0;
     getHAL()->_updateFanPWM(fs);
     getConfig()->report->fan_pwm = fs;
+    dutyCycleTask->dutyCycle = 0;
+    getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
     _updateStackVoltage(getConfig()->MIN_OPERATING_STACK_VOLTAGE);
     // Although after a minute this should turn off, we want
     // to do it immediately
@@ -440,8 +445,6 @@ bool CogTask::updatePowerMonitor()
 
       // This is setting the target...
       wattagePIDObject->temperatureSetPoint_C = getConfig()->SETPOINT_TEMP_C;
-      OxCore::Debug<const char *>("SetPoint: ");
-      OxCore::DebugLn<float>(getConfig()->SETPOINT_TEMP_C);
 
       getConfig()->report->total_wattage_W = totalWattage_w;
 
@@ -538,10 +541,8 @@ bool CogTask::updatePowerMonitor()
   MachineState CogTask::_updatePowerComponentsEmergencyShutdown() {
     Serial.println("GOT EMERGENCY SHUTDOWN!");
     MachineState new_ms = OffUserAck;
-    _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
-    // In an emergency shutdown, we do NOT run the fan!
-    getHAL()->_updateFanPWM(0.0);
-    getConfig()->report->fan_pwm = 0.0;
+    turnOff();
+    // Not sure when this is restored, or what should be done
     logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
     return new_ms;
   }

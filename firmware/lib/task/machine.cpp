@@ -26,13 +26,13 @@ void MachineConfig::dumpAllData10Hz() {
   // Loop over Ring buffer and call ouptutReport and
   // do a Network output (eventually);
   // using...
-  
+
   //int msr_lre_size = _log_entry.size();
   //Serial.println(msr_lre_size);
   for(int i = 0; i < MAX_RECORDS; i++) {
-	MachineStatusReport msr_lre= _log_entry[i];
-	
+    MachineStatusReport msr_lre= _log_entry[i];
     outputReport(&msr_lre );
+    watchdogReset();
   }
 
 }
@@ -43,9 +43,9 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         OxCore::Debug<const char *>("Machine State: ");
         OxCore::DebugLn<const char *>(MachineConfig::MachineStateNames[msr->ms]);
         // These are the dynamic targets
-        OxCore::Debug<const char *>("Target     C: ");
+        OxCore::Debug<const char *>("Target      C: ");
         OxCore::DebugLn<float>(msr->target_temp_C);
-        OxCore::Debug<const char *>("Setpoint   C: ");
+        OxCore::Debug<const char *>("Setpoint    C: ");
         OxCore::DebugLn<float>(msr->setpoint_temp_C);
         OxCore::Debug<const char *>("Target Ramp C: ");
         OxCore::DebugLn<float>(msr->target_ramp_C);
@@ -53,7 +53,7 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         OxCore::DebugLn<float>(msr->max_stack_amps_A);
         OxCore::Debug<const char *>("Max Stack   W: ");
         OxCore::DebugLn<float>(msr->max_stack_watts_W);
-        OxCore::Debug<const char *>("Fan PWM      : ");
+        OxCore::Debug<const char *>("Fan PWM   0-1: ");
         OxCore::DebugLn<float>(msr->fan_pwm);
 
 
@@ -64,7 +64,7 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         OxCore::Debug<const char *>("Post Stack  C: ");
         OxCore::DebugLn<float>(msr->post_stack_C);
 
-        OxCore::Debug<const char *>("Heater DC    : ");
+        OxCore::Debug<const char *>("Heater DC 0-1: ");
         // We want more precision to see this changing faster.
         Serial.println(msr->heater_duty_cycle,5);
         //        OxCore::DebugLn<float>(msr->heater_duty_cycle);
