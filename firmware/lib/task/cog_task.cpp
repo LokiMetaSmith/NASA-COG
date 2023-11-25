@@ -308,16 +308,19 @@ namespace OxApp
     getConfig()->report->fan_rpm =
       getHAL()->_fans[0]._calcRPM(0);
 
-    unsigned long now_ms = millis();
-    unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
-    changeRamps(delta_ms);
+    MachineState ms = getConfig()->ms;
+    if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
+      unsigned long now_ms = millis();
+      unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
+      OxCore::Debug<const char *>("delta_ms: ");
+      OxCore::DebugLn<long>(delta_ms);
+      changeRamps(delta_ms);
+      last_time_ramp_changed_ms = now_ms;
+    }
 
 
 
-    OxCore::Debug<const char *>("delta_ms: ");
-    OxCore::DebugLn<long>(delta_ms);
 
-    last_time_ramp_changed_ms = now_ms;
 
     this->StateMachineManager::run_generic();
 
