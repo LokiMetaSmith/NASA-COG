@@ -105,7 +105,10 @@ namespace OxCore
 	
     void Task::SetPeriod( TimeMs newPeriod)
     {
+		if(newPeriod != _properties.period)
+		{
          _properties.period = newPeriod;
+		}
     }
 	
   MachineConfig *Task::getConfig() {

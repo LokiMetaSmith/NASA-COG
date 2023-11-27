@@ -34,30 +34,21 @@ namespace OxApp
       OxCore::DebugLn<int>(_recordCount);
     }
     getConfig()->report->timestamp = millis();
-    //getConfig()->_log_entry.add(*getConfig()->report);
+
     getConfig()->_log_entry[_recordCount] = *getConfig()->report;
-    /*testing log recorder*/
+    
     _recordCount++;
     if(_recordCount>getConfig()->MAX_RECORDS)
       {
         _recordCount = 0;
         getConfig()->dumpAllData10Hz();
       }
-    /*end test*/
+ 
     return true;
   }
   int Log_Recorder_Task::recordCount()
   {
     return _recordCount;
   }
-  /* 	void addMSR(MachineStatusReport *);
-
-        void Log_Recorder_Task::addLog(MachineStatusReport *msr) {
-
-	}
-
-
-        void Log_Recorder_Task::clearLogs(){
-
-        }; */
+  
 }

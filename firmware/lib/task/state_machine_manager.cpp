@@ -188,6 +188,7 @@ namespace OxApp
 
   MachineState StateMachineManager::_updatePowerComponentsWarmup() {
     MachineState new_ms = Warmup;
+	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS);
     if (DEBUG_LEVEL > 0) {
       OxCore::Debug<const char *>("Warmup Mode!\n");
     }
@@ -272,6 +273,8 @@ namespace OxApp
 
 
   MachineState StateMachineManager::_updatePowerComponentsOperation(IdleOrOperateSubState i_or_o) {
+	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS);
+  
     MachineState new_ms = NormalOperation;
     if (getConfig()->USE_ONE_BUTTON) {
       runOneButtonAlgorithm();
