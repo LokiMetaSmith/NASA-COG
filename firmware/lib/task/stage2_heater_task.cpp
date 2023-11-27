@@ -22,13 +22,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 using namespace std;
 
 
-namespace OxApp
+namespace CogApp
 {
 
   // TODO: Most of this should be moved into the machine definition
   bool Stage2HeaterTask::_init()
   {
-    OxCore::Debug<const char *>("Stage2HeaterTask init\n");
+    CogCore::Debug<const char *>("Stage2HeaterTask init\n");
     return true;
   }
   // There has to be a better way to do this in C++
@@ -72,7 +72,7 @@ namespace OxApp
   // Warning!! these states are essentially unused in the
   // 5-knob protocol
   MachineState Stage2HeaterTask::_updatePowerComponentsIdle() {
-    OxCore::Debug<const char *>("IN IDLE FUNCTION ");
+    CogCore::Debug<const char *>("IN IDLE FUNCTION ");
     MachineState new_ms = NormalOperation;
     getConfig()->idleOrOperate = Idle;
     return new_ms;

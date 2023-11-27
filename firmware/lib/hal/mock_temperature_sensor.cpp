@@ -26,7 +26,7 @@ namespace Temperature {
   MockTemperatureSensor::MockTemperatureSensor() {
     }
 
-  MockTemperatureSensor::MockTemperatureSensor(OxApp::Model& m,SensorConfig &config) {
+  MockTemperatureSensor::MockTemperatureSensor(CogApp::Model& m,SensorConfig &config) {
     _m = m;
         _config = config;
     }

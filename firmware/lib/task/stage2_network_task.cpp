@@ -35,9 +35,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // hopefully it is only referenced here.
 extern byte packetBuffer[buffMax];
 
-using namespace OxCore;
+using namespace CogCore;
 
-namespace OxApp
+namespace CogApp
 {
   bool Stage2NetworkTask::_run()  {
     if (DEBUG_UDP > 1) {

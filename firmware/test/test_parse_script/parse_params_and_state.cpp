@@ -4,7 +4,7 @@
 #include <debug.h>
 #include <machine_script.h>
 
-using namespace OxCore;
+using namespace CogCore;
 
 char packetBuffer[2048] = "Name. Test Name \n\
 TimeStamp. 1680759024\n\
@@ -162,7 +162,7 @@ int process() {
 
 void setup() {
 #ifdef RIBBONFISH
-  OxCore::serialBegin(115200UL);
+  CogCore::serialBegin(115200UL);
 #endif
     process();
 }

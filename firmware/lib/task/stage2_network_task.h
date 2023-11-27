@@ -25,7 +25,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <network_udp.h>
 #include <network_task.h>
 
-namespace OxApp
+namespace CogApp
 {
   class Stage2NetworkTask : public NetworkTask {
   public:

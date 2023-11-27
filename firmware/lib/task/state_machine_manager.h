@@ -28,10 +28,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // #include <temp_refresh_task.h>
 #include <log_recorder_task.h>
 
-namespace OxApp
+namespace CogApp
 {
 
-  class StateMachineManager : public OxCore::Task {
+  class StateMachineManager : public CogCore::Task {
   public:
     int DEBUG_LEVEL = 0;
     HeaterPIDTask* heaterPIDTask;

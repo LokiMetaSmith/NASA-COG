@@ -28,9 +28,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "DeltaFans.h"
 
 
-namespace OxApp
+namespace CogApp
 {
-    class FanTESTTask : public OxCore::Task
+    class FanTESTTask : public CogCore::Task
     {
     public:
       FanTESTTask();

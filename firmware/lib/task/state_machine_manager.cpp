@@ -21,20 +21,20 @@
 
 using namespace std;
 
-namespace OxApp
+namespace CogApp
 {
 
   bool StateMachineManager::run_generic()
   {
     if (DEBUG_LEVEL > 0) {
-      OxCore::Debug<const char *>("starting run generic: ");
+      CogCore::Debug<const char *>("starting run generic: ");
     }
 
     MachineState ms = getConfig()->ms;
 
     if (DEBUG_LEVEL > 0) {
-      OxCore::Debug<const char *>("ms : ");
-      OxCore::DebugLn<int>(ms);
+      CogCore::Debug<const char *>("ms : ");
+      CogCore::DebugLn<int>(ms);
     }
     printOffWarnings(ms);
 
@@ -42,14 +42,14 @@ namespace OxApp
 
     MachineState new_state = _executeBasedOnState(ms);
     if (DEBUG_LEVEL > 0) {
-      OxCore::DebugLn<const char *>("finished execute");
+      CogCore::DebugLn<const char *>("finished execute");
     }
     // if the state really changes, we want to log that and take some action!
     if (new_state != ms) {
       getConfig()->ms = new_state;
-      OxCore::Debug<const char *>("CHANGING STATE TO: ");
-      OxCore::DebugLn<const char *>(getConfig()->MachineStateNames[getConfig()->ms]);
-      OxCore::DebugLn<const char *>("");
+      CogCore::Debug<const char *>("CHANGING STATE TO: ");
+      CogCore::DebugLn<const char *>(getConfig()->MachineStateNames[getConfig()->ms]);
+      CogCore::DebugLn<const char *>("");
     }
     return true;
   }
@@ -57,8 +57,8 @@ namespace OxApp
   void StateMachineManager::printOffWarnings(MachineState ms) {
     // If we are in the off state there is nothing to do!
     if (ms == OffUserAck) {
-      OxCore::DebugLn<const char *>("AN ERROR OCCURED. WILL NOT ENTER OFF STATE ");
-      OxCore::DebugLn<const char *>("UNTIL ACKNOWLEDGED. ENTER A SINGLE 'a' TO ACKNOWLEDGE:");
+      CogCore::DebugLn<const char *>("AN ERROR OCCURED. WILL NOT ENTER OFF STATE ");
+      CogCore::DebugLn<const char *>("UNTIL ACKNOWLEDGED. ENTER A SINGLE 'a' TO ACKNOWLEDGE:");
     }
   }
 
@@ -84,10 +84,10 @@ namespace OxApp
     MachineState new_ms;
 
     if (DEBUG_LEVEL > 0) {
-      OxCore::Debug<const char *>("\nMachine State: ");
-      OxCore::Debug<const char *>(getConfig()->MachineStateNames[ms]);
-      OxCore::Debug<const char *>(" : ");
-      OxCore::DebugLn<const char *>(getConfig()->MachineSubStateNames[getConfig()->idleOrOperate]);
+      CogCore::Debug<const char *>("\nMachine State: ");
+      CogCore::Debug<const char *>(getConfig()->MachineStateNames[ms]);
+      CogCore::Debug<const char *>(" : ");
+      CogCore::DebugLn<const char *>(getConfig()->MachineSubStateNames[getConfig()->idleOrOperate]);
     }
 
     new_ms = checkCriticalFaults(ms);
@@ -115,7 +115,7 @@ namespace OxApp
       new_ms = _updatePowerComponentsOffUserAck();
       break;
     default:
-      OxCore::Debug<const char *>("INTERNAL ERROR: UNKOWN MACHINE STATE\n");
+      CogCore::Debug<const char *>("INTERNAL ERROR: UNKOWN MACHINE STATE\n");
       // This is not really enough information; we need a way to
       // record what the fault is, but it will do for now.
       new_ms = CriticalFault;
@@ -190,7 +190,7 @@ namespace OxApp
     MachineState new_ms = Warmup;
 	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS);
     if (DEBUG_LEVEL > 0) {
-      OxCore::Debug<const char *>("Warmup Mode!\n");
+      CogCore::Debug<const char *>("Warmup Mode!\n");
     }
 
     float t = getTemperatureReadingA_C();
@@ -203,8 +203,8 @@ namespace OxApp
       return new_ms;
     }
 
-    OxCore::Debug<const char *>("Run One Button YYYY : ");
-    OxCore::DebugLn<bool>(getConfig()->USE_ONE_BUTTON);
+    CogCore::Debug<const char *>("Run One Button YYYY : ");
+    CogCore::DebugLn<bool>(getConfig()->USE_ONE_BUTTON);
 
     // TODO: this should really be in the cog_task, not here.
     if (getConfig()->USE_ONE_BUTTON) {
@@ -215,12 +215,12 @@ namespace OxApp
                                            getConfig()->WARM_UP_BEGIN_TEMP,
                                            getConfig()->BEGIN_UP_TIME_MS);
       if (DEBUG_LEVEL > 0) {
-        OxCore::Debug<const char *>("Warmup tt for :");
+        CogCore::Debug<const char *>("Warmup tt for :");
         Serial.println(getConfig()->s2heater);
-        OxCore::DebugLn<float>(tt);
-        OxCore::Debug<const char *>("Global Recent temp\n");
-        OxCore::DebugLn<float>(getConfig()->GLOBAL_RECENT_TEMP);
-        OxCore::DebugLn<float>(getConfig()->BEGIN_UP_TIME_MS);
+        CogCore::DebugLn<float>(tt);
+        CogCore::Debug<const char *>("Global Recent temp\n");
+        CogCore::DebugLn<float>(getConfig()->GLOBAL_RECENT_TEMP);
+        CogCore::DebugLn<float>(getConfig()->BEGIN_UP_TIME_MS);
       }
 
       getConfig()->SETPOINT_TEMP_C = tt;
@@ -239,7 +239,7 @@ namespace OxApp
   MachineState StateMachineManager::_updatePowerComponentsCooldown() {
     MachineState new_ms = Cooldown;
     if (DEBUG_LEVEL > 0) {
-      OxCore::Debug<const char *>("Cooldown Mode!\n");
+      CogCore::Debug<const char *>("Cooldown Mode!\n");
     }
     float t = getTemperatureReadingA_C();
     getConfig()->GLOBAL_RECENT_TEMP = t;
@@ -260,12 +260,12 @@ namespace OxApp
       heaterPIDTask->HeaterSetPoint_C = tt;
 
       if (DEBUG_LEVEL > 0) {
-        OxCore::Debug<const char *>("CoolDown tt for :");
+        CogCore::Debug<const char *>("CoolDown tt for :");
         Serial.println((unsigned long) heaterPIDTask);
-        OxCore::DebugLn<float>(tt);
-        OxCore::Debug<const char *>("Global Recent temp\n");
-        OxCore::DebugLn<float>(getConfig()->GLOBAL_RECENT_TEMP);
-        OxCore::DebugLn<float>(getConfig()->BEGIN_UP_TIME_MS);
+        CogCore::DebugLn<float>(tt);
+        CogCore::Debug<const char *>("Global Recent temp\n");
+        CogCore::DebugLn<float>(getConfig()->GLOBAL_RECENT_TEMP);
+        CogCore::DebugLn<float>(getConfig()->BEGIN_UP_TIME_MS);
       }
     }
     return new_ms;

@@ -18,11 +18,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 using namespace std;
 
 
-namespace OxApp
+namespace CogApp
 {
   bool Log_Recorder_Task::_init()
   {
-    OxCore::Debug<const char *>("LogRecorderTask init\n");
+    CogCore::Debug<const char *>("LogRecorderTask init\n");
     _recordCount = 0;
     return true;
   }
@@ -30,8 +30,8 @@ namespace OxApp
   bool Log_Recorder_Task::_run()
   {
     if (DEBUG_LOG_RECORDER) {
-      OxCore::Debug<const char *>("LogRecorderTask run: ");
-      OxCore::DebugLn<int>(_recordCount);
+      CogCore::Debug<const char *>("LogRecorderTask run: ");
+      CogCore::DebugLn<int>(_recordCount);
     }
     getConfig()->report->timestamp = millis();
 

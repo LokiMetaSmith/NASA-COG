@@ -26,6 +26,6 @@
 #include<cmath>
 
 using namespace std;
-namespace OxApp
+namespace CogApp
 {
 }

@@ -18,11 +18,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 using namespace std;
 
 
-namespace OxApp
+namespace CogApp
 {
     bool HeartbeatTask::_init()
     {
-        OxCore::Debug<const char *>("HeartbeatTask init\n");
+        CogCore::Debug<const char *>("HeartbeatTask init\n");
 
         pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
         digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)

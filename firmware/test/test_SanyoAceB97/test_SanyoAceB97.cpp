@@ -24,7 +24,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <cstdint>
 #include <debug.h>
 
-using namespace OxCore;
+using namespace CogCore;
 
 /*
   We have already done live testing of our DC power supply
@@ -118,7 +118,7 @@ void process() {
 #include <Arduino.h>
 
 void setup() {
-  OxCore::serialBegin(115200UL);
+  CogCore::serialBegin(115200UL);
   delay(1000); // delay to make sure it's ready
 
   machineConfig = new MachineConfig();
@@ -127,7 +127,7 @@ void setup() {
   // bool initSuccess  = machineConfig->hal->init();
   bool initSuccess = true;
   if (initSuccess) {
-    OxCore::TaskProperties cogProperties;
+    CogCore::TaskProperties cogProperties;
     cogProperties.name = "cog";
     cogProperties.id = 20;
     cogProperties.state_and_config = (void *) &machineConfig;

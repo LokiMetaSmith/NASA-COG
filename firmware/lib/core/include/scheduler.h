@@ -1,5 +1,5 @@
 /*
-Public Invention's Ox Project is an open source hardware design for an oxygen
+Public Invention's COG Project is an open source hardware design for an oxygen
 concentrator for use by field hospitals around the world. This team aims to
 design an oxygen concentrator that can be manufactured locally while overcoming
 challenges posed by human resources, hospital location (geographically),
@@ -29,7 +29,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "task.h"
 #include "debug.h"
 
-namespace OxCore {
+namespace CogCore {
 
 // This is a lightweight co-operative scheduler.
 // There is no overhead in context switching,
@@ -46,11 +46,11 @@ namespace OxCore {
 class IdleTask: public Task {
     private:
         bool _init() override {
-            OxCore::Debug<const char *>("Init idle task\n");
+            CogCore::Debug<const char *>("Init idle task\n");
             return true;
         }
         bool _run() override {
-            // OxCore::Debug<const char *>("Run idle task\n");
+            // CogCore::Debug<const char *>("Run idle task\n");
             return true;
         }
 };
@@ -70,7 +70,7 @@ class Scheduler {
         Task* _lastTaskRan;
         IdleTask _idleTask; // Special task not part of the task map
         static const int32_t MAX_TASKS = 40; // TODO: make this better
-        OxCollections::Map<TaskId, Task*, MAX_TASKS> map;
+        CogCollections::Map<TaskId, Task*, MAX_TASKS> map;
         TaskId _currentRunningTaskId = 0;
         int32_t _numberOfTasks = 0;
         SchedulerProperties _properties;

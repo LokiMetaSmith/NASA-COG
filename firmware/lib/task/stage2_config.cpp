@@ -26,21 +26,21 @@ void MachineConfig::outputStage2Report(
                                        float target_temp,
                                        float setpoint_temp,
                                        float measured_temp,float duty_cycle, float ramp_C_per_min) {
-  OxCore::Debug<const char *>("Stage2Heater   : ");
+  CogCore::Debug<const char *>("Stage2Heater   : ");
 
-  OxCore::DebugLn<const char *>(MachineConfig::HeaterNames[s2h]);
+  CogCore::DebugLn<const char *>(MachineConfig::HeaterNames[s2h]);
 
-  OxCore::Debug<const char *>("Machine State: ");
-  OxCore::DebugLn<const char *>(MachineConfig::MachineStateNames[msr->ms]);
-  OxCore::Debug<const char *>("Target    C: ");
-  OxCore::DebugLn<float>(target_temp);
-  OxCore::Debug<const char *>("Setpoint    C: ");
-  OxCore::DebugLn<float>(setpoint_temp);
-  OxCore::Debug<const char *>("Temp        C: ");
-  OxCore::DebugLn<float>(measured_temp);
-  OxCore::Debug<const char *>("Ramp    C/min: ");
-  OxCore::DebugLn<float>(ramp_C_per_min);
-  OxCore::Debug<const char *>("Heater     DC: ");
+  CogCore::Debug<const char *>("Machine State: ");
+  CogCore::DebugLn<const char *>(MachineConfig::MachineStateNames[msr->ms]);
+  CogCore::Debug<const char *>("Target    C: ");
+  CogCore::DebugLn<float>(target_temp);
+  CogCore::Debug<const char *>("Setpoint    C: ");
+  CogCore::DebugLn<float>(setpoint_temp);
+  CogCore::Debug<const char *>("Temp        C: ");
+  CogCore::DebugLn<float>(measured_temp);
+  CogCore::Debug<const char *>("Ramp    C/min: ");
+  CogCore::DebugLn<float>(ramp_C_per_min);
+  CogCore::Debug<const char *>("Heater     DC: ");
   Serial.println(duty_cycle,5);
 
 }

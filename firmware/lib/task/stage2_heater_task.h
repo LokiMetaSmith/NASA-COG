@@ -27,7 +27,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <heater_pid_task.h>
 #include <stage2_config.h>
 
-namespace OxApp
+namespace CogApp
 {
 
     class Stage2HeaterTask : public StateMachineManager

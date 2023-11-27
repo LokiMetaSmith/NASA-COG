@@ -24,9 +24,9 @@
 #include <core_defines.h>
 #include <core.h>
 
-using namespace OxCore;
+using namespace CogCore;
 
-class SerialReportTask : public OxCore::Task
+class SerialReportTask : public CogCore::Task
 {
 public:
   SerialReportTask();

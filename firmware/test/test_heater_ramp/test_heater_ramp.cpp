@@ -26,7 +26,7 @@
 #include <OnePinHeater.h>
 #include <TF800A12K.h>
 
-using namespace OxCore;
+using namespace CogCore;
 
 
 #include <PID_v1.h>
@@ -49,7 +49,7 @@ using namespace OxCore;
 #include <heater_pid_task.h>
 #include <read_temps_task.h>
 
-using namespace OxCore;
+using namespace CogCore;
 static Core core;
 
 const unsigned long REPORT_PERIOD_MS = 3000;
@@ -86,13 +86,13 @@ using namespace std;
 float STACK_AMPERAGE = 3.0;
 
 
-namespace OxApp
+namespace CogApp
 {
 
   enum State {RampingUp, Holding, RampingDn};
   State global_state = RampingUp;
 
-  class FanReportTask : public OxCore::Task
+  class FanReportTask : public CogCore::Task
   {
   public:
     FanReportTask();
@@ -108,7 +108,7 @@ namespace OxApp
 
   bool FanReportTask::_init()
   {
-    OxCore::Debug<const char *>("FanReportTask init\n");
+    CogCore::Debug<const char *>("FanReportTask init\n");
     return true;
   }
 
@@ -119,7 +119,7 @@ namespace OxApp
     }
   }
   // This task controls the ramp up, hold, and ramp down.
-  class SupervisorTask : public OxCore::Task
+  class SupervisorTask : public CogCore::Task
   {
   public:
     SupervisorTask();
@@ -137,7 +137,7 @@ namespace OxApp
 
   bool SupervisorTask::_init()
   {
-    OxCore::Debug<const char *>("SupervisorTask init\n");
+    CogCore::Debug<const char *>("SupervisorTask init\n");
     return true;
   }
 
@@ -153,12 +153,12 @@ namespace OxApp
     case RampingUp: {
       analogWrite(fan->PWM_PIN[0],153);
       if (DEBUG_ID > 0) {
-        OxCore::Debug<const char *>("State: RAMPING UP\n");
+        CogCore::Debug<const char *>("State: RAMPING UP\n");
       }
       float postHeaterTemp = getConfig()->report->post_heater_C;
       if (postHeaterTemp > MachineConfig::OPERATING_TEMP) {
         global_state = Holding;
-        OxCore::Debug<const char *>("State Changing to HOLDING\n");
+        CogCore::Debug<const char *>("State Changing to HOLDING\n");
         begin_hold_time = millis();
       } else {
         const unsigned long MINUTES_RAMPING_UP = ms / (60 * 1000);
@@ -169,13 +169,13 @@ namespace OxApp
     };
     case Holding: {
       if (DEBUG_ID > 0) {
-        OxCore::Debug<const char *>("State: HOLDING\n");
+        CogCore::Debug<const char *>("State: HOLDING\n");
       }
       unsigned long ms = millis();
       if (((ms - begin_hold_time) / 1000) > MachineConfig::HOLD_TIME_SECONDS) {
         global_state = RampingDn;
         begin_down_time = ms;
-        OxCore::Debug<const char *>("State: Changing to RAMPING DN\n");
+        CogCore::Debug<const char *>("State: Changing to RAMPING DN\n");
       } else {
         const unsigned long MINUTES_HOLDING = ms / (60 * 1000);
       }
@@ -183,13 +183,13 @@ namespace OxApp
     };
     case RampingDn: {
       if (DEBUG_ID > 0) {
-        OxCore::Debug<const char *>("State: RAMPING DN\n");
+        CogCore::Debug<const char *>("State: RAMPING DN\n");
       }
       float postHeaterTemp = getConfig()->report->post_heater_C;
       if (postHeaterTemp < MachineConfig::STOP_TEMP) {
         analogWrite(fan->PWM_PIN[0],5);
-        OxCore::Debug<const char *>("Stop temperature reached!\n");
-        OxCore::Debug<const char *>("=======================\n");
+        CogCore::Debug<const char *>("Stop temperature reached!\n");
+        CogCore::Debug<const char *>("=======================\n");
         delay(1000);
         while(1);
       } else {
@@ -205,7 +205,7 @@ namespace OxApp
   }
 }
 
-using namespace OxApp;
+using namespace CogApp;
 FanReportTask fanReportTask;
 ReadTempsTask readTempsTask;
 SupervisorTask supervisorTask;
@@ -215,7 +215,7 @@ DutyCycleTask dutyCycleTask;
 
 void setup() {
 
- OxCore::serialBegin(115200UL);
+ CogCore::serialBegin(115200UL);
   delay(500);
 
   if (core.Boot() == false) {
@@ -253,7 +253,7 @@ void setup() {
 #endif
 
 
-  OxCore::TaskProperties cogProperties;
+  CogCore::TaskProperties cogProperties;
   cogProperties.name = "cog";
   cogProperties.id = 20;
   cogProperties.state_and_config = (void *) machineConfig;
@@ -275,64 +275,64 @@ void setup() {
   delay(100);
 
   fanReportTask.fan = fan;
-  OxCore::TaskProperties fanReportProperties;
+  CogCore::TaskProperties fanReportProperties;
   fanReportProperties.name = "fanReport";
   fanReportProperties.id = 19;
   fanReportProperties.period = fanReportTask.PERIOD_MS;
-  fanReportProperties.priority = OxCore::TaskPriority::High;
+  fanReportProperties.priority = CogCore::TaskPriority::High;
   fanReportProperties.state_and_config = (void *) machineConfig;
   delay(300);
   core.AddTask(&fanReportTask, &fanReportProperties);
   delay(100);
 
 
-  OxCore::TaskProperties readTempsProperties;
+  CogCore::TaskProperties readTempsProperties;
   readTempsProperties.name = "readTemps";
   readTempsProperties.id = 21;
   readTempsProperties.period = readTempsTask.PERIOD_MS;
-  readTempsProperties.priority = OxCore::TaskPriority::High;
+  readTempsProperties.priority = CogCore::TaskPriority::High;
   readTempsProperties.state_and_config = (void *) machineConfig;
   delay(300);
   core.AddTask(&readTempsTask, &readTempsProperties);
   delay(100);
 
-  OxCore::TaskProperties supervisorProperties;
+  CogCore::TaskProperties supervisorProperties;
   supervisorProperties.name = "supervisor";
   supervisorProperties.id = 22;
   supervisorProperties.period = supervisorTask.PERIOD_MS;
-  supervisorProperties.priority = OxCore::TaskPriority::High;
+  supervisorProperties.priority = CogCore::TaskPriority::High;
   supervisorProperties.state_and_config = (void *) machineConfig;
   core.AddTask(&supervisorTask, &supervisorProperties);
 
   //  dutyCycleTask = new DutyCycleTask();
   heaterPIDTask.dutyCycleTask = &dutyCycleTask;
 
-  OxCore::Debug<const char *>("DDD\n");
+  CogCore::Debug<const char *>("DDD\n");
 
-  OxCore::TaskProperties dutyCycleProperties;
+  CogCore::TaskProperties dutyCycleProperties;
   dutyCycleProperties.name = "dutyCycle";
   dutyCycleProperties.id = 23;
-  OxCore::Debug<const char *>("period:");
-  OxCore::Debug<int>(dutyCycleTask.PERIOD_MS);
-  OxCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("period:");
+  CogCore::Debug<int>(dutyCycleTask.PERIOD_MS);
+  CogCore::Debug<const char *>("\n");
   dutyCycleProperties.period = dutyCycleTask.PERIOD_MS;
-  dutyCycleProperties.priority = OxCore::TaskPriority::Low;
+  dutyCycleProperties.priority = CogCore::TaskPriority::Low;
   dutyCycleProperties.state_and_config = (void *) machineConfig;
   //  core.AddTask(&dutyCycleTask, &dutyCycleProperties);
 
-  OxCore::TaskProperties HeaterPIDProperties;
+  CogCore::TaskProperties HeaterPIDProperties;
   HeaterPIDProperties.name = "HeaterPID";
   HeaterPIDProperties.id = 24;
   HeaterPIDProperties.period = heaterPIDTask.PERIOD_MS;
-  HeaterPIDProperties.priority = OxCore::TaskPriority::High;
+  HeaterPIDProperties.priority = CogCore::TaskPriority::High;
   HeaterPIDProperties.state_and_config = (void *) machineConfig;
   bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
 
   if (!heaterPIDAdd) {
-    OxCore::Debug<const char *>("heaterPIDAdd Faild\n");
+    CogCore::Debug<const char *>("heaterPIDAdd Faild\n");
     abort();
   }
-  OxCore::Debug<const char *>("Added tasks\n");
+  CogCore::Debug<const char *>("Added tasks\n");
 
   _updateStackVoltage(machineConfig->STACK_VOLTAGE,machineConfig);
   _updateStackAmperage(STACK_AMPERAGE,machineConfig);
@@ -340,22 +340,22 @@ void setup() {
 
   Serial.println("Setup Done!");
 
-  OxCore::Debug<const char *>("AAA NUM_HEATERS: ");
-  OxCore::DebugLn<int>(MachineConfig::NUM_HEATERS);
+  CogCore::Debug<const char *>("AAA NUM_HEATERS: ");
+  CogCore::DebugLn<int>(MachineConfig::NUM_HEATERS);
 
 }
 
 
 
 void loop() {
-  OxCore::Debug<const char *>("Loop starting...\n");
+  CogCore::Debug<const char *>("Loop starting...\n");
 
   // Blocking call
   if (core.Run() == false) {
-    OxCore::ErrorHandler::Log(OxCore::ErrorLevel::Critical, OxCore::ErrorCode::CoreFailedToRun);
+    CogCore::ErrorHandler::Log(CogCore::ErrorLevel::Critical, CogCore::ErrorCode::CoreFailedToRun);
 #ifdef ARDUINO
     // Loop endlessly to stop the program from running
-    OxCore::Debug<const char *>("Aborting! TEST OVER\n");
+    CogCore::Debug<const char *>("Aborting! TEST OVER\n");
     delay(300);
     abort();
     // while (true) {}

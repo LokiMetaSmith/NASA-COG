@@ -30,7 +30,7 @@ TempRefreshTask::TempRefreshTask() {
   bool TempRefreshTask::_init()
   {
 
-    OxCore::Debug<const char *>("TempRefreshTask init\n");
+    CogCore::Debug<const char *>("TempRefreshTask init\n");
     return true;
   }
 
@@ -61,8 +61,8 @@ void TempRefreshTask::computeRefreshedTargetTemp(float tmeasured,MachineState ms
 bool TempRefreshTask::_run()
 {
   // if (DEBUG_TEMP_REFRESH > 0) {
-  //   OxCore::Debug<const char *>("TempRefreshTask run\n");
-  //   OxCore::Debug<int>(getConfig()->s2heater);
+  //   CogCore::Debug<const char *>("TempRefreshTask run\n");
+  //   CogCore::Debug<int>(getConfig()->s2heater);
   // }
   // float t;
   // if (!getConfig()->IS_STAGE2_HEATER_CONFIG) {

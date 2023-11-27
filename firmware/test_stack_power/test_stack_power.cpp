@@ -1,5 +1,5 @@
 /*
-Public Invention's Ox Project is an open source hardware design for an oxygen
+Public Invention's COG Project is an open source hardware design for an oxygen
 concentrator for use by field hospitals around the world. This team aims to
 design an oxygen concentrator that can be manufactured locally while overcoming
 challenges posed by human resources, hospital location (geographically),
@@ -29,7 +29,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <cstdint>
 #include <debug.h>
 
-using namespace OxCore;
+using namespace CogCore;
 
 /*
   We have already done live testing of our DC power supply
@@ -123,7 +123,7 @@ void process() {
 
 void setup() {
 #ifdef RIBBONFISH
-  OxCore::serialBegin(115200UL);
+  CogCore::serialBegin(115200UL);
 
   pinMode(RF_STACK, OUTPUT);
 
@@ -135,7 +135,7 @@ void setup() {
     Serial.println("Could not init Hardware Abastraction Layer Properly!");
 
 #endif
-    OxCore::TaskProperties cogProperties;
+    CogCore::TaskProperties cogProperties;
     cogProperties.name = "cog";
     cogProperties.id = 20;
     cogProperties.state_and_config = (void *) &machineConfig;

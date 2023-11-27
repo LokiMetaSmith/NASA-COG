@@ -48,7 +48,7 @@ DutyCycleTask::DutyCycleTask() {
 
 bool DutyCycleTask::_init()
 {
-  OxCore::Debug<const char *>("DutyCycleTask init\n");
+  CogCore::Debug<const char *>("DutyCycleTask init\n");
     if (DEBUG_DUTY_CYCLE > 1) {
     Serial.println("DUTY CYCLE RUN!");
   }
@@ -76,12 +76,12 @@ bool DutyCycleTask::_init()
 bool DutyCycleTask::_run()
 {
   if (DEBUG_DUTY_CYCLE > 0) {
-    OxCore::DebugLn<const char *>("DUTY CYCLE RUN!");
+    CogCore::DebugLn<const char *>("DUTY CYCLE RUN!");
   }
   // WARNING: This will fail when 2^32 ms are reached, about 28 days I think.
   // TODO: Figure out how to make this immune to rollover error.
   if (DEBUG_DUTY_CYCLE > 1) {
-    OxCore::DebugLn<const char *>("DUTY CYCLE MID!");
+    CogCore::DebugLn<const char *>("DUTY CYCLE MID!");
   }
 
   unsigned long ms = millis();
@@ -105,12 +105,12 @@ bool DutyCycleTask::_run()
 
   if (window_length_ms != 0) {
     if (DEBUG_DUTY_CYCLE > 1) {
-      OxCore::Debug<const char *>("prorata_on_in_window_ms: ");
-      OxCore::DebugLn<long>(prorata_on_in_window_ms);
-      OxCore::Debug<const char *>("window_length_ms: ");
-      OxCore::DebugLn<long>(window_length_ms);
-      OxCore::Debug<const char *>("window_length_ms - prorata_on_in_window_ms: ");
-      OxCore::DebugLn<long>(window_length_ms - prorata_on_in_window_ms);
+      CogCore::Debug<const char *>("prorata_on_in_window_ms: ");
+      CogCore::DebugLn<long>(prorata_on_in_window_ms);
+      CogCore::Debug<const char *>("window_length_ms: ");
+      CogCore::DebugLn<long>(window_length_ms);
+      CogCore::Debug<const char *>("window_length_ms - prorata_on_in_window_ms: ");
+      CogCore::DebugLn<long>(window_length_ms - prorata_on_in_window_ms);
     }
     recorded_duty_cycle = (float) prorata_on_in_window_ms / (float) window_length_ms;
   } else {
@@ -122,17 +122,17 @@ bool DutyCycleTask::_run()
 
   // now we actually turn the heater on or off!
   if (DEBUG_DUTY_CYCLE > 1) {
-    OxCore::Debug<const char *>("DUTY Heater On: ");
-    OxCore::DebugLn<int>(isOn);
+    CogCore::Debug<const char *>("DUTY Heater On: ");
+    CogCore::DebugLn<int>(isOn);
   }
 
   if (DEBUG_DUTY_CYCLE > 1) {
-    OxCore::Debug<const char *>("Window Length: ");
-    OxCore::DebugLn<long>(window_length_ms);
-    OxCore::Debug<const char *>("Recorded Duty Cycle: ");
-    OxCore::DebugLn<float>(recorded_duty_cycle);
-    OxCore::Debug<const char *>("Duty Cycle: ");
-    OxCore::DebugLn<float>(dutyCycle);
+    CogCore::Debug<const char *>("Window Length: ");
+    CogCore::DebugLn<long>(window_length_ms);
+    CogCore::Debug<const char *>("Recorded Duty Cycle: ");
+    CogCore::DebugLn<float>(recorded_duty_cycle);
+    CogCore::Debug<const char *>("Duty Cycle: ");
+    CogCore::DebugLn<float>(dutyCycle);
   }
 
   time_of_last_check = ms;
@@ -140,7 +140,7 @@ bool DutyCycleTask::_run()
   one_pin_heater->setHeater(0,isOn);
 
   if (DEBUG_DUTY_CYCLE > 1) {
-    OxCore::DebugLn<const char *>("DUTY HEATERS SET! ");
+    CogCore::DebugLn<const char *>("DUTY HEATERS SET! ");
   }
 
   return true;

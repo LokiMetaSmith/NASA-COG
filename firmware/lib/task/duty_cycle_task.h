@@ -25,7 +25,7 @@
 #include <core.h>
 #include <OnePinHeater.h>
 
-using namespace OxCore;
+using namespace CogCore;
 
 /*
   This whole class might seem like overkill;
@@ -38,7 +38,7 @@ using namespace OxCore;
   tried to control an SSR with a PWM signal. - rlr
  */
 
-class DutyCycleTask : public OxCore::Task
+class DutyCycleTask : public CogCore::Task
   {
   public:
     DutyCycleTask();

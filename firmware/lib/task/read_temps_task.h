@@ -34,9 +34,9 @@
 #include <DS18B20_temperature.h>
 #endif
 
-using namespace OxCore;
+using namespace CogCore;
 
-class ReadTempsTask : public OxCore::Task
+class ReadTempsTask : public CogCore::Task
 {
 public:
   ReadTempsTask();

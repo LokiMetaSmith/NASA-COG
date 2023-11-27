@@ -29,11 +29,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <machine.h>
 #include <network_udp.h>
 
-namespace OxApp
+namespace CogApp
 {
   // Note this class is really a virtual; it makes no sense to
   // instantiated it directly, though it would give you network functionality
-  class NetworkTask : public OxCore::Task {
+  class NetworkTask : public CogCore::Task {
   public:
     // DEBUG_UDP == 1 means debug logging,
     // DEBUG_UDP == 2 means debug script retreival

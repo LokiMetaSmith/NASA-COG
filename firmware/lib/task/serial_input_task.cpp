@@ -26,11 +26,11 @@
 #include <machine.h>
 #include <stage2_hal.h>
 
-using namespace OxCore;
+using namespace CogCore;
 #define DEBUG_SERIAL_LISTEN 0
 #define DEBUG_INPUT 0
 
-namespace OxApp
+namespace CogApp
 {
   void SerialInputTask::recvWithEndMarker() {
     static byte ndx = 0;

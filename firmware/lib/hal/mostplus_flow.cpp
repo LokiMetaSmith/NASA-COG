@@ -35,8 +35,8 @@ boolean MostPlusFlow::isAirFlowing() {
   int digitizedVoltage = analogRead(RF_MOSTPLUS_FLOW_PIN);
   float trueVoltage = digitizedVoltage * 3.3 / 1023;
   if (DEBUG_FLOW_SENSOR > 0) {
-    OxCore::Debug<const char *>("FlowSensor V: ");
-    OxCore::DebugLn<float>(trueVoltage);
+    CogCore::Debug<const char *>("FlowSensor V: ");
+    CogCore::DebugLn<float>(trueVoltage);
   }
   return trueVoltage > RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE;
 }
