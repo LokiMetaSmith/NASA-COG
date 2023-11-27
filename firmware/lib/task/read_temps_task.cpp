@@ -64,7 +64,7 @@ int ReadTempsTask::ringComputation(int n) {
 void ReadTempsTask::dumpQueue() {
   OxCore::DebugLn<const char *>("All Temps, going backward in ms:");
   for(int i = 0; i < NUM_TEMPS_TO_RECORD; i++) {
-    OxCore::Debug<int>(i*1000);
+    OxCore::Debug<int>(i*MachineConfig::TEMP_READ_PERIOD_MS);
     OxCore::Debug<const char *>(" : ");
     OxCore::DebugLn<float>(this->temps[ringComputation(this->next_temp_idx - i)]);
   }

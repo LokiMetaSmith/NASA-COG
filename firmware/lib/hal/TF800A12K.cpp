@@ -363,6 +363,7 @@ void SL_PS::updateAmperage(float amperage, MachineConfig *config) {
   int ret_val = setPS_Current(this->address, amps);
   if (!ret_val) {
     Serial.println("FAILED TO SET VOLTAGE!");
+	msr->ms = CriticalFault;
   }
   // I don't like to use delay but I think some time is needed here...
   delay(10);
@@ -390,6 +391,7 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   int ret_val = setPS_Voltage(this->address, volts);
   if (!ret_val) {
     Serial.println("FAILED TO SET VOLTAGE!");
+	msr->ms = CriticalFault;
   }
 
 
