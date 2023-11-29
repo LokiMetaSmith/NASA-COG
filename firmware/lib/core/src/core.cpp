@@ -30,7 +30,7 @@ void watchdogSetup() {
 }
 
 
-namespace OxCore {
+namespace CogCore {
 
 
   unsigned long num_of_report = 0;
@@ -52,7 +52,7 @@ bool Core::_criticalError = false;
 bool Core::Boot() {
     bool result = false;
     //bool Core::_criticalError = false;
-    ErrorHandler::SetErrorMode(OxCore::ErrorMode::StdOut);
+    ErrorHandler::SetErrorMode(CogCore::ErrorMode::StdOut);
     // TODO: configure/validate HAL
 
     SchedulerProperties properties;
@@ -102,7 +102,7 @@ bool Core::AddTask(Task *task, TaskProperties *properties) {
 // 4. Run scheduler
 
 bool Core::Run() {
-    OxCore::Debug<const char *>("Core::Run!\n");
+    CogCore::Debug<const char *>("Core::Run!\n");
 
 #ifdef SW_TICK
     while (true) {

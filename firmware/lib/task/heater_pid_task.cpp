@@ -34,7 +34,7 @@ HeaterPIDTask::HeaterPIDTask() {
 
 bool HeaterPIDTask::_init()
 {
-  OxCore::Debug<const char *>("HeaterPIDTask init\n");
+  CogCore::Debug<const char *>("HeaterPIDTask init\n");
   return true;
 }
 
@@ -105,11 +105,11 @@ bool HeaterPIDTask::_run()
   }
 
   if (DEBUG_PID > 1) {
-    OxCore::Debug<const char *>("HeaterPIDTask run\n");
+    CogCore::Debug<const char *>("HeaterPIDTask run\n");
     double test_spud = getConfig()->report->post_heater_C;
-    OxCore::DebugLn<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-    OxCore::DebugLn<float>(this->HeaterSetPoint_C);
-    OxCore::DebugLn<float>(this->Input_temperature_C);
+    CogCore::DebugLn<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    CogCore::DebugLn<float>(this->HeaterSetPoint_C);
+    CogCore::DebugLn<float>(this->Input_temperature_C);
   }
 
   MachineState ms = getConfig()->ms;
@@ -145,13 +145,13 @@ bool HeaterPIDTask::_run()
   getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
 
   if (DEBUG_PID > 1) {
-    OxCore::Debug<const char *>("Setpoint");
+    CogCore::Debug<const char *>("Setpoint");
     Serial.println(this->HeaterSetPoint_C,2);
-    OxCore::Debug<const char *>("previous input ");
+    CogCore::Debug<const char *>("previous input ");
     Serial.println(previousInput,5);
-    OxCore::Debug<const char *>("Final dutyCycle_Output ");
+    CogCore::Debug<const char *>("Final dutyCycle_Output ");
     Serial.println(this->dutyCycle_Output,5);
-    OxCore::Debug<const char *>("Final dutyCycle ");
+    CogCore::Debug<const char *>("Final dutyCycle ");
     Serial.println(this->final_dutyCycle,5);
   }
 

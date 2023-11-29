@@ -40,7 +40,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <duty_cycle_task.h>
 #include <log_recorder_task.h>
 
-namespace OxApp
+namespace CogApp
 {
 
   // These are the controllable pre-set parameters to the algorithm

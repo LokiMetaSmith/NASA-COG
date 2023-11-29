@@ -20,7 +20,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <string.h>
 #include <strcasestr.h>
 
-using namespace OxCore;
+using namespace CogCore;
 
 int
 parse_param(char *buffer, const char *value, char **rvalue) {

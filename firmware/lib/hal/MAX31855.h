@@ -38,7 +38,7 @@ namespace Temperature {
     float _temperature;
     Adafruit_MAX31855* sensors[3];
   public:
-    //    MAX31855Temperature(OxApp::Model& m,SensorConfig &config);
+    //    MAX31855Temperature(CogApp::Model& m,SensorConfig &config);
     MAX31855Temperature();
 
 	// function to print a device address

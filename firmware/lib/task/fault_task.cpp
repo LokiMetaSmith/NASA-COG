@@ -20,11 +20,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 using namespace std;
 
 
-namespace OxApp
+namespace CogApp
 {
     bool FaultTask::_init()
     {
-        OxCore::Debug<const char *>("FaultTask init\n");
+        CogCore::Debug<const char *>("FaultTask init\n");
 
         return true;
     }

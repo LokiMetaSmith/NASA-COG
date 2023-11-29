@@ -24,7 +24,7 @@
 #include <cstdint>
 #include <debug.h>
 #include <OnePinHeater.h>
-using namespace OxCore;
+using namespace CogCore;
 
 
 #include <core_defines.h>
@@ -43,7 +43,7 @@ using namespace OxCore;
 #include <serial_input_task.h>
 #include <stage2_network_task.h>
 
-using namespace OxCore;
+using namespace CogCore;
 static Core core;
 
 MachineConfig *machineConfig[3];
@@ -53,7 +53,7 @@ MachineConfig *machineConfig[3];
 using namespace std;
 
 
-using namespace OxApp;
+using namespace CogApp;
 stage2_ReadTempsTask stage2_readTempsTask;
 
 HeaterPIDTask heaterPIDTask[3];
@@ -78,7 +78,7 @@ MachineConfig *getConfig(int i) {
 const int DEBUG_WITH_FAN_ON = 0;
 void setup() {
 
-  OxCore::serialBegin(115200UL);
+  CogCore::serialBegin(115200UL);
   delay(500);
 
   if (core.Boot() == false) {
@@ -120,11 +120,11 @@ void setup() {
   // we will use the "0" config as a special config;
   // this is the one that will be used for reporting.
 
-  OxCore::TaskProperties readTempsProperties;
+  CogCore::TaskProperties readTempsProperties;
   readTempsProperties.name = "readTemps";
   readTempsProperties.id = 19;
   readTempsProperties.period = stage2_readTempsTask.PERIOD_MS;
-  readTempsProperties.priority = OxCore::TaskPriority::High;
+  readTempsProperties.priority = CogCore::TaskPriority::High;
   readTempsProperties.state_and_config = (void *) getConfig(0);
   delay(300);
   core.AddTask(&stage2_readTempsTask, &readTempsProperties);
@@ -136,16 +136,16 @@ void setup() {
   }
 
   if (ETHERNET_BOARD_PRESENT) {
-    OxCore::TaskProperties Stage2NetworkProperties;
+    CogCore::TaskProperties Stage2NetworkProperties;
     Stage2NetworkProperties.name = "Stage2Network";
     Stage2NetworkProperties.id = 20;
     Stage2NetworkProperties.period = stage2NetworkTask.PERIOD_MS;
-    Stage2NetworkProperties.priority = OxCore::TaskPriority::Low;
+    Stage2NetworkProperties.priority = CogCore::TaskPriority::Low;
     // note we must be cautious here, since there is only one Network interface
     Stage2NetworkProperties.state_and_config = (void *) getConfig(0);
     bool stage2Network = core.AddTask(&stage2NetworkTask, &Stage2NetworkProperties);
     if (!stage2Network) {
-      OxCore::Debug<const char *>("Stage2Network add failed\n");
+      CogCore::Debug<const char *>("Stage2Network add failed\n");
       delay(100);
       abort();
     }
@@ -157,47 +157,47 @@ void setup() {
   }
 
   for(int i = 0; i < 3; i++) {
-    OxCore::TaskProperties stage2SerialReportProperties;
+    CogCore::TaskProperties stage2SerialReportProperties;
     stage2SerialReportProperties.name = "stage2SerialReportTemps";
     stage2SerialReportProperties.id = 21+i;
     stage2SerialReportProperties.period = stage2SerialReportTask[i].PERIOD_MS;
-    stage2SerialReportProperties.priority = OxCore::TaskPriority::High;
+    stage2SerialReportProperties.priority = CogCore::TaskPriority::High;
     stage2SerialReportProperties.state_and_config = (void *) getConfig(i);
     bool stage2SerialReportAdd = core.AddTask(&stage2SerialReportTask[i], &stage2SerialReportProperties);
     if (!stage2SerialReportAdd) {
-      OxCore::Debug<const char *>("stage2SerialReport Task add failed\n");
+      CogCore::Debug<const char *>("stage2SerialReport Task add failed\n");
       abort();
     }
 
-    OxCore::TaskProperties dutyCycleProperties;
+    CogCore::TaskProperties dutyCycleProperties;
     dutyCycleProperties.name = "dutyCycle";
     dutyCycleProperties.id = 24+i;
     dutyCycleProperties.period = dutyCycleTask[i].PERIOD_MS;
-    dutyCycleProperties.priority = OxCore::TaskPriority::Low;
+    dutyCycleProperties.priority = CogCore::TaskPriority::Low;
     dutyCycleProperties.state_and_config = (void *) getConfig(i);
     core.AddTask(&dutyCycleTask[i], &dutyCycleProperties);
     dutyCycleTask[i].whichHeater = (Stage2Heater) i;
 
-    OxCore::TaskProperties HeaterPIDProperties;
+    CogCore::TaskProperties HeaterPIDProperties;
     HeaterPIDProperties.name = "HeaterPID";
     HeaterPIDProperties.id = 27+i;
     HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
-    HeaterPIDProperties.priority = OxCore::TaskPriority::High;
+    HeaterPIDProperties.priority = CogCore::TaskPriority::High;
     HeaterPIDProperties.state_and_config = (void *) getConfig(i);
     core.AddTask(&heaterPIDTask[i], &HeaterPIDProperties);
     heaterPIDTask[i].whichHeater = (Stage2Heater) i;
 
     dutyCycleTask[i].one_pin_heater = getConfig(i)->hal->_ac_heaters[i];
 
-    OxCore::TaskProperties stage2HeaterProperties ;
+    CogCore::TaskProperties stage2HeaterProperties ;
     stage2HeaterProperties.name = "stage2HeaterTask";
     stage2HeaterProperties.id = 30+i;
     stage2HeaterProperties.period = stage2HeaterTask[i].PERIOD_MS;
-    stage2HeaterProperties.priority = OxCore::TaskPriority::High;
+    stage2HeaterProperties.priority = CogCore::TaskPriority::High;
     stage2HeaterProperties.state_and_config = (void *) getConfig(i);
     bool stage2HeaterTaskAdded = core.AddTask(&stage2HeaterTask[i], &stage2HeaterProperties);
     if (!stage2HeaterTaskAdded) {
-      OxCore::Debug<const char *>("stage add Failed\n");
+      CogCore::Debug<const char *>("stage add Failed\n");
       delay(100);
       abort();
     }
@@ -233,15 +233,15 @@ void setup() {
     getConfig(i)->IS_STAGE2_HEATER_CONFIG = true;
   }
 
-  OxCore::TaskProperties serialProperties;
+  CogCore::TaskProperties serialProperties;
   serialProperties.name = "stage2SerialInput";
   serialProperties.id = 39;
   serialProperties.period = 250;
-  serialProperties.priority = OxCore::TaskPriority::High;
+  serialProperties.priority = CogCore::TaskPriority::High;
   serialProperties.state_and_config = (void *) getConfig(0);
   bool serialAdd = core.AddTask(&stage2SerialInputTask, &serialProperties);
   if (!serialAdd) {
-    OxCore::Debug<const char *>("stage2SerialInputTask add failed\n");
+    CogCore::Debug<const char *>("stage2SerialInputTask add failed\n");
     delay(100);
     abort();
   }
@@ -255,7 +255,7 @@ void setup() {
 
   core.DEBUG_CORE = 0;
 
-  OxCore::Debug<const char *>("Added tasks\n");
+  CogCore::Debug<const char *>("Added tasks\n");
  // We want to make sure we have run the temps before we start up.
 
   // I turn three times to make sure we get a temp...
@@ -286,29 +286,29 @@ void setup() {
                                  s2hal->INIT_EXT2_Kd);
 
 
-  OxCore::Debug<const char *>("Starting\n");
+  CogCore::Debug<const char *>("Starting\n");
 
 }
 
 void loop() {
-  OxCore::Debug<const char *>("Loop starting...\n");
+  CogCore::Debug<const char *>("Loop starting...\n");
 
   delay(100);
   // Blocking call
   if (core.Run() == false) {
-    OxCore::ErrorHandler::Log(OxCore::ErrorLevel::Critical, OxCore::ErrorCode::CoreFailedToRun);
-    OxCore::Debug<const char *>("Aborting! TEST OVER\n");
+    CogCore::ErrorHandler::Log(CogCore::ErrorLevel::Critical, CogCore::ErrorCode::CoreFailedToRun);
+    CogCore::Debug<const char *>("Aborting! TEST OVER\n");
     delay(300);
 #ifdef ARDUINO
     // Loop endlessly to stop the program from running
-    OxCore::Debug<const char *>("Aborting! TEST OVER\n");
+    CogCore::Debug<const char *>("Aborting! TEST OVER\n");
     delay(300);
     abort();
     // while (true) {}
 #endif
     return;
   } else {
-    OxCore::Debug<const char *>("Run Completely\n");
+    CogCore::Debug<const char *>("Run Completely\n");
   }
 
 }

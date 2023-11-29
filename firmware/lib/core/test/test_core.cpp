@@ -1,5 +1,5 @@
 /*
-Public Invention's Ox Project is an open source hardware design for an oxygen
+Public Invention's COG Project is an open source hardware design for an oxygen
 concentrator for use by field hospitals around the world. This team aims to
 design an oxygen concentrator that can be manufactured locally while overcoming
 challenges posed by human resources, hospital location (geographically),
@@ -29,7 +29,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <unity.h>
 #include <core.h>
 
-using namespace OxCore;
+using namespace CogCore;
 
 class MockTask: public Task {
     private:
@@ -181,34 +181,34 @@ void test_failed_to_init_task() {
 // }
 
 // void test_logger_1() {
-//     OxLogger::ResetBuffer();
+//     CogLogger::ResetBuffer();
 //     const char* msg = "Hello";
-//     OxLogger::Log(msg);
-//     TEST_ASSERT_EQUAL_INT(strlen(msg), OxLogger::bufferIndex);   
+//     CogLogger::Log(msg);
+//     TEST_ASSERT_EQUAL_INT(strlen(msg), CogLogger::bufferIndex);   
 // }
 
 // void test_logger_2() {
-//     OxLogger::ResetBuffer();
+//     CogLogger::ResetBuffer();
 //     puts("Reading buffer");
 //     const char* msg = "Test buffer memory";
-//     OxLogger::Log(msg);
-//     puts(OxLogger::buffer);
+//     CogLogger::Log(msg);
+//     puts(CogLogger::buffer);
 //     TEST_ASSERT_TRUE(true);
 // }
 
 // void test_logger_3() {
-//     OxLogger::ResetBuffer();
+//     CogLogger::ResetBuffer();
 //     //const char* msg = create_random_chars(100);
 
 //     puts("Creating random chars");
 //     create_random_chars(1000);
-//     //OxLogger::Log(msg);
-//     //puts(OxLogger::buffer);
+//     //CogLogger::Log(msg);
+//     //puts(CogLogger::buffer);
 //     TEST_ASSERT_TRUE(true);
 // }
 
 // void test_logger_4() {
-//     OxLogger::ResetBufferPtr();
+//     CogLogger::ResetBufferPtr();
 // }
 
 

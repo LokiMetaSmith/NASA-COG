@@ -62,11 +62,11 @@ int ReadTempsTask::ringComputation(int n) {
     return (n+NUM_TEMPS_TO_RECORD) % NUM_TEMPS_TO_RECORD;
 }
 void ReadTempsTask::dumpQueue() {
-  OxCore::DebugLn<const char *>("All Temps, going backward in ms:");
+  CogCore::DebugLn<const char *>("All Temps, going backward in ms:");
   for(int i = 0; i < NUM_TEMPS_TO_RECORD; i++) {
-    OxCore::Debug<int>(i*1000);
-    OxCore::Debug<const char *>(" : ");
-    OxCore::DebugLn<float>(this->temps[ringComputation(this->next_temp_idx - i)]);
+    CogCore::Debug<int>(i*MachineConfig::TEMP_READ_PERIOD_MS);
+    CogCore::Debug<const char *>(" : ");
+    CogCore::DebugLn<float>(this->temps[ringComputation(this->next_temp_idx - i)]);
   }
 }
 
@@ -187,14 +187,14 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
 
 void ReadTempsTask::updateTemperatures() {
     if (DEBUG_READ_TEMPS > 0) {
-      OxCore::Debug<const char *>("About to _readTemperatureSensors");
+      CogCore::Debug<const char *>("About to _readTemperatureSensors");
       delay(30);
     }
 
   _readTemperatureSensors();
 
     if (DEBUG_READ_TEMPS > 0) {
-      OxCore::DebugLn<const char *>("Done with _readTemperatureSensors");
+      CogCore::DebugLn<const char *>("Done with _readTemperatureSensors");
       delay(30);
     }
 
@@ -224,7 +224,7 @@ void ReadTempsTask::updateTemperatures() {
 //    good_temp_reads++;
     good_temp_reads_heater++;
   } else {
-    OxCore::Debug<const char *>("Bad post_heater_C\n");
+    CogCore::Debug<const char *>("Bad post_heater_C\n");
     //bad_temp_reads++;
     bad_temp_reads_heater++;
   }
@@ -236,7 +236,7 @@ void ReadTempsTask::updateTemperatures() {
 //    good_temp_reads++;
     good_temp_reads_getter++;
   } else {
-    OxCore::Debug<const char *>("Bad post_getter_C\n");
+    CogCore::Debug<const char *>("Bad post_getter_C\n");
     //bad_temp_reads++;
     bad_temp_reads_getter++;
   }
@@ -248,7 +248,7 @@ void ReadTempsTask::updateTemperatures() {
 //    good_temp_reads++;
     good_temp_reads_stack++;
   } else {
-    OxCore::Debug<const char *>("Bad post_stack_C\n");
+    CogCore::Debug<const char *>("Bad post_stack_C\n");
     //bad_temp_reads++;
     bad_temp_reads_stack++;
   }
@@ -264,24 +264,24 @@ void ReadTempsTask::updateTemperatures() {
   addTempToQueue(getConfig()->report->post_heater_C);
   calculateDdelta();
   if (DEBUG_READ_TEMPS > 0) {
-    OxCore::Debug<const char *>("Good Temp Reads:");
-//    OxCore::Debug<unsigned long>(good_temp_reads);
-    OxCore::Debug<unsigned long>(good_temp_reads_heater);
-    OxCore::Debug<const char *>(", ");
-OxCore::Debug<unsigned long>(good_temp_reads_getter);
-    OxCore::Debug<const char *>(", ");
-OxCore::Debug<unsigned long>(good_temp_reads_stack);
-    OxCore::DebugLn<const char *>("");
+    CogCore::Debug<const char *>("Good Temp Reads:");
+//    CogCore::Debug<unsigned long>(good_temp_reads);
+    CogCore::Debug<unsigned long>(good_temp_reads_heater);
+    CogCore::Debug<const char *>(", ");
+CogCore::Debug<unsigned long>(good_temp_reads_getter);
+    CogCore::Debug<const char *>(", ");
+CogCore::Debug<unsigned long>(good_temp_reads_stack);
+    CogCore::DebugLn<const char *>("");
 
 
-    OxCore::Debug<const char *>("Bad  Temp Reads:");
-//    OxCore::Debug<unsigned long>(bad_temp_reads);
-    OxCore::Debug<unsigned long>(bad_temp_reads_heater);
-    OxCore::Debug<const char *>(", ");
-    OxCore::Debug<unsigned long>(bad_temp_reads_getter);
-    OxCore::Debug<const char *>(", ");
-    OxCore::Debug<unsigned long>(bad_temp_reads_stack);
-    OxCore::DebugLn<const char *>("");
+    CogCore::Debug<const char *>("Bad  Temp Reads:");
+//    CogCore::Debug<unsigned long>(bad_temp_reads);
+    CogCore::Debug<unsigned long>(bad_temp_reads_heater);
+    CogCore::Debug<const char *>(", ");
+    CogCore::Debug<unsigned long>(bad_temp_reads_getter);
+    CogCore::Debug<const char *>(", ");
+    CogCore::Debug<unsigned long>(bad_temp_reads_stack);
+    CogCore::DebugLn<const char *>("");
   }
 }
 
@@ -315,7 +315,7 @@ void ReadTempsTask::_configTemperatureSensors() {
 
   _temperatureSensors[0]._config = config[0];
   if (DEBUG_READ_TEMPS > 0) {
-    OxCore::Debug<const char *>("Read Temp Configuration done!");
+    CogCore::Debug<const char *>("Read Temp Configuration done!");
     delay(50);
   }
 }
@@ -326,10 +326,10 @@ void ReadTempsTask::_readTemperatureSensors() {
 
     float temperature = _temperatureSensors[0].GetTemperature(i);
     if (DEBUG_READ_TEMPS > 0) {
-      OxCore::Debug<const char *>("Temp : ");
-      OxCore::Debug<const char *>(getConfig()->TempLocationNames[i]);
-      OxCore::Debug<const char *>(": ");
-      OxCore::DebugLn<float>(temperature);
+      CogCore::Debug<const char *>("Temp : ");
+      CogCore::Debug<const char *>(getConfig()->TempLocationNames[i]);
+      CogCore::Debug<const char *>(": ");
+      CogCore::DebugLn<float>(temperature);
     }
     // TODO: We should investigate a delay hear to make sure the
     // OneWire system is ready
@@ -341,9 +341,9 @@ void ReadTempsTask::_readTemperatureSensors() {
 
 bool ReadTempsTask::_init()
 {
-  OxCore::Debug<const char *>("ReadTempsTask init\n");
+  CogCore::Debug<const char *>("ReadTempsTask init\n");
   _configTemperatureSensors();
-  OxCore::Debug<const char *>("Config of temperature sensors done\n");
+  CogCore::Debug<const char *>("Config of temperature sensors done\n");
   for (int i = 0; i < NUM_TEMP_INDICES; i++) {
     temps[i] = 0.0;
   }
@@ -353,7 +353,7 @@ bool ReadTempsTask::_init()
 bool ReadTempsTask::_run()
 {
   if (DEBUG_READ_TEMPS > 1) {
-    OxCore::Debug<const char *>("Running ReadTemps\n");
+    CogCore::Debug<const char *>("Running ReadTemps\n");
   }
   updateTemperatures();
 }
@@ -362,7 +362,7 @@ bool ReadTempsTask::_run()
 bool stage2_ReadTempsTask::_run()
 {
   if (DEBUG_READ_TEMPS > 1) {
-    OxCore::Debug<const char *>("Running ReadTemps\n");
+    CogCore::Debug<const char *>("Running ReadTemps\n");
   }
   updateTemperatures();
 }

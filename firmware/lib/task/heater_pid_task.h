@@ -26,7 +26,7 @@
 #include <PID_v1.h>
 #include <duty_cycle_task.h>
 
-  class HeaterPIDTask : public OxCore::Task
+  class HeaterPIDTask : public CogCore::Task
   {
   public:
     HeaterPIDTask();

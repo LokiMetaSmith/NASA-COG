@@ -27,10 +27,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <machine.h>
 #include <machine_core_defs.h>
 
-namespace OxApp
+namespace CogApp
 {
 
-  class Log_Recorder_Task : public OxCore::Task
+  class Log_Recorder_Task : public CogCore::Task
   {
   public:
     int DEBUG_LOG_RECORDER = 0;
@@ -39,10 +39,10 @@ namespace OxApp
     bool _init() override;
     bool _run() override;
     int _recordCount;
-    //static OxCollections::CircularArray<Error, MAX_ERRORS> errors;
+    //static CogCollections::CircularArray<Error, MAX_ERRORS> errors;
     //void addLog(MachineStatusReport *msr);
 
-    //OxCollections::CircularArray * recordLog();
+    //CogCollections::CircularArray * recordLog();
     //void clearLogs();
   };
 }

@@ -85,10 +85,10 @@ double WattagePIDObject::GetKd() {
 float WattagePIDObject::compute(float controlTemp)
 {
   if (DEBUG_PID > 1) {
-    OxCore::Debug<const char *>("WattagePIDObject run\n");
-    OxCore::DebugLn<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-    OxCore::DebugLn<float>(this->temperatureSetPoint_C);
-    OxCore::DebugLn<float>(this->input_temperature_C);
+    CogCore::Debug<const char *>("WattagePIDObject run\n");
+    CogCore::DebugLn<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    CogCore::DebugLn<float>(this->temperatureSetPoint_C);
+    CogCore::DebugLn<float>(this->input_temperature_C);
   }
 
   double previousInput = this->input_temperature_C;
@@ -103,11 +103,11 @@ float WattagePIDObject::compute(float controlTemp)
 
 
   if (DEBUG_PID > 1) {
-    OxCore::Debug<const char *>("Setpoint");
+    CogCore::Debug<const char *>("Setpoint");
     Serial.println(this->temperatureSetPoint_C,2);
-    OxCore::Debug<const char *>("previous input ");
+    CogCore::Debug<const char *>("previous input ");
     Serial.println(previousInput,5);
-    OxCore::Debug<const char *>("Final Total Wattage ");
+    CogCore::Debug<const char *>("Final Total Wattage ");
     Serial.println(this->final_totalWattage_W,5);
   }
 

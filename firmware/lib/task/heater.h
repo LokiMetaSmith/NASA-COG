@@ -28,7 +28,7 @@
 #include <math.h>
 #endif
 
-namespace OxApp {
+namespace CogApp {
 
 
   class Heater {

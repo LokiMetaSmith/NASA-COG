@@ -7,7 +7,7 @@
 #include <stdint.h>
 #endif
 
-namespace OxCore {
+namespace CogCore {
 
 typedef int32_t TimeMs;
 typedef int32_t TaskId;

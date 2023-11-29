@@ -25,7 +25,7 @@
 bool Stage2SerialReportTask::_run()
 {
   if (DEBUG_SERIAL_REPORT > 0) {
-    OxCore::Debug<const char *>("Running Stage2SerialReport Task\n");
+    CogCore::Debug<const char *>("Running Stage2SerialReport Task\n");
   }
   float target_temp = getConfig()->TARGET_TEMP_C;
   Stage2HAL* hal = (Stage2HAL *)(getConfig()->hal);
@@ -46,7 +46,7 @@ bool Stage2SerialReportTask::_run()
 }
 bool Stage2SerialReportTask::_init()
 {
-    OxCore::Debug<const char *>("Stage2SerialReport Task init\n");
+    CogCore::Debug<const char *>("Stage2SerialReport Task init\n");
 }
 Stage2SerialReportTask::Stage2SerialReportTask() {
 }

@@ -28,7 +28,7 @@
 // WARNING: This class is not used in the
 // "5 knobs" protocol.
 
-  class TempRefreshTask : public OxCore::Task
+  class TempRefreshTask : public CogCore::Task
   {
   public:
     TempRefreshTask();

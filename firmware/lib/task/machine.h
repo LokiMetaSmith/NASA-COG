@@ -247,7 +247,7 @@ void _reportFanSpeed();
 
   // Ring buffer with 30 seconds of data could be a variable here
   static constexpr unsigned int  MAX_RECORDS = 600;
-  //OxCollections::CircularArray<MachineStatusReport, MAX_RECORDS> _log_entry;
+  //CogCollections::CircularArray<MachineStatusReport, MAX_RECORDS> _log_entry;
   MachineStatusReport _log_entry[MAX_RECORDS];
   void dumpAllData10Hz();
 

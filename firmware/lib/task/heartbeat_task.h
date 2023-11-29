@@ -34,10 +34,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #endif
 
 
-namespace OxApp
+namespace CogApp
 {
     // Runs the Pressure Swing Adsorption cycle
-    class HeartbeatTask : public OxCore::Task
+    class HeartbeatTask : public CogCore::Task
     {
     public:
     private:

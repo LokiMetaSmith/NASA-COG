@@ -48,7 +48,7 @@ int freeMemory() {
 using namespace std;
 
 
-namespace OxApp
+namespace CogApp
 {
   // TODO: This class should probably be rewritten with specific state transition functions.
   // This would allow us to log transition events elegantly. As it is, we have to be idempotent...
@@ -58,7 +58,7 @@ namespace OxApp
   // TODO: Most of this should be moved into the machine definition
   bool CogTask::_init()
   {
-    OxCore::Debug<const char *>("CogTask init\n");
+    CogCore::Debug<const char *>("CogTask init\n");
     getConfig()->fanDutyCycle = 0.0;
     wattagePIDObject = new WattagePIDObject();
     return true;
@@ -144,13 +144,13 @@ namespace OxApp
     float retval = r*f + a;
     if ((DEBUG_LEVEL > 0) || (retval > z || retval < a)) {
       if ((retval > z || retval < a))
-        OxCore::Debug<const char *>("Internal error: fan speed too high");
-      OxCore::DebugLn<float>(retval);
-      OxCore::Debug<const char *>("temp:");
-      OxCore::DebugLn<float>(temp);
-      OxCore::Debug<const char *>("a,z");
-      OxCore::DebugLn<float>(a);
-      OxCore::DebugLn<float>(z);
+        CogCore::Debug<const char *>("Internal error: fan speed too high");
+      CogCore::DebugLn<float>(retval);
+      CogCore::Debug<const char *>("temp:");
+      CogCore::DebugLn<float>(temp);
+      CogCore::Debug<const char *>("a,z");
+      CogCore::DebugLn<float>(a);
+      CogCore::DebugLn<float>(z);
     }
 
     return retval;
@@ -174,16 +174,16 @@ namespace OxApp
       float nfs_p =  min(getConfig()->FAN_SPEED_MAX_p,
                          max(getConfig()->FAN_SPEED_MIN_p,m * diff + fs_p));
       if (DEBUG_LEVEL > 1) {
-          OxCore::Debug<const char *>("Full power mod fan percentage");
-          OxCore::DebugLn<float>(nfs_p);
-          OxCore::DebugLn<float>(m);
-          OxCore::DebugLn<float>(diff);
+          CogCore::Debug<const char *>("Full power mod fan percentage");
+          CogCore::DebugLn<float>(nfs_p);
+          CogCore::DebugLn<float>(m);
+          CogCore::DebugLn<float>(diff);
       }
       return nfs_p;
     } else {
       if (DEBUG_LEVEL > 1) {
-          OxCore::Debug<const char *>("Schedule percentage");
-          OxCore::Debug<float>(fs_p);
+          CogCore::Debug<const char *>("Schedule percentage");
+          CogCore::Debug<float>(fs_p);
       }
       return fs_p;
     }
@@ -227,14 +227,14 @@ namespace OxApp
             if (c.pause_substate == 0) {
                 c.pause_substate = 1;
                 c.current_pause_began = time;
-                OxCore::Debug<const char *>("PAUSING! X and temp:");
-                OxCore::Debug<float>(A);
+                CogCore::Debug<const char *>("PAUSING! X and temp:");
+                CogCore::Debug<float>(A);
             } else {
                 if (time > (c.current_pause_began + c.PAUSE_TIME_S * 1000)) {
                     c.pause_substate++;
                     c.current_pause_began = time;
-                    OxCore::Debug<const char *>("PAUSING! Y");
-                    OxCore::Debug<int>(c.pause_substate);
+                    CogCore::Debug<const char *>("PAUSING! Y");
+                    CogCore::Debug<int>(c.pause_substate);
                 }
             }
         } else {
@@ -306,11 +306,10 @@ namespace OxApp
     // delta_ms it the number of mount that we want to do...
     // but all of our ramp rates are in terms of minutes
     const float minutes = ((float)delta_ms) / (60.0 * 1000.0);
-      if (DEBUG_LEVEL_OBA > 0) {
-        OxCore::DebugLn<const char *>("Change Ramps Run! Minutes: ");
-        OxCore::DebugLn<float>(minutes);
-        OxCore::DebugLn<const char *>("pause substate: ");
-        OxCore::DebugLn<int>(c.pause_substate);
+      if (DEBUG_LEVEL_OBA > 2) {
+        CogCore::DebugLn<const char *>("Change Ramps Run! Minutes: ");
+        CogCore::DebugLn<float>(minutes);
+        CogCore::DebugLn<int>(c.pause_substate);
       }
     c.W_w += (((c.tW_w - c.W_w) > 0) ? 1.0 : -1.0) * c.Wr_Wdm * minutes;
 
@@ -350,12 +349,13 @@ namespace OxApp
     getConfig()->report->fan_rpm =
       getHAL()->_fans[0]._calcRPM(0);
 
+
     MachineState ms = getConfig()->ms;
     if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
       unsigned long now_ms = millis();
       unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
-      OxCore::Debug<const char *>("delta_ms: ");
-      OxCore::DebugLn<long>(delta_ms);
+      CogCore::Debug<const char *>("delta_ms: ");
+      CogCore::DebugLn<long>(delta_ms);
       changeRamps(delta_ms);
       last_time_ramp_changed_ms = now_ms;
     }
@@ -449,15 +449,15 @@ bool CogTask::updatePowerMonitor()
 
   void CogTask::runOneButtonAlgorithm() {
       if (DEBUG_LEVEL_OBA > 2) {
-        OxCore::DebugLn<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        CogCore::DebugLn<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
       }
 
       unsigned long now_ms = millis();
       unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
       changeRamps(delta_ms);
 
-      OxCore::Debug<const char *>("delta_ms: ");
-      OxCore::DebugLn<long>(delta_ms);
+      CogCore::Debug<const char *>("delta_ms: ");
+      CogCore::DebugLn<long>(delta_ms);
 
       last_time_ramp_changed_ms = now_ms;
 
@@ -469,19 +469,19 @@ bool CogTask::updatePowerMonitor()
       oneButtonAlgorithm(totalWattage_w,stackWattage_w,heaterWattage_w,fanSpeed_p);
         float dc = computeHeaterDutyCycleFromWattage(heaterWattage_w);
       if (DEBUG_LEVEL_OBA > 0) {
-        OxCore::DebugLn<const char *>("One Button Summary ");
-        OxCore::Debug<const char *>("Total Wattage : ");
-        OxCore::DebugLn<float>(totalWattage_w);
-        OxCore::Debug<const char *>("Stack Wattage : ");
-        OxCore::DebugLn<float>(stackWattage_w);
-        OxCore::Debug<const char *>("Heater Wattage: ");
-        OxCore::DebugLn<float>(heaterWattage_w);
-        OxCore::Debug<const char *>("Fan Speed   % : ");
-        OxCore::DebugLn<float>(fanSpeed_p);
-        OxCore::Debug<const char *>("DC          % : ");
-        OxCore::DebugLn<float>(dc * 100.0);
-        OxCore::Debug<const char *>("SetPoint: ");
-        OxCore::DebugLn<float>(getConfig()->SETPOINT_TEMP_C);
+        CogCore::DebugLn<const char *>("One Button Summary ");
+        CogCore::Debug<const char *>("Total Wattage : ");
+        CogCore::DebugLn<float>(totalWattage_w);
+        CogCore::Debug<const char *>("Stack Wattage : ");
+        CogCore::DebugLn<float>(stackWattage_w);
+        CogCore::Debug<const char *>("Heater Wattage: ");
+        CogCore::DebugLn<float>(heaterWattage_w);
+        CogCore::Debug<const char *>("Fan Speed   % : ");
+        CogCore::DebugLn<float>(fanSpeed_p);
+        CogCore::Debug<const char *>("DC          % : ");
+        CogCore::DebugLn<float>(dc * 100.0);
+        CogCore::Debug<const char *>("SetPoint: ");
+        CogCore::DebugLn<float>(getConfig()->SETPOINT_TEMP_C);
       }
 
       // This is setting the target...
@@ -510,10 +510,10 @@ bool CogTask::updatePowerMonitor()
       float a = computeAmperage(t);
 
       if (DEBUG_LEVEL > 2) {
-        OxCore::Debug<const char *>("fan speed, amperage\n");
-        OxCore::Debug<float>(fs);
-        OxCore::Debug<const char *>(" ");
-        OxCore::DebugLn<float>(a);
+        CogCore::Debug<const char *>("fan speed, amperage\n");
+        CogCore::Debug<float>(fs);
+        CogCore::Debug<const char *>(" ");
+        CogCore::DebugLn<float>(a);
       }
       getHAL()->_updateFanPWM(fs);
       getConfig()->report->fan_pwm = fs;
@@ -548,7 +548,7 @@ bool CogTask::updatePowerMonitor()
     MachineState new_ms = Cooldown;
 
     if (DEBUG_LEVEL > 0) {
-      OxCore::Debug<const char *>("Cooldown Mode!\n");
+      CogCore::Debug<const char *>("Cooldown Mode!\n");
     }
     float t = getTemperatureReadingA_C();
     getConfig()->GLOBAL_RECENT_TEMP = t;
@@ -568,7 +568,7 @@ bool CogTask::updatePowerMonitor()
   }
 
   MachineState CogTask::_updatePowerComponentsIdle() {
-    OxCore::Debug<const char *>("IN IDLE FUNCTION ");
+    CogCore::Debug<const char *>("IN IDLE FUNCTION ");
     MachineState new_ms = NormalOperation;
     getConfig()->idleOrOperate = Idle;
     _updateStackVoltage(MachineConfig::IDLE_STACK_VOLTAGE);
@@ -596,9 +596,10 @@ bool CogTask::updatePowerMonitor()
 
   // TODO: These would go better in the HAL
   void CogTask::_updateFanSpeed(float percentage) {
-
-    OxCore::Debug<const char *>("calling update Fan Speed!\n");
-    OxCore::DebugLn<float>(percentage);
+    if (DEBUG_LEVEL > 0) {
+      CogCore::Debug<const char *>("calling update Fan Speed!\n");
+      CogCore::DebugLn<float>(percentage);
+    }
     float unitInterval = percentage / 100.0;
     getConfig()->FAN_SPEED = unitInterval;
     getHAL()->_updateFanPWM(unitInterval);
@@ -620,7 +621,7 @@ bool CogTask::updatePowerMonitor()
   void CogTask::_updateStackAmperage(float amperage) {
     if (amperage < 0.0) {
       // This is an internal error which should not occur..
-       OxCore::Debug<const char *>("Internal Error, negative amperage");
+       CogCore::Debug<const char *>("Internal Error, negative amperage");
       return;
     }
     for (int i = 0; i < getHAL()->NUM_STACKS; i++) {

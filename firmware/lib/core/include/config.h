@@ -1,5 +1,5 @@
 /*
-Public Invention's Ox Project is an open source hardware design for an oxygen
+Public Invention's COG Project is an open source hardware design for an oxygen
 concentrator for use by field hospitals around the world. This team aims to
 design an oxygen concentrator that can be manufactured locally while overcoming
 challenges posed by human resources, hospital location (geographically),
@@ -61,7 +61,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // #define NUM_VALVES 4 //1-8
 
 // { name, num, state, pin, start, stop }
-/*Ox_Controller::Valve valveArray[NUM_VALVES] = {
+/*COG_Controller::Valve valveArray[NUM_VALVES] = {
   { 'A', 0, 0, 1, 0, 6000, },
   { 'B', 1, 0, 2, 6000, 12000, },
   { 'C', 2, 0, 4, 5600, 6000, },
@@ -79,7 +79,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 
 // Long format of defining valves
-/*Ox_Controller::Valve valveArray[NUM_VALVES] = {
+/*COG_Controller::Valve valveArray[NUM_VALVES] = {
   { .name = 'A',
     .num = 0,
     .state = 0,

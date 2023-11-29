@@ -32,11 +32,11 @@ namespace Temperature {
     SensorConfig _config;
     float _temperature;
   public:
-    OxApp::Model _m;
+    CogApp::Model _m;
     MockTemperatureSensor();
 
     // A mock sensor requires a "model" of the machine for mocking.
-    MockTemperatureSensor(OxApp::Model& m,SensorConfig &config);
+    MockTemperatureSensor(CogApp::Model& m,SensorConfig &config);
     MockTemperatureSensor(SensorConfig &config);
     ~MockTemperatureSensor() {};
     void Config(SensorConfig &config);

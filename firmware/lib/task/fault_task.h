@@ -38,10 +38,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "model.h"
 
 
-namespace OxApp
+namespace CogApp
 {
     // Runs the Pressure Swing Adsorption cycle
-    class FaultTask : public OxCore::Task
+    class FaultTask : public CogCore::Task
     {
     public:
     private:

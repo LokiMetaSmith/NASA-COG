@@ -36,12 +36,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // hopefully it is only referenced here.
 extern byte packetBuffer[buffMax];
 
-using namespace OxCore;
+using namespace CogCore;
 
 // TODO: Move this on to the network_udp object
 // uint8_t networkDown = 1;
 
-namespace OxApp
+namespace CogApp
 {
   bool OEDCSNetworkTask::_run()  {
     NetworkTask::_run();

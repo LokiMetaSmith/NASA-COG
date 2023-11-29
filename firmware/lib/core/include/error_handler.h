@@ -1,5 +1,5 @@
 /*
-Public Invention's Ox Project is an open source hardware design for an oxygen
+Public Invention's COG Project is an open source hardware design for an oxygen
 concentrator for use by field hospitals around the world. This team aims to
 design an oxygen concentrator that can be manufactured locally while overcoming
 challenges posed by human resources, hospital location (geographically),
@@ -28,7 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "../collections/circular_array.h"
 #include "debug.h"
 
-namespace OxCore {
+namespace CogCore {
 
 #define MAX_ERRORS 50
 
@@ -65,7 +65,7 @@ struct Error {
 class ErrorHandler {
     public:
         static ErrorMode errorMode;
-        static OxCollections::CircularArray<Error, MAX_ERRORS> errors;
+        static CogCollections::CircularArray<Error, MAX_ERRORS> errors;
         static void SetErrorMode(ErrorMode mode);
         static void Log(ErrorLevel level, ErrorCode type);
         ErrorHandler() = delete;

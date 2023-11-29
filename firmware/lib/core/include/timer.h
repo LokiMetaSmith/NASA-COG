@@ -1,5 +1,5 @@
 /*
-Public Invention's Ox Project is an open source hardware design for an oxygen
+Public Invention's COG Project is an open source hardware design for an oxygen
 concentrator for use by field hospitals around the world. This team aims to
 design an oxygen concentrator that can be manufactured locally while overcoming
 challenges posed by human resources, hospital location (geographically),
@@ -31,7 +31,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <chrono>
 #endif
 
-namespace OxCore {
+namespace CogCore {
 
 // TODO: This should be for Linux only
 //using namespace std::chrono;

@@ -32,7 +32,7 @@
     } else {
       Serial.println("Found DS3502 chip");
       foundPot = true;
-      OxCore::DebugLn<int>(this->foundPot);
+      CogCore::DebugLn<int>(this->foundPot);
     }
   }
 void DS3502DigitalPot::setWiper(float fraction) {

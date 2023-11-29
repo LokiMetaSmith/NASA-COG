@@ -49,18 +49,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <fanTEST_task.h>
 #endif
 
-using namespace OxCore;
+using namespace CogCore;
 static Core core;
 
 /***** Declare your tasks here *****/
 
-OxApp::OEDCSNetworkTask OEDCSNetworkTask;
-OxApp::CogTask cogTask;
-OxApp::OEDCSSerialInputTask oedcsSerialInputTask;
-OxApp::FaultTask faultTask;
+CogApp::OEDCSNetworkTask OEDCSNetworkTask;
+CogApp::CogTask cogTask;
+CogApp::OEDCSSerialInputTask oedcsSerialInputTask;
+CogApp::FaultTask faultTask;
 
-OxApp::HeartbeatTask heartbeatTask;
-OxApp::Log_Recorder_Task logRecorderTask;
+CogApp::HeartbeatTask heartbeatTask;
+CogApp::Log_Recorder_Task logRecorderTask;
 
 
 HeaterPIDTask heaterPIDTask;
@@ -90,7 +90,7 @@ MachineConfig *getConfig() {
 
 void setup()
 {
-  OxCore::serialBegin(115200UL);
+  CogCore::serialBegin(115200UL);
   delay(500);
 
    // WARNING! need 5 second delay for pio compiler it seems
@@ -109,7 +109,7 @@ void setup()
     // }
     // Serial.println(F("starting"));
 
-  //Debug<const char *>("Starting Ox...\n");
+  //Debug<const char *>("Starting COG...\n");
   Debug<const char *>("Starting ");
   Debug<const char *>(PROG_NAME);
   Debug<const char *>(VERSION);
@@ -171,38 +171,38 @@ void setup()
 
   /***** Configure and add your tasks here *****/
 
-  OxCore::TaskProperties readTempsProperties;
+  CogCore::TaskProperties readTempsProperties;
   readTempsProperties.name = "readTemps";
   readTempsProperties.id = 19;
   readTempsProperties.period = readTempsTask.PERIOD_MS;
-  readTempsProperties.priority = OxCore::TaskPriority::High;
+  readTempsProperties.priority = CogCore::TaskPriority::High;
   readTempsProperties.state_and_config = (void *) &machineConfig;
   bool readAdd = core.AddTask(&readTempsTask, &readTempsProperties);
   if (!readAdd) {
-    OxCore::Debug<const char *>("ReadTemps Task add failed\n");
+    CogCore::Debug<const char *>("ReadTemps Task add failed\n");
     abort();
   }
 
-  OxCore::TaskProperties serialReportProperties;
+  CogCore::TaskProperties serialReportProperties;
   serialReportProperties.name = "serialReportTemps";
   serialReportProperties.id = 20;
   serialReportProperties.period = serialReportTask.PERIOD_MS;
-  serialReportProperties.priority = OxCore::TaskPriority::High;
+  serialReportProperties.priority = CogCore::TaskPriority::High;
   serialReportProperties.state_and_config = (void *) &machineConfig;
   bool serialReportAdd = core.AddTask(&serialReportTask, &serialReportProperties);
   if (!serialReportAdd) {
-    OxCore::Debug<const char *>("serialReport Task add failed\n");
+    CogCore::Debug<const char *>("serialReport Task add failed\n");
     abort();
   }
-  OxCore::TaskProperties cogProperties;
+  CogCore::TaskProperties cogProperties;
   cogProperties.name = "cog";
   cogProperties.id = 21;
   cogProperties.period = cogTask.PERIOD_MS;
-  cogProperties.priority = OxCore::TaskPriority::High;
+  cogProperties.priority = CogCore::TaskPriority::High;
   cogProperties.state_and_config = (void *) &machineConfig;
   bool cogAdd = core.AddTask(&cogTask, &cogProperties);
   if (!cogAdd) {
-    OxCore::Debug<const char *>("Cognitive Task add failed\n");
+    CogCore::Debug<const char *>("Cognitive Task add failed\n");
     abort();
   }
 
@@ -210,88 +210,88 @@ void setup()
   cogTask.heaterPIDTask = &heaterPIDTask;
 
 
-  OxCore::TaskProperties oedcsSerialProperties;
+  CogCore::TaskProperties oedcsSerialProperties;
   oedcsSerialProperties.name = "oedcsSerial";
   oedcsSerialProperties.id = 22;
   oedcsSerialProperties.period = oedcsSerialInputTask.PERIOD_MS;
-  oedcsSerialProperties.priority = OxCore::TaskPriority::High;
+  oedcsSerialProperties.priority = CogCore::TaskPriority::High;
   oedcsSerialProperties.state_and_config = (void *) &machineConfig;
    bool oedcsSerialAdd = core.AddTask(&oedcsSerialInputTask, &oedcsSerialProperties);
   if (!oedcsSerialAdd) {
-    OxCore::Debug<const char *>("SerialInputProperties add failed\n");
+    CogCore::Debug<const char *>("SerialInputProperties add failed\n");
     abort();
   }
   oedcsSerialInputTask.cogTask = &cogTask;
 
   if (ETHERNET_REQUIRED) {
-    OxCore::TaskProperties OEDCSNetworkProperties;
+    CogCore::TaskProperties OEDCSNetworkProperties;
     OEDCSNetworkProperties.name = "OEDCSNetwork";
     OEDCSNetworkProperties.id = 24;
     OEDCSNetworkProperties.period = 5000;
-    OEDCSNetworkProperties.priority = OxCore::TaskPriority::High;
+    OEDCSNetworkProperties.priority = CogCore::TaskPriority::High;
     OEDCSNetworkProperties.state_and_config = (void *) &machineConfig;
 
     bool OEDCSNetwork = core.AddTask(&OEDCSNetworkTask, &OEDCSNetworkProperties);
     if (!OEDCSNetwork) {
-      OxCore::Debug<const char *>("Retrieve Script UDP\n");
+      CogCore::Debug<const char *>("Retrieve Script UDP\n");
       abort();
     }
   }
 
   dutyCycleTask.whichHeater = (Stage2Heater) 0;
 
-  OxCore::Debug<const char *>("Duty Cycle Setup\n");
-  OxCore::TaskProperties dutyCycleProperties;
+  CogCore::Debug<const char *>("Duty Cycle Setup\n");
+  CogCore::TaskProperties dutyCycleProperties;
   dutyCycleProperties.name = "dutyCycle";
   dutyCycleProperties.id = 25;
   dutyCycleProperties.period = dutyCycleTask.PERIOD_MS;
-  dutyCycleProperties.priority = OxCore::TaskPriority::Low;
+  dutyCycleProperties.priority = CogCore::TaskPriority::Low;
   dutyCycleProperties.state_and_config = (void *) &machineConfig;
   bool dutyCycleAdd = core.AddTask(&dutyCycleTask, &dutyCycleProperties);
   if (!dutyCycleAdd) {
-    OxCore::Debug<const char *>("dutyCycleAdd Failed\n");
+    CogCore::Debug<const char *>("dutyCycleAdd Failed\n");
     abort();
   }
   dutyCycleTask.one_pin_heater = getConfig()->hal->_ac_heaters[0];
 
-  OxCore::TaskProperties HeaterPIDProperties;
+  CogCore::TaskProperties HeaterPIDProperties;
   HeaterPIDProperties.name = "HeaterPID";
   HeaterPIDProperties.id = 26;
   HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
-  HeaterPIDProperties.priority = OxCore::TaskPriority::High;
+  HeaterPIDProperties.priority = CogCore::TaskPriority::High;
   HeaterPIDProperties.state_and_config = (void *) &machineConfig;
   bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
 
   if (!heaterPIDAdd) {
-    OxCore::Debug<const char *>("heaterPIDAdd Faild\n");
+    CogCore::Debug<const char *>("heaterPIDAdd Faild\n");
     abort();
   }
 
-  OxCore::TaskProperties HeartbeatProperties;
+  CogCore::TaskProperties HeartbeatProperties;
   HeartbeatProperties.name = "Heartbeat";
   HeartbeatProperties.id = 30;
   HeartbeatProperties.period = MachineConfig::INIT_HEARTBEAT_PERIOD_MS;
-  HeartbeatProperties.priority = OxCore::TaskPriority::High;
+  HeartbeatProperties.priority = CogCore::TaskPriority::High;
   HeartbeatProperties.state_and_config = (void *) &machineConfig;
   bool heartbeatAdd = core.AddTask(&heartbeatTask, &HeartbeatProperties);
 
   if (!heartbeatAdd) {
-    OxCore::Debug<const char *>("heartbeatAdd Faild\n");
+    CogCore::Debug<const char *>("heartbeatAdd Faild\n");
     abort();
   }
 
-  OxCore::TaskProperties Log_RecorderProperties;
+  CogCore::TaskProperties Log_RecorderProperties;
   Log_RecorderProperties.name = "Log_Recorder";
   Log_RecorderProperties.id = 40;
   Log_RecorderProperties.period = MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS;
 
-  Log_RecorderProperties.priority = OxCore::TaskPriority::High;
+  Log_RecorderProperties.priority = CogCore::TaskPriority::High;
   Log_RecorderProperties.state_and_config = (void *) &machineConfig;
   cogTask.logRecorderTask = &logRecorderTask;
   bool Log_RecorderAdd = core.AddTask(&logRecorderTask, &Log_RecorderProperties);
 
   if (!Log_RecorderAdd) {
-    OxCore::Debug<const char *>("Log_RecorderAdd Faild\n");
+    CogCore::Debug<const char *>("Log_RecorderAdd Faild\n");
     abort();
   }
 
@@ -316,7 +316,7 @@ void setup()
   readTempsTask.DEBUG_READ_TEMPS = 0;
   oedcsSerialInputTask.DEBUG_SERIAL = 0;
   getConfig()->script->DEBUG_MS = 0;
-  OxCore::Debug<const char *>("Added tasks\n");
+  CogCore::Debug<const char *>("Added tasks\n");
 
   // Now we will set the initial tunings for the heater_pid tasks
   // This is a place where one could change the settings for
@@ -333,17 +333,17 @@ void setup()
   getConfig()->GLOBAL_RECENT_TEMP = getConfig()->report->post_heater_C;
   Serial.print("starting temp is: ");
   Serial.println(getConfig()->GLOBAL_RECENT_TEMP);
-  OxCore::Debug<const char *>("Starting\n");
+  CogCore::Debug<const char *>("Starting\n");
   /*********************************************/
 }
 
 
 void loop() {
-  OxCore::Debug<const char *>("Loop starting...\n");
+  CogCore::Debug<const char *>("Loop starting...\n");
 
   // Blocking call
   if (core.Run() == false) {
-      OxCore::ErrorHandler::Log(OxCore::ErrorLevel::Critical, OxCore::ErrorCode::CoreFailedToRun);
+      CogCore::ErrorHandler::Log(CogCore::ErrorLevel::Critical, CogCore::ErrorCode::CoreFailedToRun);
 #ifdef ARDUINO
       // make sure we print anything needed!
       Serial.println("Critical error!");

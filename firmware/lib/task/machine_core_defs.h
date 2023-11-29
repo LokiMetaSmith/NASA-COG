@@ -29,11 +29,11 @@ enum MachineState {
   NormalOperation,
   // Attempt to cool down slowly
   Cooldown,
-  // A critical fault has occurred or an acknowledgement has not been received
+  // A critical fault has occurred or an acknowledgment has not been received
   CriticalFault,
-  // Emergency Shutdwon: stop power consumption as quickly as possible
+  // Emergency Shutdown: stop power consumption as quickly as possible
   EmergencyShutdown,
-  // Remain Off util a user releases this state
+  // Remain Off until a user releases this state
   OffUserAck
 };
 

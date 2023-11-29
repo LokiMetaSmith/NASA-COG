@@ -28,7 +28,7 @@
 
 
 // we need to change this!
-namespace OxApp {
+namespace CogApp {
   // forward declaration
   //  class CogTask;
 

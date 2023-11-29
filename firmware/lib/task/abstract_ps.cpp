@@ -20,15 +20,15 @@
 // void Stack::update(float voltage) {
 // #ifdef RIBBONFISH
 //   if (DEBUG_LEVEL > 0) {
-//     OxCore::Debug<const char *>(name);
-//     OxCore::Debug<const char *>(" Voltage: ");
-//     OxCore::DebugLn<float>(voltage);
+//     CogCore::Debug<const char *>(name);
+//     CogCore::Debug<const char *>(" Voltage: ");
+//     CogCore::DebugLn<float>(voltage);
 //   }
 // #else
-//   OxCore::Debug<const char *>("STACK update: (NOT IMPLEMENTED)");
-//   OxCore::Debug<const char *>("   ");
-//   OxCore::Debug<const char *>(name);
-//   OxCore::Debug<const char *>(" pwm_ratio: ");
-//   OxCore::DebugLn<float>(_pwm_ratio);
+//   CogCore::Debug<const char *>("STACK update: (NOT IMPLEMENTED)");
+//   CogCore::Debug<const char *>("   ");
+//   CogCore::Debug<const char *>(name);
+//   CogCore::Debug<const char *>(" pwm_ratio: ");
+//   CogCore::DebugLn<float>(_pwm_ratio);
 // #endif
 // }

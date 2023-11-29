@@ -1,5 +1,5 @@
 /*
-Public Invention's Ox Project is an open source hardware design for an oxygen
+Public Invention's COG Project is an open source hardware design for an oxygen
 concentrator for use by field hospitals around the world. This team aims to
 design an oxygen concentrator that can be manufactured locally while overcoming
 challenges posed by human resources, hospital location (geographically),
@@ -22,10 +22,10 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#ifndef OX_LOGGER_ENUMS_H
-#define OX_LOGGER_ENUMS_H
+#ifndef COG_LOGGER_ENUMS_H
+#define COG_LOGGER_ENUMS_H
 
-namespace OxCore {
+namespace CogCore {
 
 enum class LogLevel {
     Debug,

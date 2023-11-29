@@ -18,7 +18,7 @@
 
 #define DEBUG_LEVEL 0
 
-namespace OxApp {
+namespace CogApp {
 
     void Heater::update(float voltage) {
         _voltage = voltage;
@@ -26,33 +26,33 @@ namespace OxApp {
 
 #ifdef RIBBONFISH
         if (DEBUG_LEVEL > 0) {
-          OxCore::Debug<const char *>("Heater update: ");
-          OxCore::Debug<int>(id);
-          OxCore::Debug<const char *>("   ");
-          OxCore::Debug<const char *>(name);
-          OxCore::Debug<const char *>(" Voltage: ");
+          CogCore::Debug<const char *>("Heater update: ");
+          CogCore::Debug<int>(id);
+          CogCore::Debug<const char *>("   ");
+          CogCore::Debug<const char *>(name);
+          CogCore::Debug<const char *>(" Voltage: ");
         }
 
         if (_voltage > 6.0) {
           digitalWrite(this->pin,HIGH);
           if (DEBUG_LEVEL > 0) {
-            OxCore::DebugLn<float>(12);
+            CogCore::DebugLn<float>(12);
           }
         } else {
           digitalWrite(this->pin,LOW);
           if (DEBUG_LEVEL > 0) {
-            OxCore::DebugLn<float>(0);
+            CogCore::DebugLn<float>(0);
           }
         }
 
 
 #else
         if (DEBUG_LEVEL > 0) {
-          OxCore::Debug<const char *>("Heater update: ");
-          OxCore::Debug<const char *>("   ");
-          OxCore::Debug<const char *>(name);
-          OxCore::Debug<const char *>(" Voltage: ");
-          OxCore::DebugLn<float>(_voltage);
+          CogCore::Debug<const char *>("Heater update: ");
+          CogCore::Debug<const char *>("   ");
+          CogCore::Debug<const char *>(name);
+          CogCore::Debug<const char *>(" Voltage: ");
+          CogCore::DebugLn<float>(_voltage);
         }
 #endif
 
@@ -67,12 +67,12 @@ namespace OxApp {
     float delta_C = desired_C - current_C;
     float delta_watts = watts_per_degree * delta_C;
     float current_watts = current_V * current_V / _resistance;
-    OxCore::Debug<const char *>("current watts ");
-    OxCore::DebugLn<float>(current_watts);
+    CogCore::Debug<const char *>("current watts ");
+    CogCore::DebugLn<float>(current_watts);
     float new_watts = current_watts + delta_watts;
     float new_volts = sqrt( new_watts * _resistance);
-    OxCore::Debug<const char *>("delta_C ");
-    OxCore::DebugLn<float>(delta_C);
+    CogCore::Debug<const char *>("delta_C ");
+    CogCore::DebugLn<float>(delta_C);
 
     return new_volts;
   }

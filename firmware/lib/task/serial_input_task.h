@@ -31,7 +31,7 @@
 #define INPUT_BUFFER_SIZE 256
 
 
-namespace OxApp
+namespace CogApp
 {
 
   struct InputCommand {
@@ -40,7 +40,7 @@ namespace OxApp
     float value_f;
   };
 
-  class SerialInputTask : public OxCore::Task {
+  class SerialInputTask : public CogCore::Task {
   private:
     static const byte numChars = 32;
     char receivedChars[numChars];
