@@ -71,8 +71,6 @@ namespace OxApp
     float tW_w = 0;
     // Target Heater Wattage
     float tH_w = 0;
-    // Target Heater Temperature
-    const float tT_c = MachineConfig::OPERATING_TEMPERATURE_C;
     // Target Fan Speed
     float tS_p = 100.0;
     // Heater ramp rate (degrees C per minute)

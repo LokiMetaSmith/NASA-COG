@@ -320,22 +320,19 @@ namespace OxApp
     if (c.pause_substate == 0) {
       MachineState ms = getConfig()->ms;
       // Is this useing the correct variables?
-      float diff = c.tT_c - getConfig()->SETPOINT_TEMP_C;
+      float diff = getConfig()->TARGET_TEMP_C - getConfig()->SETPOINT_TEMP_C;
       // Here I am trying to make sure we don't raise the SETPOINT_TEMP_C past our target
       // or lower it past our target.
       float change_c = c.Hr_Cdm * minutes;
 
-      OxCore::Debug<const char *>("change_c, c.tT_c, TARGET_TEMP_C ");
-      OxCore::DebugLn<float>(change_c);
-      OxCore::DebugLn<float>(c.tT_c);
-      OxCore::DebugLn<float>(getConfig()->TARGET_TEMP_C);
-
       if (diff > 0.0) {
           getConfig()->SETPOINT_TEMP_C += change_c;
-          getConfig()->SETPOINT_TEMP_C = min( getConfig()->SETPOINT_TEMP_C,c.tT_c);
+          getConfig()->SETPOINT_TEMP_C = min( getConfig()->SETPOINT_TEMP_C,
+                                              getConfig()->TARGET_TEMP_C);
       } else {
           getConfig()->SETPOINT_TEMP_C -= change_c;
-          getConfig()->SETPOINT_TEMP_C = max( getConfig()->SETPOINT_TEMP_C,c.tT_c);
+          getConfig()->SETPOINT_TEMP_C = max( getConfig()->SETPOINT_TEMP_C,
+                                              getConfig()->TARGET_TEMP_C);
       }
     }
 
