@@ -129,6 +129,7 @@ namespace OxApp
     float w = max(0.0,min(L,y));
     return min(w,targetTotalWattage);
   }
+  // This returns a percentage....
   float CogTask::computeFanSpeedTargetFromSchedule(float temp) {
     float t = max(0,temp);
     float a = getConfig()->FAN_SPEED_MIN_p;
@@ -140,8 +141,19 @@ namespace OxApp
                   max(0,
                       min_speed_temp - temp)/
                   (min_speed_temp - ambient));
+    float retval = r*f + a;
+    if ((DEBUG_LEVEL > 0) || (retval > z || retval < a)) {
+      if ((retval > z || retval < a))
+        OxCore::Debug<const char *>("Internal error: fan speed too high");
+      OxCore::DebugLn<float>(retval);
+      OxCore::Debug<const char *>("temp:");
+      OxCore::DebugLn<float>(temp);
+      OxCore::Debug<const char *>("a,z");
+      OxCore::DebugLn<float>(a);
+      OxCore::DebugLn<float>(z);
+    }
 
-    return r*f + a;
+    return retval;
   }
   bool CogTask::heaterWattsAtFullPowerPred(float watts) {
     return watts > getConfig()->HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITON;
@@ -149,15 +161,30 @@ namespace OxApp
   float CogTask::computeFanSpeedTarget(float currentTargetTemp, float temp, float heaterWatts) {
     float fs_p = computeFanSpeedTargetFromSchedule(temp);
     float diff = currentTargetTemp - temp;
-    float final_c = getConfig()->FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c;
     float init_c = getConfig()->FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c;
-    if (heaterWattsAtFullPowerPred(heaterWatts) && ((diff > init_c))) {
+    // Here we are checking if the heater is at full power.
+    // checking the dutyCycle to be 100% is probably the best way to do this,
+    // as it takes time to reach there.
+    //    if (heaterWattsAtFullPowerPred(heaterWatts) && ((diff > init_c))) {
+    if ((dutyCycleTask->dutyCycle >= 0.99) && ((diff > init_c))) {
+      float final_c = getConfig()->FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c;
       float min_p = getConfig()->FAN_SPEED_MIN_p;
       // m is literally the slope in our linear equation
       float m =  -(fs_p - min_p)/(init_c - final_c);
-      float nfs_p =  max(getConfig()->FAN_SPEED_MIN_p,m * diff + fs_p);
+      float nfs_p =  min(getConfig()->FAN_SPEED_MAX_p,
+                         max(getConfig()->FAN_SPEED_MIN_p,m * diff + fs_p));
+      if (DEBUG_LEVEL > 1) {
+          OxCore::Debug<const char *>("Full power mod fan percentage");
+          OxCore::DebugLn<float>(nfs_p);
+          OxCore::DebugLn<float>(m);
+          OxCore::DebugLn<float>(diff);
+      }
       return nfs_p;
     } else {
+      if (DEBUG_LEVEL > 1) {
+          OxCore::Debug<const char *>("Schedule percentage");
+          OxCore::Debug<float>(fs_p);
+      }
       return fs_p;
     }
   }
@@ -291,9 +318,27 @@ namespace OxApp
     c.S_p = max(0,c.S_p);
 
     if (c.pause_substate == 0) {
-      getConfig()->SETPOINT_TEMP_C += min((((c.tT_c - getConfig()->SETPOINT_TEMP_C) > 0) ? 1.0 : -1.0) * c.Hr_Cdm * minutes,
-                                          c.tT_c);
+      MachineState ms = getConfig()->ms;
+      // Is this useing the correct variables?
+      float diff = c.tT_c - getConfig()->SETPOINT_TEMP_C;
+      // Here I am trying to make sure we don't raise the SETPOINT_TEMP_C past our target
+      // or lower it past our target.
+      float change_c = c.Hr_Cdm * minutes;
+
+      OxCore::Debug<const char *>("change_c, c.tT_c, TARGET_TEMP_C ");
+      OxCore::DebugLn<float>(change_c);
+      OxCore::DebugLn<float>(c.tT_c);
+      OxCore::DebugLn<float>(getConfig()->TARGET_TEMP_C);
+
+      if (diff > 0.0) {
+          getConfig()->SETPOINT_TEMP_C += change_c;
+          getConfig()->SETPOINT_TEMP_C = min( getConfig()->SETPOINT_TEMP_C,c.tT_c);
+      } else {
+          getConfig()->SETPOINT_TEMP_C -= change_c;
+          getConfig()->SETPOINT_TEMP_C = max( getConfig()->SETPOINT_TEMP_C,c.tT_c);
+      }
     }
+
     c.W_w = max(c.W_w,0);
   }
 
@@ -317,10 +362,6 @@ namespace OxApp
       changeRamps(delta_ms);
       last_time_ramp_changed_ms = now_ms;
     }
-
-
-
-
 
     this->StateMachineManager::run_generic();
 
@@ -456,6 +497,7 @@ bool CogTask::updatePowerMonitor()
       getConfig()->CURRENT_STACK_WATTAGE_W = stackWattage_w;
       _updateStackWattage(stackWattage_w);
 
+      // This is measured as a percentage...
       _updateFanSpeed(fanSpeed_p);
       getConfig()->CURRENT_HEATER_WATTAGE_W = heaterWattage_w;
 
@@ -559,10 +601,11 @@ bool CogTask::updatePowerMonitor()
   void CogTask::_updateFanSpeed(float percentage) {
 
     OxCore::Debug<const char *>("calling update Fan Speed!\n");
-    float pwm = percentage / 100.0;
-    getConfig()->FAN_SPEED = pwm;
-    getHAL()->_updateFanPWM(pwm);
-    getConfig()->report->fan_pwm = pwm;
+    OxCore::DebugLn<float>(percentage);
+    float unitInterval = percentage / 100.0;
+    getConfig()->FAN_SPEED = unitInterval;
+    getHAL()->_updateFanPWM(unitInterval);
+    getConfig()->report->fan_pwm = unitInterval;
   }
   void CogTask::_updateStackWattage(float wattage) {
     // We will set the amperage based on the resistance that we measure

@@ -35,7 +35,7 @@ public:
 
 
   static const int NUM_HEATERS = 1;
-  const int HEATER_PINS[NUM_HEATERS] = {51};
+  const int HEATER_PINS[NUM_HEATERS] = {HEATER_PIN};
 
   // These are lightly tested at present
   const double INIT_Kp = 0.005;

@@ -98,7 +98,7 @@ void SanyoAceB97::printRPMS() {
 // is needed for some other purpose.
 void SanyoAceB97::fanSpeedPerCentage(int s)
 {
- 
+
 #ifdef FAN_LOCKOUT
 	int q = map(s, SPEED_MIN, SPEED_MAX, OPERATING_PWM_THROTTLE, 0); // inverted PWM for Control v1 pcb's
 #else
@@ -107,13 +107,15 @@ void SanyoAceB97::fanSpeedPerCentage(int s)
 
 
   if (DEBUG_FAN > 0 ) {
+    Serial.print("s =");
+    Serial.println(s);
     Serial.print("Putting out speed to fan control board:");
     Serial.println(q);
   }
-  
+
   analogWrite(PWM_PIN[0], q);
 
- 
+
 }
 
 // This would be clearer in the the .h!! or in the machine hal for the specific device
@@ -122,12 +124,12 @@ void SanyoAceB97::_init() {
   PWM_PIN[0] = 9;
   TACH_PIN[0] = A0;
   fan_Enable = 22;
-  
+
   #ifdef FAN_LOCKOUT
       pinMode(fan_Enable, OUTPUT);
-	  digitalWrite(fan_Enable, HIGH);   
+	  digitalWrite(fan_Enable, HIGH);
   #endif
-  
+
 
   for(int i = 0; i < NUMBER_OF_FANS; i++) {
     tach_data_ts[i] = 0;
@@ -136,9 +138,9 @@ void SanyoAceB97::_init() {
     tach_data_duration[i] = 0;
     pinMode(PWM_PIN[i], OUTPUT);
 #ifdef FAN_LOCKOUT
-	digitalWrite(PWM_PIN[i], HIGH);   
+	digitalWrite(PWM_PIN[i], HIGH);
 #else
-	digitalWrite(PWM_PIN[i], LOW);   
+	digitalWrite(PWM_PIN[i], LOW);
 #endif
     pinMode(TACH_PIN[i],INPUT_PULLUP);
   }
@@ -147,9 +149,9 @@ void SanyoAceB97::_init() {
 
 void SanyoAceB97::E_STOP() {
 #ifdef FAN_LOCKOUT
-  digitalWrite(fan_Enable, LOW); 
+  digitalWrite(fan_Enable, LOW);
 
-	 
+
   for(int i = 0; i < NUMBER_OF_FANS; i++) {
     pinMode(PWM_PIN[i], OUTPUT);
 		  digitalWrite(PWM_PIN[i], HIGH);
