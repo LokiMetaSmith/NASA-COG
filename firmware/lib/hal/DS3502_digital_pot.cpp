@@ -28,27 +28,29 @@
     ds3502 = Adafruit_DS3502();
     // DIGITAL_POT_HACK
     if (!ds3502.begin()) {
-      Serial.println("Couldn't find DS3502 chip");
+      CogCore::Debug<const char *>("Couldn't find DS3502 chip\n");
     } else {
-      Serial.println("Found DS3502 chip");
+      CogCore::Debug<const char *>("Found DS3502 chip\n");
       foundPot = true;
-      CogCore::DebugLn<int>(this->foundPot);
+      CogCore::Debug<int>(this->foundPot);
+      CogCore::Debug<const char *>("\n");
     }
   }
 void DS3502DigitalPot::setWiper(float fraction) {
   if (foundPot) {
     int n = (int) (fraction * 127.0);
-    Serial.print("PRE Wiper voltage with wiper set to N: ");
-    Serial.println(n);
+    CogCore::Debug<const char *>("PRE Wiper voltage with wiper set to N: ");
+    CogCore::Debug<uint32_t>(n);
+    CogCore::Debug<const char *>("\n");
     ds3502.setWiper(n);
     int verify = ds3502.getWiper();
     if (verify != n) {
-      Serial.println("FAILURE OF DS3502");
+      CogCore::Debug<const char *>("FAILURE OF DS3502\n");
     }
 
     return;
   } else {
-    Serial.println("No Digital Pot Found");
+    CogCore::Debug<const char *>("No Digital Pot Found\n");
   }
   }
 #endif

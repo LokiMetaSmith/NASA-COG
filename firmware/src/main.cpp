@@ -107,7 +107,7 @@ void setup()
     // while (!Serial) {
     //   watchdogReset();
     // }
-    // Serial.println(F("starting"));
+    // Debug<const char *>("starting\n");
 
   //Debug<const char *>("Starting COG...\n");
   Debug<const char *>("Starting ");
@@ -120,24 +120,23 @@ void setup()
   Debug<const char *>("\n");
 
    //Print out the reset reason
-  Serial.println("=================");
-  Serial.print("ResetCause: ");
+  Debug<const char *>("=================\n");
+  Debug<const char *>("ResetCause: ");
   switch(getResetCause()) {
-  case 0: Serial.println("general"); break;
-  case 1: Serial.println("backup"); break;
-  case 2: Serial.println("watchdog"); break;
-  case 3: Serial.println("software"); break;
-  case 4: Serial.println("user"); break;
+  case 0: Debug<const char *>("general\n"); break;
+  case 1: Debug<const char *>("backup\n"); break;
+  case 2: Debug<const char *>("watchdog\n"); break;
+  case 3: Debug<const char *>("software\n"); break;
+  case 4: Debug<const char *>("user\n"); break;
   }
-  Serial.println("=================");
+  Debug<const char *>("=================\n");
 
   // TODO: consider doing this....
     // Serial.begin(BAUDRATE);
     // while (!Serial) {
     //   watchdogReset();
     // }
-    // Serial.println(F("starting"));
-
+    // Debug<const char *>("starting\n");
 
   delay(100);
   if (core.Boot() == false) {
@@ -159,11 +158,12 @@ void setup()
   machineConfig.hal->DEBUG_HAL = 0;
   bool initSuccess  = machineConfig.hal->init();
   if (!initSuccess) {
-    Serial.println("Could not init Hardware Abastraction Layer Properly!");
+    Debug<const char *>("Could not init Hardware Abastraction Layer Properly!\n");
+    Debug<const char *>("Could not init Hardware Abastraction Layer Properly!\n");
     delay(50);
     abort();
   } else {
-    Serial.println("Successful init of Hardware Abastraction Layer!");
+    Debug<const char *>("Successful init of Hardware Abastraction Layer!\n");
   }
 
   // Now we will set the machine state to "Off"
@@ -330,8 +330,9 @@ void setup()
   readTempsTask._run();
   readTempsTask._run();
   getConfig()->GLOBAL_RECENT_TEMP = getConfig()->report->post_heater_C;
-  Serial.print("starting temp is: ");
-  Serial.println(getConfig()->GLOBAL_RECENT_TEMP);
+  Debug<const char *>("starting temp is: ");
+  Debug<uint32_t>(getConfig()->GLOBAL_RECENT_TEMP);
+  Debug<const char *>("\n");
   CogCore::Debug<const char *>("Starting\n");
   /*********************************************/
 }
@@ -345,16 +346,16 @@ void loop() {
       CogCore::ErrorHandler::Log(CogCore::ErrorLevel::Critical, CogCore::ErrorCode::CoreFailedToRun);
 #ifdef ARDUINO
       // make sure we print anything needed!
-      Serial.println("Critical error!");
+      Debug<const char *>("Critical error!\n");
       delay(100);
       // Loop endlessly to stop the program from running
-      Serial.println("INTERNAL ERROR (CORE RETURNED)!");
+      Debug<const char *>("INTERNAL ERROR (CORE RETURNED)!\n");
       delay(1000);
       abort();
 #endif
       return;
   } else {
-    Serial.println("INTERNAL ERROR (CORE DID NOT START)!");
+    Debug<const char *>("INTERNAL ERROR (CORE DID NOT START)!\n");
     delay(300000);
     abort();
   }

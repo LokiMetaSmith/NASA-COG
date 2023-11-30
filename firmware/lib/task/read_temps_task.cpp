@@ -62,11 +62,12 @@ int ReadTempsTask::ringComputation(int n) {
     return (n+NUM_TEMPS_TO_RECORD) % NUM_TEMPS_TO_RECORD;
 }
 void ReadTempsTask::dumpQueue() {
-  CogCore::DebugLn<const char *>("All Temps, going backward in ms:");
+  CogCore::Debug<const char *>("All Temps, going backward in ms:\n");
   for(int i = 0; i < NUM_TEMPS_TO_RECORD; i++) {
     CogCore::Debug<int>(i*MachineConfig::TEMP_READ_PERIOD_MS);
     CogCore::Debug<const char *>(" : ");
-    CogCore::DebugLn<float>(this->temps[ringComputation(this->next_temp_idx - i)]);
+    CogCore::Debug<float>(this->temps[ringComputation(this->next_temp_idx - i)]);
+    CogCore::Debug<const char *>(" : ");
   }
 }
 
@@ -112,17 +113,20 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
     temp = _temperatureSensors[0].GetTemperature(idx);
     if (temp < 0.0) {
       if (DEBUG_READ_TEMPS > 0) {
-        Serial.println("PERFORMING ADDITIONAL READ");
-        Serial.println(i);
-        Serial.println(temp);
+	CogCore::Debug<const char *>("PERFORMING ADDITIONAL READ\n");
+	CogCore::Debug<int>(i);
+	CogCore::Debug<const char *>("\n");
+	CogCore::Debug<float>(temp);
+	CogCore::Debug<const char *>("\n");
       }
     }
   }
 
   // we'd like to use the corret sentinels, but they don't seem to work...
   if (temp == DEVICE_DISCONNECTED_C) {
-      Serial.print("THERMOCOUPLE DIGITAL DISCONNECT FOR : ");
-      Serial.println(idx);
+    CogCore::Debug<const char *>("THERMOCOUPLE DIGITAL DISCONNECT FOR : ");
+    CogCore::Debug<int>(idx);
+    CogCore::Debug<const char *>("\n");
       // As long as there is not a fault present, this creates;
       // if one is allready present, we leave it.
       if (!getConfig()->errors[ec].fault_present) {
@@ -130,8 +134,9 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
         getConfig()->errors[ec].begin_condition_ms = millis();
       }
   } else if (temp == DEVICE_FAULT_OPEN_C) {
-      Serial.print("THERMOCOUPLE OPEN FAULT FOR : ");
-      Serial.println(idx);
+    CogCore::Debug<const char *>("THERMOCOUPLE OPEN FAULT FOR : ");
+    CogCore::Debug<int>(idx);
+    CogCore::Debug<const char *>("\n");
       // As long as there is not a fault present, this creates;
       // if one is allready present, we leave it.
       if (!getConfig()->errors[ec].fault_present) {
@@ -139,8 +144,9 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
         getConfig()->errors[ec].begin_condition_ms = millis();
       }
   } else if (temp == DEVICE_FAULT_SHORTGND_C) {
-      Serial.print("THERMOCOUPLE GROUND SHORT FAULT FOR : ");
-      Serial.println(idx);
+    CogCore::Debug<const char *>("THERMOCOUPLE GROUND SHORT FAULT FOR : ");
+    CogCore::Debug<int>(idx);
+    CogCore::Debug<const char *>("\n");
       // As long as there is not a fault present, this creates;
       // if one is allready present, we leave it.
       if (!getConfig()->errors[ec].fault_present) {
@@ -148,8 +154,9 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
         getConfig()->errors[ec].begin_condition_ms = millis();
       }
   } else if (temp == DEVICE_FAULT_SHORTVDD_C) {
-      Serial.print("THERMOCOUPLE VDD SHORT FAULT FOR : ");
-      Serial.println(idx);
+    CogCore::Debug<const char *>("THERMOCOUPLE VDD SHORT FAULT FOR : ");
+    CogCore::Debug<int>(idx);
+    CogCore::Debug<const char *>("\n");
       // As long as there is not a fault present, this creates;
       // if one is allready present, we leave it.
       if (!getConfig()->errors[ec].fault_present) {
@@ -157,23 +164,26 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
         getConfig()->errors[ec].begin_condition_ms = millis();
       }
   } else if (temp == -0.19) {
-      Serial.print("THERMOCOUPLE PROBABLE ANALOG DISCONNECT FOR :");
-      Serial.println(idx);
+    CogCore::Debug<const char *>("THERMOCOUPLE PROBABLE ANALOG DISCONNECT FOR :");
+    CogCore::Debug<int>(idx);
+    CogCore::Debug<const char *>("\n");
       if (!getConfig()->errors[ec].fault_present) {
         getConfig()->errors[ec].fault_present = true;
         getConfig()->errors[ec].begin_condition_ms = millis();
       }
   } else if (temp < 0.0) {
-      Serial.print("THERMOCOUPLE PROBABLE  FOR :");
-      Serial.println(idx);
+    CogCore::Debug<const char *>("THERMOCOUPLE PROBABLE  FOR :");
+    CogCore::Debug<int>(idx);
+    CogCore::Debug<const char *>("\n");
       if (!getConfig()->errors[ec].fault_present) {
         getConfig()->errors[ec].fault_present = true;
         getConfig()->errors[ec].begin_condition_ms = millis();
       }
   } else {
     if (getConfig()->errors[ec].fault_present) {
-      Serial.print("THERMOCOUPLE FAULT REMVOED FOR : ");
-      Serial.println(idx);
+      CogCore::Debug<const char *>("THERMOCOUPLE FAULT REMVOED FOR : ");
+      CogCore::Debug<int>(idx);
+      CogCore::Debug<const char *>("\n");
     }
     getConfig()->errors[ec].fault_present = false;
   }
@@ -187,24 +197,25 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
 
 void ReadTempsTask::updateTemperatures() {
     if (DEBUG_READ_TEMPS > 0) {
-      CogCore::Debug<const char *>("About to _readTemperatureSensors");
+      CogCore::Debug<const char *>("About to _readTemperatureSensors\n");
       delay(30);
     }
 
   _readTemperatureSensors();
 
     if (DEBUG_READ_TEMPS > 0) {
-      CogCore::DebugLn<const char *>("Done with _readTemperatureSensors");
+      CogCore::Debug<const char *>("Done with _readTemperatureSensors\n");
       delay(30);
     }
 
     for(int i = 0; i < 3; i++) {
       if (getConfig()->errors[i].fault_present) {
-        Serial.print("THERMOCOUPLE FAULT PRESENT ON :");
-        Serial.println(i);
-        Serial.print("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
-        Serial.print((((float) getConfig()->errors[i].toleration_ms) - ((float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
-        Serial.println(" SECONDS.!");
+	CogCore::Debug<const char *>("THERMOCOUPLE FAULT PRESENT ON :");
+	CogCore::Debug<int>(i);
+	CogCore::Debug<const char *>("\n");
+	CogCore::Debug<const char *>("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
+	CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) - ((float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
+	CogCore::Debug<const char *>(" SECONDS.!\n");
       }
     }
 
@@ -268,10 +279,10 @@ void ReadTempsTask::updateTemperatures() {
 //    CogCore::Debug<unsigned long>(good_temp_reads);
     CogCore::Debug<unsigned long>(good_temp_reads_heater);
     CogCore::Debug<const char *>(", ");
-CogCore::Debug<unsigned long>(good_temp_reads_getter);
+    CogCore::Debug<unsigned long>(good_temp_reads_getter);
     CogCore::Debug<const char *>(", ");
-CogCore::Debug<unsigned long>(good_temp_reads_stack);
-    CogCore::DebugLn<const char *>("");
+    CogCore::Debug<unsigned long>(good_temp_reads_stack);
+    CogCore::Debug<const char *>("\n");
 
 
     CogCore::Debug<const char *>("Bad  Temp Reads:");
@@ -281,7 +292,7 @@ CogCore::Debug<unsigned long>(good_temp_reads_stack);
     CogCore::Debug<unsigned long>(bad_temp_reads_getter);
     CogCore::Debug<const char *>(", ");
     CogCore::Debug<unsigned long>(bad_temp_reads_stack);
-    CogCore::DebugLn<const char *>("");
+    CogCore::Debug<const char *>("\n");
   }
 }
 
@@ -310,12 +321,12 @@ void ReadTempsTask::_configTemperatureSensors() {
 #elif USE_MAX31855_THERMOCOUPLES
   _temperatureSensors = (Temperature::AbstractTemperature *) new Temperature::MAX31855Temperature[1];
 #else
-  Serial.println("MAJOR INTERNAL ERROR, THERMOCOUPLE PREPROCESSOR DIRECTIVES NOT DEFINED!");
+  CogCore::Debug<const char *>("MAJOR INTERNAL ERROR, THERMOCOUPLE PREPROCESSOR DIRECTIVES NOT DEFINED!\n");
 #endif
 
   _temperatureSensors[0]._config = config[0];
   if (DEBUG_READ_TEMPS > 0) {
-    CogCore::Debug<const char *>("Read Temp Configuration done!");
+    CogCore::Debug<const char *>("Read Temp Configuration done!\n");
     delay(50);
   }
 }
@@ -329,7 +340,8 @@ void ReadTempsTask::_readTemperatureSensors() {
       CogCore::Debug<const char *>("Temp : ");
       CogCore::Debug<const char *>(getConfig()->TempLocationNames[i]);
       CogCore::Debug<const char *>(": ");
-      CogCore::DebugLn<float>(temperature);
+      CogCore::Debug<float>(temperature);
+      CogCore::Debug<const char *>("\n");
     }
     // TODO: We should investigate a delay hear to make sure the
     // OneWire system is ready

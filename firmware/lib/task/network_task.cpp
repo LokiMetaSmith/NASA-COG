@@ -45,18 +45,18 @@ namespace CogApp
     for (uint8_t i = 0; i < 10 && net_udp.networkDown; i++) {
       switch(net_udp.networkStart()) {
       case 0: net_udp.networkDown = 0; break;
-      case 1: Serial.println(F("W5x00 init failed")); break;
-      case 2: Serial.println(F("No ethernet boad")); break;
-      case 3: Serial.println(F("No link")); break;
-      case 4: Serial.println(F("No DHCP")); break;
-      case 5: Serial.println(F("UDP failed on port")); break;
+      case 1: CogCore::Debug<const char *>("W5x00 init failed\n"); break;
+      case 2: CogCore::Debug<const char *>("No ethernet boad\n"); break;
+      case 3: CogCore::Debug<const char *>("No link\n"); break;
+      case 4: CogCore::Debug<const char *>("No DHCP\n"); break;
+      case 5: CogCore::Debug<const char *>("UDP failed on port\n"); break;
       }
     }
 
     if (net_udp.networkDown) {
       // Be sure to call safeDelay or watchdogReset
       while(1) {
-        Serial.println(F("CRITICAL ERROR! CONFIGURED FOR ETHERNET, BUT NONE FOUND!"));
+	CogCore::Debug<const char *>("CRITICAL ERROR! CONFIGURED FOR ETHERNET, BUT NONE FOUND!\n");
         watchdogReset();
         delay(5000);
       // WARNING --- there is a danger that this
@@ -68,9 +68,7 @@ namespace CogApp
       }
     }
 
-    Serial.println(F("Network started"));
-    Serial.println();
-    Serial.println();
+    CogCore::Debug<const char *>("Network started\n\n");
 
     unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
     char buffer[1024];
@@ -89,17 +87,17 @@ namespace CogApp
 
   bool NetworkTask::_run()  {
     if (DEBUG_UDP > 1) {
-      DebugLn<const char *>("The NetworkUDPTask was run\n");
+      Debug<const char *>("The NetworkUDPTask was run\n");
     }
 
     switch(net_udp.networkCheck()) {
     case 1:
     case 2:
-      Serial.println(F("Lost network link"));
+      CogCore::Debug<const char *>("Lost network link\n");
       net_udp.networkDown++;
       break;
     case 3:
-      Serial.println("Lost IP address");
+      CogCore::Debug<const char *>("Lost IP address\n");
       net_udp.networkDown++;
       break;
     case 100: net_udp.networkDown = 0;

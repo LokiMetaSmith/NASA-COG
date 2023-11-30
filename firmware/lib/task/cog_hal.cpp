@@ -23,7 +23,7 @@
 bool COG_HAL::init() {
 
   if (DEBUG_HAL > 0) {
-      Serial.println("HAL: About to init Fan!");
+    CogCore::Debug<const char *>("HAL: About to init Fan!\n");
   }
 
   pinMode(MAX31850_DATA_PIN, INPUT);
@@ -37,7 +37,7 @@ bool COG_HAL::init() {
   // as well. There should be a way to move this into the
   // superclass, but I can't figure out how to do it.
   if (DEBUG_HAL > 0) {
-      Serial.println("About to initialize heaters");
+    CogCore::Debug<const char *>("About to initialize heaters\n");
       delay(100);
   }
   _ac_heaters = new OnePinHeater*[NUM_HEATERS];
@@ -47,7 +47,7 @@ bool COG_HAL::init() {
     _ac_heaters[i]->init();
   }
   if (DEBUG_HAL > 0) {
-      Serial.println("HEATERS_INITIALIZED");
+    CogCore::Debug<const char *>("HEATERS_INITIALIZED\n");
       delay(100);
   }
 
@@ -56,7 +56,7 @@ bool COG_HAL::init() {
   _stacks[0]->init();
 
   if (DEBUG_HAL > 0) {
-      Serial.println("HAL:About to return!");
+    CogCore::Debug<const char *>("HAL:About to return!\n");
   }
   return true;
 }

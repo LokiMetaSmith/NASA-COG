@@ -46,16 +46,19 @@ namespace Temperature {
   sensors.begin();
 
   // locate devices on the bus
-  Serial.print("Locating devices...");
-  Serial.print("Found ");
-  Serial.print(sensors.getDeviceCount(), DEC);
-  Serial.println(" devices.");
+  CogCore::Debug<const char *>("Locating devices...");
+  CogCore::Debug<const char *>("Found ");
+  CogCore::Debug<uint32_t>(sensors.getDeviceCount());
+  CogCore::Debug<const char *>(" devices.\n");
 
   // report parasite power requirements
-  Serial.print("Parasite power is: ");
-  if (sensors.isParasitePowerMode()) Serial.println("ON");
-  else Serial.println("OFF");
-
+  CogCore::Debug<const char *>("Parasite power is: ");
+  if (sensors.isParasitePowerMode()) {
+    CogCore::Debug<const char *>("ON\n");
+  } else {
+    CogCore::Debug<const char *>("OFF\n");
+  }
+  
   // assign address manually.  the addresses below will beed to be changed
   // to valid device addresses on your bus.  device address can be retrieved
   // by using either oneWire.search(deviceAddress) or individually via
@@ -69,9 +72,9 @@ namespace Temperature {
   // the devices on your bus (and assuming they don't change).
   //
   // method 1: by index
-  if (!sensors.getAddress(postHeaterThermometer, 0)) Serial.println("Unable to find address for Device 0");
-  if (!sensors.getAddress(postGetterThermometer, 1)) Serial.println("Unable to find address for Device 1");
-    if (!sensors.getAddress(postStackThermometer, 2)) Serial.println("Unable to find address for Device 2");
+  if (!sensors.getAddress(postHeaterThermometer, 0)) CogCore::Debug<const char *>("Unable to find address for Device 0\n");
+  if (!sensors.getAddress(postGetterThermometer, 1)) CogCore::Debug<const char *>("Unable to find address for Device 1\n");
+  if (!sensors.getAddress(postStackThermometer, 2)) CogCore::Debug<const char *>("Unable to find address for Device 2\n");
 
   // method 2: search()
   // search() looks for the next device. Returns 1 if a new address has been
@@ -83,39 +86,39 @@ namespace Temperature {
   // Must be called before search()
   //oneWire.reset_search();
   // assigns the first address found to postHeaterThermometer
-  //if (!oneWire.search(postHeaterThermometer)) Serial.println("Unable to find address for postHeaterThermometer");
+  //if (!oneWire.search(postHeaterThermometer)) CogCore::Debug<const char *>("Unable to find address for postHeaterThermometer\n");
   // assigns the seconds address found to postGetterThermometer
-  //if (!oneWire.search(postGetterThermometer)) Serial.println("Unable to find address for postGetterThermometer");
+  //if (!oneWire.search(postGetterThermometer)) CogCore::Debug<const char *>("Unable to find address for postGetterThermometer\n");
 
   // show the addresses we found on the bus
-  Serial.print("Device 0 Address: ");
+  CogCore::Debug<const char *>("Device 0 Address: ");
   printAddress(postHeaterThermometer);
-  Serial.println();
+  CogCore::Debug<const char *>("\n");
 
-  Serial.print("Device 1 Address: ");
+  CogCore::Debug<const char *>("Device 1 Address: ");
   printAddress(postGetterThermometer);
-  Serial.println();
+  CogCore::Debug<const char *>("\n");
 
-  Serial.print("Device 2 Address: ");
+  CogCore::Debug<const char *>("Device 2 Address: ");
   printAddress(postStackThermometer);
-  Serial.println();
+  CogCore::Debug<const char *>("\n");
 
   // set the resolution to 9 bit
   sensors.setResolution(postHeaterThermometer, TEMPERATURE_PRECISION);
   sensors.setResolution(postGetterThermometer, TEMPERATURE_PRECISION);
   sensors.setResolution(postStackThermometer, TEMPERATURE_PRECISION);
 
-  Serial.print("Device 0 Resolution: ");
-  Serial.print(sensors.getResolution(postHeaterThermometer), DEC);
-  Serial.println();
+  CogCore::Debug<const char *>("Device 0 Resolution: ");
+  CogCore::Debug<uint32_t>(sensors.getResolution(postHeaterThermometer));
+  CogCore::Debug<const char *>("\n");
 
-  Serial.print("Device 1 Resolution: ");
-  Serial.print(sensors.getResolution(postGetterThermometer), DEC);
-  Serial.println();
+  CogCore::Debug<const char *>("Device 1 Resolution: ");
+  CogCore::Debug<uint32_t>(sensors.getResolution(postGetterThermometer));
+  CogCore::Debug<const char *>("\n");
 
-  Serial.print("Device 2 Resolution: ");
-  Serial.print(sensors.getResolution(postStackThermometer), DEC);
-  Serial.println();
+  CogCore::Debug<const char *>("Device 2 Resolution: ");
+  CogCore::Debug<uint32_t>(sensors.getResolution(postStackThermometer));
+  CogCore::Debug<const char *>("\n");
   }
 
   MAX31850Temperature::MAX31850Temperature(SensorConfig &config) {
@@ -132,9 +135,9 @@ namespace Temperature {
   {
     for (uint8_t i = 0; i < 8; i++)
       {
-        // zero pad the address if necessary
-        if (deviceAddress[i] < 16) Serial.print("0");
-        Serial.print(deviceAddress[i], HEX);
+	char t[3];
+	sprintf(t, "%0X", deviceAddress[i]);
+	CogCore::Debug<const char *>(t);
       }
   }
 
@@ -161,8 +164,9 @@ namespace Temperature {
       tempC = this->sensors.getTempC(postStackThermometer);
       brak;
     default: {
-      Serial.print("INTERNAL ERROR! BAD IDX FOR MAX31850: ");
-      Serial.println(idx);
+      CogCore::Debug<const char *>("INTERNAL ERROR! BAD IDX FOR MAX31850: ");
+      CogCore::Debug<uint32_t>(idx);
+      OxCore::Debug<const char *>("\n");
     }
     }
 #else

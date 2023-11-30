@@ -65,9 +65,9 @@ namespace CogApp
   }
 
   void CogTask::printGenericInstructions() {
-    Serial.println("Enter s:1 to Turn On Manual Control, s:0 to Turn Off.");
-    Serial.println("Enter s:2 to Turn Enter Automatic Control.");
-    Serial.println("Enter a:XX.X to set (a)mperage, (w)attage, (f)an speed (h)eater set p., and (r)amp rate.");
+    CogCore::Debug<const char *>("Enter s:1 to Turn On, s:0 to Turn Off.\n");
+    CogCore::Debug<const char *>("Enter s:2 to Turn Enter Automatic Control.");
+    CogCore::Debug<const char *>("Enter a:XX.X to set (a)mperage, (w)attage, (f)an speed (h)eater set p., and (r)amp rate.");
 
   }
 
@@ -278,9 +278,12 @@ namespace CogApp
     // but all of our ramp rates are in terms of minutes
     const float minutes = ((float)delta_ms) / (60.0 * 1000.0);
       if (DEBUG_LEVEL_OBA > 2) {
-        CogCore::DebugLn<const char *>("Change Ramps Run! Minutes: ");
-        CogCore::DebugLn<float>(minutes);
-        CogCore::DebugLn<int>(c.pause_substate);
+        CogCore::Debug<const char *>("Change Ramps Run! Minutes: ");
+        CogCore::Debug<const char *>("\n");
+        CogCore::Debug<float>(minutes);
+        CogCore::Debug<const char *>("\n");
+        CogCore::Debug<int>(c.pause_substate);
+        CogCore::Debug<const char *>("\n");
       }
     c.W_w += (((c.tW_w - c.W_w) > 0) ? 1.0 : -1.0) * c.Wr_Wdm * minutes;
 
@@ -290,7 +293,8 @@ namespace CogApp
     if (c.pause_substate == 0) {
         getConfig()->SETPOINT_TEMP_C += (((c.tT_c - getConfig()->SETPOINT_TEMP_C) > 0) ? 1.0 : -1.0) * c.Hr_Cdm * minutes;
     }
-    Serial.println(getConfig()->SETPOINT_TEMP_C);
+    CogCore::Debug<uint32_t>(getConfig()->SETPOINT_TEMP_C);
+    CogCore::Debug<const char *>("\n");
     c.W_w = max(c.W_w,0);
   }
 
@@ -299,7 +303,7 @@ namespace CogApp
     //Check for AC power, ie for +24V
     bool powerIsOK = updatePowerMonitor();
     if (!powerIsOK){
-      Serial.println("AC Power (+24V) FAIL.");
+      CogCore::Debug<const char *>("AC Power (+24V) FAIL.\n");
     }
     // Report fan speed
     getConfig()->report->fan_rpm =
@@ -312,15 +316,17 @@ namespace CogApp
 
 
     CogCore::Debug<const char *>("delta_ms: ");
-    CogCore::DebugLn<long>(delta_ms);
+    CogCore::Debug<long>(delta_ms);
+    CogCore::Debug<const char *>("\n");
 
     last_time_ramp_changed_ms = now_ms;
 
     this->StateMachineManager::run_generic();
 
     if (DEBUG_LEVEL > 0) {
-      Serial.print("Free Memory: ");
-      Serial.println(freeMemory());
+      CogCore::Debug<const char *>("Free Memory: ");
+      CogCore::Debug<int>(freeMemory());
+      CogCore::Debug<const char *>("\n");
     }
   }
 
@@ -340,10 +346,11 @@ namespace CogApp
            getConfig()->report->stack_ohms);
 
     if (DEBUG_LEVEL > 2) {
-      Serial.print("max_a_from_raw , max_a_from_wattage :");
-      Serial.print(max_a_from_raw);
-      Serial.print(" ");
-      Serial.println(max_a_from_wattage);
+      CogCore::Debug<const char *>("max_a_from_raw , max_a_from_wattage");
+      CogCore::Debug<uint32_t>(max_a_from_raw);
+      CogCore::Debug<const char *>(" ");
+      CogCore::Debug<uint32_t>(max_a_from_wattage);
+      CogCore::Debug<const char *>("\n");
     }
     return min(max_a_from_raw,max_a_from_wattage);
   }
@@ -369,7 +376,7 @@ namespace CogApp
 bool CogTask::updatePowerMonitor()
     {
       // Note:adding a task
-       if (DEBUG_LEVEL >0 ) Serial.println("PowerMonitorTask run");
+       if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
 
         //Analog read of the +24V expected about 3.25V at ADC input.
         // SENSE_24V on A1.
@@ -381,16 +388,17 @@ bool CogTask::updatePowerMonitor()
         bool powerIsGood = false;
         int lowThreshold24V = 1023 * 3 / 4;
 
-        if (DEBUG_LEVEL >0 )  Serial.print("analogRead(SENSE_24V)= ");
-        if (DEBUG_LEVEL >0 )  Serial.println(analogRead(SENSE_24V) * ((Vcc * (R1+R2))/(1023.0 * R2)));
+        if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
+        if (DEBUG_LEVEL >0 )  CogCore::Debug<uint32_t>(analogRead(SENSE_24V) * ((Vcc * (R1+R2))/(1023.0 * R2))); 
+        if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("\n");
 
         if (analogRead(A1) > lowThreshold24V) {
             powerIsGood = true;
-            if (DEBUG_LEVEL >0 )  Serial.println("+24V power monitor reports good.");
+            if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
             return true;
         }else{
             powerIsGood = false;
-            if (DEBUG_LEVEL >0 ) Serial.println("+24V power monitor reports bad.");
+            if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
             return false;
         }
     }
@@ -403,7 +411,7 @@ bool CogTask::updatePowerMonitor()
 
   void CogTask::runOneButtonAlgorithm() {
       if (DEBUG_LEVEL_OBA > 2) {
-        CogCore::DebugLn<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        CogCore::Debug<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
       }
 
       unsigned long now_ms = millis();
@@ -411,7 +419,8 @@ bool CogTask::updatePowerMonitor()
       changeRamps(delta_ms);
 
       CogCore::Debug<const char *>("delta_ms: ");
-      CogCore::DebugLn<long>(delta_ms);
+      CogCore::Debug<long>(delta_ms);
+      CogCore::Debug<const char *>("\n");
 
       last_time_ramp_changed_ms = now_ms;
 
@@ -423,25 +432,32 @@ bool CogTask::updatePowerMonitor()
       oneButtonAlgorithm(totalWattage_w,stackWattage_w,heaterWattage_w,fanSpeed_p);
         float dc = computeHeaterDutyCycleFromWattage(heaterWattage_w);
       if (DEBUG_LEVEL_OBA > 0) {
-        CogCore::DebugLn<const char *>("One Button Summary ");
+        CogCore::Debug<const char *>("One Button Summary\n");
         CogCore::Debug<const char *>("Total Wattage : ");
-        CogCore::DebugLn<float>(totalWattage_w);
+        CogCore::Debug<float>(totalWattage_w);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Stack Wattage : ");
-        CogCore::DebugLn<float>(stackWattage_w);
+        CogCore::Debug<float>(stackWattage_w);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Heater Wattage: ");
-        CogCore::DebugLn<float>(heaterWattage_w);
+        CogCore::Debug<float>(heaterWattage_w);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Fan Speed   % : ");
-        CogCore::DebugLn<float>(fanSpeed_p);
+        CogCore::Debug<float>(fanSpeed_p);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("DC          % : ");
-        CogCore::DebugLn<float>(dc * 100.0);
+        CogCore::Debug<float>(dc * 100.0);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("SetPoint: ");
-        CogCore::DebugLn<float>(getConfig()->SETPOINT_TEMP_C);
+        CogCore::Debug<float>(getConfig()->SETPOINT_TEMP_C);
+        CogCore::Debug<const char *>("\n");
       }
 
       // This is setting the target...
       wattagePIDObject->temperatureSetPoint_C = getConfig()->SETPOINT_TEMP_C;
       CogCore::Debug<const char *>("SetPoint: ");
-      CogCore::DebugLn<float>(getConfig()->SETPOINT_TEMP_C);
+      CogCore::Debug<float>(getConfig()->SETPOINT_TEMP_C);
+      CogCore::Debug<const char *>("\n");
 
       getConfig()->report->total_wattage_W = totalWattage_w;
 
@@ -468,7 +484,8 @@ bool CogTask::updatePowerMonitor()
         CogCore::Debug<const char *>("fan speed, amperage\n");
         CogCore::Debug<float>(fs);
         CogCore::Debug<const char *>(" ");
-        CogCore::DebugLn<float>(a);
+        CogCore::Debug<float>(a);
+        CogCore::Debug<const char *>("\n");
       }
       getHAL()->_updateFanPWM(fs);
       getConfig()->report->fan_pwm = fs;
@@ -523,7 +540,7 @@ bool CogTask::updatePowerMonitor()
   }
 
   MachineState CogTask::_updatePowerComponentsIdle() {
-    CogCore::Debug<const char *>("IN IDLE FUNCTION ");
+    CogCore::Debug<const char *>("IN IDLE FUNCTION\n ");
     MachineState new_ms = NormalOperation;
     getConfig()->idleOrOperate = Idle;
     _updateStackVoltage(MachineConfig::IDLE_STACK_VOLTAGE);
@@ -536,7 +553,7 @@ bool CogTask::updatePowerMonitor()
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsEmergencyShutdown() {
-    Serial.println("GOT EMERGENCY SHUTDOWN!");
+  CogCore:Debug<const char *>("GOT EMERGENCY SHUTDOWN!");
     MachineState new_ms = OffUserAck;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
     // In an emergency shutdown, we do NOT run the fan!
@@ -576,7 +593,7 @@ bool CogTask::updatePowerMonitor()
   void CogTask::_updateStackAmperage(float amperage) {
     if (amperage < 0.0) {
       // This is an internal error which should not occur..
-       CogCore::Debug<const char *>("Internal Error, negative amperage");
+       CogCore::Debug<const char *>("Internal Error, negative amperage\n");
       return;
     }
     for (int i = 0; i < getHAL()->NUM_STACKS; i++) {

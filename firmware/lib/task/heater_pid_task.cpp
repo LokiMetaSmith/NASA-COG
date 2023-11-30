@@ -39,36 +39,40 @@ bool HeaterPIDTask::_init()
 }
 
 void HeaterPIDTask::printTunings() {
-    Serial.print("Tunings for            : ");
-    Serial.print(MachineConfig::HeaterNames[whichHeater]);
-    Serial.print(" ");
-    Serial.print(FKp,5);
-    Serial.print(", ");
-    Serial.print(FKi,5);
-    Serial.print(", ");
-    Serial.print(FKd,5);
-    Serial.println();
-    Serial.print("Tunings (Inverted, 1/x): ");
-    Serial.print(MachineConfig::HeaterNames[whichHeater]);
-    Serial.print(" ");
-    if (FKp == 0.0) {
-      Serial.print("nan");
-    } else {
-      Serial.print(1.0/FKp,2);
+  CogCore::Debug<const char *>("Tunings for            : ");
+  CogCore::Debug<const char *>(MachineConfig::HeaterNames[whichHeater]);
+  CogCore::Debug<const char *>(" ");
+  char t[10];
+  sprintf(t, "%.5f", FKp);
+  CogCore::Debug<const char *>(t);
+  CogCore::Debug<const char *>(", ");
+  sprintf(t, "%.5f", FKi);
+  CogCore::Debug<const char *>(t);
+  CogCore::Debug<const char *>(", ");
+  sprintf(t, "%.5f", FKd);
+  CogCore::Debug<const char *>(t);
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("Tunings (Inverted, 1/x): ");
+  CogCore::Debug<const char *>(MachineConfig::HeaterNames[whichHeater]);
+  CogCore::Debug<const char *>(" ");
+    if (FKp == 0.0) CogCore::Debug<const char *>("nan");
+    else {
+      sprintf(t, "%.2f", 1.0/FKp);
+      CogCore::Debug<const char *>(t);
     }
-    Serial.print(", ");
-    if (FKi == 0.0) {
-      Serial.print("nan");
-    } else {
-      Serial.print(1.0/FKi,2);
+    CogCore::Debug<const char *>(", ");
+    if (FKi == 0.0) CogCore::Debug<const char *>("nan");
+    else {
+      sprintf(t, "%.2f", 1.0/FKi);
+      CogCore::Debug<const char *>(t);
     }
-    Serial.print(", ");
-    if (FKd == 0.0) {
-      Serial.print("nan");
-    } else {
-      Serial.print(1.0/FKd,2);
+    CogCore::Debug<const char *>(", ");
+    if (FKd == 0.0) CogCore::Debug<const char *>("nan");
+    else {
+      sprintf(t, "%.2f", 1.0/FKd);
+      CogCore::Debug<const char *>(t);
     }
-    Serial.println();
+    CogCore::Debug<const char *>("\n");
 }
 
 void HeaterPIDTask::SetTunings(double p, double i, double d) {
@@ -107,9 +111,11 @@ bool HeaterPIDTask::_run()
   if (DEBUG_PID > 1) {
     CogCore::Debug<const char *>("HeaterPIDTask run\n");
     double test_spud = getConfig()->report->post_heater_C;
-    CogCore::DebugLn<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-    CogCore::DebugLn<float>(this->HeaterSetPoint_C);
-    CogCore::DebugLn<float>(this->Input_temperature_C);
+    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    CogCore::Debug<float>(this->HeaterSetPoint_C);
+    CogCore::Debug<const char *>("\n");
+    CogCore::Debug<float>(this->Input_temperature_C);
+   CogCore::Debug<const char *>("\n");
   }
 
   MachineState ms = getConfig()->ms;
@@ -146,13 +152,22 @@ bool HeaterPIDTask::_run()
 
   if (DEBUG_PID > 1) {
     CogCore::Debug<const char *>("Setpoint");
-    Serial.println(this->HeaterSetPoint_C,2);
+    char t[10];
+    sprintf(t, "%.2f", this->HeaterSetPoint_C);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>("\n");
     CogCore::Debug<const char *>("previous input ");
-    Serial.println(previousInput,5);
+    sprintf(t, "%.5f", previousInput);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>("\n");
     CogCore::Debug<const char *>("Final dutyCycle_Output ");
-    Serial.println(this->dutyCycle_Output,5);
+    sprintf(t, "%.5f", this->dutyCycle_Output);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>("\n");
     CogCore::Debug<const char *>("Final dutyCycle ");
-    Serial.println(this->final_dutyCycle,5);
+    sprintf(t, "%.5f", this->final_dutyCycle);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>("\n");
   }
 
   return true;
