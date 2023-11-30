@@ -28,7 +28,7 @@ void MachineConfig::dumpAllData10Hz() {
   // using...
   
   //int msr_lre_size = _log_entry.size();
-  //Serial.println(msr_lre_size);
+  //CogCore::Debug<int>(msr_lre_size);
   for(int i = 0; i < MAX_RECORDS; i++) {
 	MachineStatusReport msr_lre= _log_entry[i];
 	
@@ -37,51 +37,73 @@ void MachineConfig::dumpAllData10Hz() {
 
 }
 void MachineConfig::outputReport(MachineStatusReport *msr) {
-        CogCore::DebugLn<const char *>("");
-		CogCore::Debug<const char *>("Timestamp: ");
-        CogCore::DebugLn<long>(msr->timestamp);
+        CogCore::Debug<const char *>("\n");
+	CogCore::Debug<const char *>("Timestamp: ");
+        CogCore::Debug<long>(msr->timestamp);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Machine State: ");
-        CogCore::DebugLn<const char *>(MachineConfig::MachineStateNames[msr->ms]);
+        CogCore::Debug<const char *>(MachineConfig::MachineStateNames[msr->ms]);
+        CogCore::Debug<const char *>("\n");
         // These are the dynamic targets
         CogCore::Debug<const char *>("Target     C: ");
-        CogCore::DebugLn<float>(msr->target_temp_C);
+        CogCore::Debug<float>(msr->target_temp_C);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Setpoint   C: ");
-        CogCore::DebugLn<float>(msr->setpoint_temp_C);
+        CogCore::Debug<float>(msr->setpoint_temp_C);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Target Ramp C: ");
-        CogCore::DebugLn<float>(msr->target_ramp_C);
+        CogCore::Debug<float>(msr->target_ramp_C);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Max Stack   A: ");
-        CogCore::DebugLn<float>(msr->max_stack_amps_A);
+        CogCore::Debug<float>(msr->max_stack_amps_A);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Max Stack   W: ");
-        CogCore::DebugLn<float>(msr->max_stack_watts_W);
+        CogCore::Debug<float>(msr->max_stack_watts_W);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Fan PWM      : ");
-        CogCore::DebugLn<float>(msr->fan_pwm);
+        CogCore::Debug<float>(msr->fan_pwm);
+        CogCore::Debug<const char *>("\n");
 
 
         CogCore::Debug<const char *>("Post Heater C: ");
-        CogCore::DebugLn<float>(msr->post_heater_C);
+        CogCore::Debug<float>(msr->post_heater_C);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Post Getter C: ");
-        CogCore::DebugLn<float>(msr->post_getter_C);
+        CogCore::Debug<float>(msr->post_getter_C);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Post Stack  C: ");
-        CogCore::DebugLn<float>(msr->post_stack_C);
+        CogCore::Debug<const char *>("\n");
+        CogCore::Debug<float>(msr->post_stack_C);
 
         CogCore::Debug<const char *>("Heater DC    : ");
         // We want more precision to see this changing faster.
-        Serial.println(msr->heater_duty_cycle,5);
+	char t[10];
+	sprintf(t, "%.5f", msr->heater_duty_cycle);
+        CogCore::Debug<const char *>(t);
+        CogCore::Debug<const char *>("\n");
         //        CogCore::DebugLn<float>(msr->heater_duty_cycle);
         CogCore::Debug<const char *>("Stack amps  A: ");
-        CogCore::DebugLn<float>(msr->stack_amps);
+        CogCore::Debug<float>(msr->stack_amps);
+	sprintf(t, "%.5f", msr->heater_duty_cycle);
+        CogCore::Debug<const char *>(t);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Stack watts W: ");
-        CogCore::DebugLn<float>(msr->stack_watts);
+        CogCore::Debug<float>(msr->stack_watts);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Stack volts V: ");
-        CogCore::DebugLn<float>(msr->stack_voltage);
+        CogCore::Debug<float>(msr->stack_voltage);
+        CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Stack ohms  O: ");
         if (isnan(msr->stack_ohms) || msr->stack_ohms < 0.0) {
-          CogCore::DebugLn<const char*>(" N/A");
+          CogCore::Debug<const char*>(" N/A");
+        CogCore::Debug<const char *>("\n");
         } else {
-          CogCore::DebugLn<float>(msr->stack_ohms);
+          CogCore::Debug<float>(msr->stack_ohms);
+        CogCore::Debug<const char *>("\n");
         }
         CogCore::Debug<const char *>("Fan RPM      : ");
-        CogCore::DebugLn<float>(msr->fan_rpm);
+        CogCore::Debug<const char *>("\n");
+        CogCore::Debug<float>(msr->fan_rpm);
 }
 
 void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
@@ -164,8 +186,8 @@ void MachineConfig::clearErrors() {
 // need this for "one-button" operation.
 void MachineConfig::runComplexAlgolAssertions() {
   // How we make certain assertions to make sure we are well configured
-  Serial.println("BEGINNING ASSERTION CHECKS!!");
-  Serial.println("IF YOU DO NOT SEE THE WORDS 'ALL CLEAR' BELOW AN ASSERTION HAS FAILED");
+  CogCore::Debug<const char *>("BEGINNING ASSERTION CHECKS!!\n");
+  CogCore::Debug<const char *>("IF YOU DO NOT SEE THE WORDS 'ALL CLEAR' BELOW AN ASSERTION HAS FAILED\n");
   delay(100);
   // assert(RAMP_UP_TARGET_D_MIN >= 0.0);
   // assert(RAMP_DN_TARGET_D_MIN <= 0.0);
@@ -177,17 +199,18 @@ void MachineConfig::runComplexAlgolAssertions() {
   // assert(FAN_SPEED_AT_OPERATING_TEMP < FULL_POWER_FOR_FAN);
   // assert(TEMP_TO_BEGIN_FAN_SLOW_DOWN < OPERATING_TEMP);
   // assert(OPERATING_TEMP < END_FAN_SLOW_DOWN);
-  Serial.println("ALL CLEAR!!");
+  CogCore::Debug<const char *>("ALL CLEAR!!\n");
   delay(50);
 }
 
 bool MachineConfig::init() {
- Serial.println("error toleration times (ms)");
+ CogCore::Debug<const char *>("error toleration times (ms)\n");
  for(int i = 0; i < 3; i++) {
-   Serial.print("Errors index: ");
-   Serial.print(i);
-   Serial.print(" ");
-   Serial.println(errors[i].toleration_ms);
+   CogCore::Debug<const char *>("Errors index: ");
+   CogCore::Debug<int>(i);
+   CogCore::Debug<const char *>(" ");
+   CogCore::Debug<uint32_t>(errors[i].toleration_ms);
+   CogCore::Debug<const char *>("\n");
  }
   return true;
 }

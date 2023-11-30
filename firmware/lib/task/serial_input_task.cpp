@@ -40,7 +40,7 @@ namespace CogApp
     while (Serial.available() > 0 && newData == false) {
       rc = Serial.read();
       // We'll do an echo here, we have to do it explicitly...
-      Serial.print(rc);
+      CogCore::Debug<char>(rc);
 
       if (rc != endMarker) {
         receivedChars[ndx] = rc;
@@ -77,21 +77,26 @@ namespace CogApp
   }
 
   void SerialInputTask::showParsedData(InputCommand ic) {
-    Serial.print("Command ");
-    Serial.println(ic.com_c);
+    CogCore::Debug<const char *>("Command ");
+    CogCore::Debug<char>(ic.com_c);
+    CogCore::Debug<const char *>("\n");
     if (ic.com_c == 'S') {
-      Serial.print("State ");
-      Serial.println(ic.value_c);
+      CogCore::Debug<const char *>("State ");
+      CogCore::Debug<char>(ic.value_c);
+    CogCore::Debug<const char *>("\n");
     } else {
-      Serial.print("Value ");
-      Serial.println(ic.value_f,8);
+      CogCore::Debug<const char *>("Value ");
+      char t[20];
+      sprintf(t, "%10.8f", ic.value_f);
+      CogCore::Debug<const char *>(t);
+      CogCore::Debug<const char *>("\n");
     }
   }
 
   // true if a new command found
   bool SerialInputTask::listen(InputCommand &ric) {
     if (DEBUG_SERIAL > 2) {
-      Serial.println("listening...");
+      CogCore::Debug<const char *>("listening...\n");
     }
     recvWithEndMarker();
     if (newData == true) {
@@ -113,14 +118,14 @@ namespace CogApp
 
   bool OEDCSSerialInputTask::_init() {
     if (DEBUG_SERIAL > 1) {
-      Serial.println("OEDSCSerialTask Inited");
+      CogCore::Debug<const char *>("OEDSCSerialTask Inited\n");
     }
     SerialInputTask::_init();
     return true;
   }
   bool Stage2SerialInputTask::_init() {
     if (DEBUG_SERIAL > 1) {
-      Serial.println("OEDSCSerialTask Inited");
+      CogCore::Debug<const char *>("OEDSCSerialTask Inited\n");
     }
     SerialInputTask::_init();
     return true;
@@ -139,9 +144,9 @@ namespace CogApp
     } else if (ic.value_c == '0') {
       if (mc->ms != Off) {
         mc->ms = Off;
-        Debug<const char *>("New State: Off.");
+        Debug<const char *>("New State: Off.\n");
       } else {
-        Debug<const char *>("Already Off.");
+        Debug<const char *>("Already Off.\n");
       }
     } else if (ic.value_c == '2') {
         Debug<const char *>("Enterring Automatic One-Button Algorithm.");
@@ -154,7 +159,7 @@ namespace CogApp
 
   bool SerialInputTask::executeCommand(InputCommand ic,MachineConfig* mc,StateMachineManager *smm) {
     if (DEBUG_SERIAL > 1) {
-      Serial.println("Serial Input Task executeCommand");
+      CogCore::Debug<const char *>("Serial Input Task executeCommand\n");
     }
 
     switch(ic.com_c) {
@@ -164,10 +169,14 @@ namespace CogApp
     case 'H':
       {
         smm->changeTargetTemp(ic.value_f);
-        Serial.print("Target Temp changed to: ");
-        Serial.println(ic.value_f);
-        Serial.print("New state is: ");
-        Serial.println(MachineConfig::MachineStateNames[mc->ms]);
+	CogCore::Debug<const char *>("Target Temp changed to: ");
+      char t[20];
+      sprintf(t, "%10.8f", ic.value_f);
+      CogCore::Debug<const char *>(t);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("New state is: ");
+      CogCore::Debug<const char *>(MachineConfig::MachineStateNames[mc->ms]);
+      CogCore::Debug<const char *>("\n");
       }
       break;
     case 'R':
@@ -176,8 +185,9 @@ namespace CogApp
         r = max(0.0,r);
         mc->change_ramp(r);
         mc->report->target_ramp_C = r;
-        Serial.print("Ramp changed to: ");
-        Serial.println(r);
+	CogCore::Debug<const char *>("Ramp changed to: ");
+	CogCore::Debug<float>(r);
+	CogCore::Debug<const char *>("\n");
       }
       break;
     case 'P':
@@ -208,13 +218,13 @@ namespace CogApp
       }
       break;
     default:
-      Serial.println("Internal Error!");
+      CogCore::Debug<const char *>("Internal Error!\n");
     }
   }
 
   bool OEDCSSerialInputTask::executeCommand(InputCommand ic,MachineConfig* mc,StateMachineManager *smm) {
     if (DEBUG_SERIAL > 1) {
-      Serial.println("executeCommand");
+      CogCore::Debug<const char *>("executeCommand\n");
     }
 
     if (ic.com_c == 'S' ||  ic.com_c == 'H' || ic.com_c == 'R' ||
@@ -229,10 +239,11 @@ namespace CogApp
           mc->MAX_AMPERAGE = a;
           mc->report->max_stack_amps_A =
             mc->MAX_AMPERAGE;
-        Serial.print("Maximum amperage changed to: ");
-        Serial.println(a);
-        break;
+	  CogCore::Debug<const char *>("Maximum amperage changed to: ");
+	  CogCore::Debug<float>(a);
+	  CogCore::Debug<const char *>("\n");
         }
+        break;
       case 'W':
         {
           float w = min(mc->BOUND_MAX_WATTAGE,ic.value_f);
@@ -240,8 +251,9 @@ namespace CogApp
           mc->MAX_STACK_WATTAGE = w;
           mc->report->max_stack_watts_W =
             mc->MAX_STACK_WATTAGE;
-          Serial.print("Wattage changed to: ");
-          Serial.println(w);
+	  CogCore::Debug<const char *>("Wattage changed to: ");
+	  CogCore::Debug<float>(w);
+	  CogCore::Debug<const char *>("\n");
           break;
         }
       case 'F':
@@ -251,12 +263,13 @@ namespace CogApp
           mc->FAN_SPEED = f;
           mc->report->fan_pwm =
             mc->FAN_SPEED;
-          Serial.print("Fan Speed changed to: ");
-          Serial.println(f);
+	  CogCore::Debug<const char *>("Fan Speed changed to: ");
+	  CogCore::Debug<float>(f);
+	  CogCore::Debug<const char *>("\n");
           break;
         }
       default:
-          Serial.print("Unknown command.");
+	CogCore::Debug<const char *>("Unknown command.\n");
         break;
       };
     }
@@ -265,7 +278,7 @@ namespace CogApp
   bool OEDCSSerialInputTask::_run()
   {
     if (DEBUG_SERIAL > 2) {
-      Serial.println("OEDCS SerialInput Taske Run");
+      CogCore::Debug<const char *>("OEDCS SerialInput Taske Run\n");
     }
     InputCommand ic;
     if (listen(ic)) {
@@ -275,7 +288,7 @@ namespace CogApp
 
   bool Stage2SerialInputTask::executeCommand(InputCommand ic,MachineConfig* mc,StateMachineManager *smm) {
     if (DEBUG_SERIAL > 1) {
-      Serial.println("executeCommand");
+      CogCore::Debug<const char *>("executeCommand\n");
     }
 
     showParsedData(ic);
@@ -289,27 +302,28 @@ namespace CogApp
       case '1':
         {
           mc->hal->s2heaterToControl = Int1;
-          DebugLn<const char *>("Switching to controlling the Int1 Heater!\n");
+          Debug<const char *>("Switching to controlling the Int1 Heater!\n");
           return false;
           break;
         }
       case '2':
         {
           mc->hal->s2heaterToControl = Ext1;
-          DebugLn<const char *>("Switching to controlling the Ext1 Heater!\n");
+          Debug<const char *>("Switching to controlling the Ext1 Heater!\n");
           return false;
           break;
         }
       case '3':
         {
           mc->hal->s2heaterToControl = Ext2;
-          DebugLn<const char *>("Switching to controlling the Ext2 Heater!\n");
+          Debug<const char *>("Switching to controlling the Ext2 Heater!\n");
           return false;
           break;
         }
       default: {
-        Serial.print("unknown command: ");
-        Serial.println(ic.com_c);
+        CogCore::Debug<const char *>("unknown command: ");
+        CogCore::Debug<char>(ic.com_c);
+        CogCore::Debug<const char *>("\n");
       }
       }
     }
@@ -318,17 +332,18 @@ namespace CogApp
   bool Stage2SerialInputTask::_run()
   {
     if (DEBUG_SERIAL > 1) {
-      Serial.println("Stage2SerialInputTask run");
+      CogCore::Debug<const char *>("Stage2SerialInputTask run\n");
     }
     InputCommand ic;
     if (listen(ic)) {
       if (DEBUG_SERIAL > 0) {
-        Serial.println("Got command");
+	CogCore::Debug<const char *>("Got command\n");
         showParsedData(ic);
       }
       executeCommand(ic,
                      mcs[getConfig()->hal->s2heaterToControl],
                      stage2HeaterTasks[getConfig()->hal->s2heaterToControl]);
     }
+    return true;
   }
 }

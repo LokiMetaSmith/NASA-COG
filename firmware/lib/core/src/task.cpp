@@ -50,11 +50,11 @@ namespace CogCore
             _state = TaskState::Running;
             _lastRun = now;
             if (DEBUG > 0) {
-              Serial.println("about to _run");
+	      CogCore::Debug<const char *>("about to _run\n");
             }
             _run(); // TODO: use result
             if (DEBUG > 0) {
-              Serial.println("finished _run");
+	      CogCore::Debug<const char *>("finished _run\n");
             }
 
         } else {
@@ -63,7 +63,7 @@ namespace CogCore
         }
         _state = TaskState::Ready;
         if (DEBUG > 0) {
-          Serial.println("Returning Run");
+	  CogCore::Debug<const char *>("Returning Run\n");
         }
 
     }

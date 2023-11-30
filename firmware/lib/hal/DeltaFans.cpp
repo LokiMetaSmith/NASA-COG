@@ -19,6 +19,7 @@
 
 #include "DeltaFans.h"
 #include <math.h>
+#include <debug.h>
 
 
 #define PERIOD 1000
@@ -62,10 +63,13 @@
 unsigned long DeltaFans::_calcRPM(uint8_t i){
   refresh_tach_data(i);
   if (DEBUG_FAN > 1) {
-    Serial.print("CALC: " );
-    Serial.println(i);
-    Serial.println(tach_data_ocnt[i]);
-    Serial.println(tach_data_duration[i]);
+    CogCore::Debug<const char *>("CALC: " );
+    CogCore::Debug<uint32_t>(i);
+    CogCore::Debug<const char *>("\n" );
+    CogCore::Debug<uint32_t>(tach_data_ocnt[i]);
+    CogCore::Debug<const char *>("\n" );
+    CogCore::Debug<uint32_t>(tach_data_duration[i]);
+    CogCore::Debug<const char *>("\n" );
   }
   if (tach_data_duration[i] != 0) {
     // I think these are 4-pole fans
@@ -77,13 +81,13 @@ unsigned long DeltaFans::_calcRPM(uint8_t i){
 
 
 void DeltaFans::printRPMS() {
-  Serial.println("RPMS:");
+  CogCore::Debug<const char *>("RPMS:");
   for(uint8_t i = 0; i < 4; i++) {
     long rpm = _calcRPM(i);
-    Serial.print("rpm: ");
-     Serial.print(i);
-     Serial.print(" : ");
-     Serial.println(rpm);
+    CogCore::Debug<const char *>("rpm: ");
+    CogCore::Debug<uint32_t>(i);
+    CogCore::Debug<const char *>(" : ");
+    CogCore::Debug<uint32_t>(rpm);
   }
 }
 
@@ -97,8 +101,8 @@ void DeltaFans::motorControl(int s)
 {
   int q = map(s, SPEED_MIN, SPEED_MAX, 0, 255);
   if (DEBUG_FAN > 0 ) {
-    Serial.print("Putting out speed to fan control board:");
-    Serial.println(q);
+    CogCore::Debug<const char *>("Putting out speed to fan control board:");
+    CogCore::Debug<uint32_t>(q);
   }
   analogWrite(MOTOR_OUT_PIN, q);
 }
@@ -110,10 +114,10 @@ void DeltaFans::PWMMotorControl(float s, int m)
   int q = map(s*50, SPEED_MIN, SPEED_MAX, 0, 255);
 
   if (DEBUG_FAN > 0 ) {
-    Serial.print("m : q");
-    Serial.print(m);
-    Serial.print(" : ");
-    Serial.println(q);
+    CogCore::Debug<const char *>("m : q");
+    CogCore::Debug<uint32_t>(m);
+    CogCore::Debug<const char *>(" : ");
+    CogCore::Debug<uint32_t>(q);
   }
   // analogWrite(PWM_PIN[m], q);
   analogWrite(PWM_PIN[m], q);
@@ -180,10 +184,11 @@ void DeltaFans::update(float pwm_ratio) {
   }
 
   if (DEBUG_FAN > 0 ) {
-    Serial.print("PWM ratio:  num / ratio : ");
-    Serial.print(num);
-    Serial.print(" : ");
-    Serial.println(pwm_ratio);
+    CogCore::Debug<const char *>("PWM ratio:  num / ratio : ");
+    CogCore::Debug<uint32_t>(num);
+    CogCore::Debug<const char *>(" : ");
+    CogCore::Debug<uint32_t>(pwm_ratio);
+    CogCore::Debug<const char *>("\n");
     printRPMS();
   }
 }

@@ -48,9 +48,10 @@ namespace CogApp
 
     // This is the (currently unused) retrieval of scripts to set parameters
     if (DEBUG_UDP > 1) {
-      Serial.println("Seeking Params");
-      Serial.println("ms");
-      Serial.println(getConfig()->report->ms);
+      CogCore::Debug<const char *>("Seeking Params\n");
+      CogCore::Debug<const char *>("ms\n");
+      CogCore::Debug<uint8_t>(getConfig()->report->ms);
+      CogCore::Debug<const char *>("\n");
       delay(50);
     }
 
@@ -61,32 +62,34 @@ namespace CogApp
 
     bool new_packet = false;
     if (DEBUG_UDP > 1) {
-      Serial.println("Done with Params!");
+      CogCore::Debug<const char *>("Done with Params!\n");
       delay(50);
     }
     if (new_packet) {
       if (DEBUG_UDP > 1) {
-        Serial.println("Got a Param Packet!");
+	CogCore::Debug<const char *>("Got a Param Packet!\n");
         delay(50);
       }
       if (DEBUG_UDP > 1) {
-        Serial.println("ms");
-        Serial.println(getConfig()->report->ms);
+	CogCore::Debug<const char *>("ms\n");
+	CogCore::Debug<uint32_t>(getConfig()->report->ms);
+	CogCore::Debug<const char *>("\n");
         delay(50);
       }
       // This would be better done with a static member
       MachineScript *old = getConfig()->script;
       MachineScript *ms = old->parse_buffer_into_new_script((char *) packetBuffer,old->DEBUG_MS);
       if (DEBUG_UDP > 1) {
-        Serial.println("Done with parse_buffer_into_new_script");
-        Serial.println("ms");
-        Serial.println(getConfig()->report->ms);
+	CogCore::Debug<const char *>("Done with parse_buffer_into_new_script\n");
+	CogCore::Debug<const char *>("ms\n");
+	CogCore::Debug<uint32_t>(getConfig()->report->ms);
+	CogCore::Debug<const char *>("\n");
         delay(50);
       }
       getConfig()->script = ms;
       delete old;
       if (DEBUG_UDP > 1) {
-        Serial.println("old Script deleted.");
+	CogCore::Debug<const char *>("old Script deleted.\n");
         delay(50);
       }
     }
@@ -99,7 +102,7 @@ namespace CogApp
     //    getConfig()->outputReport(getConfig()->report);
 
     if (DEBUG_UDP > 1) {
-      Serial.println("outputReport");
+      CogCore::Debug<const char *>("outputReport\n");
       delay(50);
     }
     char buffer[4096];
@@ -107,18 +110,19 @@ namespace CogApp
     buffer[0] = 0;
     getConfig()->createJSONReport(getConfig()->report,buffer);
     if (DEBUG_UDP > 0) {
-      Debug<const char *>("Sending buffer:");
-      DebugLn<const char *>(buffer);
+      CogCore::Debug<const char *>("Sending buffer:\n");
+      CogCore::Debug<const char *>(buffer);
+      CogCore::Debug<const char *>("\n");
       delay(50);
     }
     unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
     if (DEBUG_UDP > 1) {
-      Serial.println("About to Send Data!");
+      CogCore::Debug<const char *>("About to Send Data!\n");
       delay(50);
     }
     net_udp.sendData(buffer,current_epoch_time, 2000);
     if (DEBUG_UDP > 1) {
-      Serial.println("Data Sent!");
+      CogCore::Debug<const char *>("Data Sent!\n");
       delay(50);
     }
     return true;

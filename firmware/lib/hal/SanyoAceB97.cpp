@@ -18,6 +18,7 @@
 
 #include "SanyoAceB97.h"
 #include <math.h>
+#include <debug.h>
 
 #define PERIOD 1000
 
@@ -61,10 +62,12 @@
 unsigned long SanyoAceB97::_calcRPM(uint8_t i){
   refresh_tach_data(i);
   if (DEBUG_FAN > 1) {
-    Serial.print("CALC: " );
-    Serial.println(i);
-    Serial.println(tach_data_ocnt[i]);
-    Serial.println(tach_data_duration[i]);
+    CogCore::Debug<const char *>("CALC: " );
+    CogCore::Debug<uint8_t>(i);
+    CogCore::Debug<const char *>("\n" );
+    CogCore::Debug<uint32_t>(tach_data_ocnt[i]);
+    CogCore::Debug<uint32_t>(tach_data_duration[i]);
+    CogCore::Debug<const char *>("\n" );
   }
   if (tach_data_duration[i] != 0) {
     // According to the documentation, there will be two falling
@@ -82,11 +85,12 @@ unsigned long SanyoAceB97::_calcRPM(uint8_t i){
 
 
 void SanyoAceB97::printRPMS() {
-  Serial.println("RPMS:");
+  CogCore::Debug<const char *>("RPMS:\n");
   for(uint8_t i = 0; i < NUMBER_OF_FANS; i++) {
     long rpm = _calcRPM(i);
-    Serial.print("rpm: ");
-    Serial.println(rpm);
+    CogCore::Debug<const char *>("rpm: ");
+    CogCore::Debug<uint32_t>(rpm);
+    CogCore::Debug<const char *>("\n");
   }
 }
 
@@ -107,8 +111,9 @@ void SanyoAceB97::fanSpeedPerCentage(int s)
 
 
   if (DEBUG_FAN > 0 ) {
-    Serial.print("Putting out speed to fan control board:");
-    Serial.println(q);
+    CogCore::Debug<const char *>("Putting out speed to fan control board:");
+    CogCore::Debug<uint32_t>(q);
+    CogCore::Debug<const char *>("\n");
   }
   
   analogWrite(PWM_PIN[0], q);
@@ -173,8 +178,9 @@ void SanyoAceB97::update(float pwm_ratio) {
   _pwm_ratio[0] = pwm_ratio;
 
   if (DEBUG_FAN > 0 ) {
-    Serial.print("PWM ratio:  num / ratio : ");
-    Serial.println(pwm_ratio);
+    CogCore::Debug<const char *>("PWM ratio:  num / ratio : ");
+    CogCore::Debug<uint32_t>(pwm_ratio);
+    CogCore::Debug<const char *>("\n");
     printRPMS();
   }
 }

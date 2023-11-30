@@ -31,7 +31,8 @@ namespace CogApp
   {
     if (DEBUG_LOG_RECORDER) {
       CogCore::Debug<const char *>("LogRecorderTask run: ");
-      CogCore::DebugLn<int>(_recordCount);
+      CogCore::Debug<int>(_recordCount);
+      CogCore::Debug<const char *>("\n");
     }
     getConfig()->report->timestamp = millis();
 

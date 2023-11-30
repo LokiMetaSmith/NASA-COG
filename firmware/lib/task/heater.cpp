@@ -36,12 +36,14 @@ namespace CogApp {
         if (_voltage > 6.0) {
           digitalWrite(this->pin,HIGH);
           if (DEBUG_LEVEL > 0) {
-            CogCore::DebugLn<float>(12);
+            CogCore::Debug<float>(12);
+	    CogCore::Debug<const char *>("\n");
           }
         } else {
           digitalWrite(this->pin,LOW);
           if (DEBUG_LEVEL > 0) {
-            CogCore::DebugLn<float>(0);
+            CogCore::Debug<float>(0);
+	    CogCore::Debug<const char *>("\n");
           }
         }
 
@@ -52,7 +54,8 @@ namespace CogApp {
           CogCore::Debug<const char *>("   ");
           CogCore::Debug<const char *>(name);
           CogCore::Debug<const char *>(" Voltage: ");
-          CogCore::DebugLn<float>(_voltage);
+          CogCore::Debug<float>(_voltage);
+      CogCore::Debug<const char *>("\n");
         }
 #endif
 
@@ -68,11 +71,13 @@ namespace CogApp {
     float delta_watts = watts_per_degree * delta_C;
     float current_watts = current_V * current_V / _resistance;
     CogCore::Debug<const char *>("current watts ");
-    CogCore::DebugLn<float>(current_watts);
+    CogCore::Debug<float>(current_watts);
+      CogCore::Debug<const char *>("\n");
     float new_watts = current_watts + delta_watts;
     float new_volts = sqrt( new_watts * _resistance);
     CogCore::Debug<const char *>("delta_C ");
-    CogCore::DebugLn<float>(delta_C);
+    CogCore::Debug<float>(delta_C);
+      CogCore::Debug<const char *>("\n");
 
     return new_volts;
   }

@@ -33,7 +33,7 @@ namespace CogApp
     bool HeartbeatTask::_run()
     {
       // Note:adding a heartbeat task
-      // Serial.println("HeartbeatTask run");
+      // CogCore::Debug<const char *>("HeartbeatTask run\n");
         //Toggeling the LED
             if (digitalRead(LED_BUILTIN) == LOW) {
             digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)

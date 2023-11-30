@@ -20,6 +20,7 @@
 #include "utility/w5100.h"
 #include <network_udp.h>
 #include <flash.h>
+#include <debug.h>
 
 // TODO: all of this should be moved to a more accessible configuration file.
 char timeServer[] = "time.nist.gov";
@@ -58,41 +59,45 @@ NetworkUDP::networkCheck() {
 
 void
 NetworkUDP::printPacketInfo(int packetsize) {
-  if (DEBUG_UDP > 1) {
-    Serial.print(F("UDP Packet received, size "));
-    Serial.println(packetsize);
-    Serial.print(F("From "));
-  }
   IPAddress remoteIp = Udp.remoteIP();
   if (DEBUG_UDP > 1) {
-    Serial.print(remoteIp);
-    Serial.print(F(", port "));
-    Serial.println(Udp.remotePort());
+    CogCore::Debug<const char *>("UDP Packet received, size ");
+    CogCore::Debug<uint32_t>(packetsize);
+    CogCore::Debug<const char *>("\n");
+    CogCore::Debug<const char *>("From ");
+    char t[16];
+    sprintf(t, "%u.%u.%u.%u", remoteIp[0], remoteIp[1], remoteIp[2], remoteIp[3]);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>(", port ");
+    CogCore::Debug<uint32_t>(Udp.remotePort());
+    CogCore::Debug<const char *>("\n");
   }
 }
 
 void
 NetworkUDP::printTime(unsigned long time) {
-  Serial.print(F("Unix time = "));
-  Serial.println(time);
+  CogCore::Debug<const char *>("Unix time = ");
+  CogCore::Debug<uint32_t>(time);
+  CogCore::Debug<const char *>("\n");
   // print the hour, minute and second:
-  Serial.print(F("The UTC time is "));       // UTC is the time at Greenwich Meridian (GMT)
+  CogCore::Debug<const char *>("The UTC time is ");       // UTC is the time at Greenwich Meridian (GMT)
   // print the hour (86400 equals secs per day)
-  if ((time % 86400L) / 3600 < 10) Serial.print(F("0"));
-  Serial.print((time  % 86400L) / 3600);
-  Serial.print(F(":"));
+  if ((time % 86400L) / 3600 < 10)  CogCore::Debug<const char *>("0");
+  CogCore::Debug<uint32_t>((time  % 86400L) / 3600);
+  CogCore::Debug<const char *>(":");
 
   // In the first 10 minutes of each hour, we'll want a leading '0'
-  if (((time % 3600) / 60) < 10) Serial.print(F("0"));
+  if (((time % 3600) / 60) < 10) CogCore::Debug<const char *>("0");
 
   // print the minute (3600 equals secs per minute)
-  Serial.print((time  % 3600) / 60);
-  Serial.print(F(":"));
+  CogCore::Debug<uint32_t>((time  % 3600) / 60);
+  CogCore::Debug<const char *>(":");
 
   // In the first 10 seconds of each minute, we'll want a leading '0'
-  if ((time % 60) < 10) Serial.print(F("0"));
+  if ((time % 60) < 10) CogCore::Debug<const char *>("0");
 
-  Serial.println(time % 60); // print the second
+  CogCore::Debug<uint32_t>(time % 60); // print the second
+  CogCore::Debug<const char *>("\n");
 }
 
 // send an NTP request to the time server at the given address
@@ -117,12 +122,12 @@ NetworkUDP::getTime(uint16_t timeout) {
   // all NTP fields have been given values, now
   // you can send a packet requesting a timestamp:
   if (! Udp.beginPacket(timeServer, 123)) { //NTP requests are to port 123
-    if (DEBUG_UDP > 2) Serial.println(F("can't resolve timeserver"));
+    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("can't resolve timeserver\n");
     return 0;
   }
   Udp.write(ntpBuffer, NTP_PACKET_SIZE);
   if (! Udp.endPacket()) {
-    if (DEBUG_UDP > 2) Serial.println(F("Could not send time request"));
+    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("Could not send time request\n");
     return 0;
   }
 
@@ -136,7 +141,7 @@ NetworkUDP::getTime(uint16_t timeout) {
   }
 
   if (!packetSize) {
-    if (DEBUG_UDP > 2) Serial.println(F("No time data returned"));
+    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("No time data returned\n");
     return 0;
   }
 
@@ -162,7 +167,7 @@ NetworkUDP::getTime(uint16_t timeout) {
 bool
 NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
   if (! Udp.beginPacket(mcogs, serverPort)) {
-    if (DEBUG_UDP > 2) Serial.println(F("Can't resolve mcogs"));
+    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("Can't resolve mcogs\n");
     return false;
   }
 
@@ -183,7 +188,7 @@ NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
   if (data && strlen(data)) Udp.write(data, strlen(data));
   Udp.write("}", 1);
   if (! Udp.endPacket()) {
-    if (DEBUG_UDP > 2) Serial.println(F("Can't send data"));
+    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("Can't send data\n");
     return false;
   }
 
@@ -196,21 +201,24 @@ NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
   }
 
   if (!packetSize) {
-    if (DEBUG_UDP > 2) Serial.println(F("no response"));
+    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("no response\n");
     return false;
   }
 
   Udp.read(packetBuffer, packetSize);
   packetBuffer[packetSize] = '\0';
   if (strncmp((char *)packetBuffer, "posted", 6)) return false;
-  if (DEBUG_UDP > 2) Serial.println((char *)packetBuffer);
+  if (DEBUG_UDP > 2) {
+    CogCore::Debug<const char *>((char *)packetBuffer);
+    CogCore::Debug<const char *>("\n");
+  }
   return true;
 }
 
 bool
 NetworkUDP::getParams(uint16_t timeout) {
   if (! Udp.beginPacket(mcogs, serverPort)) {
-    if (DEBUG_UDP > 2) Serial.println(F("can't resolve mcogs"));
+    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("can't resolve mcogs\n");
     return false;
   }
   Udp.write("GET ", 4);
@@ -224,7 +232,7 @@ NetworkUDP::getParams(uint16_t timeout) {
 #endif  
   Udp.write("Params\n", 7);
   if (! Udp.endPacket()) {
-    if (DEBUG_UDP > 2) Serial.println(F("can't send request"));
+    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("can't send request\n");
     return false;
   }
 
@@ -233,49 +241,53 @@ NetworkUDP::getParams(uint16_t timeout) {
   while (!packetSize && (millis() - startMs) < timeout) {
     delay(10);
     if (DEBUG_UDP > 2) {
-      Serial.println(F("Calling parse packet (should loop)"));
-      Serial.println((millis() - startMs));
+      CogCore::Debug<const char *>("Calling parse packet (should loop)\n");
+      CogCore::Debug<uint32_t>((millis() - startMs));
+      CogCore::Debug<const char *>("\n");
     }
     packetSize = Udp.parsePacket();
     watchdogReset();
   }
 
   if (!packetSize) {
-    if (DEBUG_UDP > 2) Serial.println(F("no params returned"));
+    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("no params returned\n");
     return false;
   }
 
-  if (DEBUG_UDP > 1) {
-    Serial.print(F("UDP Packet received, size "));
-    Serial.println(packetSize);
-    delay(50);
-    Serial.print(F("From "));
-    delay(50);
-  }
   IPAddress remoteIp = Udp.remoteIP();
   if (DEBUG_UDP > 1) {
-    Serial.print(remoteIp);
-    Serial.print(F(", port "));
-    Serial.println(Udp.remotePort());
+    CogCore::Debug<const char *>("UDP Packet received, size ");
+    CogCore::Debug<uint32_t>(packetSize);
+    CogCore::Debug<const char *>("\n");
+    delay(50);
+    CogCore::Debug<const char *>("From ");
+    delay(50);
+    char t[16];
+    sprintf(t, "%u.%u.%u.%u", remoteIp[0], remoteIp[1], remoteIp[2], remoteIp[3]);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>(", port ");
+    CogCore::Debug<uint32_t>(Udp.remotePort());
     delay(50);
   }
 
   Udp.read(packetBuffer, packetSize);
   if (DEBUG_UDP > 1) {
-    Serial.println(packetSize);
+    CogCore::Debug<uint32_t>(packetSize);
+    CogCore::Debug<const char *>("\n");
     delay(50);
   }
   packetBuffer[packetSize] = '\0';
 
   if (DEBUG_UDP > 1) {
-    Serial.println("About to construct config");
+    CogCore::Debug<const char *>("About to construct config\n");
     delay(50);
   }
 
   if (DEBUG_UDP > 1) {
-    Serial.println("constructed config");
+    CogCore::Debug<const char *>("constructed config\n");
     delay(50);
-    Serial.println((char *)packetBuffer);
+    CogCore::Debug<const char *>((char *)packetBuffer);
+    CogCore::Debug<const char *>("\n");
     delay(50);
   }
 
@@ -288,22 +300,36 @@ NetworkUDP::getParams(uint16_t timeout) {
 void
 NetworkUDP::printNet() {
   //  Ethernet.MACAddress(mac);
-  Serial.print(F("The MAC address is: "));
+  CogCore::Debug<const char *>("The MAC address is: ");
   for (uint8_t i = 0; i < 6; i++) {
-    if (mac[i] < 10) Serial.print(F("0"));
-    Serial.print(mac[i], HEX);
-    if (i < 5) Serial.print(F(":"));
+    char t[4];
+    sprintf(t, "%0X", mac[i]);
+    CogCore::Debug<const char *>(t);
+    if (i < 5) CogCore::Debug<const char *>(":");
   }
-  Serial.println();
+  CogCore::Debug<const char *>("\n");
 
-  Serial.print(F("IP address: "));
-  Serial.println(Ethernet.localIP());
-  Serial.print(F("Subnet Mask: "));
-  Serial.println(Ethernet.subnetMask());
-  Serial.print(F("Gateway: "));
-  Serial.println(Ethernet.gatewayIP());
-  Serial.print(F("DNS Server: "));
-  Serial.println(Ethernet.dnsServerIP());
+  CogCore::Debug<const char *>("IP address: ");
+  IPAddress   tempIP = Ethernet.localIP();
+  char t[16];
+  sprintf(t, "%u.%u.%u.%u", tempIP[0], tempIP[1], tempIP[2], tempIP[3]);
+  CogCore::Debug<const char *>(t);
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("Subnet Mask: ");
+  tempIP = Ethernet.subnetMask();
+  sprintf(t, "%u.%u.%u.%u", tempIP[0], tempIP[1], tempIP[2], tempIP[3]);
+  CogCore::Debug<const char *>(t);
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("Gateway: ");
+  tempIP = Ethernet.gatewayIP();
+  sprintf(t, "%u.%u.%u.%u", tempIP[0], tempIP[1], tempIP[2], tempIP[3]);
+  CogCore::Debug<const char *>(t);
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("DNS Server: ");
+  tempIP = Ethernet.dnsServerIP();
+  sprintf(t, "%u.%u.%u.%u", tempIP[0], tempIP[1], tempIP[2], tempIP[3]);
+  CogCore::Debug<const char *>(t);
+  CogCore::Debug<const char *>("\n");
 }
 
 uint8_t
@@ -315,8 +341,8 @@ NetworkUDP::networkStart() {
   if (!Ethernet.hardwareStatus()) return 2;
 
   if (setGlobalMacAddress() != 0) {
-    Serial.println(F("Problem reading EFC"));
-    Serial.println(F("Using default mac"));
+    CogCore::Debug<const char *>("Problem reading EFC\n");
+    CogCore::Debug<const char *>("Using default mac\n");
   }
 
   SPI.beginTransaction(SPI_ETHERNET_SETTINGS);
@@ -324,18 +350,20 @@ NetworkUDP::networkStart() {
   uint32_t add = 0;
   W5100.setIPAddress((uint8_t *) &add);
   SPI.endTransaction();
-
+  
   uint32_t startMs = millis();
   // this seems to take about 3 seconds!!!  don't change
   while (W5100.getLinkStatus() != LINK_ON && (millis() - startMs) < 3000) {
     delay(10);
     watchdogReset();
   }
-
+  
   if (W5100.getLinkStatus() != LINK_ON) return 3;
-
+  
   if (Ethernet.begin(mac, WATCH_DOG_TIME - 500, 3000) == 0) return 4;
-
+  
+  printNet();
+  
   Udp.stop();
   if (!Udp.begin(localPort)) return 5;
 
@@ -346,7 +374,7 @@ NetworkUDP::networkStart() {
     delay(50);
   }
 
-  if (epoch == 0) Serial.println(F("Can't get time"));
+  if (epoch == 0) CogCore::Debug<const char *>("Can't get time\n");
   else printTime(epoch);
 
   return 0;

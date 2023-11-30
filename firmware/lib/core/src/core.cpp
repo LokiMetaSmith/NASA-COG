@@ -107,7 +107,7 @@ bool Core::Run() {
 #ifdef SW_TICK
     while (true) {
         if (_criticalError == true) {
-          Serial.println("Ending Core Run due to critical error!");
+	  CogCore::Debug<const char *>("Ending Core Run due to critical error!\n");
           delay(100);
             return false;
         }
@@ -117,8 +117,9 @@ bool Core::Run() {
         unsigned long m = millis();
         if (DEBUG_CORE > 1) {
           if (m > (time_since_last_report + TIME_TO_REPORT_SCHEDULER_MS)) {
-            Serial.print("Scheduler Still Alive, Number of Ticks:");
-            Serial.println(num_of_report++);
+	    CogCore::Debug<const char *>("Scheduler Still Alive, Number of Ticks:");
+	    CogCore::Debug<uint32_t>(num_of_report++);
+	    CogCore::Debug<const char *>("\n");
             time_since_last_report = m;
           }
         }
@@ -126,7 +127,7 @@ bool Core::Run() {
         ResetHardwareWatchdog();
         bool reset = ResetWatchdog();
         if (reset == false) {
-          Serial.println("Ending Core Run due to internal Watchdog!");
+	  CogCore::Debug<const char *>("Ending Core Run due to internal Watchdog!\n");
           delay(100);
             return false;
         }

@@ -36,7 +36,8 @@ boolean MostPlusFlow::isAirFlowing() {
   float trueVoltage = digitizedVoltage * 3.3 / 1023;
   if (DEBUG_FLOW_SENSOR > 0) {
     CogCore::Debug<const char *>("FlowSensor V: ");
-    CogCore::DebugLn<float>(trueVoltage);
+    CogCore::Debug<float>(trueVoltage);
+    CogCore::Debug<const char *>("\n");
   }
   return trueVoltage > RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE;
 }

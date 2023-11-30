@@ -41,7 +41,7 @@ void Scheduler::setupIdleTask() {
 Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
     // Record how long the previous task took to run
   if (DEBUG_SCHEDULER > 1) {
-    Serial.println("getNextTask");
+    CogCore::Debug<const char *>("getNextTask\n");
   }
 
     if (_lastTaskRan != nullptr) {
@@ -63,7 +63,8 @@ Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
         task->_timeUntilDeadline = currentTime - (lastRunTime + period);
 
         if (DEBUG_SCHEDULER > 1) {
-          Serial.println(task->_timeUntilDeadline);
+	  CogCore::Debug<uint32_t>(task->_timeUntilDeadline);
+	  CogCore::Debug<const char *>("\n");
         }
 
 
@@ -79,8 +80,9 @@ Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
   if (DEBUG_SCHEDULER > 1) {
     if (nextTask == nullptr) {
     } else {
-      Serial.println("nexTask");
-      Serial.println(nextTask->_properties.name);
+      CogCore::Debug<const char *>("nexTask\n");
+      CogCore::Debug<const char *>(nextTask->_properties.name);
+      CogCore::Debug<const char *>("\n");
       delay(50);
     }
   }
@@ -139,12 +141,13 @@ TaskState Scheduler::RunNextTask(uint32_t msNow) {
     }
 
   if (DEBUG_SCHEDULER > 1) {
-    Serial.println("About to Run task!");
-    Serial.println(nextTask->_properties.name);
+    CogCore::Debug<const char *>("About to Run task!\n");
+    CogCore::Debug<const char *>(nextTask->_properties.name);
+    CogCore::Debug<const char *>("\n");
   }
     nextTask->Run(msNow);
   if (DEBUG_SCHEDULER > 1) {
-    Serial.println("Finished Run!");
+    CogCore::Debug<const char *>("Finished Run!\n");
   }
     _lastTaskRan = nextTask;
     return nextTask->GetState();

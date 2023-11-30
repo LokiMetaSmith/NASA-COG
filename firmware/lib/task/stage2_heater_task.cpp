@@ -40,10 +40,11 @@ namespace CogApp
   void Stage2HeaterTask::printGenericInstructions() {
     // to avoid this being printed too often, we will only run it for the int1 machine.
     if (getConfig()->s2heater == Int1) {
-      Serial.print("Current Heater to command:");
-      Serial.println(MachineConfig::HeaterNames[getConfig()->hal->s2heaterToControl]);
-      Serial.println("Enter 1, 2, or 3 to switch the machine your commands change.");
-      Serial.println("Use h:700 to set target temp; use r:0.3 to set ramp rate.");
+      CogCore::Debug<const char *>("Current Heater to command: ");
+      CogCore::Debug<const char *>(MachineConfig::HeaterNames[getConfig()->hal->s2heaterToControl]);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("Enter 1, 2, or 3 to switch the machine your commands change.\n");
+      CogCore::Debug<const char *>("Use h:700 to set target temp; use r:0.3 to set ramp rate.\n");
     }
   }
 
@@ -72,7 +73,7 @@ namespace CogApp
   // Warning!! these states are essentially unused in the
   // 5-knob protocol
   MachineState Stage2HeaterTask::_updatePowerComponentsIdle() {
-    CogCore::Debug<const char *>("IN IDLE FUNCTION ");
+    CogCore::Debug<const char *>("IN IDLE FUNCTION\n ");
     MachineState new_ms = NormalOperation;
     getConfig()->idleOrOperate = Idle;
     return new_ms;
