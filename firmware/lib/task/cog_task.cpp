@@ -316,23 +316,29 @@ namespace CogApp
     c.S_p += (((c.tS_p - c.S_p) > 0) ? 1.0 : -1.0) * c.Sr_Pdm * minutes;
     c.S_p = max(0,c.S_p);
 
-    if (c.pause_substate == 0) {
-      MachineState ms = getConfig()->ms;
-      // Is this useing the correct variables?
-      float diff = getConfig()->TARGET_TEMP_C - getConfig()->SETPOINT_TEMP_C;
-      // Here I am trying to make sure we don't raise the SETPOINT_TEMP_C past our target
-      // or lower it past our target.
-      float change_c = c.Hr_Cdm * minutes;
+    MachineState ms = getConfig()->ms;
+    if (ms != NormalOperation) {
+      if (c.pause_substate == 0) {
+        // Is this useing the correct variables?
+        float diff = getConfig()->TARGET_TEMP_C - getConfig()->SETPOINT_TEMP_C;
+        // Here I am trying to make sure we don't raise the SETPOINT_TEMP_C past our target
+        // or lower it past our target.
+        float change_c = c.Hr_Cdm * minutes;
 
-      if (diff > 0.0) {
+        if (diff > 0.0) {
           getConfig()->SETPOINT_TEMP_C += change_c;
           getConfig()->SETPOINT_TEMP_C = min( getConfig()->SETPOINT_TEMP_C,
                                               getConfig()->TARGET_TEMP_C);
-      } else {
+        } else {
           getConfig()->SETPOINT_TEMP_C -= change_c;
           getConfig()->SETPOINT_TEMP_C = max( getConfig()->SETPOINT_TEMP_C,
                                               getConfig()->TARGET_TEMP_C);
+        }
+      } else {
+        CogCore::DebugLn<const char *>("PAUSED!");
       }
+    } else {
+      getConfig()->SETPOINT_TEMP_C = getConfig()->TARGET_TEMP_C;
     }
 
     c.W_w = max(c.W_w,0);

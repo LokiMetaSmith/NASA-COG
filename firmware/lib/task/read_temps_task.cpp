@@ -203,7 +203,8 @@ void ReadTempsTask::updateTemperatures() {
         Serial.print("THERMOCOUPLE FAULT PRESENT ON :");
         Serial.println(i);
         Serial.print("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
-        Serial.print((((float) getConfig()->errors[i].toleration_ms) - ((float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
+        unsigned long now = millis();
+        Serial.print((((float) getConfig()->errors[i].toleration_ms) - ((float) now - (float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
         Serial.println(" SECONDS.!");
       }
     }
