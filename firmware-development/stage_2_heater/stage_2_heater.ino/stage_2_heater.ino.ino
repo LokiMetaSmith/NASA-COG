@@ -1,4 +1,5 @@
 //test config for display, thermocouple and ethernet
+//Works with Control board V1.1
 //Author: Lawrence Kincheloe
 //
 
@@ -21,25 +22,25 @@
 
 // Example creating a thermocouple instance with software SPI on any three
 // digital IO pins.
-#define MAXDO   3
-#define EXT1_MAXCS   10
-#define EXT2_MAXCS   11
-#define INT1_MAXCS   12
-#define MAXCLK  5
+// #define MAXDO   3
+// #define EXT1_MAXCS   10
+// #define EXT2_MAXCS   11
+// #define INT1_MAXCS   12
+// #define MAXCLK  5
 
-#define EXT1_OUTPUT_PIN A1
-#define EXT2_OUTPUT_PIN A1
-#define INT1_OUTPUT_PIN A1
+#define EXT1_OUTPUT_PIN 33
+#define EXT2_OUTPUT_PIN 34
+#define INT1_OUTPUT_PIN 35
 
-#define LCD_CLOCK 22 // Clock (Common), sometimes called SCK or SCL
-#define LCD_MOSI 23  // MOSI (common), sometimes called SDA or DATA
-#define LCD_RESET 33 // LCD reset, sometimes called RST or RSTB
-#define LCD_CS 5     // LCD CS, sometimes called EN or SS
-#define LCD_RS 1     // LCD RS, sometimes called A0 or DC
+#define LCD_CLOCK 13 // Clock (Common), sometimes called SCK or SCL
+#define LCD_MOSI 11  // MOSI (common), sometimes called SDA or DATA
+#define LCD_RESET 46 // LCD reset, sometimes called RST or RSTB
+#define LCD_CS  48    // LCD CS, sometimes called EN or SS
+#define LCD_RS 47     // LCD RS, sometimes called A0 or DC, not used
 
-#define  LED_PIN_RED  10
-#define  LED_PIN_GREEN 11
-#define  LED_PIN_BLUE 12
+#define  LED_PIN_RED  43
+#define  LED_PIN_GREEN 44
+#define  LED_PIN_BLUE 45
 
 #define TEMP_READ_DELAY 800 //can only read digital temp sensor every ~750ms
 
@@ -53,9 +54,9 @@
 // SimpleRotary Library
 // https://github.com/mprograms/SimpleRotary
 // Pin A, Pin B, Button Pin
-#define ENA_PIN 2
-#define ENB_PIN 3
-#define ENC_PIN 4
+#define ENA_PIN 40
+#define ENB_PIN 41
+#define ENC_PIN 42
 SimpleRotary rotary(ENA_PIN, ENB_PIN, ENC_PIN);
 
 
@@ -66,10 +67,10 @@ U8G2_ST7567_JLX12864_1_4W_SW_SPI u8g2(U8G2_R2,
                                       LCD_RS,
                                       LCD_RESET);
 
-// Initialize the Thermocouple
-Adafruit_MAX31855 ext1_thermocouple(MAXCLK, EXT1_MAXCS, MAXDO);
-Adafruit_MAX31855 ext2_thermocouple(MAXCLK, EXT2_MAXCS, MAXDO);
-Adafruit_MAX31855 int1_thermocouple(MAXCLK, INT1_MAXCS, MAXDO);
+// // Initialize the Thermocouple
+// Adafruit_MAX31855 ext1_thermocouple(MAXCLK, EXT1_MAXCS, MAXDO);
+// Adafruit_MAX31855 ext2_thermocouple(MAXCLK, EXT2_MAXCS, MAXDO);
+// Adafruit_MAX31855 int1_thermocouple(MAXCLK, INT1_MAXCS, MAXDO);
 
 MUIU8G2 mui;
 
@@ -111,9 +112,9 @@ unsigned long lastTempUpdate; //tracks clock time of last temp update
 //returns true if update happened
 bool updateTemperature() {
   if ((millis() - lastTempUpdate) > TEMP_READ_DELAY) {
-    ext1_temperature = ext1_thermocouple.readCelsius(); //get temp reading
-    ext2_temperature = ext2_thermocouple.readCelsius(); //get temp reading
-    int1_temperature = int1_thermocouple.readCelsius(); //get temp reading
+    // ext1_temperature = ext1_thermocouple.readCelsius(); //get temp reading
+    // ext2_temperature = ext2_thermocouple.readCelsius(); //get temp reading
+    // int1_temperature = int1_thermocouple.readCelsius(); //get temp reading
   if (isnan(ext1_temperature))
   {
      u8g2.print("ext1 T/C Problem");
@@ -492,25 +493,28 @@ void setup() {
   pinMode(LED_PIN_RED, OUTPUT);
   pinMode(LED_PIN_GREEN, OUTPUT);
   pinMode(LED_PIN_BLUE, OUTPUT);
-
+ //define SSR initial output
+  digitalWrite(LED_PIN_RED, HIGH);
+  digitalWrite(LED_PIN_GREEN, HIGH);
+  digitalWrite(LED_PIN_BLUE, HIGH);
   
   u8g2.begin();
   mui.begin(u8g2, fds_data, muif_list, sizeof(muif_list)/sizeof(muif_t));
   mui.gotoForm(/* form_id= */ 1, /* initial_cursor_position= */ 0);
  delay(500);
  
-  if (!ext1_thermocouple.begin()) {
-    u8g2.print("ext1 ERROR.");
-    while (1) delay(10);
-  }
-  if (!ext2_thermocouple.begin()) {
-    u8g2.print("ext2 ERROR.");
-    while (1) delay(10);
-  }
-  if (!int1_thermocouple.begin()) {
-    u8g2.print("int1 ERROR.");
-    while (1) delay(10);
-  }
+  // if (!ext1_thermocouple.begin()) {
+  //   u8g2.print("ext1 ERROR.");
+  //   while (1) delay(10);
+  // }
+  // if (!ext2_thermocouple.begin()) {
+  //   u8g2.print("ext2 ERROR.");
+  //   while (1) delay(10);
+  // }
+  // if (!int1_thermocouple.begin()) {
+  //   u8g2.print("int1 ERROR.");
+  //   while (1) delay(10);
+  // }
   u8g2.print("DONE.");
 
 
@@ -522,40 +526,40 @@ void setup() {
 
   Serial.println(F("starting"));
 
-   // start the Ethernet
-  if(!Ethernet.begin(mac))
-  {
-      u8g2.print("ext1 ERROR.");
-    while (1) delay(10);
-  }
+  //  // start the Ethernet
+  // if(!Ethernet.begin(mac))
+  // {
+  //     u8g2.print("ext1 ERROR.");
+  //   while (1) delay(10);
+  // }
 
-  // Check for Ethernet hardware present
-  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-    Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
-    while (true) {
-      delay(1); // do nothing, no point running without Ethernet hardware
-    }
-  }
-  if (Ethernet.linkStatus() == LinkOFF) {
-    Serial.println("Ethernet cable is not connected.");
-  }
-  Udp.begin(localPort);
+  // // Check for Ethernet hardware present
+  // if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+  //   Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
+  //   while (true) {
+  //     delay(1); // do nothing, no point running without Ethernet hardware
+  //   }
+  // }
+  // if (Ethernet.linkStatus() == LinkOFF) {
+  //   Serial.println("Ethernet cable is not connected.");
+  // }
+  // Udp.begin(localPort);
 
-  sprintf(macString, "%X:%X:%X:%X:%X:%X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  // sprintf(macString, "%X:%X:%X:%X:%X:%X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
-  printNet();
-  delay(1000);
+  // printNet();
+  // delay(1000);
 
-  for (int i = 10; epoch == 0 && i > 0; i--) {
-    epoch = getTime();
-    delay(500);
-  }
-  if (epoch == 0) Serial.println(F("Can't get time!"));
-  else printTime(epoch);
+  // for (int i = 10; epoch == 0 && i > 0; i--) {
+  //   epoch = getTime();
+  //   delay(500);
+  // }
+  // if (epoch == 0) Serial.println(F("Can't get time!"));
+  // else printTime(epoch);
   
 
-  // start UDP
-  Udp.begin(localPort);
+  // // start UDP
+  // Udp.begin(localPort);
 }
 
 uint8_t is_redraw = 1;
@@ -602,7 +606,7 @@ void handle_events(void) {
 void loop() {
   // put your main code here, to run repeatedly:
 
-  updateTemperature();
+  //updateTemperature();
  // setPoint = analogRead(POT_PIN);
   ext1_PID.run(); //call every loop, updates automatically at certain time interval
   ext2_PID.run();
@@ -624,11 +628,11 @@ void loop() {
   }
 
 
-    // send a reply to the IP address and port that sent us the packet we received
-    //  Serial.println("calling getConfig()!");
-  getConfig();
-  sendData(NULL);
-  //delay(20000);
+  //   // send a reply to the IP address and port that sent us the packet we received
+  //   //  Serial.println("calling getConfig()!");
+  // getConfig();
+  // sendData(NULL);
+  // //delay(20000);
   
   
   
