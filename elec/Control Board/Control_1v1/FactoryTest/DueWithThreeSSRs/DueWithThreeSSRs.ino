@@ -1,14 +1,15 @@
 /* Program: DueWithThreeSSRs
- Tests the three SSR drive circuits on the Control V1.1 assembly
+  Tests the three SSR drive circuits on the Control V1.1 assembly
 
- Setup:
- Connect an LED with series resistor at J13, J30 and J31. 
- Pin 1 is positive and Pin 2 is ground. 
- Series resistor should limit current from +24V for LED.
+  Setup:
+  Connect an LED with series resistor at J13, J30 and J31.
+  Pin 1 is positive and Pin 2 is ground.
+  Series resistor should limit current from +24V for LED.
   SSR1 and SSR2 flash independently.
   Press switch S2, "SHUT DOWN" to turn on the SSR3 LED.
 */
 
+#include <RotaryEncoder.h>
 
 #define BAUD_RATE 115200
 
@@ -59,29 +60,89 @@ class Flasher
     }
 };
 
+//Control V1.1 signal pin names
+#define SSR1 51
+#define SSR2 52
+#define SSR3 53
+#define SHUT_DOWN 49
+#define LED_RED 43
+#define LED_BLUE 44
+#define LED_GREEN 45
+#define BEEPER 50   //A buzzer.
+
+//Control V1.1 hardware
+//Rotary Encoder on RepRap
+#define PIN_IN1 40
+#define PIN_IN2 41
+#define ENC_SW 42   //A switch
+
+// Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
+RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
+
+
 Flasher led0(13, 100, 400);      //Pins for Control V1.1
-Flasher led1(51, 100, 400);      //Pins for Control V1.1
-Flasher led2(52, 350, 350);
-//Flasher led3(53, 150, 350);
+Flasher led1(SSR1, 100, 400);    //Pins for Control V1.1
+Flasher led2(SSR2, 350, 350);
+//Flasher led3(SSR3, 150, 350);
+
+void updateSHUTDOWN(){
+    if (digitalRead(49) == LOW) {
+    Serial.println("Shutdown button pressed");
+    digitalWrite(SSR3, LOW);
+    digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
+  } else {
+//    Serial.println("Button Open");
+    digitalWrite(SSR3, HIGH);   
+  }
+}//end update shutdown button
+
+//Check for encoder button pressed and return true
+bool updateENC_BUT(){
+    if (digitalRead(ENC_SW) == LOW) {
+    Serial.println("Button");
+    digitalWrite(SSR3, LOW);
+    digitalWrite(BEEPER, !digitalRead(BEEPER));
+    return true; //Reset the position
+  } else {
+//    Serial.println("Button Open");
+    digitalWrite(SSR3, HIGH);
+    return false;
+  }
+}//end update shutdown button
 
 void setup() {
   Serial.begin(BAUD_RATE);
+  Serial.println();
   Serial.println("DueWithThreeSSRs");
-  pinMode(49, INPUT_PULLUP);
-  pinMode(53, OUTPUT);
+  pinMode(SHUT_DOWN, INPUT_PULLUP);
+  pinMode(ENC_SW, INPUT_PULLUP);
+  pinMode(SSR3, OUTPUT);
+  pinMode(BEEPER, OUTPUT);
 }
 
 void loop() {
+  static int pos = 0;
+  encoder.tick();
 
+  int newPos = encoder.getPosition();
+  if (pos != newPos) {
+    Serial.print("pos:");
+    Serial.print(newPos);
+    Serial.print(" dir:");
+    Serial.println((int)(encoder.getDirection()));
+    pos = newPos;
+  } // if
+  
   led0.Update();
   led1.Update();
   led2.Update();
-  if (digitalRead(49) == LOW){
-    Serial.println("Button pressed");
-    digitalWrite(53, LOW);
-  }else{
-    Serial.println("Button Open");
-    digitalWrite(53, HIGH);
+  //led3.Update();  //Does not work on Due hardware.
+
+  updateSHUTDOWN(); //Check for press of switch
+ 
+  if (updateENC_BUT()){ //Check encoder, zero if button pressed
+    pos =0;
+    encoder.setPosition(0);
+//    Serial.println("Reset position.");
   }
-  //led3.Update();
 }
