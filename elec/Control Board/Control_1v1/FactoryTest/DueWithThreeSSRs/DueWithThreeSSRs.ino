@@ -85,6 +85,9 @@ class Flasher
 #define LED_BLUE 44
 #define LED_GREEN 45
 #define BEEPER 50   //A buzzer.
+#define nFAN1_PWM 9 // The pin D9 for driving the Blower.
+#define BLOWER_ENABLE 22 // The pin D22 for Enable 24V to the Blower.
+
 
 
 //Rotary Encoder on BigTreeTech MINI 12864
@@ -139,6 +142,9 @@ void setup() {
   pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
   pinMode(BEEPER, OUTPUT);
+  pinMode(BLOWER_ENABLE,OUTPUT);
+  digitalWrite(BLOWER_ENABLE,HIGH); //Set high to enable blower power. 
+  analogWrite(nFAN1_PWM, 200);  // Set for low RPM
 
   u8g2.begin();
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
