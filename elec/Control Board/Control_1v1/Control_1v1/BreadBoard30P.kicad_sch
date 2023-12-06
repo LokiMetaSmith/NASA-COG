@@ -5,8 +5,8 @@
   (paper "USLetter")
 
   (title_block
-    (title "Control Interconnect Board OEDCS")
-    (date "2023-10-10")
+    (title "Control Interconnect Board OEDCS With Reworks")
+    (date "2023-12-06")
     (rev "Rev 1.1")
     (company "Public Invention")
     (comment 1 "GNU Affero General Public License v3.0")
