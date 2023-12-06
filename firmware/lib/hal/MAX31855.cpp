@@ -61,8 +61,8 @@ namespace Temperature {
     //   }
     // else
     //   {
-    //     Serial.print(F("Error: Could not read temperature data: "));
-    //     Serial.println(idx);
+    //     OxCore::Debug<const char *>("Error: Could not read temperature data: \n");
+    //     OxCore::Debug<uint_32_t>ln(idx);
     //   }
     return tempC;
 

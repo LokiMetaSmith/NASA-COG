@@ -47,9 +47,12 @@ namespace CogApp
 // that can be tuned (before the algorithm is running).
    class PreSetParameters  {
    public:
-     const float L_w = 180.0; // max stack wattage
+     const float L_w = 200.0;  // max stack wattage
      const float M_w = 200.0; // stack wattage at 0 wafer difference
      const float Q_c = 30.0;  // maximum wafer difference
+     const float A_a = 30.0;  // max stack amperage
+     const float E_c = 25.0;  // Preferred Temperature limit
+     const float F_c = 40.0;  // Drop-dead abort temperature limit
    };
   class OneButtonControl {
   public:
@@ -86,7 +89,8 @@ namespace CogApp
     int pause_substate = 0;
     unsigned long current_pause_began = 0;
 
-    const float DT_PAUSE_LIMIT_K = 20.0;
+    const float DT_PAUSE_LIMIT_K = 30.0;
+    const float DT_MAX_LIMIT_K = 50.0;
     const float PAUSE_TIME_S = 5*60;
     // These are our ohms in the cable and the leads.
     // I'm not entirely sure what this should be.
@@ -122,7 +126,7 @@ namespace CogApp
     float computeTotalWattage(float controlTemp);
     float computeTargetStackWattage(float targetTotalWattage, float heaterWatts, float currentTemp, float B, float C, float targetStackWatts);
     float computeFanSpeedTargetFromSchedule(float temp);
-    float computeFanSpeedTarget(float currentTargetTemp,float temp, float heaterWatts);
+    float computeFanSpeedTarget(float currentTargetTemp,float temp, float heaterWatts, float A, float B, float C);
     bool heaterWattsAtFullPowerPred(float watts);
     void oneButtonAlgorithm(float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p);
     void runOneButtonAlgorithm();

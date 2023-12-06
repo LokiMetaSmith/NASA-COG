@@ -146,8 +146,11 @@ public:
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
 // V = 115, W = 918.402
   static constexpr float HEATER_MAXIMUM_WATTAGE = 918;
+  // TODO: This is a bit of a fudge factor...I'm not sure why it is needed
+  // This needs to be figured out.
+  static constexpr float HEATER_MAX_WATTAGE_FOR_DC_CALC = 0.95*HEATER_MAXIMUM_WATTAGE;
   const float HEATER_MAXIMUM_WATTAGE_SLOP = 50;
-  const float HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITON = HEATER_MAXIMUM_WATTAGE - HEATER_MAXIMUM_WATTAGE_SLOP;
+  const float HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITION = HEATER_MAXIMUM_WATTAGE - HEATER_MAXIMUM_WATTAGE_SLOP;
 
   // The beginning temperature of the current warming
   // or cooling cycle.
@@ -289,14 +292,18 @@ void _reportFanSpeed();
   const float DECREASE_STACK_WATTAGE_INCREMENT_W = 1.0;
 
   const float FAN_SPEED_MAX_p = 80;
-  const float FAN_SPEED_MIN_p = 40;
-  const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 600.0;
+  const float FAN_SPEED_MIN_p = 50;
+  const float FAN_SPEED_PREFERRED_p = 50;
+  const float LOW_TEMP_TRIGGER = 20;
+  const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 700.0;
   const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
   const float FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c = 20.0;
 
   float CURRENT_TOTAL_WATTAGE_W;
   float CURRENT_HEATER_WATTAGE_W;
   float CURRENT_STACK_WATTAGE_W;
+
+  const float TEST_MINIMUM_STACK_AMPS = 0.1;
 
 
   static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;

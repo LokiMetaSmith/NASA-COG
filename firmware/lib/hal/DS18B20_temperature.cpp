@@ -23,6 +23,7 @@
 
 #include <core.h>
 #include <machine.h>
+#include <debug.h>
 
 namespace Temperature {
   DS18B20Temperature::DS18B20Temperature() {
@@ -55,8 +56,9 @@ namespace Temperature {
       }
     else
       {
-        Serial.print(F("Error: Could not read temperature data: "));
-        Serial.println(idx);
+	CogCore::Debug<const char *>("Error: Could not read temperature data: ");
+	CogCore::Debug<uint32_t>(idx);
+	CogCore::Debug<const char *>("\n");
       }
     return tempC;
 

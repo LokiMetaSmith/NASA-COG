@@ -33,17 +33,23 @@ SensirionFlow::SensirionFlow() {
 
 
   // print various sensor values
-  Serial.println();
-  Serial.print("flow sensor serial number: ");
-  Serial.println(flowSensor->serialNumber, HEX);
-  Serial.print("flow sensor article number: ");
-  Serial.println(flowSensor->articleNumber, HEX);
-  Serial.println();
-  Serial.print("read scale factor: ");
-  Serial.println(flowSensor->flowScale);
-  Serial.print("read flow offset: ");
-  Serial.println(flowSensor->flowOffset);
-
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("flow sensor serial number: ");
+  char t[20];
+  snprintf(t, sizeof t, "%0X", flowSensor->serialNumber);
+  CogCore::Debug<const char *>(t);
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("flow sensor article number: ");
+  snprintf(t, sizeof t, "%0X", flowSensor->articleNumber);
+  CogCore::Debug<const char *>(t);
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("read scale factor: ");
+  CogCore::Debug<uint32_t>(flowSensor->flowScale);
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("read flow offset: ");
+  CogCore::Debug<uint32_t>(flowSensor->flowOffset);
+  CogCore::Debug<const char *>("\n");
 }
 
 float SensirionFlow::flowInSLM() {
@@ -52,16 +58,18 @@ float SensirionFlow::flowInSLM() {
 
   if(flowSensor->checkRange(flow))
   {
-    Serial.print("flow exceeded sensor limits:  ");
-    Serial.print(flow);
-    Serial.println(" slm");
+    CogCore::Debug<const char *>("flow exceeded sensor limits:  ");
+    CogCore::Debug<uint32_t>(flow);
+    CogCore::Debug<const char *>(" slm");
+    CogCore::Debug<const char *>("\n");
   }
   else
   {
     if (DEBUG_FLOW_SENSOR > 1) {
-      Serial.print("flow : ");
-      Serial.print(flow);
-      Serial.println(" slm");
+      CogCore::Debug<const char *>("flow : ");
+      CogCore::Debug<uint32_t>(flow);
+      CogCore::Debug<const char *>(" slm");
+      CogCore::Debug<const char *>("\n");
     }
   }
   return flow;

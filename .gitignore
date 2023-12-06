@@ -60,8 +60,14 @@ flycheck_*.el
 
 # For FreeCAD projects
 
-# Back up file(s)
-*.FCStd*
+# Back up file(s) for FreeCAD
+*.pyc
+*.fcstd1
+*.FCStd1
+*.fcstd2
+*.FCStd2
+*.FCBak
+Private
 
 
 # For PCBs designed using KiCad: https://www.kicad.org/

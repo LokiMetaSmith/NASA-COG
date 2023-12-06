@@ -22,13 +22,15 @@
 //   if (DEBUG_LEVEL > 0) {
 //     CogCore::Debug<const char *>(name);
 //     CogCore::Debug<const char *>(" Voltage: ");
-//     CogCore::DebugLn<float>(voltage);
+//     CogCore::Debug<float>(voltage);
+//     CogCore::Debug<const char *>("\n");
 //   }
 // #else
 //   CogCore::Debug<const char *>("STACK update: (NOT IMPLEMENTED)");
 //   CogCore::Debug<const char *>("   ");
 //   CogCore::Debug<const char *>(name);
 //   CogCore::Debug<const char *>(" pwm_ratio: ");
-//   CogCore::DebugLn<float>(_pwm_ratio);
+//   CogCore::Debug<float>(_pwm_ratio);
+//   CogCore::Debug<const char *>("\n");
 // #endif
 // }

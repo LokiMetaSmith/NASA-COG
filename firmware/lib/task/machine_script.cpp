@@ -168,7 +168,7 @@ bool MachineScript::AppendPhase(MachinePhase p) {
     //    phase[[numPhases++] = p;
     return true;
   } else {
-    DebugLn<const char *>("MAXIMUM_NUM_PHASES Exceeded!");
+    Debug<const char *>("MAXIMUM_NUM_PHASES Exceeded!\n");
     return false;
   }
 }
@@ -180,14 +180,15 @@ MachineScript *MachineScript::parse_buffer_into_new_script(char *packetBuffer,in
   ms->DEBUG_MS = debug;
 
   if (!packetBuffer || strlen(packetBuffer) == 0) {
-    DebugLn<const char *>("No script");
+    Debug<const char *>("No script\n");
     return NULL;
   }
   
   if (DEBUG_MS > 1) {
-    DebugLn<const char *>("BUFFER BEGIN");
-    DebugLn<const char *>(packetBuffer);
-    DebugLn<const char *>("BUFFER END");
+    Debug<const char *>("BUFFER BEGIN\n");
+    Debug<const char *>(packetBuffer);
+    Debug<const char *>("\n");
+    Debug<const char *>("BUFFER END\n");
   }
 
   static char *gName = NULL;
@@ -239,34 +240,60 @@ MachineScript *MachineScript::parse_buffer_into_new_script(char *packetBuffer,in
 
   if (DEBUG_MS > 1) {
     Debug<const char *>("Name is ");
-    DebugLn<const char *>(gName);
+    Debug<const char *>(gName);
+    Debug<const char *>("\n");
     Debug<const char *>("Timestamp is ");
-    DebugLn<const char *>(gTimestamp);
+    Debug<const char *>(gTimestamp);
+    Debug<const char *>("\n");
     Debug<const char *>("Dryrun is ");
-    DebugLn<const char *>( gDryRun ? "True" : "False");
+    Debug<const char *>( gDryRun ? "True" : "False");
+    Debug<const char *>("\n");
     Debug<const char *>("Nonce is ");
-    DebugLn<int>(gNonce);
+    Debug<int>(gNonce);
+    Debug<const char *>("\n");
     Debug<const char *>("Max RampUP is ");
-    DebugLn<int>(gMaxRampUp);
+    Debug<int>(gMaxRampUp);
+    Debug<const char *>("\n");
     Debug<const char *>("Max RampDOWN is ");
-    DebugLn<int>(gMaxRampDown);
+    Debug<int>(gMaxRampDown);
+    Debug<const char *>("\n");
     Debug<const char *>("\n----\n");
     Debug<const char *>("Warmup Script:\n");
-    if (gWarmUp) DebugLn<const char *>(gWarmUp);
-    else DebugLn<const char *>("None");
+    if (gWarmUp) {
+      Debug<const char *>(gWarmUp);
+    Debug<const char *>("\n");
+    } else {
+      Debug<const char *>("None");
+      Debug<const char *>("\n");
+    }
     Debug<const char *>("\n----\n");
     Debug<const char *>("Cooldown Script:\n");
-    if (gCooldown) DebugLn<const char *>(gCooldown);
-    else DebugLn<const char *>("None");
+    if (gCooldown) {
+      Debug<const char *>(gCooldown);
+      Debug<const char *>("\n");
+    } else {
+      Debug<const char *>("None");
+      Debug<const char *>("\n");
+    }
     Debug<const char *>("\n----\n");
     Debug<const char *>("Emergency Script:\n");
-    if (gEmShutdown) DebugLn<const char *>(gEmShutdown);
-    else DebugLn<const char *>("None");
+    if (gEmShutdown) {
+      Debug<const char *>(gEmShutdown);
+      Debug<const char *>("\n");
+    } else {
+      Debug<const char *>("None");
+      Debug<const char *>("\n");
+    }
     Debug<const char *>("\n----\n");
     Debug<const char *>("Operation Script:\n");
-    if (gOperation) DebugLn<const char *>(gOperation);
-    else DebugLn<const char *>("None");
-    DebugLn<const char *>("\n----\n");
+    if (gOperation) {
+      Debug<const char *>(gOperation);
+      Debug<const char *>("\n");
+    } else {
+      Debug<const char *>("None");
+      Debug<const char *>("\n");
+    }
+    Debug<const char *>("\n----\n");
   }
 
   if (DEBUG_MS > 0) {
@@ -299,7 +326,7 @@ parse_phases_from_state_script(MachineState m_state, char *script, MachineScript
   if (!script || strlen(script) == 0) return;
   phasecnt = parse_state_phases(script, &p);
   if (!phasecnt) {
-    DebugLn<const char *>("No Phases");
+    Debug<const char *>("No Phases\n");
     return;
   }
 
@@ -308,14 +335,19 @@ parse_phases_from_state_script(MachineState m_state, char *script, MachineScript
   DebugLn<const char *>(" phases:");
   for (int x = 0; x <= phasecnt; x++) {
     Debug<const char *>("Phase: ");
-    DebugLn<int>(x);
+    Debug<int>(x);
+    Debug<const char *>("\n");
     Debug<const char *>("  Duration ");
-    DebugLn<int>(p[x].duration);
+    Debug<int>(p[x].duration);
+    Debug<const char *>("\n");
     Debug<const char *>("  preheat temp ");
-    DebugLn<int>(p[x].preheat_temp);
+    Debug<int>(p[x].preheat_temp);
+    Debug<const char *>("\n");
     Debug<const char *>("  stack temp ");
-    DebugLn<int>(p[x].stack_temp);
+    Debug<int>(p[x].stack_temp);
+    Debug<const char *>("\n");
     Debug<const char *>("  stack ramp ");
-    DebugLn<int>(p[x].stack_ramp);
+    Debug<int>(p[x].stack_ramp);
+    Debug<const char *>("\n");
   }
 }

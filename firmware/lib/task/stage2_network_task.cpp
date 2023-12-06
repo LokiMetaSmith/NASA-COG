@@ -41,7 +41,7 @@ namespace CogApp
 {
   bool Stage2NetworkTask::_run()  {
     if (DEBUG_UDP > 1) {
-      DebugLn<const char *>("Stage2NetworkTask was run\n");
+      Debug<const char *>("Stage2NetworkTask was run\n");
     }
     NetworkTask::_run();
 
@@ -50,7 +50,7 @@ namespace CogApp
     // This needs to change to send all three buffers
 
     if (DEBUG_UDP > 1) {
-      DebugLn<const char *>("Stage2NetworkTask completed\n");
+      Debug<const char *>("Stage2NetworkTask completed\n");
     }
 
     for (int i = 0; i < 3; i++) {
@@ -58,7 +58,8 @@ namespace CogApp
       mcs[i]->createStage2JSONReport(mcs[i]->s2heater,mcs[i]->report,buffer);
       if (DEBUG_UDP > 0) {
         Debug<const char *>("Sending buffer:");
-        DebugLn<const char *>(buffer);
+        Debug<const char *>(buffer);
+        Debug<const char *>("\n");
       }
       unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
       // have to add a timeout here!

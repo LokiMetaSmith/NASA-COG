@@ -68,7 +68,8 @@ void ErrorHandler::Log(ErrorLevel level, ErrorCode type) {
 #ifdef ARDUINO
             CogCore::Debug<const char *>(ErrorLevelText[static_cast<int>(level)]);
             CogCore::Debug<const char *>(": ");
-            CogCore::DebugLn<const char *>(ErrorMessage[static_cast<int>(type)]);
+            CogCore::Debug<const char *>(ErrorMessage[static_cast<int>(type)]);
+            CogCore::Debug<const char *>("\n");
 #else
             std::cout << ErrorMessage[static_cast<int>(type)] << std::endl;
 #endif

@@ -32,34 +32,42 @@ WattagePIDObject::WattagePIDObject() {
 }
 
 void WattagePIDObject::printTunings() {
-    Serial.print("Tunings for Tottal Wattage PID Task: ");
-    Serial.print(" ");
-    Serial.print(FKp,5);
-    Serial.print(", ");
-    Serial.print(FKi,5);
-    Serial.print(", ");
-    Serial.print(FKd,5);
-    Serial.println();
-    Serial.print("Tunings (Inverted, 1/x): ");
-    Serial.print(" ");
+    CogCore::Debug<const char *>("WattagePIDObject run\n");
+    CogCore::Debug<const char *>("Tunings for Tottal Wattage PID Task: ");
+    CogCore::Debug<const char *>(" ");
+    char t[10];
+    sprintf(t, "%0.5f", FKp);
+    CogCore::Debug<const char *>(t);
+    sprintf(t, "%0.5f", FKi);
+    CogCore::Debug<const char *>(", ");
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>(", ");
+    sprintf(t, "%0.5f", FKd);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>("\n");
+    CogCore::Debug<const char *>("Tunings (Inverted, 1/x): ");
+    CogCore::Debug<const char *>(" ");
     if (FKp == 0.0) {
-      Serial.print("nan");
+      CogCore::Debug<const char *>("nan");
     } else {
-      Serial.print(1.0/FKp,2);
+      sprintf(t, "%0.2f", (1.0/FKp));
+      CogCore::Debug<const char *>(t);
     }
-    Serial.print(", ");
+    CogCore::Debug<const char *>(", ");
     if (FKi == 0.0) {
-      Serial.print("nan");
+      CogCore::Debug<const char *>("nan");
     } else {
-      Serial.print(1.0/FKi,2);
+      sprintf(t, "%0.5f", (1.0/FKi));
+      CogCore::Debug<const char *>(t);
     }
-    Serial.print(", ");
+    CogCore::Debug<const char *>(", ");
     if (FKd == 0.0) {
-      Serial.print("nan");
+      CogCore::Debug<const char *>("nan");
     } else {
-      Serial.print(1.0/FKd,2);
+      sprintf(t, "%0.5f", (1.0/FKd));
+      CogCore::Debug<const char *>(t);
     }
-    Serial.println();
+    CogCore::Debug<const char *>("\n");
 }
 
 void WattagePIDObject::SetTunings(double p, double i, double d) {
@@ -86,9 +94,11 @@ float WattagePIDObject::compute(float controlTemp)
 {
   if (DEBUG_PID > 1) {
     CogCore::Debug<const char *>("WattagePIDObject run\n");
-    CogCore::DebugLn<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-    CogCore::DebugLn<float>(this->temperatureSetPoint_C);
-    CogCore::DebugLn<float>(this->input_temperature_C);
+    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n\n");
+    CogCore::Debug<float>(this->temperatureSetPoint_C);
+    CogCore::Debug<const char *>("\n");
+    CogCore::Debug<float>(this->input_temperature_C);
+    CogCore::Debug<const char *>("\n");
   }
 
   double previousInput = this->input_temperature_C;
@@ -104,11 +114,18 @@ float WattagePIDObject::compute(float controlTemp)
 
   if (DEBUG_PID > 1) {
     CogCore::Debug<const char *>("Setpoint");
-    Serial.println(this->temperatureSetPoint_C,2);
+    char t[10];
+    sprintf(t, "%0.2f", this->temperatureSetPoint_C);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>("\n");
     CogCore::Debug<const char *>("previous input ");
-    Serial.println(previousInput,5);
+    sprintf(t, "%0.2f", previousInput);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>("\n");
     CogCore::Debug<const char *>("Final Total Wattage ");
-    Serial.println(this->final_totalWattage_W,5);
+    sprintf(t, "%0.5f", this->final_totalWattage_W);
+    CogCore::Debug<const char *>(t);
+    CogCore::Debug<const char *>("\n");
   }
 
   return  this->final_totalWattage_W;

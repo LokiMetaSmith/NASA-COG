@@ -63,6 +63,7 @@ bool TempRefreshTask::_run()
   // if (DEBUG_TEMP_REFRESH > 0) {
   //   CogCore::Debug<const char *>("TempRefreshTask run\n");
   //   CogCore::Debug<int>(getConfig()->s2heater);
+  //   CogCore::Debug<const char *>("\n");
   // }
   // float t;
   // if (!getConfig()->IS_STAGE2_HEATER_CONFIG) {

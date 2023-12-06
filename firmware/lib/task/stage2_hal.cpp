@@ -18,6 +18,7 @@
 */
 
 #include <stage2_hal.h>
+#include <debug.h>
 
 bool Stage2HAL::init() {
   pinMode(MAX31850_DATA_PIN, INPUT);
@@ -26,8 +27,9 @@ bool Stage2HAL::init() {
   // as well. There should be a way to move this into the
   // superclass, but I can't figure out how to do it.
   if (DEBUG_HAL > 0) {
-      Serial.println("About to initialize heaters");
-      Serial.println(NUM_HEATERS);
+    CogCore::Debug<const char *>("About to initialize heaters\n");
+    CogCore::Debug<uint32_t>(NUM_HEATERS);
+    CogCore::Debug<const char *>("\n");
       delay(100);
   }
   _ac_heaters = new OnePinHeater*[NUM_HEATERS];
@@ -38,7 +40,7 @@ bool Stage2HAL::init() {
   }
 
   if (DEBUG_HAL > 0) {
-      Serial.println("HAL:About to return!");
+    CogCore::Debug<const char *>("HAL:About to return!\n");
       delay(100);
   }
   return true;
@@ -58,7 +60,7 @@ float Stage2HAL::getTemperatureReading(Stage2Heater s2heaterToControl,MachineCon
     //   t = mc->report->post_stack_C;
     //   break;
     // default:
-    //   Serial.println("s2heater_task HeaterControl not set!");
+    //   CogCore::Debug<const char *>("s2heater_task HeaterControl not set!\n");
     //   break;
     // }
     return t;

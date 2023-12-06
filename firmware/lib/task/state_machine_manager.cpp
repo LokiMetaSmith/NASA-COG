@@ -34,7 +34,8 @@ namespace CogApp
 
     if (DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("ms : ");
-      CogCore::DebugLn<int>(ms);
+      CogCore::Debug<int>(ms);
+      CogCore::Debug<const char *>("\n");
     }
     printOffWarnings(ms);
 
@@ -42,14 +43,14 @@ namespace CogApp
 
     MachineState new_state = _executeBasedOnState(ms);
     if (DEBUG_LEVEL > 0) {
-      CogCore::DebugLn<const char *>("finished execute");
+      CogCore::Debug<const char *>("finished execute\n");
     }
     // if the state really changes, we want to log that and take some action!
     if (new_state != ms) {
       getConfig()->ms = new_state;
       CogCore::Debug<const char *>("CHANGING STATE TO: ");
-      CogCore::DebugLn<const char *>(getConfig()->MachineStateNames[getConfig()->ms]);
-      CogCore::DebugLn<const char *>("");
+      CogCore::Debug<const char *>(getConfig()->MachineStateNames[getConfig()->ms]);
+      CogCore::Debug<const char *>("\n");
     }
     return true;
   }
@@ -57,8 +58,8 @@ namespace CogApp
   void StateMachineManager::printOffWarnings(MachineState ms) {
     // If we are in the off state there is nothing to do!
     if (ms == OffUserAck) {
-      CogCore::DebugLn<const char *>("AN ERROR OCCURED. WILL NOT ENTER OFF STATE ");
-      CogCore::DebugLn<const char *>("UNTIL ACKNOWLEDGED. ENTER A SINGLE 'a' TO ACKNOWLEDGE:");
+      CogCore::Debug<const char *>("AN ERROR OCCURED. WILL NOT ENTER OFF STATE\n");
+      CogCore::Debug<const char *>("UNTIL ACKNOWLEDGED. ENTER A SINGLE 'a' TO ACKNOWLEDGE:\n");
     }
   }
 
@@ -87,7 +88,8 @@ namespace CogApp
       CogCore::Debug<const char *>("\nMachine State: ");
       CogCore::Debug<const char *>(getConfig()->MachineStateNames[ms]);
       CogCore::Debug<const char *>(" : ");
-      CogCore::DebugLn<const char *>(getConfig()->MachineSubStateNames[getConfig()->idleOrOperate]);
+      CogCore::Debug<const char *>(getConfig()->MachineSubStateNames[getConfig()->idleOrOperate]);
+      CogCore::Debug<const char *>("\n");
     }
 
     new_ms = checkCriticalFaults(ms);
@@ -216,11 +218,13 @@ namespace CogApp
                                            getConfig()->BEGIN_UP_TIME_MS);
       if (DEBUG_LEVEL > 0) {
         CogCore::Debug<const char *>("Warmup tt for :");
-        Serial.println(getConfig()->s2heater);
-        CogCore::DebugLn<float>(tt);
+	CogCore::Debug<uint32_t>(getConfig()->s2heater);
+        CogCore::Debug<float>(tt);
         CogCore::Debug<const char *>("Global Recent temp\n");
-        CogCore::DebugLn<float>(getConfig()->GLOBAL_RECENT_TEMP);
-        CogCore::DebugLn<float>(getConfig()->BEGIN_UP_TIME_MS);
+        CogCore::Debug<float>(getConfig()->GLOBAL_RECENT_TEMP);
+	CogCore::Debug<const char *>("\n");
+        CogCore::Debug<float>(getConfig()->BEGIN_UP_TIME_MS);
+	CogCore::Debug<const char *>("\n");
       }
 
       getConfig()->SETPOINT_TEMP_C = tt;
@@ -261,11 +265,15 @@ namespace CogApp
 
       if (DEBUG_LEVEL > 0) {
         CogCore::Debug<const char *>("CoolDown tt for :");
-        Serial.println((unsigned long) heaterPIDTask);
-        CogCore::DebugLn<float>(tt);
+	CogCore::Debug<uint32_t>((unsigned long) heaterPIDTask);
+	CogCore::Debug<const char *>("\n");
+        CogCore::Debug<float>(tt);
+	CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Global Recent temp\n");
-        CogCore::DebugLn<float>(getConfig()->GLOBAL_RECENT_TEMP);
-        CogCore::DebugLn<float>(getConfig()->BEGIN_UP_TIME_MS);
+        CogCore::Debug<float>(getConfig()->GLOBAL_RECENT_TEMP);
+	CogCore::Debug<const char *>("\n");
+        CogCore::Debug<float>(getConfig()->BEGIN_UP_TIME_MS);
+	CogCore::Debug<const char *>("\n");
       }
     }
     return new_ms;

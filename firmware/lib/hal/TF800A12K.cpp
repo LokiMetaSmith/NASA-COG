@@ -43,96 +43,105 @@ int SL_PS::init() {
   // This would be better done as an error message than a hard loop...
   //  delay(500);
   //  if (!Serial1) {
-  //    Serial.print("Could not create Serial1 connection!");
+  //    CogCore::Debug<const char*>("Could not create Serial1 connection!");
   //    return -1;
   //  }
   while (!Serial1);
-  if (setPS_OnOff(ADDRESS, "OFF")) Serial.println("Turned it OFF!");
+  if (setPS_OnOff(ADDRESS, "OFF")) CogCore::Debug<const char *>("Turned it OFF!\n");
 
   getPS_Manuf(ADDRESS);
-  Serial.print("GetPS Manuf: ");
+  CogCore::Debug<const char *>("GetPS Manuf: ");
   if (!strlen(manuf)) strcpy(manuf, "UNKWN");
-  Serial.println(manuf);
+  CogCore::Debug<const char *>(manuf);
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_Model(ADDRESS);
-  Serial.print("GetPS Model: ");
+  CogCore::Debug<const char *>("GetPS Model: ");
   if (!strlen(model)) strcpy(manuf, "UNKWN");
-  Serial.println(model);
+  CogCore::Debug<const char *>(model);
+  CogCore::Debug<const char *>("\n");
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_VoltageString(ADDRESS);
-  Serial.print("GetPS VoltageSt: ");
+  CogCore::Debug<const char *>("GetPS VoltageSt: ");
   if (!strlen(voltage_string)) strcpy(manuf, "UNKWN");
-  Serial.println(voltage_string);
+  CogCore::Debug<const char *>(voltage_string);
+  CogCore::Debug<const char *>("\n");
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_Revision(ADDRESS);
-  Serial.print("GetPS Rev: ");
+  CogCore::Debug<const char *>("GetPS Rev: ");
   if (!strlen(revision)) strcpy(manuf, "UNKWN");
-  Serial.println(revision);
+  CogCore::Debug<const char *>(revision);
+  CogCore::Debug<const char *>("\n");
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_ManufDate(ADDRESS);
-  Serial.print("GetPS ManufDate: ");
+  CogCore::Debug<const char *>("GetPS ManufDate: ");
   if (!strlen(manuf_date)) strcpy(manuf, "UNKWN");
-  Serial.println(manuf_date);
+  CogCore::Debug<const char *>(manuf_date);
+  CogCore::Debug<const char *>("\n");
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_Serial(ADDRESS);
-  Serial.print("GetPS Serial Address: ");
+  CogCore::Debug<const char *>("GetPS Serial Address: ");
   if (!strlen(serial)) strcpy(manuf, "UNKWN");
-  Serial.println(serial);
+  CogCore::Debug<const char *>(serial);
+  CogCore::Debug<const char *>("\n");
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_Country(ADDRESS);
-  Serial.print("GetPS Country: ");
+  CogCore::Debug<const char *>("GetPS Country: ");
   if (!strlen(country)) strcpy(manuf, "UNKWN");
-  Serial.println(country);
+  CogCore::Debug<const char *>(country);
+  CogCore::Debug<const char *>("\n");
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_RateVoltage(ADDRESS);
-  Serial.print("GetPS RateVoltage: ");
-  if (rate_voltage < 0) Serial.println("UNKWN");
-  else Serial.println(rate_voltage);
+  CogCore::Debug<const char *>("GetPS RateVoltage: ");
+  if (rate_voltage < 0) CogCore::Debug<const char *>("UNKWN");
+  else CogCore::Debug<uint32_t>(rate_voltage);
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_RateCurrent(ADDRESS);
-  Serial.print("GetPS RateCurrent: ");
-  if (rate_current < 0) Serial.println("UNKWN");
-  else Serial.println(rate_current);
+  CogCore::Debug<const char *>("GetPS RateCurrent: ");
+  if (rate_current < 0) CogCore::Debug<const char *>("UNKWN");
+  else CogCore::Debug<uint32_t>(rate_current);
+  CogCore::Debug<const char *>("\n");
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_MaxVoltage(ADDRESS);
-  Serial.print("GetPS MaxVoltage: ");
-  if (max_voltage < 0) Serial.println("UNKWN");
-  else Serial.println(max_voltage);
+  CogCore::Debug<const char *>("GetPS MaxVoltage: ");
+  if (max_voltage < 0) CogCore::Debug<const char *>("UNKWN");
+  else CogCore::Debug<uint32_t>(max_voltage);
+  CogCore::Debug<const char *>("\n");
   delay(MYDELAY);
    watchdogReset();
 
 
   getPS_MaxCurrent(ADDRESS);
-  Serial.print("GetPS MaxCurrent: ");
-  if (max_current < 0) Serial.println("UNKWN");
-  else Serial.println(max_current);
+  CogCore::Debug<const char *>("GetPS MaxCurrent: ");
+  if (max_current < 0) CogCore::Debug<const char *>("UNKWN");
+  else CogCore::Debug<uint32_t>(max_current);
+  CogCore::Debug<const char *>("\n");
   delay(MYDELAY);
    watchdogReset();
 
@@ -141,21 +150,21 @@ int SL_PS::init() {
 //  sendMsg(packetBuffer);
 
   // Note! We want to turn off the machine as quickly as possible on startup!
-  if (setPS_OnOff(ADDRESS, "ON")) Serial.println("Turned it on");
+  if (setPS_OnOff(ADDRESS, "ON")) CogCore::Debug<const char *>("Turned it on\n");
   else {
-    Serial.println("failed to turn PS on");
+    CogCore::Debug<const char *>("failed to turn PS on\n");
     retval = -1;
   }
 
-  if (setPS_Voltage(ADDRESS, 0)) Serial.println("Set volts to 0.0 volts");
+  if (setPS_Voltage(ADDRESS, 0)) CogCore::Debug<const char *>("Set volts to 0.0 volts\n");
   else {
-    Serial.println("failed to set volts");
+    CogCore::Debug<const char *>("failed to set volts\n");
     retval = -1;
   }
 
-  if (setPS_Current(ADDRESS, 0)) Serial.println("Set current to 0.0 amps");
+  if (setPS_Current(ADDRESS, 0)) CogCore::Debug<const char *>("Set current to 0.0 amps\n");
   else {
-    Serial.println("failed to set current");
+    CogCore::Debug<const char *>("failed to set current\n");
     retval = -1;
   }
 
@@ -174,7 +183,7 @@ int SL_PS::setPS_Addr(uint8_t addr) {
 
 int SL_PS::setPS_Val(uint8_t addr, const char *loc, const char *val) {
   if (!setPS_Addr(addr)) {
-    Serial.println("setPS_Val didn't set address");
+    CogCore::Debug<const char *>("setPS_Val didn't set address\n");
     return 0;
   }
 
@@ -213,7 +222,7 @@ int SL_PS::setPS_Current(uint8_t addr, uint16_t amps) {
 char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
   static char rval[50];
   if (!setPS_Addr(addr)) {
-    Serial.println("getPS_Val didn't set address");
+    CogCore::Debug<const char *>("getPS_Val didn't set address\n");
     return 0;
   }
 
@@ -347,10 +356,11 @@ void SL_PS::getPS_Control(int addr) {
 void SL_PS::printFullStatus(int addr) {
 
   getPS_OutCurrent(addr);
-  Serial.print("SL_PS out voltage: ");
-  Serial.println(out_voltage);
-  Serial.print("SL_PS out current: ");
-  Serial.println(out_current);
+  CogCore::Debug<const char *>("SL_PS out voltage: ");
+  CogCore::Debug<uint32_t>(out_voltage);
+  CogCore::Debug<const char *>("\n");
+  CogCore::Debug<const char *>("SL_PS out current: ");
+  CogCore::Debug<const char *>("\n");
 
 
 }
@@ -360,9 +370,14 @@ void SL_PS::updateAmperage(float amperage, MachineConfig *config) {
   MachineStatusReport *msr = config->report;
   uint16_t amps = (uint16_t) (amperage * 100.0);
 
+  if (DEBUG_SL_PS > 0) {
+    CogCore::Debug<const char *>("Setting SL_PS_Amps: ");
+    CogCore::Debug<uint32_t>(amperage);
+    CogCore::Debug<const char *>("\n");
+  }
   int ret_val = setPS_Current(this->address, amps);
   if (!ret_val) {
-    Serial.println("FAILED TO SET VOLTAGE!");
+    CogCore::Debug<const char *>("FAILED TO SET VOLTAGE!\n");
 	msr->ms = CriticalFault;
   }
   // I don't like to use delay but I think some time is needed here...
@@ -385,12 +400,13 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   uint16_t volts = (uint16_t) (voltage * 100.0);
 
   if (DEBUG_SL_PS > 0) {
-    Serial.print("Setting SL_PS_Volts: ");
-    Serial.println(volts);
+    CogCore::Debug<const char *>("Setting SL_PS_Volts: ");
+    CogCore::Debug<uint32_t>(volts);
+    CogCore::Debug<const char *>("\n");
   }
   int ret_val = setPS_Voltage(this->address, volts);
   if (!ret_val) {
-    Serial.println("FAILED TO SET VOLTAGE!");
+    CogCore::Debug<const char *>("FAILED TO SET VOLTAGE!\n");
 	msr->ms = CriticalFault;
   }
 
@@ -399,7 +415,7 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   delay(10);
 
   if (DEBUG_SL_PS > 0) {
-    Serial.print("RRRR");
+    CogCore::Debug<const char *>("Voltage Updated");
   }
 
   getPS_OutVoltage(this->address);
