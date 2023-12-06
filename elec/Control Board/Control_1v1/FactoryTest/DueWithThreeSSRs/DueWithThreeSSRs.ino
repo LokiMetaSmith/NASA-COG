@@ -150,7 +150,8 @@ void setup() {
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
     // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    pixels.setPixelColor(i, pixels.Color(50, 150, 50));  //Medium green color
+//    pixels.setPixelColor(i, pixels.Color(50, 150, 50));  //Medium green color
+    pixels.setPixelColor(i, pixels.Color(150, 50, 50));  //Medium red color
     pixels.show();   // Send the updated pixel colors to the hardware.
   }
   u8g2.drawStr(25, 10, "Starting Test");
