@@ -26,13 +26,13 @@ void MachineConfig::dumpAllData10Hz() {
   // Loop over Ring buffer and call ouptutReport and
   // do a Network output (eventually);
   // using...
-  
+
   //int msr_lre_size = _log_entry.size();
   //CogCore::Debug<int>(msr_lre_size);
   for(int i = 0; i < MAX_RECORDS; i++) {
-	MachineStatusReport msr_lre= _log_entry[i];
-	
+    MachineStatusReport msr_lre= _log_entry[i];
     outputReport(&msr_lre );
+    watchdogReset();
   }
 
 }
@@ -58,13 +58,9 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         CogCore::Debug<float>(msr->max_stack_amps_A);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Max Stack   W: ");
-        CogCore::Debug<float>(msr->max_stack_watts_W);
-        CogCore::Debug<const char *>("\n");
-        CogCore::Debug<const char *>("Fan PWM      : ");
-        CogCore::Debug<float>(msr->fan_pwm);
-        CogCore::Debug<const char *>("\n");
-
-
+        CogCore::DebugLn<float>(msr->max_stack_watts_W);
+        CogCore::Debug<const char *>("Fan PWM   0-1: ");
+        CogCore::DebugLn<float>(msr->fan_pwm);
         CogCore::Debug<const char *>("Post Heater C: ");
         CogCore::Debug<float>(msr->post_heater_C);
         CogCore::Debug<const char *>("\n");
@@ -72,10 +68,10 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         CogCore::Debug<float>(msr->post_getter_C);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Post Stack  C: ");
-        CogCore::Debug<const char *>("\n");
         CogCore::Debug<float>(msr->post_stack_C);
+        CogCore::Debug<const char *>("\n");
 
-        CogCore::Debug<const char *>("Heater DC    : ");
+        CogCore::Debug<const char *>("Heater DC 0-1: ");
         // We want more precision to see this changing faster.
 	char t[10];
 	sprintf(t, "%.5f", msr->heater_duty_cycle);
@@ -84,8 +80,6 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         //        CogCore::DebugLn<float>(msr->heater_duty_cycle);
         CogCore::Debug<const char *>("Stack amps  A: ");
         CogCore::Debug<float>(msr->stack_amps);
-	sprintf(t, "%.5f", msr->heater_duty_cycle);
-        CogCore::Debug<const char *>(t);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Stack watts W: ");
         CogCore::Debug<float>(msr->stack_watts);
@@ -102,8 +96,7 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         CogCore::Debug<const char *>("\n");
         }
         CogCore::Debug<const char *>("Fan RPM      : ");
-        CogCore::Debug<const char *>("\n");
-        CogCore::Debug<float>(msr->fan_rpm);
+        CogCore::DebugLn<float>(msr->fan_rpm);
 }
 
 void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {

@@ -119,6 +119,11 @@ oedcs:
 	&& pio run -e due_ribbonfish -t upload  \
 	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
 
+oedcsSN1:
+	cd firmware \
+	&& pio run -e due_SN1 -t upload  \
+	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
+
 oedcsSN2:
 	cd firmware \
 	&& pio run -e  due_OEDCS2 -t upload  \

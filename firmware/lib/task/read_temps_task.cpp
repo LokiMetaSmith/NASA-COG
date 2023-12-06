@@ -214,7 +214,8 @@ void ReadTempsTask::updateTemperatures() {
 	CogCore::Debug<int>(i);
 	CogCore::Debug<const char *>("\n");
 	CogCore::Debug<const char *>("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
-	CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) - ((float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
+        unsigned long now = millis();
+	CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) - ((float) now - (float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
 	CogCore::Debug<const char *>(" SECONDS.!\n");
       }
     }
