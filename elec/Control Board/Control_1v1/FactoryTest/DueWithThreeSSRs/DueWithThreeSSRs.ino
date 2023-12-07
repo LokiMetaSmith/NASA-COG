@@ -1,5 +1,7 @@
 /* Program: DueWithThreeSSRs
   Tests the three SSR drive circuits on the Control V1.1 assembly
+  Tests the SHUT DOWN switch
+  Tests BigTreeTech MINI 12864 Rotary Encoder and switch
 
   Setup:
   Connect an LED with series resistor at J13, J30 and J31.
@@ -7,11 +9,24 @@
   Series resistor should limit current from +24V for LED.
   SSR1 and SSR2 flash independently.
   Press switch S2, "SHUT DOWN" to turn on the SSR3 LED.
+  Press the BigTreeTech MINI 12864 Rotary Encoder switch and hear buzzer
+  Rotate the BigTreeTech MINI 12864 Rotary Encoder and see the text message about position and direction.
 */
 
-#include <RotaryEncoder.h>
+#define COMPANY_NAME "pubinv.org "
+#define PROG_NAME "DueWithThreeSSRs"
+#define VERSION ";_Rev_0.2"
+#define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
+#define LICENSE "GNU Affero General Public License, version 3 "
 
 #define BAUD_RATE 115200
+
+#include <RotaryEncoder.h>
+#include <U8g2lib.h>
+#include <Adafruit_NeoPixel.h>
+
+const int NUMPIXELS = 3;
+Adafruit_NeoPixel pixels(NUMPIXELS, 43, NEO_RGB + NEO_KHZ400);
 
 class Flasher
 {
@@ -60,6 +75,7 @@ class Flasher
     }
 };
 
+//Control V1.1 hardware
 //Control V1.1 signal pin names
 #define SSR1 51
 #define SSR2 52
@@ -69,9 +85,12 @@ class Flasher
 #define LED_BLUE 44
 #define LED_GREEN 45
 #define BEEPER 50   //A buzzer.
+#define nFAN1_PWM 9 // The pin D9 for driving the Blower.
+#define BLOWER_ENABLE 22 // The pin D22 for Enable 24V to the Blower.
 
-//Control V1.1 hardware
-//Rotary Encoder on RepRap
+
+
+//Rotary Encoder on BigTreeTech MINI 12864
 #define PIN_IN1 40
 #define PIN_IN2 41
 #define ENC_SW 42   //A switch
@@ -79,32 +98,37 @@ class Flasher
 // Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
 RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
 
+U8G2_UC1701_EA_DOGS102_1_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
 
+//Flasher to exercise the SSRs pins and the Building LED.
 Flasher led0(13, 100, 400);      //Pins for Control V1.1
 Flasher led1(SSR1, 100, 400);    //Pins for Control V1.1
 Flasher led2(SSR2, 350, 350);
 //Flasher led3(SSR3, 150, 350);
 
-void updateSHUTDOWN(){
-    if (digitalRead(49) == LOW) {
+//Tests for press of switch, "SHUT DOWN". Buzzes on BigTreeTech MINI 12864
+void updateSHUTDOWN() {
+  if (digitalRead(49) == LOW) {
     Serial.println("Shutdown button pressed");
     digitalWrite(SSR3, LOW);
     digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
+    u8g2.drawStr(0, 0, "Shutdown button pressed");
   } else {
-//    Serial.println("Button Open");
-    digitalWrite(SSR3, HIGH);   
+    //    Serial.println("Button Open");
+    digitalWrite(SSR3, HIGH);
   }
 }//end update shutdown button
 
 //Check for encoder button pressed and return true
-bool updateENC_BUT(){
-    if (digitalRead(ENC_SW) == LOW) {
+bool updateENC_BUT() {
+  if (digitalRead(ENC_SW) == LOW) {
     Serial.println("Button");
     digitalWrite(SSR3, LOW);
-    digitalWrite(BEEPER, !digitalRead(BEEPER));
+    digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
+    u8g2.drawStr(50, 20, "Encoder button pressed");
     return true; //Reset the position
   } else {
-//    Serial.println("Button Open");
+    //    Serial.println("Button Open");
     digitalWrite(SSR3, HIGH);
     return false;
   }
@@ -118,9 +142,32 @@ void setup() {
   pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
   pinMode(BEEPER, OUTPUT);
-}
+  pinMode(BLOWER_ENABLE,OUTPUT);
+  digitalWrite(BLOWER_ENABLE,HIGH); //Set high to enable blower power. 
+  analogWrite(nFAN1_PWM, 200);  // Set for low RPM
+
+  u8g2.begin();
+  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
+    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
+//    pixels.setPixelColor(i, pixels.Color(50, 150, 50));  //Medium green color
+    pixels.setPixelColor(i, pixels.Color(150, 50, 50));  //Medium red color
+    pixels.show();   // Send the updated pixel colors to the hardware.
+  }
+  u8g2.drawStr(25, 10, "Starting Test");
+  u8g2.sendBuffer();
+
+}//End setup()
 
 void loop() {
+  // picture loop
+  u8g2.clearBuffer();
+  //draw();
+  u8g2_prepare();
+  u8g2.drawStr(50, 20, "In loop()");
+  u8g2.sendBuffer();
+
+
   static int pos = 0;
   encoder.tick();
 
@@ -132,17 +179,17 @@ void loop() {
     Serial.println((int)(encoder.getDirection()));
     pos = newPos;
   } // if
-  
+
   led0.Update();
   led1.Update();
   led2.Update();
   //led3.Update();  //Does not work on Due hardware.
 
   updateSHUTDOWN(); //Check for press of switch
- 
-  if (updateENC_BUT()){ //Check encoder, zero if button pressed
-    pos =0;
+
+  if (updateENC_BUT()) { //Check encoder, zero if button pressed
+    pos = 0;
     encoder.setPosition(0);
-//    Serial.println("Reset position.");
+    //    Serial.println("Reset position.");
   }
 }

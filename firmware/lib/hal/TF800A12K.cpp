@@ -370,6 +370,11 @@ void SL_PS::updateAmperage(float amperage, MachineConfig *config) {
   MachineStatusReport *msr = config->report;
   uint16_t amps = (uint16_t) (amperage * 100.0);
 
+  if (DEBUG_SL_PS > 0) {
+    CogCore::Debug<const char *>("Setting SL_PS_Amps: ");
+    CogCore::Debug<uint32_t>(amperage);
+    CogCore::Debug<const char *>("\n");
+  }
   int ret_val = setPS_Current(this->address, amps);
   if (!ret_val) {
     CogCore::Debug<const char *>("FAILED TO SET VOLTAGE!\n");
@@ -410,7 +415,7 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   delay(10);
 
   if (DEBUG_SL_PS > 0) {
-    CogCore::Debug<const char *>("RRRR");
+    CogCore::Debug<const char *>("Voltage Updated");
   }
 
   getPS_OutVoltage(this->address);
