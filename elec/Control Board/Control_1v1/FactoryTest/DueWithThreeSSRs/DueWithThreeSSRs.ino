@@ -28,6 +28,41 @@
 const int NUMPIXELS = 3;
 Adafruit_NeoPixel pixels(NUMPIXELS, 43, NEO_RGB + NEO_KHZ400);
 
+
+class PowerSense
+{
+    // Class Member Variables
+    // These are initialized at startup
+    int ADCinPin;    // the number of the ADC pin
+    long ReadPeriod;  // milliseconds of on-time
+    unsigned long previousMillis;   // will store last time ADC was read
+    String my_pinName;
+
+    // Constructor - creates a Flasher
+    // and initializes the member variables and state
+  public:
+    PowerSense(const String pinName, int pin, long period)
+    {
+      ADCinPin = pin;
+      previousMillis = 0;
+      ReadPeriod = period;
+      my_pinName = pinName;
+    }
+
+    void Update()
+    {
+      // check to see if it's time to change the state of the LED
+      unsigned long currentMillis = millis();
+      if (currentMillis - previousMillis >= ReadPeriod)
+      {
+        previousMillis = currentMillis;  // Remember the time
+        Serial.print(my_pinName);  // 
+        Serial.print(": ");  // 
+        Serial.println(analogRead(ADCinPin));  // RAW Read of the ADC
+      }
+    }
+};//end PowersSense
+
 class Flasher
 {
     // Class Member Variables
@@ -74,6 +109,16 @@ class Flasher
       }
     }
 };
+
+//PowerSense SENSE_12V(2,2000); //Read A2 every two seconds.
+//PowerSense SENSE_AUX1(3,2000); //Read A3 every two seconds.
+//PowerSense SENSE_AUX2(4,2000); //Read A4 every two seconds.
+
+PowerSense SENSE_24V("24V",1,2000); //Read A1 every two seconds.
+PowerSense SENSE_12V("12V",2,2000); //Read A2 every two seconds.
+PowerSense SENSE_AUX1("AUX1",3,2000); //Read A3 every two seconds.
+PowerSense SENSE_AUX2("AUX2",4,2000); //Read A4 every two seconds.
+
 
 //Control V1.1 hardware
 //Control V1.1 signal pin names
@@ -134,6 +179,37 @@ bool updateENC_BUT() {
   }
 }//end update shutdown button
 
+
+bool updatePowerMonitor(void){
+  // Note:adding a task
+//  if (DEBUG_LEVEL > 0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
+
+  //Analog read of the +24V expected about 3.25V at ADC input.
+  // SENSE_24V on A1.
+  // Full scale is 1023, ten bits for 3.3V.
+  //30K into 4K7
+  const long R1 = 30000;
+  const long R2 = 4700;
+  const float Vcc = 3.3;
+  bool powerIsGood = false;
+  int lowThreshold24V = 1023 * 3 / 4;
+
+//  if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
+//  if (DEBUG_LEVEL > 0 )  CogCore::Debug<uint32_t>(analogRead(SENSE_24V) * ((Vcc * (R1 + R2)) / (1023.0 * R2)));
+//  if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("\n");
+
+  if (analogRead(A1) > lowThreshold24V) {
+    powerIsGood = true;
+//    if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
+    return true;
+  } else{
+    powerIsGood = false;
+//    if (DEBUG_LEVEL > 0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
+    return false;
+  }
+}
+
+
 void setup() {
   Serial.begin(BAUD_RATE);
   Serial.println();
@@ -142,16 +218,15 @@ void setup() {
   pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
   pinMode(BEEPER, OUTPUT);
-  pinMode(BLOWER_ENABLE,OUTPUT);
-  digitalWrite(BLOWER_ENABLE,HIGH); //Set high to enable blower power. 
+  pinMode(BLOWER_ENABLE, OUTPUT);
+  digitalWrite(BLOWER_ENABLE, HIGH); //Set high to enable blower power.
   analogWrite(nFAN1_PWM, 200);  // Set for low RPM
 
   u8g2.begin();
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
     // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-//    pixels.setPixelColor(i, pixels.Color(50, 150, 50));  //Medium green color
-    pixels.setPixelColor(i, pixels.Color(150, 50, 50));  //Medium red color
+    pixels.setPixelColor(i, pixels.Color(50, 150, 50));  //Medium green color
     pixels.show();   // Send the updated pixel colors to the hardware.
   }
   u8g2.drawStr(25, 10, "Starting Test");
@@ -160,6 +235,7 @@ void setup() {
 }//End setup()
 
 void loop() {
+
   // picture loop
   u8g2.clearBuffer();
   //draw();
@@ -184,6 +260,10 @@ void loop() {
   led1.Update();
   led2.Update();
   //led3.Update();  //Does not work on Due hardware.
+  SENSE_24V.Update(); //Read A1 every two seconds.
+  SENSE_12V.Update(); //Read A2 every two seconds.
+  SENSE_AUX1.Update(); //Read A3 every two seconds.
+  SENSE_AUX2.Update(); //Read A4 every two seconds.
 
   updateSHUTDOWN(); //Check for press of switch
 
@@ -192,4 +272,9 @@ void loop() {
     encoder.setPosition(0);
     //    Serial.println("Reset position.");
   }
-}
+
+//   if (!updatePowerMonitor()){
+//    Serial.println("24Volt low, probabl loss of AC power.");
+//   }
+
+}//end of loop()
