@@ -149,7 +149,9 @@ PowerSense SENSE_AUX2("SENSE_AUX2", 6, 2000, 10000, 14700); //Read A6 R126, R127
 // Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
 RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
 
-U8G2_UC1701_EA_DOGS102_1_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
+//U8G2_UC1701_EA_DOGS102_1_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
+//U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
+U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46); //Rotation 180
 
 //Flasher to exercise the SSRs pins and the Building LED.
 Flasher led0(13, 100, 400);      //Pins for Control V1.1
@@ -232,7 +234,6 @@ void setup() {
   u8g2.drawStr(5, 0, "Starting Test");
   //  u8g2.drawStr( 5, 0, "drawBox");
   u8g2.sendBuffer();
-
   u8g2.setFont(u8g2_font_ncenB14_tr);
   u8g2.drawStr(0, 15, "Hello World!");
 
