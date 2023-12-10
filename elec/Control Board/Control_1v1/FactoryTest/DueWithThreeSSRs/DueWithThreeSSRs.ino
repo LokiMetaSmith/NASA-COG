@@ -1,3 +1,4 @@
+
 /* Program: DueWithThreeSSRs
   Tests the three SSR drive circuits on the Control V1.1 assembly
   Tests the SHUT DOWN switch
@@ -37,16 +38,22 @@ class PowerSense
     long ReadPeriod;  // milliseconds of on-time
     unsigned long previousMillis;   // will store last time ADC was read
     String my_pinName;
+    float my_R1;
+    float my_R2;
+    float voltage;
 
     // Constructor - creates a Flasher
     // and initializes the member variables and state
   public:
-    PowerSense(const String pinName, int pin, long period)
+    PowerSense(const String pinName, int pin, long period, float R1 = 30000, float R2 = 4700)
     {
       ADCinPin = pin;
       previousMillis = 0;
       ReadPeriod = period;
       my_pinName = pinName;
+      my_R1 = R1;
+      my_R2 = R2;
+      voltage = 0;
     }
 
     void Update()
@@ -56,9 +63,10 @@ class PowerSense
       if (currentMillis - previousMillis >= ReadPeriod)
       {
         previousMillis = currentMillis;  // Remember the time
-        Serial.print(my_pinName);  // 
-        Serial.print(": ");  // 
-        Serial.println(analogRead(ADCinPin));  // RAW Read of the ADC
+        voltage = analogRead(ADCinPin) * 3.3 * (my_R1 + my_R2) / (1023 * my_R2); // RAW Read of the ADC
+        Serial.print(my_pinName);  //
+        Serial.print(": ");  //
+        Serial.println(voltage);  // RAW Read of the ADC
       }
     }
 };//end PowersSense
@@ -110,14 +118,12 @@ class Flasher
     }
 };
 
-//PowerSense SENSE_12V(2,2000); //Read A2 every two seconds.
-//PowerSense SENSE_AUX1(3,2000); //Read A3 every two seconds.
-//PowerSense SENSE_AUX2(4,2000); //Read A4 every two seconds.
-
-PowerSense SENSE_24V("24V",1,2000); //Read A1 every two seconds.
-PowerSense SENSE_12V("12V",2,2000); //Read A2 every two seconds.
-PowerSense SENSE_AUX1("AUX1",3,2000); //Read A3 every two seconds.
-PowerSense SENSE_AUX2("AUX2",4,2000); //Read A4 every two seconds.
+// Resistive dividers Vin = Vadc*3.3/1032 *(R1+R1)/R2
+//Read every two seconds
+PowerSense SENSE_24V("SENSE_24V", 1, 2000, 30000, 4700); //Read A1. R101+R105+R106, R102.
+PowerSense SENSE_12V("SENSE_12V", 2, 2000, 30000, 10000); //Read A2. R103+R107+R108, R104.
+PowerSense SENSE_AUX1("SENSE_AUX1", 3, 2000, 10000, 14700); //Read A3. R123, R124+R125. 
+PowerSense SENSE_AUX2("SENSE_AUX2", 6, 2000, 10000, 14700); //Read A6 R126, R127+R128.
 
 
 //Control V1.1 hardware
@@ -180,9 +186,9 @@ bool updateENC_BUT() {
 }//end update shutdown button
 
 
-bool updatePowerMonitor(void){
+bool updatePowerMonitor(void) {
   // Note:adding a task
-//  if (DEBUG_LEVEL > 0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
+  //  if (DEBUG_LEVEL > 0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
 
   //Analog read of the +24V expected about 3.25V at ADC input.
   // SENSE_24V on A1.
@@ -194,17 +200,17 @@ bool updatePowerMonitor(void){
   bool powerIsGood = false;
   int lowThreshold24V = 1023 * 3 / 4;
 
-//  if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
-//  if (DEBUG_LEVEL > 0 )  CogCore::Debug<uint32_t>(analogRead(SENSE_24V) * ((Vcc * (R1 + R2)) / (1023.0 * R2)));
-//  if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("\n");
+  //  if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
+  //  if (DEBUG_LEVEL > 0 )  CogCore::Debug<uint32_t>(analogRead(SENSE_24V) * ((Vcc * (R1 + R2)) / (1023.0 * R2)));
+  //  if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("\n");
 
   if (analogRead(A1) > lowThreshold24V) {
     powerIsGood = true;
-//    if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
+    //    if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
     return true;
-  } else{
+  } else {
     powerIsGood = false;
-//    if (DEBUG_LEVEL > 0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
+    //    if (DEBUG_LEVEL > 0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
     return false;
   }
 }
@@ -222,27 +228,30 @@ void setup() {
   digitalWrite(BLOWER_ENABLE, HIGH); //Set high to enable blower power.
   analogWrite(nFAN1_PWM, 200);  // Set for low RPM
 
-  u8g2.begin();
-  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
-  for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
-    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    pixels.setPixelColor(i, pixels.Color(50, 150, 50));  //Medium green color
-    pixels.show();   // Send the updated pixel colors to the hardware.
-  }
-  u8g2.drawStr(25, 10, "Starting Test");
+  setupu8g2();
+  u8g2.drawStr(5, 0, "Starting Test");
+  //  u8g2.drawStr( 5, 0, "drawBox");
   u8g2.sendBuffer();
+
+  u8g2.setFont(u8g2_font_ncenB14_tr);
+  u8g2.drawStr(0, 15, "Hello World!");
+
+  pixels.show();   // Send the updated pixel colors to the hardware.
+
 
 }//End setup()
 
 void loop() {
-
+uint8_t draw_state = 0;
   // picture loop
   u8g2.clearBuffer();
-  //draw();
-  u8g2_prepare();
-  u8g2.drawStr(50, 20, "In loop()");
+  draw();
   u8g2.sendBuffer();
-
+  // increase the state
+  draw_state++;
+  if ( draw_state >= 12 * 8 )
+    draw_state = 0;
+  // deley between each page
 
   static int pos = 0;
   encoder.tick();
@@ -273,8 +282,8 @@ void loop() {
     //    Serial.println("Reset position.");
   }
 
-//   if (!updatePowerMonitor()){
-//    Serial.println("24Volt low, probabl loss of AC power.");
-//   }
+  //   if (!updatePowerMonitor()){
+  //    Serial.println("24Volt low, probabl loss of AC power.");
+  //   }
 
 }//end of loop()
