@@ -29,7 +29,13 @@
 const int NUMPIXELS = 3;
 Adafruit_NeoPixel pixels(NUMPIXELS, 43, NEO_RGB + NEO_KHZ400);
 
+// OLED Display
+//U8G2_UC1701_EA_DOGS102_1_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
+//U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
+U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46); //Rotation 180
 
+
+//Check power supplies. Reports status on serial port, OLED display.
 class PowerSense
 {
     // Class Member Variables
@@ -41,11 +47,13 @@ class PowerSense
     float my_R1;
     float my_R2;
     float voltage;
+    int my_offsetX = 0;
+    int my_offsetY = 41; //Benieth center
 
     // Constructor - creates a Flasher
     // and initializes the member variables and state
   public:
-    PowerSense(const String pinName, int pin, long period, float R1 = 30000, float R2 = 4700)
+    PowerSense(const String pinName, int pin, long period, float R1 = 30000, float R2 = 4700, int offsetX = 0, int offsetY = 0)
     {
       ADCinPin = pin;
       previousMillis = 0;
@@ -54,6 +62,8 @@ class PowerSense
       my_R1 = R1;
       my_R2 = R2;
       voltage = 0;
+      my_offsetX = offsetX;
+      my_offsetY = offsetY;
     }
 
     void Update()
@@ -67,6 +77,19 @@ class PowerSense
         Serial.print(my_pinName);  //
         Serial.print(": ");  //
         Serial.println(voltage);  // RAW Read of the ADC
+
+        //Update OLED display
+        u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
+        u8g2.setFontMode(0);
+        u8g2.setCursor(my_offsetX, my_offsetY);
+        u8g2.print("               ");
+        u8g2.sendBuffer();
+        u8g2.setCursor(my_offsetX, my_offsetY);
+        u8g2.print(my_pinName);
+        u8g2.print(voltage);
+        u8g2.sendBuffer();
+
+
       }
     }
 };//end PowersSense
@@ -120,13 +143,12 @@ class Flasher
 
 // Resistive dividers Vin = Vadc*3.3/1032 *(R1+R1)/R2
 //Read every two seconds
-PowerSense SENSE_24V("SENSE_24V", 1, 2000, 30000, 4700); //Read A1. R101+R105+R106, R102.
-PowerSense SENSE_12V("SENSE_12V", 2, 2000, 30000, 10000); //Read A2. R103+R107+R108, R104.
-PowerSense SENSE_AUX1("SENSE_AUX1", 3, 2000, 10000, 14700); //Read A3. R123, R124+R125.
-PowerSense SENSE_AUX2("SENSE_AUX2", 6, 2000, 10000, 14700); //Read A6 R126, R127+R128.
+//              Signal name, Pin number, R1, R2, Xoffset, Yoffset
+PowerSense SENSE_24V("+24V ", 1, 2000, 30000, 4700, 0, 50); //Read A1. R101+R105+R106, R102.
+PowerSense SENSE_12V("+12V ", 2, 2000, 30000, 10000, 64, 50); //Read A2. R103+R107+R108, R104.
+PowerSense SENSE_AUX1("AUX1 ", 3, 2000, 10000, 14700, 0, 60); //Read A3. R123, R124+R125.
+PowerSense SENSE_AUX2("AUX2 ", 6, 2000, 10000, 14700, 64, 60); //Read A6 R126, R127+R128.
 
-
-//Control V1.1 hardware
 //Control V1.1 signal pin names
 #define SSR1 51
 #define SSR2 52
@@ -139,8 +161,6 @@ PowerSense SENSE_AUX2("SENSE_AUX2", 6, 2000, 10000, 14700); //Read A6 R126, R127
 #define nFAN1_PWM 9 // The pin D9 for driving the Blower.
 #define BLOWER_ENABLE 22 // The pin D22 for Enable 24V to the Blower.
 
-
-
 //Rotary Encoder on BigTreeTech MINI 12864
 #define PIN_IN1 40
 #define PIN_IN2 41
@@ -149,9 +169,6 @@ PowerSense SENSE_AUX2("SENSE_AUX2", 6, 2000, 10000, 14700); //Read A6 R126, R127
 // Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
 RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
 
-//U8G2_UC1701_EA_DOGS102_1_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
-//U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
-U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46); //Rotation 180
 
 //Flasher to exercise the SSRs pins and the Building LED.
 Flasher led0(13, 100, 400);      //Pins for Control V1.1
@@ -178,7 +195,7 @@ bool updateENC_BUT() {
     Serial.println("Button");
     digitalWrite(SSR3, LOW);
     digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
-    u8g2.drawStr(50, 20, "Encoder button pressed");
+//    u8g2.drawStr(50, 20, "Encoder button pressed");
     return true; //Reset the position
   } else {
     //    Serial.println("Button Open");
@@ -265,29 +282,29 @@ void loop() {
   }
 
   if (!updatePowerMonitor()) {
-    delay(500);
-    //      Serial.println("24Volt low, probabl loss of AC power.");
-    //    u8g2.setFont(u8g2_font_helvB12_tr); //FLE
-    //    u8g2.setFont(u8g2_font_helvB08_tr); //FLE  Transparent font
-    u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
-    u8g2.setFontMode(0);
-    u8g2.setCursor(0, 41);
-    u8g2.print("               ");
-    u8g2.sendBuffer();
-    u8g2.setCursor(0, 41);
-    u8g2.print("24Volt low");
-    u8g2.sendBuffer();
-  } else {
-    delay(500);
-//    u8g2.setFont(u8g2_font_helvB08_tr); //FLE
-    u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
-    u8g2.setFontMode(0);
-    u8g2.setCursor(0, 41);
-    u8g2.print("               ");
-    u8g2.sendBuffer();
-    u8g2.setCursor(0, 41);
-    u8g2.print("24Volt Normal");
-    u8g2.sendBuffer();
+//    delay(500);
+//    //      Serial.println("24Volt low, probabl loss of AC power.");
+//    //    u8g2.setFont(u8g2_font_helvB12_tr); //FLE
+//    //    u8g2.setFont(u8g2_font_helvB08_tr); //FLE  Transparent font
+//    u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
+//    u8g2.setFontMode(0);
+//    u8g2.setCursor(0, 41);
+//    u8g2.print("               ");
+//    u8g2.sendBuffer();
+//    u8g2.setCursor(0, 41);
+//    u8g2.print("24Volt low");
+//    u8g2.sendBuffer();
+//  } else {
+//    delay(500);
+//    //    u8g2.setFont(u8g2_font_helvB08_tr); //FLE
+//    u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
+//    u8g2.setFontMode(0);
+//    u8g2.setCursor(0, 41);
+//    u8g2.print("               ");
+//    u8g2.sendBuffer();
+//    u8g2.setCursor(0, 41);
+//    u8g2.print("24Volt Normal");
+//    u8g2.sendBuffer();
   }
 
 }//end of loop()
