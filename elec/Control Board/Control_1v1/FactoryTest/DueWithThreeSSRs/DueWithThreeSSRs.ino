@@ -1,8 +1,8 @@
-
 /* Program: DueWithThreeSSRs
   Tests the three SSR drive circuits on the Control V1.1 assembly
   Tests the SHUT DOWN switch
   Tests BigTreeTech MINI 12864 Rotary Encoder and switch
+  Tests four power supplies, 24V, 12V, AUX1 and AUX2.
 
   Setup:
   Connect an LED with series resistor at J13, J30 and J31.
@@ -15,8 +15,8 @@
 */
 
 #define COMPANY_NAME "pubinv.org "
-#define PROG_NAME "OEDCS Factory Test"
-#define VERSION ";_Rev_0.3"
+#define PROG_NAME "OEDCS_Factory_Test"
+#define VERSION ";_Rev_0.4"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -26,11 +26,16 @@
 #include <U8g2lib.h>
 #include <Adafruit_NeoPixel.h>
 
-const int NUMPIXELS = 3;
-Adafruit_NeoPixel pixels(NUMPIXELS, 43, NEO_RGB + NEO_KHZ400);
+#define NEOPIX_DIN 43
+#define NUMPIXELS 3
+Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIX_DIN, NEO_RGB + NEO_KHZ400);
 
+//Name the pins from the Due
+#define CS 48
+#define DC 47
+#define RESET 46
 // OLED Display
-U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46); //Rotation 180
+U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ CS, /* dc=*/ DC, /* reset=*/ RESET); //Rotation 180
 
 
 //Check power supplies. Reports status on serial port, OLED display.
@@ -220,7 +225,8 @@ bool updatePowerMonitor(void) {
 void setup() {
   Serial.begin(BAUD_RATE);
   Serial.println();
-  Serial.println("DueWithThreeSSRs");
+  Serial.print(PROG_NAME);
+  Serial.println(VERSION);
   pinMode(SHUT_DOWN, INPUT_PULLUP);
   pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);

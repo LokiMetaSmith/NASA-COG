@@ -575,15 +575,7 @@ void setupBacklights(void){
   pixels.show();
 }
 
-void setupu8g2(void) {
-  
-  //  for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
-  //    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-  //    // Here we're using a moderately bright green color:
-  //    pixels.setPixelColor(i, pixels.Color(150, 50, 50));
-  //    pixels.show();   // Send the updated pixel colors to the hardware.
-  //  }
-
+void setupu8g2(void) { 
 //Display setup
   u8g2.begin();
   u8g2.setContrast(128);
