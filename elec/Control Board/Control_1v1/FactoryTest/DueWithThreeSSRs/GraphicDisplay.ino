@@ -567,36 +567,34 @@ void draw(void) {
   }
 }
 
+void setupBacklights(void){
+  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  pixels.setPixelColor(0, pixels.Color(150, 50, 50)); //encoder back light
+  pixels.setPixelColor(1, pixels.Color(150, 50, 50)); //encoder back light
+  pixels.setPixelColor(2, pixels.Color(250, 250, 250)); //Back light display
+  pixels.show();
+}
 
 void setupu8g2(void) {
-  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
-  for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
-   // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
-    // Here we're using a moderately bright green color:
-    pixels.setPixelColor(i, pixels.Color(150, 50, 50));
-    pixels.show();   // Send the updated pixel colors to the hardware.
-  }
   
+  //  for (int i = 0; i < NUMPIXELS; i++) { // For each pixel...
+  //    // pixels.Color() takes RGB values, from 0,0,0 up to 255,255,255
+  //    // Here we're using a moderately bright green color:
+  //    pixels.setPixelColor(i, pixels.Color(150, 50, 50));
+  //    pixels.show();   // Send the updated pixel colors to the hardware.
+  //  }
+
+//Display setup
   u8g2.begin();
   u8g2.setContrast(128);
   u8g2.setFont(u8g2_font_helvB12_tr); //FLE
   u8g2.setFontMode(1);
   u8g2.setCursor(0, 16);
-  //  u8g2.setCursor(0,0);
-  u8g2.print("Iot Demo");
+  u8g2.print(COMPANY_NAME);
+  //  u8g2.print("Iot Demo");
+  u8g2.setCursor(0, 32);
+  u8g2.print(PROG_NAME);
   u8g2.sendBuffer();
-  Serial.println("IoT Demo");
-  //  u8g2.setFontMode(1);
-  delay(1000);
-
-//  pixels.setPixelColor(0, pixels.Color(50, 50, 150));
-//  pixels.setPixelColor(1, pixels.Color(50, 150, 50));
-//  pixels.setPixelColor(2, pixels.Color(150, 50, 50));
-
-  pixels.setPixelColor(0, pixels.Color(150, 50, 50)); //encoder back light
-  pixels.setPixelColor(1, pixels.Color(150, 50, 50)); //encoder back light
-  pixels.setPixelColor(2, pixels.Color(250, 250, 250)); //Back light display
-  
 }
 
 //void loop(void) {

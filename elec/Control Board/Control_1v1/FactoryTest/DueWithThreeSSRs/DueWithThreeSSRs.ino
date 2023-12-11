@@ -122,7 +122,7 @@ class Flasher
 //Read every two seconds
 PowerSense SENSE_24V("SENSE_24V", 1, 2000, 30000, 4700); //Read A1. R101+R105+R106, R102.
 PowerSense SENSE_12V("SENSE_12V", 2, 2000, 30000, 10000); //Read A2. R103+R107+R108, R104.
-PowerSense SENSE_AUX1("SENSE_AUX1", 3, 2000, 10000, 14700); //Read A3. R123, R124+R125. 
+PowerSense SENSE_AUX1("SENSE_AUX1", 3, 2000, 10000, 14700); //Read A3. R123, R124+R125.
 PowerSense SENSE_AUX2("SENSE_AUX2", 6, 2000, 10000, 14700); //Read A6 R126, R127+R128.
 
 
@@ -230,33 +230,14 @@ void setup() {
   digitalWrite(BLOWER_ENABLE, HIGH); //Set high to enable blower power.
   analogWrite(nFAN1_PWM, 200);  // Set for low RPM
 
-  setupu8g2();
-  u8g2.drawStr(5, 0, "Starting Test");
-  //  u8g2.drawStr( 5, 0, "drawBox");
-  u8g2.sendBuffer();
-  u8g2.setFont(u8g2_font_ncenB14_tr);
-  u8g2.drawStr(0, 15, "Hello World!");
-
-  pixels.show();   // Send the updated pixel colors to the hardware.
-
-
+  setupBacklights(); //Setup the neopixels
+  setupu8g2(); //Setup the graphics display
+  delay(1000);  // Hold the splash screen a second
 }//End setup()
 
 void loop() {
-uint8_t draw_state = 0;
-  // picture loop
-  u8g2.clearBuffer();
-  draw();
-  u8g2.sendBuffer();
-  // increase the state
-  draw_state++;
-  if ( draw_state >= 12 * 8 )
-    draw_state = 0;
-  // deley between each page
-
   static int pos = 0;
   encoder.tick();
-
   int newPos = encoder.getPosition();
   if (pos != newPos) {
     Serial.print("pos:");
@@ -283,8 +264,30 @@ uint8_t draw_state = 0;
     //    Serial.println("Reset position.");
   }
 
-  //   if (!updatePowerMonitor()){
-  //    Serial.println("24Volt low, probabl loss of AC power.");
-  //   }
+  if (!updatePowerMonitor()) {
+    delay(500);
+    //      Serial.println("24Volt low, probabl loss of AC power.");
+    //    u8g2.setFont(u8g2_font_helvB12_tr); //FLE
+    //    u8g2.setFont(u8g2_font_helvB08_tr); //FLE  Transparent font
+    u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
+    u8g2.setFontMode(0);
+    u8g2.setCursor(0, 41);
+    u8g2.print("               ");
+    u8g2.sendBuffer();
+    u8g2.setCursor(0, 41);
+    u8g2.print("24Volt low");
+    u8g2.sendBuffer();
+  } else {
+    delay(500);
+//    u8g2.setFont(u8g2_font_helvB08_tr); //FLE
+    u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
+    u8g2.setFontMode(0);
+    u8g2.setCursor(0, 41);
+    u8g2.print("               ");
+    u8g2.sendBuffer();
+    u8g2.setCursor(0, 41);
+    u8g2.print("24Volt Normal");
+    u8g2.sendBuffer();
+  }
 
 }//end of loop()
