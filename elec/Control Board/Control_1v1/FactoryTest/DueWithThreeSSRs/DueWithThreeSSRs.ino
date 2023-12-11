@@ -15,8 +15,8 @@
 */
 
 #define COMPANY_NAME "pubinv.org "
-#define PROG_NAME "DueWithThreeSSRs"
-#define VERSION ";_Rev_0.2"
+#define PROG_NAME "OEDCS Factory Test"
+#define VERSION ";_Rev_0.3"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -30,8 +30,6 @@ const int NUMPIXELS = 3;
 Adafruit_NeoPixel pixels(NUMPIXELS, 43, NEO_RGB + NEO_KHZ400);
 
 // OLED Display
-//U8G2_UC1701_EA_DOGS102_1_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
-//U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46);
 U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ 48, /* dc=*/ 47, /* reset=*/ 46); //Rotation 180
 
 
@@ -77,9 +75,8 @@ class PowerSense
         Serial.print(my_pinName);  //
         Serial.print(": ");  //
         Serial.println(voltage);  // RAW Read of the ADC
-
         //Update OLED display
-        u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
+        u8g2.setFont(u8g2_font_6x10_mf); //Not transparent font
         u8g2.setFontMode(0);
         u8g2.setCursor(my_offsetX, my_offsetY);
         u8g2.print("               ");
@@ -88,8 +85,6 @@ class PowerSense
         u8g2.print(my_pinName);
         u8g2.print(voltage);
         u8g2.sendBuffer();
-
-
       }
     }
 };//end PowersSense
@@ -182,9 +177,7 @@ void updateSHUTDOWN() {
     Serial.println("Shutdown button pressed");
     digitalWrite(SSR3, LOW);
     digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
-    u8g2.drawStr(0, 0, "Shutdown button pressed");
   } else {
-    //    Serial.println("Button Open");
     digitalWrite(SSR3, HIGH);
   }
 }//end update shutdown button
@@ -195,10 +188,8 @@ bool updateENC_BUT() {
     Serial.println("Button");
     digitalWrite(SSR3, LOW);
     digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
-//    u8g2.drawStr(50, 20, "Encoder button pressed");
     return true; //Reset the position
   } else {
-    //    Serial.println("Button Open");
     digitalWrite(SSR3, HIGH);
     return false;
   }
@@ -206,9 +197,6 @@ bool updateENC_BUT() {
 
 
 bool updatePowerMonitor(void) {
-  // Note:adding a task
-  //  if (DEBUG_LEVEL > 0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
-
   //Analog read of the +24V expected about 3.25V at ADC input.
   // SENSE_24V on A1.
   // Full scale is 1023, ten bits for 3.3V.
@@ -219,17 +207,11 @@ bool updatePowerMonitor(void) {
   bool powerIsGood = false;
   int lowThreshold24V = 1023 * 3 / 4;
 
-  //  if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
-  //  if (DEBUG_LEVEL > 0 )  CogCore::Debug<uint32_t>(analogRead(SENSE_24V) * ((Vcc * (R1 + R2)) / (1023.0 * R2)));
-  //  if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("\n");
-
   if (analogRead(A1) > lowThreshold24V) {
     powerIsGood = true;
-    //    if (DEBUG_LEVEL > 0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
     return true;
   } else {
     powerIsGood = false;
-    //    if (DEBUG_LEVEL > 0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
     return false;
   }
 }
@@ -277,34 +259,11 @@ void loop() {
 
   if (updateENC_BUT()) { //Check encoder, zero if button pressed
     pos = 0;
-    encoder.setPosition(0);
-    //    Serial.println("Reset position.");
+    encoder.setPosition(0);    
   }
 
   if (!updatePowerMonitor()) {
-//    delay(500);
-//    //      Serial.println("24Volt low, probabl loss of AC power.");
-//    //    u8g2.setFont(u8g2_font_helvB12_tr); //FLE
-//    //    u8g2.setFont(u8g2_font_helvB08_tr); //FLE  Transparent font
-//    u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
-//    u8g2.setFontMode(0);
-//    u8g2.setCursor(0, 41);
-//    u8g2.print("               ");
-//    u8g2.sendBuffer();
-//    u8g2.setCursor(0, 41);
-//    u8g2.print("24Volt low");
-//    u8g2.sendBuffer();
-//  } else {
-//    delay(500);
-//    //    u8g2.setFont(u8g2_font_helvB08_tr); //FLE
-//    u8g2.setFont(u8g2_font_6x10_mf); //FLE  not transparent font
-//    u8g2.setFontMode(0);
-//    u8g2.setCursor(0, 41);
-//    u8g2.print("               ");
-//    u8g2.sendBuffer();
-//    u8g2.setCursor(0, 41);
-//    u8g2.print("24Volt Normal");
-//    u8g2.sendBuffer();
+    ;
   }
 
 }//end of loop()
