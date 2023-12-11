@@ -100,9 +100,24 @@ public:
   MachineState response_state;
 };
 
+
+// These are the controllable pre-set parameters to the algorithm
+// that can be tuned (before the algorithm is running).
+class PreSetParameters  {
+public:
+  const float L_w = 250.0;  // max stack wattage
+  const float M_w = 250.0; // stack wattage at 0 wafer difference
+  const float Q_c = 30.0;  // maximum wafer difference
+  const float A_a = 30.0;  // max stack amperage
+  const float E_c = 25.0;  // Preferred Temperature limit
+  const float F_c = 40.0;  // Drop-dead abort temperature limit
+};
+
 class MachineConfig {
 public:
   MachineConfig();
+
+  PreSetParameters p;
 
   CriticalError errors[NUM_CRITICAL_ERROR_DEFINITIONS];
 
@@ -292,10 +307,10 @@ void _reportFanSpeed();
   const float DECREASE_STACK_WATTAGE_INCREMENT_W = 1.0;
 
   const float FAN_SPEED_MAX_p = 80;
-  const float FAN_SPEED_MIN_p = 50;
-  const float FAN_SPEED_PREFERRED_p = 50;
+  const float FAN_SPEED_MIN_p = 30;
+  const float FAN_SPEED_PREFERRED_p = 40;
   const float LOW_TEMP_TRIGGER = 20;
-  const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 700.0;
+  const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 800.0;
   const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
   const float FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c = 20.0;
 

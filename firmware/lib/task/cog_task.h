@@ -43,17 +43,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 namespace CogApp
 {
 
-  // These are the controllable pre-set parameters to the algorithm
-// that can be tuned (before the algorithm is running).
-   class PreSetParameters  {
-   public:
-     const float L_w = 200.0;  // max stack wattage
-     const float M_w = 200.0; // stack wattage at 0 wafer difference
-     const float Q_c = 30.0;  // maximum wafer difference
-     const float A_a = 30.0;  // max stack amperage
-     const float E_c = 25.0;  // Preferred Temperature limit
-     const float F_c = 40.0;  // Drop-dead abort temperature limit
-   };
   class OneButtonControl {
   public:
     // Current Stack Wattage
@@ -63,7 +52,7 @@ namespace CogApp
     // Computing Pumping Wattage
     float PW_w = 0;
     // Current Fan Speed
-    float S_p = 0;
+    float S_p = 50;
     // Current Total Wattage
     float TW_w = 0;
     // Current Heater Wattage
@@ -89,8 +78,8 @@ namespace CogApp
     int pause_substate = 0;
     unsigned long current_pause_began = 0;
 
-    const float DT_PAUSE_LIMIT_K = 30.0;
-    const float DT_MAX_LIMIT_K = 50.0;
+    const float DT_PAUSE_LIMIT_K = 5.0;
+    const float DT_MAX_LIMIT_K = 20.0;
     const float PAUSE_TIME_S = 5*60;
     // These are our ohms in the cable and the leads.
     // I'm not entirely sure what this should be.
@@ -101,13 +90,14 @@ namespace CogApp
   {
   public:
     int PERIOD_MS = 10000;
+    int DEBUG_FAN = 0;
     int DEBUG_LEVEL = 0;
     int DEBUG_LEVEL_OBA = 0;
 
     unsigned long last_time_ramp_changed_ms = 0;
 
     OneButtonControl c;
-    PreSetParameters p;
+    //    PreSetParameters p;
     DutyCycleTask *dutyCycleTask;
     WattagePIDObject *wattagePIDObject;
 

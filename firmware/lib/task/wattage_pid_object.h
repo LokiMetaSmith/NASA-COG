@@ -28,7 +28,7 @@
   class WattagePIDObject
   {
   public:
-    WattagePIDObject();
+    WattagePIDObject(float TOTAL_WATTAGE);
     PID *pidControllerWattage;
     int DEBUG_PID = 0;
 
@@ -49,9 +49,9 @@
     float compute(float controlTemp);
 
   private:
-    double FKp = 10.0;
+    double FKp = 20.0;
     double FKi = 1.0;
-    double FKd = 0.5;
+    double FKd = 1.0;
 
   };
 

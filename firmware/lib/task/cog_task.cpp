@@ -60,7 +60,8 @@ namespace CogApp
   {
     CogCore::Debug<const char *>("CogTask init\n");
     getConfig()->fanDutyCycle = 0.0;
-    wattagePIDObject = new WattagePIDObject();
+    const float MAXIMUM_TOTAL_WATTAGE = MachineConfig::HEATER_MAXIMUM_WATTAGE + getConfig()->p.L_w;
+    wattagePIDObject = new WattagePIDObject(MAXIMUM_TOTAL_WATTAGE);
     return true;
   }
 
@@ -87,22 +88,6 @@ namespace CogApp
   // I am currently in the process of implementing the "One-Button Algorithm".
   // I will first implement the helper functions. -rlr
   float CogTask::computeTotalWattage(float controlTemp) {
-    // This has to use a PID controller, which will require some thought
-    // to determine how we add this in.
-
-
-    // somehow we need to make sure this functionality is accomplished.
-    // Possibly it is already done in the various state machines.
-    // MachineState ms = getConfig()->ms;
-    // if ((ms == Off) || (ms == EmergencyShutdown) || (ms == OffUserAck)) {
-    //   // in this case, we do nothing...but we will put the set point
-    //   // to room temperature.
-    //   this->temperatureSetPoint_C = 25.0;
-    //   getConfig()->report->heater_duty_cycle = 0.0;
-    //   dutyCycleTask->dutyCycle = 0.0;
-    //   getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
-    //  return true;
-    // }
     float totalWattage = wattagePIDObject->compute(controlTemp);
     return totalWattage;
   }
@@ -117,15 +102,15 @@ namespace CogApp
     // here we implement a straight-line decrease in statck wattage proportional
     // to the difference C - B
     float y;
-    float M = p.M_w;
+    float M = getConfig()->p.M_w;
     if (C > B) {
       float d = abs(C - B);
-      float Q = p.Q_c;
-      y = d * M / Q + M;
+      float Q = getConfig()->p.Q_c;
+      y = d * -M / Q + M;
     } else {
       y = M;
     }
-    float L = p.L_w;
+    float L = getConfig()->p.L_w;
     float w = max(0.0,min(L,y));
     return min(w,targetTotalWattage);
   }
@@ -161,7 +146,9 @@ namespace CogApp
 
 
   float CogTask::computeFanSpeedTarget(float currentTargetTemp, float temp, float heaterWatts,float A, float B, float C) {
-    const bool NEW_STRATEGY = false;
+    CogCore::DebugLn<const char *>("QQQQQQQQQQQQQQQQQQQQQ");
+
+    const bool NEW_STRATEGY = true;
     // The NEW_STRATEGY is based on learnings that we have to adjust the fan dynamically.
     // The idea is to adjust the fan between three values: MIN, MAX, and PREFERRED.
     // We test for three boolean conditions, and compute fan speed based on
@@ -175,10 +162,22 @@ namespace CogApp
       bool HI_DELTA = false;
       bool VERY_HI_DELTA = false;
       float delta = abs(B-C);
-      LOW_TEMP = (temp < currentTargetTemp + getConfig()->LOW_TEMP_TRIGGER);
-      HI_DELTA = (delta < c.DT_PAUSE_LIMIT_K);
-      VERY_HI_DELTA = (delta < c.DT_MAX_LIMIT_K);
+      LOW_TEMP = ((temp  + getConfig()->LOW_TEMP_TRIGGER) < currentTargetTemp);
+      HI_DELTA = (delta > c.DT_PAUSE_LIMIT_K);
+      VERY_HI_DELTA = (delta > c.DT_MAX_LIMIT_K);
 
+      if (DEBUG_FAN > 0) {
+        CogCore::Debug<const char *>("XXXX LOW_TEMP: ");
+        CogCore::DebugLn<int>(LOW_TEMP);
+      }
+      if (DEBUG_FAN > 0) {
+        CogCore::Debug<const char *>("XXXX HI_DELTA: ");
+        CogCore::DebugLn<int>(HI_DELTA);
+      }
+      if (VERY_HI_DELTA > 0) {
+        CogCore::Debug<const char *>("XXXX VERY_HI_DELTA: ");
+        CogCore::DebugLn<int>(VERY_HI_DELTA);
+      }
       switch (HI_DELTA) {
       case false:
         switch (LOW_TEMP) {
@@ -217,34 +216,35 @@ namespace CogApp
         break;
       }
 
-        if (DEBUG_LEVEL > 1) {
-          CogCore::Debug<const char *>("Full power mod fan percentage");
-        }
+      if (DEBUG_FAN > 0) {
+        CogCore::Debug<const char *>("XXXX Mode: ");
+        CogCore::DebugLn<int>(a);
+      }
       switch (a) {
       case INCREASE:
-        if (DEBUG_LEVEL > 1) {
-          CogCore::Debug<const char *>("Fan Action: Increase\n");
+        if (DEBUG_FAN > 0) {
+          CogCore::DebugLn<const char *>("XXXX Fan Action: Increase\n");
         }
         return getConfig()->FAN_SPEED_MAX_p;
         break;
       case DECREASE:
-        if (DEBUG_LEVEL > 1) {
-          CogCore::Debug<const char *>("Fan Action: Decrease\n");
+        if (DEBUG_FAN > 0) {
+          CogCore::DebugLn<const char *>("XXXX Fan Action: Decrease\n");
         }
         return getConfig()->FAN_SPEED_MIN_p;
         break;
       case NORMALIZE:
-        if (DEBUG_LEVEL > 1) {
-          CogCore::Debug<const char *>("ACTION: Increase\n");
+        if (DEBUG_FAN > 0) {
+          CogCore::DebugLn<const char *>("XXXX ACTION: Normalize\n");
         }
         return getConfig()->FAN_SPEED_PREFERRED_p;
         break;
       case ABORT:
-        if (DEBUG_LEVEL > 0) {
-          CogCore::Debug<const char *>("ACTION: ABORT!\n");
+        if (DEBUG_FAN > 0) {
+          CogCore::DebugLn<const char *>("XXXX ACTION: ABORT!\n");
         }
         // This is a major problem....we need to scream and croak.
-        CogCore::Debug<const char *>("ACTION: ABORT DUE TO INABILITY TO PROGESS SAFELY\n");
+        CogCore::DebugLn<const char *>("ACTION: ABORT DUE TO INABILITY TO PROGESS SAFELY\n");
         break;
       }
 
@@ -358,14 +358,14 @@ namespace CogApp
 
     const float actualWattage = getConfig()->report->stack_watts;
 
-    const float presetLimitedWattage = p.L_w;
-    getConfig()->report->max_stack_watts_W = p.L_w ;
+    const float presetLimitedWattage = getConfig()->p.L_w;
+    getConfig()->report->max_stack_watts_W = getConfig()->p.L_w ;
 
     // Now we want to limit this with amps
-    const float wattsLimitedByAmperage = p.A_a * p.A_a * R_O;
+    const float wattsLimitedByAmperage = getConfig()->p.A_a * getConfig()->p.A_a * R_O;
     const float limitedWattage = min(presetLimitedWattage,wattsLimitedByAmperage);
     // This is actually a constant in our program, so it makes little sense
-    getConfig()->report->max_stack_amps_A = p.A_a;
+    getConfig()->report->max_stack_amps_A = getConfig()->p.A_a;
 
 
     //    c.W_w = actualWattage;
@@ -409,9 +409,13 @@ namespace CogApp
     }
 
     // I'm not sure why I was performing the action below that is commented!
-    stackWattage_w = sw;
-    //    stackWattage_w = min(getConfig()->report->stack_watts + FUDGE_STACK_WATTS,
-    //                              sw);
+    //    stackWattage_w = sw;
+    // This is needed because the stack especially when cold, cannot obtain
+    // all of the wattage that we want...we limit it to what we have actually
+    // achieved, plus a fudge factor. Without this action, we never put enough
+    // into the heater.
+    stackWattage_w = min(getConfig()->report->stack_watts + FUDGE_STACK_WATTS,
+                                  sw);
     heaterWattage_w = max(0,
                           min(totalWattage_w - stackWattage_w,
                               getConfig()->HEATER_MAXIMUM_WATTAGE));
@@ -478,15 +482,15 @@ namespace CogApp
       getHAL()->_fans[0]._calcRPM(0);
 
 
-    MachineState ms = getConfig()->ms;
-    if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
-      unsigned long now_ms = millis();
-      unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
-      CogCore::Debug<const char *>("delta_ms: ");
-      CogCore::DebugLn<long>(delta_ms);
-      changeRamps(delta_ms);
-      last_time_ramp_changed_ms = now_ms;
-    }
+    // MachineState ms = getConfig()->ms;
+    // if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
+    //   unsigned long now_ms = millis();
+    //   unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
+    //   CogCore::Debug<const char *>("delta_ms: ");
+    //   CogCore::DebugLn<long>(delta_ms);
+    //   changeRamps(delta_ms);
+    //   last_time_ramp_changed_ms = now_ms;
+    // }
 
     this->StateMachineManager::run_generic();
 
@@ -586,6 +590,9 @@ bool CogTask::updatePowerMonitor()
       unsigned long now_ms = millis();
       unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
       changeRamps(delta_ms);
+      getConfig()->report->target_fan_pc = c.tS_p;
+      _updateFanSpeed(c.S_p);
+
       last_time_ramp_changed_ms = now_ms;
 
       float totalWattage_w;
@@ -631,7 +638,10 @@ bool CogTask::updatePowerMonitor()
       _updateStackWattage(stackWattage_w);
 
       // This is measured as a percentage...
-      _updateFanSpeed(fanSpeed_p);
+      //      _updateFanSpeed(fanSpeed_p);
+      c.tS_p = fanSpeed_p;
+
+
       getConfig()->CURRENT_HEATER_WATTAGE_W = heaterWattage_w;
 
       dutyCycleTask->dutyCycle = dc;
