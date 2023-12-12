@@ -128,7 +128,7 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
     CogCore::Debug<int>(idx);
     CogCore::Debug<const char *>("\n");
       // As long as there is not a fault present, this creates;
-      // if one is allready present, we leave it.
+      // if one is already present, we leave it.
       if (!getConfig()->errors[ec].fault_present) {
         getConfig()->errors[ec].fault_present = true;
         getConfig()->errors[ec].begin_condition_ms = millis();

@@ -135,8 +135,19 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
     sprintf(buffer+strlen(buffer), "\"StackOhms\": %.2f",msr->stack_ohms);
     strcat(buffer, ",\n");
   }
+  //add a state for error: no error
+  for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++)
+  {
+	  if (msr->CriticalError[i].fault_present)//critical error detected
+	  {
+		sprintf(buffer+strlen(buffer), "\"CriticalError\": ");  
+		sprintf(buffer+strlen(buffer),msr->CriticalErrorNames[i]);
+		strcat(buffer, ",\n");
+	  }
+  }
   sprintf(buffer+strlen(buffer), "\"FanRPM\": %.2f",msr->fan_rpm);
   strcat(buffer, "\n");
+  
 }
 
 void MachineConfig::change_ramp(float ramp) {

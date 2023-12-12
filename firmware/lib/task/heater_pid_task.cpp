@@ -35,6 +35,7 @@ HeaterPIDTask::HeaterPIDTask() {
 bool HeaterPIDTask::_init()
 {
   CogCore::Debug<const char *>("HeaterPIDTask init\n");
+  last_temp_change = millis(); //initialize last_temp_change when the task starts
   return true;
 }
 
@@ -100,6 +101,33 @@ void HeaterPIDTask::shutHeaterDown() {
   getConfig()->report->heater_duty_cycle = 0.0;
   dutyCycleTask->dutyCycle = 0.0;
 }
+//  evaluateHeater(previousInput,this->Input_temperature_C,this->HeaterSetPoint_C,s)
+
+double HeaterPIDTask::evaluateHeater(	int idx, \
+							CritcalErrorCondition ec, \
+							double &previous_input_temperature, 
+							double &current_input_temperature,
+							double &goal_temperature)
+{
+
+	time_now = millis();
+	
+	if(previous_input_temperature != current_input_temperature)
+	{
+		last_temp_change = time_now;
+	}
+	
+	if ((time_now - last_temp_change) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
+	{
+	  // As long as there is not a fault present, this creates;
+      // if one is already present, we leave it.
+      if (!getConfig()->errors[ec].fault_present) {
+        getConfig()->errors[ec].fault_present = true;
+        getConfig()->errors[ec].begin_condition_ms = millis();
+      }
+	}
+}
+
 bool HeaterPIDTask::_run()
 {
   // if we are running the One Button Algorithm
@@ -118,6 +146,8 @@ bool HeaterPIDTask::_run()
    CogCore::Debug<const char *>("\n");
   }
 
+
+  
   MachineState ms = getConfig()->ms;
   if ((ms == Off) || (ms == EmergencyShutdown) || (ms == OffUserAck)) {
     // in this case, we do nothing...but we will put the set point
@@ -131,7 +161,10 @@ bool HeaterPIDTask::_run()
   double previousInput = this->Input_temperature_C;
 
   this->Input_temperature_C = getConfig()->report->post_heater_C;
-
+  
+  //evaluate the temerature and verify it's changing within the predescribed time interval
+  evaluateHeater(0,HEATER_UNRESPONSIVE,previousInput,this->Input_temperature_C,this->HeaterSetPoint_C);
+  
   // didn't hang when return was here.
   pidControllerHeater->Compute();
 

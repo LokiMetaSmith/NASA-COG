@@ -85,12 +85,30 @@ public:
   virtual bool init() = 0;
 };
 
-#define NUM_CRITICAL_ERROR_DEFINITIONS 3
+#define NUM_CRITICAL_ERROR_DEFINITIONS 10
 enum CriticalErrorCondition {
   POST_HEATER_TC_BAD,
   POST_GETTER_TC_BAD,
-  POST_STACK_TC_BAD
+  POST_STACK_TC_BAD,
+  BLOWER_LOSS_PWR,
+  BLOWER_UNRESPONSIVE,
+  HEATER_UNRESPONSIVE,
+  STACK_LOSS_PWR,
+  PSU_UNRESPONSIVE,
+  MAINS_LOSS_PWR
 };
+
+constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINITIONS] = {
+    "Post Heater TC-A Bad",
+    "Post Getter TC-B Bad",
+    "Post Stack  TC-C Bad",
+	"Lost 24v Power",
+	"TACH unresponsive",
+	"Lost control of Heater",
+	"Lost control of the Stack",
+	"Lost control of the programmable PSU",
+	"Lost mains power, on UPS"
+  };
 
 class CriticalError {
 public:
@@ -141,6 +159,7 @@ public:
   const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
   const float BOUND_MAX_WATTAGE = 300.0;
   const float BOUND_MAX_RAMP = 3.0;
+  const float BOUND_MAX_TEMP_TRANSITION = 10.0;
   // TODO: Need to check this.
 
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
@@ -186,7 +205,7 @@ public:
   static const int TEMP_READ_PERIOD_MS = 225; // this is intentionally a little less than half the PID PERIOD
   static const int INIT_PID_PERIOD_MS = 500;
 
-  static const int INIT_HEARTBEAT_PERIOD_MS = 500;
+  static const int INIT_HEARTBEAT_PERIOD_MS = 500; // heartbeat task period
 
   static const int INIT_LOG_RECORDER_LONG_PERIOD_MS = 600000; //10 minute record interval
   static const int INIT_LOG_RECORDER_SHORT_PERIOD_MS = 1000;  //1 second record interval
