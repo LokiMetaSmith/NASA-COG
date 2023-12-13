@@ -118,9 +118,20 @@ public:
   MachineState response_state;
 };
 
+
+// These are the controllable pre-set parameters to the algorithm
+// that can be tuned (before the algorithm is running).
+class PreSetParameters  {
+public:
+  const float M_w = 250.0; // stack wattage at 0 wafer difference
+  const float Q_c = 30.0;  // maximum wafer difference
+};
+
 class MachineConfig {
 public:
   MachineConfig();
+
+  PreSetParameters p;
 
   CriticalError errors[NUM_CRITICAL_ERROR_DEFINITIONS];
 
@@ -141,8 +152,10 @@ public:
   float RAMP_DN_TARGET_D_MIN = -0.5; // R (degrees C per minute)
   void change_ramp(float ramp);
   float TARGET_TEMP_C = 30.0; // This is the goal target
-  float MAX_AMPERAGE = 0.0; // A (Amperes)
-  float MAX_STACK_WATTAGE = 0.0; // W (Wattage)
+
+  float MAX_AMPERAGE = 30.0; // A (Amperes)
+  float MAX_STACK_WATTAGE = 250.0; // W (Wattage)
+
   float FAN_SPEED = 0.0; // F (fraction between 0.0 and 1.0)
 
   unsigned long BEGIN_DN_TIME_MS = 0;
@@ -156,6 +169,8 @@ public:
   const float BOUND_MAX_TEMP = 750.0;
   const float BOUND_MIN_TEMP = 25.0;
   static constexpr float NOMINAL_AMBIENT_c = 25.0;
+
+
   const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
   const float BOUND_MAX_WATTAGE = 300.0;
   const float BOUND_MAX_RAMP = 3.0;
@@ -311,10 +326,10 @@ void _reportFanSpeed();
   const float DECREASE_STACK_WATTAGE_INCREMENT_W = 1.0;
 
   const float FAN_SPEED_MAX_p = 80;
-  const float FAN_SPEED_MIN_p = 50;
-  const float FAN_SPEED_PREFERRED_p = 50;
+  const float FAN_SPEED_MIN_p = 30;
+  const float FAN_SPEED_PREFERRED_p = 40;
   const float LOW_TEMP_TRIGGER = 20;
-  const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 700.0;
+  const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 800.0;
   const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
   const float FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c = 20.0;
 

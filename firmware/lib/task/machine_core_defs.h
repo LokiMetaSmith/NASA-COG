@@ -66,6 +66,7 @@ struct MachineStatusReport {
   float max_stack_watts_W;
   float target_ramp_C;
   float fan_pwm;
+  float target_fan_pc;
 
   // currently unused
   float total_wattage_W;

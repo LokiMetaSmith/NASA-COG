@@ -61,6 +61,8 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         CogCore::DebugLn<float>(msr->max_stack_watts_W);
         CogCore::Debug<const char *>("Fan PWM   0-1: ");
         CogCore::DebugLn<float>(msr->fan_pwm);
+        CogCore::Debug<const char *>("Fan Target % : ");
+        CogCore::DebugLn<float>(msr->target_fan_pc);
         CogCore::Debug<const char *>("Post Heater C: ");
         CogCore::Debug<float>(msr->post_heater_C);
         CogCore::Debug<const char *>("\n");
@@ -113,6 +115,8 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
   sprintf(buffer+strlen(buffer), "\"MaxStackW\": %.2f",msr->max_stack_watts_W);
   strcat(buffer, ",\n");
   sprintf(buffer+strlen(buffer), "\"FanPWM\": %.2f",msr->fan_pwm);
+  strcat(buffer, ",\n");
+  sprintf(buffer+strlen(buffer), "\"TargFanPC\": %.2f",msr->target_fan_pc);
   strcat(buffer, ",\n");
   sprintf(buffer+strlen(buffer), "\"HeaterC\": %.2f",msr->post_heater_C);
   strcat(buffer, ",\n");
