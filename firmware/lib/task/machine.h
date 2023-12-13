@@ -319,7 +319,10 @@ void _reportFanSpeed();
 
   const float TEST_MINIMUM_STACK_AMPS = 0.1;
 
-
+  // I believe this should be tested to see if a much slower
+  // rate creates a more stable system. It makes no sense to me
+  // to do this faster then than the 3-second turn-on time for the
+  // heater. I suggest this be set to 20 seconds.
   static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;
 
 };

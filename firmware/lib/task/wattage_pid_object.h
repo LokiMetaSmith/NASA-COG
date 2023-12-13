@@ -51,7 +51,7 @@
   private:
     double FKp = 20.0;
     double FKi = 1.0;
-    double FKd = 1.0;
+    double FKd = 4.0;
 
   };
 

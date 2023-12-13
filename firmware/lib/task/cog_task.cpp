@@ -163,7 +163,7 @@ namespace CogApp
       bool VERY_HI_DELTA = false;
       float delta = abs(B-C);
       LOW_TEMP = ((temp  + getConfig()->LOW_TEMP_TRIGGER) < currentTargetTemp);
-      HI_DELTA = (delta > c.DT_PAUSE_LIMIT_K);
+      HI_DELTA = (delta > c.DELTA_LIMIT_K);
       VERY_HI_DELTA = (delta > c.DT_MAX_LIMIT_K);
 
       if (DEBUG_FAN > 0) {
