@@ -1,4 +1,4 @@
-In evaluation of proper control of an ODECOS and CFC, the following hazards need to be considered
+##### In evaluation of proper control of an ODECOS and CFC, the following hazards need to be considered
 - Uncontrolled oxygen production
   -- leaking pipes or cracked stacks could cause excessive O2 build up in enclosed spaces
   -- could cause excessive oxygen levels in enclosed spaces
@@ -16,7 +16,7 @@ In evaluation of proper control of an ODECOS and CFC, the following hazards need
   -- can cause fire hazards for other devices and materials in the ajoined enclosed space.
 
 
-Resolutions
+##### Resolutions
 -  Uncontrolled oxygen production 
   -- a well functioning controller that monitors pressure and meters O2 production satisfies this condition during normal operation
   -- Disabling the stack power supply and the stack heater will eliminate the systems ability to make oxygen 
@@ -39,10 +39,12 @@ Resolutions
   -- a controller that monitors inlet and ambient temperature should satisfy this condition
 
 
-Controller safety features
+##### Controller safety features
 - The controller is designed such that on loss of control of the DUE or loss of power, the controller produces a condition that is intrinsically safe and disables production of oxygen
 
 
-References: 
+##### References: 
+
 https://www.eaton.com/ie/en-gb/markets/machine-building/service-and-support-machine-building-moem-service-eaton/blogs/emergency-stop-circuit---blogs---eaton.html
+
 https://en.wikipedia.org/wiki/Watchdog_timer
