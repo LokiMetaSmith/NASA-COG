@@ -65,7 +65,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE 1.75
 
 #endif
-
+#define DISPLAY_CS 48
 
 #include <machine_core_defs.h>
 

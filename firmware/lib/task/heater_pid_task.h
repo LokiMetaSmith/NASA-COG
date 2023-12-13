@@ -46,7 +46,7 @@
  
 	
     double evaluateHeater(	int idx, \
-							CritcalErrorCondition ec, \
+							CriticalErrorCondition ec, \
 							double &previous_input_temperature, 
 							double &current_input_temperature,
 							double &goal_temperature); //returns a safe heater set point given inputs
