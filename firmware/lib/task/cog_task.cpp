@@ -60,15 +60,15 @@ namespace CogApp
   {
     CogCore::Debug<const char *>("CogTask init\n");
     getConfig()->fanDutyCycle = 0.0;
-    const float MAXIMUM_TOTAL_WATTAGE = MachineConfig::HEATER_MAXIMUM_WATTAGE + getConfig()->p.L_w;
+    const float MAXIMUM_TOTAL_WATTAGE = MachineConfig::HEATER_MAXIMUM_WATTAGE + getConfig()->MAX_STACK_WATTAGE;
     wattagePIDObject = new WattagePIDObject(MAXIMUM_TOTAL_WATTAGE);
     return true;
   }
 
   void CogTask::printGenericInstructions() {
     CogCore::Debug<const char *>("Enter s:1 to Turn On, s:0 to Turn Off.\n");
-    CogCore::Debug<const char *>("Enter s:2 to Turn Enter Automatic Control.");
-    CogCore::Debug<const char *>("Enter a:XX.X to set (a)mperage, (w)attage, (f)an speed (h)eater set p., and (r)amp rate.");
+    CogCore::Debug<const char *>("Enter s:2 to Turn Enter Automatic Control.\n");
+    CogCore::Debug<const char *>("Enter a:XX.X to set (a)mperage, (w)attage, (f)an speed (h)eater set p., and (r)amp rate.\n");
   }
 
   COG_HAL* CogTask::getHAL() {
@@ -110,7 +110,7 @@ namespace CogApp
     } else {
       y = M;
     }
-    float L = getConfig()->p.L_w;
+    float L = getConfig()->MAX_STACK_WATTAGE;
     float w = max(0.0,min(L,y));
     return min(w,targetTotalWattage);
   }
@@ -167,16 +167,20 @@ namespace CogApp
       VERY_HI_DELTA = (delta > c.DT_MAX_LIMIT_K);
 
       if (DEBUG_FAN > 0) {
-        CogCore::Debug<const char *>("XXXX LOW_TEMP: ");
-        CogCore::DebugLn<int>(LOW_TEMP);
-      }
-      if (DEBUG_FAN > 0) {
-        CogCore::Debug<const char *>("XXXX HI_DELTA: ");
-        CogCore::DebugLn<int>(HI_DELTA);
-      }
-      if (VERY_HI_DELTA > 0) {
-        CogCore::Debug<const char *>("XXXX VERY_HI_DELTA: ");
-        CogCore::DebugLn<int>(VERY_HI_DELTA);
+        if (LOW_TEMP > 0) {
+          CogCore::Debug<const char *>("XXXX LOW_TEMP: ");
+          CogCore::DebugLn<int>(LOW_TEMP);
+          CogCore::DebugLn<float>(temp);
+          CogCore::DebugLn<float>(currentTargetTemp);
+        }
+        if (HI_DELTA > 0) {
+          CogCore::Debug<const char *>("XXXX HI_DELTA: ");
+          CogCore::DebugLn<int>(HI_DELTA);
+        }
+        if (VERY_HI_DELTA > 0) {
+          CogCore::Debug<const char *>("XXXX VERY_HI_DELTA: ");
+          CogCore::DebugLn<int>(VERY_HI_DELTA);
+        }
       }
       switch (HI_DELTA) {
       case false:
@@ -358,14 +362,14 @@ namespace CogApp
 
     const float actualWattage = getConfig()->report->stack_watts;
 
-    const float presetLimitedWattage = getConfig()->p.L_w;
-    getConfig()->report->max_stack_watts_W = getConfig()->p.L_w ;
+    const float presetLimitedWattage = getConfig()->MAX_STACK_WATTAGE;
+    getConfig()->report->max_stack_watts_W = getConfig()->MAX_STACK_WATTAGE;
 
     // Now we want to limit this with amps
-    const float wattsLimitedByAmperage = getConfig()->p.A_a * getConfig()->p.A_a * R_O;
+    const float wattsLimitedByAmperage = getConfig()->MAX_AMPERAGE * getConfig()->MAX_AMPERAGE * R_O;
     const float limitedWattage = min(presetLimitedWattage,wattsLimitedByAmperage);
     // This is actually a constant in our program, so it makes little sense
-    getConfig()->report->max_stack_amps_A = getConfig()->p.A_a;
+    getConfig()->report->max_stack_amps_A = getConfig()->MAX_AMPERAGE;
 
 
     //    c.W_w = actualWattage;
@@ -415,12 +419,12 @@ namespace CogApp
     // achieved, plus a fudge factor. Without this action, we never put enough
     // into the heater.
     stackWattage_w = min(getConfig()->report->stack_watts + FUDGE_STACK_WATTS,
-                                  sw);
+                                  limitedWattage);
     heaterWattage_w = max(0,
                           min(totalWattage_w - stackWattage_w,
                               getConfig()->HEATER_MAXIMUM_WATTAGE));
 
-    fanSpeed_p = computeFanSpeedTarget(getConfig()->SETPOINT_TEMP_C, T_c,heaterWattage_w,A,B,C);
+    fanSpeed_p = computeFanSpeedTarget(getConfig()->SETPOINT_TEMP_C, A, heaterWattage_w,A,B,C);
 
   }
 

@@ -78,9 +78,9 @@ namespace CogApp
     int pause_substate = 0;
     unsigned long current_pause_began = 0;
 
-    const float DT_PAUSE_LIMIT_K = 5.0;
-    const float DT_MAX_LIMIT_K = 20.0;
-    const float PAUSE_TIME_S = 5*60;
+    const float DT_PAUSE_LIMIT_K = 30.0;
+    const float DT_MAX_LIMIT_K = 45.0;
+    const float PAUSE_TIME_S = 2*60;
     // These are our ohms in the cable and the leads.
     // I'm not entirely sure what this should be.
     const float CABLE_O = 0.1;

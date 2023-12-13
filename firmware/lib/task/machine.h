@@ -105,12 +105,8 @@ public:
 // that can be tuned (before the algorithm is running).
 class PreSetParameters  {
 public:
-  const float L_w = 250.0;  // max stack wattage
   const float M_w = 250.0; // stack wattage at 0 wafer difference
   const float Q_c = 30.0;  // maximum wafer difference
-  const float A_a = 30.0;  // max stack amperage
-  const float E_c = 25.0;  // Preferred Temperature limit
-  const float F_c = 40.0;  // Drop-dead abort temperature limit
 };
 
 class MachineConfig {
@@ -138,8 +134,10 @@ public:
   float RAMP_DN_TARGET_D_MIN = -0.5; // R (degrees C per minute)
   void change_ramp(float ramp);
   float TARGET_TEMP_C = 30.0; // This is the goal target
-  float MAX_AMPERAGE = 0.0; // A (Amperes)
-  float MAX_STACK_WATTAGE = 0.0; // W (Wattage)
+
+  float MAX_AMPERAGE = 30.0; // A (Amperes)
+  float MAX_STACK_WATTAGE = 250.0; // W (Wattage)
+
   float FAN_SPEED = 0.0; // F (fraction between 0.0 and 1.0)
 
   unsigned long BEGIN_DN_TIME_MS = 0;
@@ -153,10 +151,11 @@ public:
   const float BOUND_MAX_TEMP = 750.0;
   const float BOUND_MIN_TEMP = 25.0;
   static constexpr float NOMINAL_AMBIENT_c = 25.0;
+
+
   const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
   const float BOUND_MAX_WATTAGE = 300.0;
   const float BOUND_MAX_RAMP = 3.0;
-  // TODO: Need to check this.
 
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
 // V = 115, W = 918.402
