@@ -166,6 +166,11 @@ PowerSense SENSE_AUX2("AUX2 ", 6, 2000, 10000, 14700, 64, 60); //Read A6 R126, R
 #define PIN_IN2 41
 #define ENC_SW 42   //A switch
 
+// Programable Power Supply Enable
+#define PS1_EN 23
+#define PS2_EN 8
+
+
 // Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
 RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
 
@@ -234,6 +239,12 @@ void setup() {
   pinMode(BLOWER_ENABLE, OUTPUT);
   digitalWrite(BLOWER_ENABLE, HIGH); //Set high to enable blower power.
   analogWrite(nFAN1_PWM, 200);  // Set for low RPM
+  pinMode(PS1_EN, OUTPUT);
+  pinMode(PS2_EN, OUTPUT);
+  digitalWrite(PS1_EN, HIGH); //Set high to enable PS1
+  digitalWrite(PS2_EN, HIGH); //Set high to enable PS2
+  
+  
 
   setupBacklights(); //Setup the neopixels
   setupu8g2(); //Setup the graphics display
