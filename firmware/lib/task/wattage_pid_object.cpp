@@ -21,11 +21,11 @@
 #include <wattage_pid_object.h>
 
 // Note: This routine may now be obsolete
-WattagePIDObject::WattagePIDObject() {
+WattagePIDObject::WattagePIDObject(float MAXIMUM_TOTAL_WATTAGE) {
     this->pidControllerWattage =
       new PID(&(this->input_temperature_C), &(this->totalWattage_Output_W),
               &(this->temperatureSetPoint_C), FKp, FKi, FKd, DIRECT);
-    this->pidControllerWattage->SetOutputLimits(0.0, MachineConfig::HEATER_MAXIMUM_WATTAGE);
+    this->pidControllerWattage->SetOutputLimits(0.0, MAXIMUM_TOTAL_WATTAGE);
     // This should probably be changed...
     this->pidControllerWattage->SetSampleTime(MachineConfig::WATTAGE_PID_SAMPLE_TIME_MS);
     this->pidControllerWattage->SetMode(AUTOMATIC);
