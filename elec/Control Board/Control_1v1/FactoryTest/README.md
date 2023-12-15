@@ -44,19 +44,30 @@ Before connecting to the Controller, program the Due with Load the factory test 
 Added legs (8-32 x 2") with nuts.
 Solder in the Due connectors, seven locations.  The long tails must go in the top and through to the bottom
 
-Connect the Due to the Controller assembly.
-Install the thermocouple amplifier assemblies.
-Observing polarity, connect thermocouples, 
+Connect the Due to the Controller assembly.  The Due is under the Controller V1.1 assembly as a "shield".
+
+#### Build Up MAX31850 Thermocouple Amplifier Assemblies
+Note that the side of the board to be up has the pads for configuring the addresses of the assemblies. 
+Observing polarity, connect thermocouples to the MAX31850 amplifire assemblies. 
+Install the MAC13850 thermocouple amplifier assemblies to the Control V1.1 at JP9, JP10 and JP15.
+**NEED IMAGE HERE**
 
 ### Apply power. 
-Apply power to Due. Note current for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED WITH DUE's THAT HAVE NEVER BEEN PROGRAMED.
+Note the +12V, the +24V and the Stack programable power supply are connected to a switchable outlet switch.
+With the power outlet off, 
+Connect the +12V power at J11.
+Connect the  +24V power at J12.
+Do not connect the Stack supply at J10 ( or J27) at this time.
+
+Apply power by switching on the AC power strip.
+Note current for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED WITH DUE's THAT HAVE NEVER BEEN PROGRAMED.
 
 **Results continued...**
 | Test ID 	| Test Name  | Setup | Test Location | Requirements  | Results SN 9 | Results SN 10 | Results SN 11 | Results SN 12 | Results SN 13 	|
 |--------:	|------------ | -------- |---------- | ------------	|--------------	|----------	|----------- |--------------- |--------------- |
-|       7 | Current, Temperature Only  | In line DC current meter |    Due input |  85 mA |             |             |             |         |
-|       8 | Check thermocouples  | Connect three |   Serial Plolter |  Three traces |   OK   |             |             |             |         |
-|       9 | boo  | In line DC current meter |    Due input |               |             |             |             |         |            |
+|      7 | Current, Temperature Only  | In line DC current meter |    Due input |  85 mA |             |             |             |         |
+|      8 | Check thermocouples  | Connect three |   Serial Plolter |  Three traces |   OK   |             |             |             |         |
+|      9 | boo  | In line DC current meter |    Due input |               |             |             |             |         |            |
 |     10 | murphy  | In line DC current meter |    Due input |               |             |             |             |         |            |
 
 
@@ -65,4 +76,5 @@ Typical Serial Plotter results.
 ![image](https://github.com/PubInv/NASA-COG/assets/5836181/1fea245c-46c5-4b3a-8275-9ffe570d2142)
 
 
-
+### Add LAN Shield
+With power off connect the LAN shield to the Control V1.1. It goes on the top side of the assembly
