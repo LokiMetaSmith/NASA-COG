@@ -86,10 +86,14 @@ public:
 };
 
 #define NUM_CRITICAL_ERROR_DEFINITIONS 3
+
+// WARNING! Do not reorder these!!
+// The code currently depends on the 0,1, and 2 being the the thermocouple errors.
 enum CriticalErrorCondition {
   POST_HEATER_TC_BAD,
   POST_GETTER_TC_BAD,
-  POST_STACK_TC_BAD
+  POST_STACK_TC_BAD,
+  COULD_NOT_INIT_3_THERMOCOUPLES
 };
 
 class CriticalError {
@@ -289,7 +293,9 @@ void _reportFanSpeed();
   // This is currently not in use; we expect to need it
   // when we are making the system more automatic.
   void runComplexAlgolAssertions();
+  void initErrors();
   void clearErrors();
+  void clearThermocoupleErrors();
 
   // This is the number of periods around a point in time we will
   // average to produce a smooth temperature. (Our thermocouples have
@@ -324,7 +330,7 @@ void _reportFanSpeed();
   // to do this faster then than the 3-second turn-on time for the
   // heater. I suggest this be set to 20 seconds.
   static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;
-
+  static bool IsAShutdownState(MachineState ms);
 };
 
 
