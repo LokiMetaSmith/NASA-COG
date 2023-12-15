@@ -6,10 +6,10 @@ Five Assemblies assigned SN 9-14.
 Notes made in issue #89 during the development of this test plan.
 
 ## Resources
-12V power supply with current monitor
-Multi meter to measure voltage and resistance.  (Actual Multimeter (EMCO DMR-3800) )
-PC with Arduino IDE to connect to USB programing port of Due
-Firmware: https://github.com/PubInv/NASA-MCOG/tree/develop/elec/Control%20Board/Control_1v1/FactoryTest
+12V power supply with current monitor.  
+Multi meter to measure voltage and resistance.  (Actual Multimeter (EMCO DMR-3800) )  
+PC with Arduino IDE to connect to USB programing port of Due  
+Firmware: https://github.com/PubInv/NASA-MCOG/tree/develop/elec/Control%20Board/Control_1v1/FactoryTest  
 Arduino Sketches: 
 1. DueWithThreeSSRs
 2. GraphicsTest
@@ -53,10 +53,10 @@ Install the MAC13850 thermocouple amplifier assemblies to the Control V1.1 at JP
 **NEED IMAGE HERE**
 
 ### Apply power. 
-Note the +12V, the +24V and the Stack programable power supply are connected to a switchable outlet switch.
+Note the +12V, the +24V and the Stack programable power supply are connected to a switchable outlet switch.  
 With the power outlet off, 
-Connect the +12V power at J11.
-Connect the  +24V power at J12.
+Connect the +12V power at J11.  
+Connect the  +24V power at J12.  
 Do not connect the Stack supply at J10 ( or J27) at this time.
 
 Apply power by switching on the AC power strip.
@@ -77,4 +77,8 @@ Typical Serial Plotter results.
 
 
 ### Add LAN Shield
-With power off connect the LAN shield to the Control V1.1. It goes on the top side of the assembly
+With power off connect the LAN shield to the Control V1.1. It goes on the top side of the assembly. Connect tto a LA
+Apply power
+Load the OEDCS firmware into the unit under test.
+
+
