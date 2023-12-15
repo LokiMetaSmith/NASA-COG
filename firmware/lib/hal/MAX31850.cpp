@@ -58,13 +58,13 @@ namespace Temperature {
   } else {
     CogCore::Debug<const char *>("OFF\n");
   }
-  
+
   // assign address manually.  the addresses below will beed to be changed
   // to valid device addresses on your bus.  device address can be retrieved
   // by using either oneWire.search(deviceAddress) or individually via
   // sensors.getAddress(deviceAddress, index)
-  //postHeaterThermometer = { 0x28, 0x1D, 0x39, 0x31, 0x2, 0x0, 0x0, 0xF0 };
-  //postGetterThermometer   = { 0x28, 0x3F, 0x1C, 0x31, 0x2, 0x0, 0x0, 0x2 };
+  // postHeaterThermometer = { 0x28, 0x1D, 0x39, 0x31, 0x2, 0x0, 0x0, 0xF0 };
+  // postGetterThermometer   = { 0x28, 0x3F, 0x1C, 0x31, 0x2, 0x0, 0x0, 0x2 };
 
   // search for devices on the bus and assign based on an index.  ideally,
   // you would do this to initially discover addresses on the bus and then
@@ -72,9 +72,36 @@ namespace Temperature {
   // the devices on your bus (and assuming they don't change).
   //
   // method 1: by index
-  if (!sensors.getAddress(postHeaterThermometer, 0)) CogCore::Debug<const char *>("Unable to find address for Device 0\n");
-  if (!sensors.getAddress(postGetterThermometer, 1)) CogCore::Debug<const char *>("Unable to find address for Device 1\n");
-  if (!sensors.getAddress(postStackThermometer, 2)) CogCore::Debug<const char *>("Unable to find address for Device 2\n");
+#ifndef ALLOW_BAD_THERMOCOUPLES_FOR_TESTING
+  const bool ALLOW_BAD_THERMOCOUPLES = false;
+#else
+  const bool ALLOW_BAD_THERMOCOUPLES = true;
+#endif
+
+  if (!sensors.getAddress(postHeaterThermometer, 0)) {
+    CogCore::Debug<const char *>("Unable to find address for Device 0\n");
+    if (!ALLOW_BAD_THERMOCOUPLES) {
+      CogCore::Debug<const char *>("Refusing to continue without a working thermocouple.\n");
+    } else {
+      CogCore::Debug<const char *>("Foolishly carrying on because ALLOW_BAD_THERMO_COUPLES_FOR_TESTING is set!\n");
+    }
+  }
+  if (!sensors.getAddress(postGetterThermometer, 1)) {
+    CogCore::Debug<const char *>("Unable to find address for Device 1\n");
+    if (!ALLOW_BAD_THERMOCOUPLES) {
+      CogCore::Debug<const char *>("Refusing to continue without a working thermocouple.\n");
+    } else {
+      CogCore::Debug<const char *>("Foolishly carrying on because ALLOW_BAD_THERMO_COUPLES_FOR_TESTING is set!\n");
+    }
+  }
+  if (!sensors.getAddress(postStackThermometer, 2)) {
+    CogCore::Debug<const char *>("Unable to find address for Device 2\n");
+    if (!ALLOW_BAD_THERMOCOUPLES) {
+      CogCore::Debug<const char *>("Refusing to continue without a working thermocouple.\n");
+    } else {
+      CogCore::Debug<const char *>("Foolishly carrying on because ALLOW_BAD_THERMO_COUPLES_FOR_TESTING is set!\n");
+    }
+  }
 
   // method 2: search()
   // search() looks for the next device. Returns 1 if a new address has been

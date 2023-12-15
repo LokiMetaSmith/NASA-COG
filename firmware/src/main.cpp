@@ -303,6 +303,14 @@ void setup()
 
   cogTask.heaterPIDTask = &heaterPIDTask;
 
+
+  // Now we will check for anything that causes us to enter a critical error, such as missing hardware
+  // components. We could not have done this earlier, because we want this to have our CogTask and
+  // our logger set up...
+
+  // NOTHING HERE YET...
+
+  // now set up debugging levels...
   logRecorderTask.DEBUG_LOG_RECORDER = 0;
   core.DEBUG_CORE = 0;
   core._scheduler.DEBUG_SCHEDULER = 0;
