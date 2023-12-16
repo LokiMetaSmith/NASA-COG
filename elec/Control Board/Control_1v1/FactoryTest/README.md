@@ -101,12 +101,13 @@ Open the Arduino Serial Monitor. Observe the data.
 |      13 |Encoder knob switch          |  |      |               |             |             |             |         |            |
 |      14 | PCB button SHUT DOWN        |  |      |               |             |             |             |         |            |
 |      15 | LAN CONNECTION              |  |      |               |             |             |             |         |            |
-|      16 | Stack power to load         |  |      |               |             |             |             |         |            |
-|      17 | Cumulocity reporting        |  |      |               |             |             |             |         |            |
-|      18 | PxxxxxxxxxxxxxxxxxN         |  |      |               |             |             |             |         |            |
+|      16 | Stack voltage at reset 1V   |  |      |               |             |             |             |         |            |
+|      17 | Stack power to load         |  |      |               |             |             |             |         |            |
+|      18 | Cumulocity reporting        |  |      |               |             |             |             |         |            |
+|      19 | PxxxxxxxxxxxxxxxxxN         |  |      |               |             |             |             |         |            |
 
 ### Add Stack Power Supply Control 
-With power off.
+With AC power on.
 Connect at J10 with power supply which has a load.
 #### PS1_EN Jumper
 
@@ -114,13 +115,27 @@ Connect at J10 with power supply which has a load.
 |--------	|------------ |
 | ![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/106d175e-e942-4e01-a3b8-b7b6f470ea7f) | Untill the OEDCS firmware is modified to support the PS1_EN and PS2_EN control lines place a jumper wire from J14 Pin 5 to J9 pin 9   |
 
-Load the OEDCS firmware into the unit under test.
-Open the serial monitor.
-Observe the voltage on the load.
-Apply AC power to Stack power supply and +24VIn.
-On serial port monitor confirm device connects to LAN
-On serial port monitor confirm device current and voltage on stack load is normal.
-Observe data on Cumulocity
+Load the OEDCS firmware into the unit under test.  
+Open the serial monitor. 
+Observe the traffice and note that a Power supply  is reported.  
+![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/f4dca5d2-eb4a-4583-9b26-30fd3afd920a)  
+Observe the traffice and note that an IP address is reported.  
+![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/607dcabb-5c68-43cf-8c0f-e29e81acb0e4)  
+On serial port monitor confirm device connects to LAN **ID16**.  
+
+#### Set Stack power supply and +24VIn.  
+With multi meeter observe the voltage on the load.  
+After observe and record voltage **ID16** after reset it should be 1V
+Send OEDCS serial port commands to set Stack power to load manual.
+* s:1
+* a:0.1
+* w:2.5
+Observe and record **ID17** Stack power to load should be 1V
+
+### Observe data on Cumulocity  
+https://mcogs.us.cumulocity.com/apps/app-builder/index.html#/application/34000/dashboard/71202350/device/45175917
+![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/2a72fef9-9d39-459b-a6e8-70a8755b9307)
+Observe and report **ID19**. 
 
 ## Rejoice another great OEDCS has been born!
 
