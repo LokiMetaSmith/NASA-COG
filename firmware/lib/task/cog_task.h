@@ -78,7 +78,7 @@ namespace CogApp
     int pause_substate = 0;
     unsigned long current_pause_began = 0;
 
-    const float DT_PAUSE_LIMIT_K = 30.0;
+    const float DT_PAUSE_LIMIT_K = 40.0;
     const float DELTA_LIMIT_K = 30.0;
     const float DT_MAX_LIMIT_K = 45.0;
     const float PAUSE_TIME_S = 2*60;
