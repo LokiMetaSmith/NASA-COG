@@ -6,7 +6,7 @@ Five Assemblies assigned SN 9-14.
 Notes made in issue #89 during the development of this test plan.
 
 ## Resources
-12V power supply with current monitor.  
+12V power supply with current monitor. Color the plug Red. 
 Multi meter to measure voltage and resistance.  (Actual Multimeter (EMCO DMR-3800) )  
 PC with Arduino IDE to connect to USB programing port of Due  
 Firmware: https://github.com/PubInv/NASA-MCOG/tree/develop/elec/Control%20Board/Control_1v1/FactoryTest  
@@ -17,6 +17,7 @@ Arduino Sketches:
 ## Test Procedure
 ### Before Test, Finish Assembly
 Install on these units the feed through headers for the Due connections which make this assembly become a shield for a Due.
+Color the connector J11, +12VIn red with a sharpie.
 
 
 ### Unpowered Test of PWA.
@@ -29,8 +30,8 @@ Date of Test _____ 20231026 _____________________
 | Test ID 	| Test Name       	| Setup                                          	| Test Location 	| Requirements    	| Results SN 9 	| Results SN 10 	| Results SN 11 	| Results SN 12 	| Results SN 13 	|
 |--------:	|-----------------	|------------------------------------------------	|---------------	|-----------------	|--------------	|---------------	|---------------	|---------------	|---------------	|
 |       1 	| Inspection      	| Inspect correct orientation on polarized parts 	|               	|                 	|      D1 and D2 Probably backwards. |               	|               	|               	|               	|
-|       2 	| +24 In No Short 	| Set ohm meter 20M. Com to GND                  	| TP20 (J12 Pin 1)   	|  > 10K 	|  34.6K  	|  34.6K        	|     34.5K  	|  34.6K       	|               	|
-|       3 	| +12 In No Short 	| Set ohm meter 20M. Com to GND                  	| TP 2 (J11 Pin 1) |   > 10K 	 |    39.8K |  39.9K      	|   39.8K         |   39.8k      	|               	|
+|       2 	| +24In In No Short 	| Set ohm meter 20M. Com to GND                  	| TP20 (J12 Pin 1)   	|  > 10K 	|  34.6K  	|  34.6K        	|     34.5K  	|  34.6K       	|               	|
+|       3 	| +12In In No Short 	| Set ohm meter 20M. Com to GND                  	| TP 2 (J11 Pin 1) |   > 10K 	 |    39.8K |  39.9K      	|   39.8K         |   39.8k      	|               	|
 |       4 	| 5VHEAD net      	| Set ohm meter 20M. Com to GND                  	| J8 Pin 1 | Open or > 1 Meg 	|     Open |       Open   	|      Open     	|      Open   	|               	|
 |       5 	| +5V net         	| Set ohm meter 20M. Com to GND                  	| J3 Pin 4 | Open or > 1 Meg 	|     12.1 Meg |      Open   	|        Open 	| 2.4K (Issue #126 https://github.com/PubInv/NASA-MCOG/issues/126) |       	|
 |       6 	| +3.3V net       	| Set ohm meter 20M. Com to GND                  	| J3 Pin 5 | Open or > 1 Meg 	|   11.7 Meg |         Open    	|         Open     	|         Open     	|               	|
@@ -58,15 +59,15 @@ Observing polarity, connect thermocouples to the MAX31850 amplifire assemblies.
 5. Connect the Ethernet W5200 (or similar) sheild on the top of the Controller V1.1
 
 ### Apply power. 
-Note the +12V, the +24V and the Stack programable power supply are connected to a switchable outlet switch.  
+Note the +12VIn, the +24VIn and the Stack programable power supply are connected to a switchable outlet switch.  
 With the power outlet off, 
-Connect the +12V power at J11.  
-Connect the  +24V power at J12.  
+Connect the +12VIn power at J11, the RED connector.  
+Connect the  +24VIn power at J12.  
 Connect SSR simulator LEDS at  SSR1, SSR2, SSR3.
 ??? Do not connect the Stack power supply at J10 ( or J27) at this time. ???
 
 Apply power by switching on the AC power strip.
-**Test ID7:** Note current in table on the +12V supply current monitor for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED WITH DUE's THAT HAVE NEVER BEEN PROGRAMED.
+**Test ID7:** Note current in table on the +12VIn supply current monitor for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED WITH DUE's THAT HAVE NEVER BEEN PROGRAMED.
 Check that the BUILDIN_LED ner the LAN Shield and SSR2 and SSR3 connectors is blinking rapidly as an idication that the firmware is running.
 Open the Arduino Serial Plotter (<Ctrl> <Shift> <L>) and touch some thermocouples.
 ### Temperature Measurements.
@@ -107,14 +108,20 @@ Open the Arduino Serial Monitor. Observe the data.
 ### Add Stack Power Supply Control 
 With power off.
 Connect at J10 with power supply which has a load.
+#### PS1_EN Jumper
+
+| Nets to Jumper 	| Description  |
+|--------	|------------ |
+| ![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/106d175e-e942-4e01-a3b8-b7b6f470ea7f) | Untill the OEDCS firmware is modified to support the PS1_EN and PS2_EN control lines place a jumper wire from J14 Pin 5 to J9 pin 9   |
+
 Load the OEDCS firmware into the unit under test.
 Open the serial monitor.
-Apply power to Stack power supply and +24V.
 Observe the voltage on the load.
+Apply AC power to Stack power supply and +24VIn.
 On serial port monitor confirm device connects to LAN
 On serial port monitor confirm device current and voltage on stack load is normal.
 Observe data on Cumulocity
 
-Rejoice another great OEDCS has been born!
+## Rejoice another great OEDCS has been born!
 
 
