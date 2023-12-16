@@ -62,32 +62,58 @@ Note the +12V, the +24V and the Stack programable power supply are connected to 
 With the power outlet off, 
 Connect the +12V power at J11.  
 Connect the  +24V power at J12.  
-Do not connect the Stack power supply at J10 ( or J27) at this time.
+Connect SSR simulator LEDS at  SSR1, SSR2, SSR3.
+??? Do not connect the Stack power supply at J10 ( or J27) at this time. ???
 
 Apply power by switching on the AC power strip.
-Note current for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED WITH DUE's THAT HAVE NEVER BEEN PROGRAMED.
+**Test ID7:** Note current in table on the +12V supply current monitor for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED WITH DUE's THAT HAVE NEVER BEEN PROGRAMED.
+Check that the BUILDIN_LED ner the LAN Shield and SSR2 and SSR3 connectors is blinking rapidly as an idication that the firmware is running.
+Open the Arduino Serial Plotter (<Ctrl> <Shift> <L>) and touch some thermocouples.
+### Temperature Measurements.
+**Test ID8:** Typical Serial Plotter results. Touching some of the thermocouples to ensure they respond.
+Note resutls in table
+![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/e4f5bb6a-2a47-4039-8720-b6846f36b7f7)
 
 **Results continued...**
 | Test ID 	| Test Name  | Setup | Test Location | Requirements  | Results SN 9 | Results SN 10 | Results SN 11 | Results SN 12 | Results SN 13 	|
 |--------:	|------------ | -------- |---------- | ------------	|--------------	|----------	|----------- |--------------- |--------------- |
 |      7 | Current, Temperature Only  | In line DC current meter |    Due input |  85 mA |             |             |             |         |
 |      8 | Check thermocouples  | Connect three |   Serial Plolter |  Three traces |   OK   |             |             |             |         |
-|      9 |   |  |      |               |             |             |             |         |            |
-|      10 |   |  |      |               |             |             |             |         |            |
-|      11 |   |  |      |               |             |             |             |         |            |
-|      12 |   |  |      |               |             |             |             |         |            |
-|      13 |   |  |      |               |             |             |             |         |            |
-|      14 |   |  |      |               |             |             |             |         |            |
-|      15 |   |  |      |               |             |             |             |         |            |
-|      16 |   |  |      |               |             |             |             |         |            |
+|      9 | future use  |  |      |               |             |             |             |         |            |
 
 
-### Temperature Measurements.
-Typical Serial Plotter results.
+Load and run factory test firmware DueWithThreeSSRs.ino
+Open the Arduino Serial Monitor. Observe the data.
+**Test ID10 ** Observe SSR1, SSR2, SSR3 LED Blinking.
+**Test ID11 ** Observe Mini12864 Display back lit and displaying splash message and four measurements.
+**Test ID12 ** Encoder Rotation Knob is back lit. Rotate the know and observe the serial port reporting changes.
+**Test ID13 ** Encoder knob switch. Press the knob and observer serial port message about shutdown.
+**Test ID14 ** PCB mount SHUT DOWN button. Press the button and observer serial port message about shutdown.
 
-### Add LAN Shield
-With power off connect the LAN shield to the Control V1.1. It goes on the top side of the assembly. Connect tto a LA
-Apply power
+
+**Results continued...**
+| Test ID 	| Test Name  | Setup | Test Location | Requirements  | Results SN 9 | Results SN 10 | Results SN 11 | Results SN 12 | Results SN 13 	|
+|      10 | SSR1, SSR2, SSR3 LED Blink  |  |      |               |             |             |             |         |            |
+|      11 | Mini12864 Display           |  |      |               |             |             |             |         |            |
+|      12 |Encoder Rotation Knob        |  |      |               |             |             |             |         |            |
+|      13 |Encoder knob switch          |  |      |               |             |             |             |         |            |
+|      14 | PCB button SHUT DOWN        |  |      |               |             |             |             |         |            |
+|      15 | LAN CONNECTION              |  |      |               |             |             |             |         |            |
+|      16 | Stack power to load         |  |      |               |             |             |             |         |            |
+|      17 | Cumulocity reporting        |  |      |               |             |             |             |         |            |
+|      18 | PxxxxxxxxxxxxxxxxxN         |  |      |               |             |             |             |         |            |
+
+### Add Stack Power Supply Control 
+With power off.
+Connect at J10 with power supply which has a load.
 Load the OEDCS firmware into the unit under test.
+Open the serial monitor.
+Apply power to Stack power supply and +24V.
+Observe the voltage on the load.
+On serial port monitor confirm device connects to LAN
+On serial port monitor confirm device current and voltage on stack load is normal.
+Observe data on Cumulocity
+
+Rejoice another great OEDCS has been born!
 
 
