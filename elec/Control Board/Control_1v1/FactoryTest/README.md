@@ -29,11 +29,11 @@ Date of Test _____ 20231026 _____________________
 | Test ID 	| Test Name       	| Setup                                          	| Test Location 	| Requirements    	| Results SN 9 	| Results SN 10 	| Results SN 11 	| Results SN 12 	| Results SN 13 	|
 |--------:	|-----------------	|------------------------------------------------	|---------------	|-----------------	|--------------	|---------------	|---------------	|---------------	|---------------	|
 |       1 	| Inspection      	| Inspect correct orientation on polarized parts 	|               	|                 	|      D1 and D2 Probably backwards. |               	|               	|               	|               	|
-|       2 	| +24 In No Short 	| Set ohm meter 20M. Com to GND                  	| TP20 (J12 Pin 1)   	|  > 10K 	|  34.6K            	|               	|               	|               	|               	|
-|       3 	| +12 In No Short 	| Set ohm meter 20M. Com to GND                  	| TP 2 (J11 Pin 1) |   > 10K 	 |    39.8K |               	|               	|               	|               	|
-|       4 	| 5VHEAD net      	| Set ohm meter 20M. Com to GND                  	| J8 Pin 1 | Open or > 1 Meg 	|     Open |               	|               	|               	|               	|
-|       5 	| +5V net         	| Set ohm meter 20M. Com to GND                  	| J3 Pin 4 | Open or > 1 Meg 	|     12.1 Meg |               	|               	|               	|
-|       6 	| +3.3V net       	| Set ohm meter 20M. Com to GND                  	| J3 Pin 5 | Open or > 1 Meg 	|   11.7 Meg |               	|               	|               	|               	|
+|       2 	| +24 In No Short 	| Set ohm meter 20M. Com to GND                  	| TP20 (J12 Pin 1)   	|  > 10K 	|  34.6K  	|  34.6K        	|     34.5K  	|  34.6K       	|               	|
+|       3 	| +12 In No Short 	| Set ohm meter 20M. Com to GND                  	| TP 2 (J11 Pin 1) |   > 10K 	 |    39.8K |  39.9K      	|   39.8K         |   39.8k      	|               	|
+|       4 	| 5VHEAD net      	| Set ohm meter 20M. Com to GND                  	| J8 Pin 1 | Open or > 1 Meg 	|     Open |       Open   	|      Open     	|      Open   	|               	|
+|       5 	| +5V net         	| Set ohm meter 20M. Com to GND                  	| J3 Pin 4 | Open or > 1 Meg 	|     12.1 Meg |      Open   	|        Open 	| 2.4K (Issue TBD) |       	|
+|       6 	| +3.3V net       	| Set ohm meter 20M. Com to GND                  	| J3 Pin 5 | Open or > 1 Meg 	|   11.7 Meg |         Open    	|         Open     	|         Open     	|               	|
 
 
 
@@ -73,8 +73,6 @@ Note current for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED W
 
 ### Temperature Measurements.
 Typical Serial Plotter results.
-![image](https://github.com/PubInv/NASA-COG/assets/5836181/1fea245c-46c5-4b3a-8275-9ffe570d2142)
-
 
 ### Add LAN Shield
 With power off connect the LAN shield to the Control V1.1. It goes on the top side of the assembly. Connect tto a LA
