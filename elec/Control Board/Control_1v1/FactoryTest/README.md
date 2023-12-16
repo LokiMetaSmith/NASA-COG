@@ -93,6 +93,7 @@ Open the Arduino Serial Monitor. Observe the data.
 
 **Results continued...**
 | Test ID 	| Test Name  | Setup | Test Location | Requirements  | Results SN 9 | Results SN 10 | Results SN 11 | Results SN 12 | Results SN 13 	|
+|--------:	|------------ | -------- |---------- | ------------	|--------------	|----------	|----------- |--------------- |--------------- |
 |      10 | SSR1, SSR2, SSR3 LED Blink  |  |      |               |             |             |             |         |            |
 |      11 | Mini12864 Display           |  |      |               |             |             |             |         |            |
 |      12 |Encoder Rotation Knob        |  |      |               |             |             |             |         |            |
