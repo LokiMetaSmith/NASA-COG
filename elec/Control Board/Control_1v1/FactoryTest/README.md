@@ -32,32 +32,37 @@ Date of Test _____ 20231026 _____________________
 |       2 	| +24 In No Short 	| Set ohm meter 20M. Com to GND                  	| TP20 (J12 Pin 1)   	|  > 10K 	|  34.6K  	|  34.6K        	|     34.5K  	|  34.6K       	|               	|
 |       3 	| +12 In No Short 	| Set ohm meter 20M. Com to GND                  	| TP 2 (J11 Pin 1) |   > 10K 	 |    39.8K |  39.9K      	|   39.8K         |   39.8k      	|               	|
 |       4 	| 5VHEAD net      	| Set ohm meter 20M. Com to GND                  	| J8 Pin 1 | Open or > 1 Meg 	|     Open |       Open   	|      Open     	|      Open   	|               	|
-|       5 	| +5V net         	| Set ohm meter 20M. Com to GND                  	| J3 Pin 4 | Open or > 1 Meg 	|     12.1 Meg |      Open   	|        Open 	| 2.4K (Issue TBD) |       	|
+|       5 	| +5V net         	| Set ohm meter 20M. Com to GND                  	| J3 Pin 4 | Open or > 1 Meg 	|     12.1 Meg |      Open   	|        Open 	| 2.4K (Issue #126 https://github.com/PubInv/NASA-MCOG/issues/126) |       	|
 |       6 	| +3.3V net       	| Set ohm meter 20M. Com to GND                  	| J3 Pin 5 | Open or > 1 Meg 	|   11.7 Meg |         Open    	|         Open     	|         Open     	|               	|
 
 
 
+### Program Due with Firmware
+Before connecting to the Controller V1.1 Assembly, program the Due with Load the factory test firmware "MAX31850_Tester.ino" 
+
 ## Finish Assembly
 
-Before connecting to the Controller, program the Due with Load the factory test firmware "MAX31850_Tester.ino" 
-
-Added legs (8-32 x 2") with nuts.
-Solder in the Due connectors, seven locations.  The long tails must go in the top and through to the bottom
-
-Connect the Due to the Controller assembly.  The Due is under the Controller V1.1 assembly as a "shield".
-
-#### Build Up MAX31850 Thermocouple Amplifier Assemblies
+#### Build Up MAX31850 Thermocouple Amplifier Sub Assemblies
 Note that the side of the board to be up has the pads for configuring the addresses of the assemblies. 
+Cut the on board shunt on each MAX31850 PCB. Measure with multimeter that the shunt to GND is open.
+Solder the header and screw terminal to the MAX31850 on the correct side.
+
+1. Install the MAC13850 thermocouple amplifier assemblies to the Control V1.1 at JP9, JP10 and JP15.
+Add a ?2.5mm? x 10 mm screw with nut as mechanice support and retention.
 Observing polarity, connect thermocouples to the MAX31850 amplifire assemblies. 
-Install the MAC13850 thermocouple amplifier assemblies to the Control V1.1 at JP9, JP10 and JP15.
 **NEED IMAGE HERE**
+
+2. Added legs (8-32 x 2") with nuts.
+3. Solder in the Due connectors, seven locations.  The long tails must go in the top and through to the bottom
+4. Connect the Due to the Controller assembly.  The Due is under the Controller V1.1 assembly as a "shield".
+5. Connect the Ethernet W5200 (or similar) sheild on the top of the Controller V1.1
 
 ### Apply power. 
 Note the +12V, the +24V and the Stack programable power supply are connected to a switchable outlet switch.  
 With the power outlet off, 
 Connect the +12V power at J11.  
 Connect the  +24V power at J12.  
-Do not connect the Stack supply at J10 ( or J27) at this time.
+Do not connect the Stack power supply at J10 ( or J27) at this time.
 
 Apply power by switching on the AC power strip.
 Note current for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED WITH DUE's THAT HAVE NEVER BEEN PROGRAMED.
@@ -67,8 +72,14 @@ Note current for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED W
 |--------:	|------------ | -------- |---------- | ------------	|--------------	|----------	|----------- |--------------- |--------------- |
 |      7 | Current, Temperature Only  | In line DC current meter |    Due input |  85 mA |             |             |             |         |
 |      8 | Check thermocouples  | Connect three |   Serial Plolter |  Three traces |   OK   |             |             |             |         |
-|      9 | boo  | In line DC current meter |    Due input |               |             |             |             |         |            |
-|     10 | murphy  | In line DC current meter |    Due input |               |             |             |             |         |            |
+|      9 |   |  |      |               |             |             |             |         |            |
+|      10 |   |  |      |               |             |             |             |         |            |
+|      11 |   |  |      |               |             |             |             |         |            |
+|      12 |   |  |      |               |             |             |             |         |            |
+|      13 |   |  |      |               |             |             |             |         |            |
+|      14 |   |  |      |               |             |             |             |         |            |
+|      15 |   |  |      |               |             |             |             |         |            |
+|      16 |   |  |      |               |             |             |             |         |            |
 
 
 ### Temperature Measurements.
