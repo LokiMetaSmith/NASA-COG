@@ -46,6 +46,10 @@
 #ifndef SANYOACEB97_H
 #define SANYOACEB97_H
 
+
+#include <abstract_fan.h>
+
+
 #ifdef ARDUINO
 #include <Arduino.h>
 #else
@@ -57,6 +61,8 @@
 // for redundancy or great flow against pressure.
 #define NUMBER_OF_FANS 1
 
+using namespace CogCore;
+
 // because these are interrupts, they cannot be members,
 // and making them static is complicated...
 
@@ -65,13 +71,14 @@ void tachISR(uint8_t i);
 void tachISR0();
 
 
-class SanyoAceB97 {
+class SanyoAceB97 : public AbstractFAN{
 private:
   const char *name;
   uint8_t id;
   uint8_t pin;
   uint8_t fan_Enable;
   
+
   // This is a ration from 0.0 to 1.0
   float _pwm_ratio[NUMBER_OF_FANS] = {0.0};
 
@@ -100,7 +107,9 @@ public:
 
   void printRPMS();
   void fanSpeedPerCentage(int s);
-
+  float evaluateFan(	CriticalErrorCondition ec, \
+						float &_normalized_PWM
+						);
   void update(float pwm_ratio);
 };
 

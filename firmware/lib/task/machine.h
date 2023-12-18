@@ -20,7 +20,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 // Hardware Abstraction Layer
 // #include "SensirionSFM3X00.h"
-#include <SanyoAceB97.h>
+//#include <SanyoAceB97.h>
+#include <abstract_fan.h>
+
 #include <OnePinHeater.h>
 
 #include <machine_script.h>
@@ -88,10 +90,11 @@ public:
 #define NUM_CRITICAL_ERROR_DEFINITIONS 10
 // WARNING! Do not reorder these!!
 // The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
+enum CriticalErrorCondition {
   POST_HEATER_TC_BAD,
   POST_GETTER_TC_BAD,
   POST_STACK_TC_BAD,
-  COULD_NOT_INIT_3_THERMOCOUPLES
+  COULD_NOT_INIT_3_THERMOCOUPLES,
   BLOWER_LOSS_PWR,
   BLOWER_UNRESPONSIVE,
   HEATER_UNRESPONSIVE,
@@ -228,6 +231,8 @@ public:
   static const int INIT_LOG_RECORDER_LONG_PERIOD_MS = 600000; //10 minute record interval
   static const int INIT_LOG_RECORDER_SHORT_PERIOD_MS = 1000;  //1 second record interval
 
+  static const int DISPLAY_UPDATE_MS = 2000; 
+  
 void _reportFanSpeed();
 
   static const int NUM_MACHINE_STATES = 8;
@@ -315,7 +320,8 @@ void _reportFanSpeed();
   void initErrors();
   void clearErrors();
   void clearThermocoupleErrors();
-
+  void clearFanErrors();
+  void clearMainsPowerErrors();
   // This is the number of periods around a point in time we will
   // average to produce a smooth temperature. (Our thermocouples have
   // only 0.25 C resolution, which is low for a 0.5C/minute control

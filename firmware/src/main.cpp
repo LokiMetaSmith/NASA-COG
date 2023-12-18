@@ -299,7 +299,7 @@ void setup()
   CogCore::TaskProperties DisplayProperties;
   DisplayProperties.name = "Display";
   DisplayProperties.id = 50;
-  DisplayProperties.period = 
+  DisplayProperties.period = MachineConfig::DISPLAY_UPDATE_MS;
   DisplayProperties.priority = CogCore::TaskPriority::Low;
   DisplayProperties.state_and_config = (void *) &machineConfig;
   bool displayAdd = core.AddTask(&displayTask, &DisplayProperties);

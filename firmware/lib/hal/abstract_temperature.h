@@ -70,7 +70,7 @@ namespace Temperature {
 
       // "Get" is intended to be a const which which does not
       // modify the object. Ben made this a const, but that
-      // makes it imposssible for us to call functions on
+      // makes it impossible for us to call functions on
       // attached objects, so I'm giving that up... - rlr
       virtual float GetTemperature();
       virtual float GetTemperature(int idx);

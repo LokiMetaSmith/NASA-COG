@@ -175,36 +175,64 @@ void MachineConfig::initErrors() {
 // here we init the errors...
  // If we lose a thermocouple for more than 10 seconds
  // we have to go into emergency shutdown.
- errors[POST_HEATER_TC_BAD].fault_present = false;
- errors[POST_GETTER_TC_BAD].fault_present = false;
- errors[POST_STACK_TC_BAD].fault_present  = false;
- errors[COULD_NOT_INIT_3_THERMOCOUPLES].fault_present = false;
+ clearThermocoupleErrors();
+ clearFanErrors();
+ clearMainsPowerErrors();
+ 
 
  errors[POST_HEATER_TC_BAD].toleration_ms = THERMOCOUPLE_FAULT_TOLERATION_TIME_MS;
  errors[POST_GETTER_TC_BAD].toleration_ms = THERMOCOUPLE_FAULT_TOLERATION_TIME_MS;
  errors[POST_STACK_TC_BAD].toleration_ms  = THERMOCOUPLE_FAULT_TOLERATION_TIME_MS;
  // No toleration for initialization erorrs.
  errors[COULD_NOT_INIT_3_THERMOCOUPLES].toleration_ms = 0;
-
+ errors[BLOWER_LOSS_PWR].toleration_ms = 0;
+ errors[BLOWER_UNRESPONSIVE].toleration_ms = 0;
+ errors[HEATER_UNRESPONSIVE].toleration_ms = 0;
+ errors[STACK_LOSS_PWR].toleration_ms = 0;
+ errors[PSU_UNRESPONSIVE].toleration_ms = 0;
+ errors[MAINS_LOSS_PWR].toleration_ms = 0;
+ 
+ 
  errors[POST_HEATER_TC_BAD].response_state = EmergencyShutdown;
  errors[POST_GETTER_TC_BAD].response_state = EmergencyShutdown;
  errors[POST_STACK_TC_BAD].response_state  = EmergencyShutdown;
  errors[COULD_NOT_INIT_3_THERMOCOUPLES].response_state  = EmergencyShutdown;
+ errors[BLOWER_LOSS_PWR].response_state = EmergencyShutdown;
+ errors[BLOWER_UNRESPONSIVE].response_state = EmergencyShutdown;
+ errors[HEATER_UNRESPONSIVE].response_state = EmergencyShutdown;
+ errors[STACK_LOSS_PWR].response_state = EmergencyShutdown;
+ errors[PSU_UNRESPONSIVE].response_state = EmergencyShutdown;
+ errors[MAINS_LOSS_PWR].response_state = EmergencyShutdown;
 }
 
 void MachineConfig::clearThermocoupleErrors() {
-// here we init the errors...
+ // here we init the errors...
  // If we lose a thermocouple for more than 10 seconds
  // we have to go into emergency shutdown.
  errors[POST_HEATER_TC_BAD].fault_present = false;
  errors[POST_GETTER_TC_BAD].fault_present = false;
  errors[POST_STACK_TC_BAD].fault_present  = false;
-}
-void MachineConfig::clearErrors() {
-  clearThermocoupleErrors();
   // we should never have to clear an init error, but this is
   // in expectation of future proofing...
   errors[COULD_NOT_INIT_3_THERMOCOUPLES].fault_present  = false;
+}
+
+void MachineConfig::clearFanErrors()  {
+ errors[BLOWER_LOSS_PWR].fault_present = false;
+ errors[BLOWER_UNRESPONSIVE].fault_present = false;
+}
+
+void MachineConfig::clearMainsPowerErrors()  {
+ errors[HEATER_UNRESPONSIVE].fault_present = false;
+ errors[STACK_LOSS_PWR].fault_present = false;
+ errors[PSU_UNRESPONSIVE].fault_present = false;
+ errors[MAINS_LOSS_PWR].fault_present = false;
+}
+
+void MachineConfig::clearErrors() {
+  clearThermocoupleErrors();
+  clearFanErrors();
+  clearMainsPowerErrors();
 }
 
 // This code is currently not invoked.

@@ -22,12 +22,12 @@
 
 #include <machine.h>
 #include <abstract_ps.h>
-
+#include <abstract_fan.h>
 
 class COG_HAL : public MachineHAL {
 public:
   const static int NUM_FANS = 1;
-  SanyoAceB97 _fans[NUM_FANS];
+  AbstractFAN* _fans[NUM_FANS];
   const static int NUM_STACKS = 1;
   AbstractPS* _stacks[NUM_STACKS];
   bool init() override;

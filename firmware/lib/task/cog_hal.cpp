@@ -51,6 +51,7 @@ bool COG_HAL::init() {
       delay(100);
   }
 
+  //init  PSU
 
   _stacks[0] = new SL_PS("FIRST_STACK",0);
   _stacks[0]->init();
@@ -66,6 +67,6 @@ bool COG_HAL::init() {
 // but this is genertic.
 void COG_HAL::_updateFanPWM(float unitInterval) {
   for (int i = 0; i < NUM_FANS; i++) {
-     _fans[i].update(unitInterval);
+     _fans[i].updatePWM(unitInterval);
   }
 }

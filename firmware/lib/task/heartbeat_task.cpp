@@ -32,6 +32,9 @@ namespace CogApp
 
     bool HeartbeatTask::_run()
     {
+	  //adding error handling tasks for events that aren't directly actuated	
+	  	 
+		
       // Note:adding a heartbeat task
       // CogCore::Debug<const char *>("HeartbeatTask run\n");
         //Toggeling the LED
