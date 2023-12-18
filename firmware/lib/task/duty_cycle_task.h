@@ -48,6 +48,8 @@ class DutyCycleTask : public CogCore::Task
     // AmOx has stated that the heater will have longer life
     // if the "time on" is set longer than 50 ms.
     const int PERIOD_MS = 3000;
+    // This is is a test to see if it removes our oscilllations
+    //    const int PERIOD_MS = 1000;
     int DEBUG_DUTY_CYCLE = 0;
     boolean isOn = false;
 

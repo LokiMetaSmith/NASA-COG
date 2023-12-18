@@ -49,6 +49,7 @@ namespace Temperature {
     float _temperature;
     OneWire oneWire;
     DallasTemperature sensors;
+    boolean ABORT_DUE_TO_SENSOR_INIT = false;
     // Pass our oneWire reference to Dallas Temperature.
   public:
     MAX31850Temperature();

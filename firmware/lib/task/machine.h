@@ -86,10 +86,12 @@ public:
 };
 
 #define NUM_CRITICAL_ERROR_DEFINITIONS 10
-enum CriticalErrorCondition {
+// WARNING! Do not reorder these!!
+// The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
   POST_HEATER_TC_BAD,
   POST_GETTER_TC_BAD,
   POST_STACK_TC_BAD,
+  COULD_NOT_INIT_3_THERMOCOUPLES
   BLOWER_LOSS_PWR,
   BLOWER_UNRESPONSIVE,
   HEATER_UNRESPONSIVE,
@@ -102,6 +104,7 @@ constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINI
     "Post Heater TC-A Bad",
     "Post Getter TC-B Bad",
     "Post Stack  TC-C Bad",
+    "Can not init three TC's",
 	"Lost 24v Power",
 	"TACH unresponsive",
 	"Lost control of Heater",
@@ -309,7 +312,9 @@ void _reportFanSpeed();
   // This is currently not in use; we expect to need it
   // when we are making the system more automatic.
   void runComplexAlgolAssertions();
+  void initErrors();
   void clearErrors();
+  void clearThermocoupleErrors();
 
   // This is the number of periods around a point in time we will
   // average to produce a smooth temperature. (Our thermocouples have
@@ -339,9 +344,12 @@ void _reportFanSpeed();
 
   const float TEST_MINIMUM_STACK_AMPS = 0.1;
 
-
+  // I believe this should be tested to see if a much slower
+  // rate creates a more stable system. It makes no sense to me
+  // to do this faster then than the 3-second turn-on time for the
+  // heater. I suggest this be set to 20 seconds.
   static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;
-
+  static bool IsAShutdownState(MachineState ms);
 };
 
 

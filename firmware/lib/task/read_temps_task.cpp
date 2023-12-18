@@ -213,10 +213,12 @@ void ReadTempsTask::updateTemperatures() {
 	CogCore::Debug<const char *>("THERMOCOUPLE FAULT PRESENT ON :");
 	CogCore::Debug<int>(i);
 	CogCore::Debug<const char *>("\n");
-	CogCore::Debug<const char *>("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
-        unsigned long now = millis();
-	CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) - ((float) now - (float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
-	CogCore::Debug<const char *>(" SECONDS.!\n");
+        if (!MachineConfig::IsAShutdownState(getConfig()->ms)) {
+          CogCore::Debug<const char *>("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
+          unsigned long now = millis();
+          CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) - ((float) now - (float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
+          CogCore::Debug<const char *>(" SECONDS.!\n");
+        }
       }
     }
 
@@ -318,7 +320,11 @@ void stage2_ReadTempsTask::updateTemperatures() {
 void ReadTempsTask::_configTemperatureSensors() {
 
 #ifdef USE_MAX31850_THERMOCOUPLES
-  _temperatureSensors = (Temperature::AbstractTemperature *) new Temperature::MAX31850Temperature[1];
+  Temperature::MAX31850Temperature* ts = new Temperature::MAX31850Temperature[1];
+  _temperatureSensors = (Temperature::AbstractTemperature *) ts;
+  if (ts[0].ABORT_DUE_TO_SENSOR_INIT) {
+    getConfig()->errors[COULD_NOT_INIT_3_THERMOCOUPLES].fault_present = true;
+  }
 #elif USE_MAX31855_THERMOCOUPLES
   _temperatureSensors = (Temperature::AbstractTemperature *) new Temperature::MAX31855Temperature[1];
 #else

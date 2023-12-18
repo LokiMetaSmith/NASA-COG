@@ -70,7 +70,7 @@ namespace CogApp
     // Stack Watts ramp rate (watts per minute)
     const float Wr_Wdm = 1.0;
     // Fan speed ramp rate (% cent per minute)
-    const float Sr_Pdm = 2.0;
+    const float Sr_Pdm = 1.0;
     // Substate in terms of pausing due to problems
     // This is an integer representing "how paused" we are.
     // At 1 or more, we are pausing increasting the target temperature.
@@ -78,7 +78,8 @@ namespace CogApp
     int pause_substate = 0;
     unsigned long current_pause_began = 0;
 
-    const float DT_PAUSE_LIMIT_K = 30.0;
+    const float DT_PAUSE_LIMIT_K = 40.0;
+    const float DELTA_LIMIT_K = 30.0;
     const float DT_MAX_LIMIT_K = 45.0;
     const float PAUSE_TIME_S = 2*60;
     // These are our ohms in the cable and the leads.

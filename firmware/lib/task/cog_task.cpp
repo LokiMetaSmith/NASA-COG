@@ -66,8 +66,7 @@ namespace CogApp
   }
 
   void CogTask::printGenericInstructions() {
-    CogCore::Debug<const char *>("Enter s:1 to Turn On, s:0 to Turn Off.\n");
-    CogCore::Debug<const char *>("Enter s:2 to Turn Enter Automatic Control.\n");
+    CogCore::Debug<const char *>("Enter s:0 to Turn Off, s:1 to Enter Manual Mode, s:2 to Turn Enter Automatic Control.\n");
     CogCore::Debug<const char *>("Enter a:XX.X to set (a)mperage, (w)attage, (f)an speed (h)eater set p., and (r)amp rate.\n");
   }
 
@@ -163,7 +162,7 @@ namespace CogApp
       bool VERY_HI_DELTA = false;
       float delta = abs(B-C);
       LOW_TEMP = ((temp  + getConfig()->LOW_TEMP_TRIGGER) < currentTargetTemp);
-      HI_DELTA = (delta > c.DT_PAUSE_LIMIT_K);
+      HI_DELTA = (delta > c.DELTA_LIMIT_K);
       VERY_HI_DELTA = (delta > c.DT_MAX_LIMIT_K);
 
       if (DEBUG_FAN > 0) {
@@ -212,7 +211,7 @@ namespace CogApp
             break;
           case true:
             a = ABORT; // We probably need to use a timer
-            // here to prevent aborting too early. I have not means of doinb that at present.
+            // here to prevent aborting too early. I have not means of doing that at present.
             break;
           }
           break;
@@ -246,9 +245,11 @@ namespace CogApp
       case ABORT:
         if (DEBUG_FAN > 0) {
           CogCore::DebugLn<const char *>("XXXX ACTION: ABORT!\n");
+          CogCore::DebugLn<const char *>("It is very unclear what action can be taken!\n");
         }
         // This is a major problem....we need to scream and croak.
         CogCore::DebugLn<const char *>("ACTION: ABORT DUE TO INABILITY TO PROGESS SAFELY\n");
+        CogCore::DebugLn<const char *>("WARNING: AT PRESENT NO ACTION WILL BE TAKEN!!\n");
         break;
       }
 

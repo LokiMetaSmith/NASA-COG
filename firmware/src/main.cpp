@@ -18,7 +18,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define COMPANY_NAME "pubinv.org "
 //#define PROG_NAME "main.cpp"
 #define PROG_NAME "OEDCS"
-#define VERSION "; Rev: 0.3.10"  // Adding power_monitor_task,  Loss Detection by +24V
+#define VERSION "; Rev: 0.3.11"  // Fan controlled version
 #define DEVICE_UNDER_TEST "Hardware: Due"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -317,15 +317,23 @@ void setup()
 
   cogTask.heaterPIDTask = &heaterPIDTask;
 
+
+  // Now we will check for anything that causes us to enter a critical error, such as missing hardware
+  // components. We could not have done this earlier, because we want this to have our CogTask and
+  // our logger set up...
+
+  // NOTHING HERE YET...
+
+  // now set up debugging levels...
   logRecorderTask.DEBUG_LOG_RECORDER = 0;
   core.DEBUG_CORE = 0;
   core._scheduler.DEBUG_SCHEDULER = 0;
   dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
   heaterPIDTask.DEBUG_PID = 0;
-  cogTask.DEBUG_FAN = 1;
+  cogTask.DEBUG_FAN = 0;
   cogTask.DEBUG_LEVEL = 0;
-  cogTask.DEBUG_LEVEL_OBA = 1;
-  cogTask.wattagePIDObject->DEBUG_PID = 2;
+  cogTask.DEBUG_LEVEL_OBA = 0;
+  cogTask.wattagePIDObject->DEBUG_PID = 0;
   OEDCSNetworkTask.DEBUG_UDP = 0;
   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
   readTempsTask.DEBUG_READ_TEMPS = 0;

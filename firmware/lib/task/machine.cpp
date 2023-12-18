@@ -168,24 +168,43 @@ bool MachineHAL::init() {
 MachineConfig::MachineConfig() {
  script = new MachineScript();
  report = new MachineStatusReport();
- clearErrors();
- }
+ initErrors();
+}
 
-void MachineConfig::clearErrors() {
+void MachineConfig::initErrors() {
 // here we init the errors...
  // If we lose a thermocouple for more than 10 seconds
  // we have to go into emergency shutdown.
  errors[POST_HEATER_TC_BAD].fault_present = false;
  errors[POST_GETTER_TC_BAD].fault_present = false;
  errors[POST_STACK_TC_BAD].fault_present  = false;
+ errors[COULD_NOT_INIT_3_THERMOCOUPLES].fault_present = false;
 
  errors[POST_HEATER_TC_BAD].toleration_ms = THERMOCOUPLE_FAULT_TOLERATION_TIME_MS;
  errors[POST_GETTER_TC_BAD].toleration_ms = THERMOCOUPLE_FAULT_TOLERATION_TIME_MS;
  errors[POST_STACK_TC_BAD].toleration_ms  = THERMOCOUPLE_FAULT_TOLERATION_TIME_MS;
+ // No toleration for initialization erorrs.
+ errors[COULD_NOT_INIT_3_THERMOCOUPLES].toleration_ms = 0;
 
  errors[POST_HEATER_TC_BAD].response_state = EmergencyShutdown;
  errors[POST_GETTER_TC_BAD].response_state = EmergencyShutdown;
  errors[POST_STACK_TC_BAD].response_state  = EmergencyShutdown;
+ errors[COULD_NOT_INIT_3_THERMOCOUPLES].response_state  = EmergencyShutdown;
+}
+
+void MachineConfig::clearThermocoupleErrors() {
+// here we init the errors...
+ // If we lose a thermocouple for more than 10 seconds
+ // we have to go into emergency shutdown.
+ errors[POST_HEATER_TC_BAD].fault_present = false;
+ errors[POST_GETTER_TC_BAD].fault_present = false;
+ errors[POST_STACK_TC_BAD].fault_present  = false;
+}
+void MachineConfig::clearErrors() {
+  clearThermocoupleErrors();
+  // we should never have to clear an init error, but this is
+  // in expectation of future proofing...
+  errors[COULD_NOT_INIT_3_THERMOCOUPLES].fault_present  = false;
 }
 
 // This code is currently not invoked.
@@ -221,4 +240,7 @@ bool MachineConfig::init() {
    CogCore::Debug<const char *>("\n");
  }
   return true;
+}
+bool MachineConfig::IsAShutdownState(MachineState ms) {
+  return ((ms == CriticalFault) || (ms == EmergencyShutdown) || (ms == OffUserAck));
 }

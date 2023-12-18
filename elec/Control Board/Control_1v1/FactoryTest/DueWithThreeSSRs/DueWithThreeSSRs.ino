@@ -232,6 +232,9 @@ void setup() {
   Serial.println();
   Serial.print(PROG_NAME);
   Serial.println(VERSION);
+  Serial.print("Compiled at: ");
+  Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
+
   pinMode(SHUT_DOWN, INPUT_PULLUP);
   pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
@@ -243,8 +246,6 @@ void setup() {
   pinMode(PS2_EN, OUTPUT);
   digitalWrite(PS1_EN, HIGH); //Set high to enable PS1
   digitalWrite(PS2_EN, HIGH); //Set high to enable PS2
-  
-  
 
   setupBacklights(); //Setup the neopixels
   setupu8g2(); //Setup the graphics display
@@ -276,7 +277,7 @@ void loop() {
 
   if (updateENC_BUT()) { //Check encoder, zero if button pressed
     pos = 0;
-    encoder.setPosition(0);    
+    encoder.setPosition(0);
   }
 
   if (!updatePowerMonitor()) {
