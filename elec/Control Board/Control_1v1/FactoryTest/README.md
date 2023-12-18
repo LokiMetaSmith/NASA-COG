@@ -105,7 +105,8 @@ Open the Arduino Serial Monitor. Observe the data.
 |      16 | Stack voltage at reset 1V   |  |      |               |             |             |             |         |            |
 |      17 | Stack power to load         |  |      |               |             |             |             |         |            |
 |      18 | Cumulocity reporting        |  |      |               |             |             |             |         |            |
-|      19 | PxxxxxxxxxxxxxxxxxN         |  |      |               |             |             |             |         |            |
+|      19 | Reset to safe               |  |      |               |             |             |             |         |            |
+|      20 | PxxxxxxxxxxxxxxxxxN         |  |      |               |             |             |             |         |            |
 
 ### Stack Power Supply Control 
 With AC power on.
@@ -138,6 +139,13 @@ Observe and record **ID17** Stack power to load should now be about 12V
 https://mcogs.us.cumulocity.com/apps/app-builder/index.html#/application/34000/dashboard/71202350/device/45175917
 ![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/2a72fef9-9d39-459b-a6e8-70a8755b9307)
 Observe and report **ID19**. 
+
+### Reset to Safe
+Press and hold the reset button.
+Observe that the Stack power supply voltage goes to zero.  (IT DID NOT as of 20231218 with TF800A12K)
+Observe that the blower stops.
+Observe that the SSR LEDs go off.
+Recorde results in test **ID19**  
 
 ### End of Test
 Power off the unit under test.
