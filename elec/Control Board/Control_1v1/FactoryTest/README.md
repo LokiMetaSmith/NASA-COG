@@ -45,18 +45,18 @@ Before connecting to the Controller V1.1 Assembly, program the Due with Load the
 
 #### Build Up MAX31850 Thermocouple Amplifier Sub Assemblies
 Note that the side of the board to be up has the pads for configuring the addresses of the assemblies. 
-Cut the on board shunt on each MAX31850 PCB. Measure with multimeter that the shunt to GND is open.
 Solder the header and screw terminal to the MAX31850 on the correct side.
 
 1. Install the MAC13850 thermocouple amplifier assemblies to the Control V1.1 at JP9, JP10 and JP15.
 Add a ?2.5mm? x 10 mm screw with nut as mechanice support and retention.
-Observing polarity, connect thermocouples to the MAX31850 amplifire assemblies. 
-**NEED IMAGE HERE**
+Observing polarity, connect thermocouples to the MAX31850 amplifire assemblies.
+Cut the four on board shunt on each MAX31850 PCB (See image below for where to cut on one).  Measure with multimeter that the shunt to GND is open.
+![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/df5c26bd-828b-47e3-a31b-94f947e3e6c9)
 
-2. Added legs (8-32 x 2") with nuts.
-3. Solder in the Due connectors, seven locations.  The long tails must go in the top and through to the bottom
-4. Connect the Due to the Controller assembly.  The Due is under the Controller V1.1 assembly as a "shield".
-5. Connect the Ethernet W5200 (or similar) sheild on the top of the Controller V1.1
+3. Add screws for legs such as 8-32 x 2") with nuts.  These legs are necessary because the long stacking connectors to be installed must not be bent which would happen if the legs were not installed.
+4. Solder in the stakcing Due connectors, seven locations.  The long tails must go in the top and through to the bottom
+5. Connect the Due to the Controller assembly.  The Due is under the Controller V1.1 assembly as a "shield".
+6. Connect the Ethernet W5200 (or similar) sheild on the top of the Controller V1.1
 
 ### Apply power. 
 Note the +12VIn, the +24VIn and the Stack programable power supply are connected to a switchable outlet switch.  
@@ -70,6 +70,7 @@ Apply power by switching on the AC power strip.
 **Test ID7:** Note current in table on the +12VIn supply current monitor for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED WITH DUE's THAT HAVE NEVER BEEN PROGRAMED.
 Check that the BUILDIN_LED ner the LAN Shield and SSR2 and SSR3 connectors is blinking rapidly as an idication that the firmware is running.
 Open the Arduino Serial Plotter (<Ctrl> <Shift> <L>) and touch some thermocouples.
+
 ### Temperature Measurements.
 **Test ID8:** Typical Serial Plotter results. Touching some of the thermocouples to ensure they respond.
 Note resutls in table
@@ -106,9 +107,9 @@ Open the Arduino Serial Monitor. Observe the data.
 |      18 | Cumulocity reporting        |  |      |               |             |             |             |         |            |
 |      19 | PxxxxxxxxxxxxxxxxxN         |  |      |               |             |             |             |         |            |
 
-### Add Stack Power Supply Control 
+### Stack Power Supply Control 
 With AC power on.
-Connect at J10 with power supply which has a load.
+
 #### PS1_EN Jumper
 
 | Nets to Jumper 	| Description  |
@@ -124,18 +125,25 @@ Observe the traffice and note that an IP address is reported.
 On serial port monitor confirm device connects to LAN **ID16**.  
 
 #### Set Stack power supply and +24VIn.  
-With multi meeter observe the voltage on the load.  
-After observe and record voltage **ID16** after reset it should be 1V
+Connect a 1.5K 1/2 wat resistor load on the Stack Power Supply ouput.
+With multi meeter observe the voltage on the stack power supply load.  
+After observe and record voltage **ID16** after reset it should be 1V the power on voltage.
 Send OEDCS serial port commands to set Stack power to load manual.
 * s:1
 * a:0.1
 * w:2.5
-Observe and record **ID17** Stack power to load should be 1V
+Observe and record **ID17** Stack power to load should now be about 12V
 
 ### Observe data on Cumulocity  
 https://mcogs.us.cumulocity.com/apps/app-builder/index.html#/application/34000/dashboard/71202350/device/45175917
 ![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/2a72fef9-9d39-459b-a6e8-70a8755b9307)
 Observe and report **ID19**. 
+
+### End of Test
+Power off the unit under test.
+Remove all connections including the jumper wire at J14 and J25.
+Very carfuly so as to not bend pins, remove the LAN Sheild.
+Very carfuly so as to not bend pins, remove the Due controller. A modified pop cycle stick helps.
 
 ## Rejoice another great OEDCS has been born!
 
