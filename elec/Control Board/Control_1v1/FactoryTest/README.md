@@ -63,8 +63,8 @@ Note the +12VIn, the +24VIn and the Stack programable power supply are connected
 With the power outlet off, 
 Connect the +12VIn power at J11, the RED connector.  
 Connect the  +24VIn power at J12.  
-Connect SSR simulator LEDS at  SSR1, SSR2, SSR3.
-??? Do not connect the Stack power supply at J10 ( or J27) at this time. ???
+Connect SSR simulator LEDS at  SSR1, SSR2, SSR3.  
+Connect the Stack power supply at J10 ( or J27) at this time.
 
 Apply power by switching on the AC power strip.
 **Test ID7:** Note current in table on the +12VIn supply current monitor for excessive, above 100 mA.  THIS NUMBER WILL NEED TO BE CHECKED WITH DUE's THAT HAVE NEVER BEEN PROGRAMED.
@@ -79,8 +79,8 @@ Note resutls in table
 **Results continued...**
 | Test ID 	| Test Name  | Setup | Test Location | Requirements  | Results SN 9 | Results SN 10 | Results SN 11 | Results SN 12 | Results SN 13 	|
 |--------:	|------------ | -------- |---------- | ------------	|--------------	|----------	|----------- |--------------- |--------------- |
-|      7 | Current, Temperature Only  | In line DC current meter |    Due input |  85 mA |             |             |             |         |
-|      8 | Check thermocouples  | Connect three |   Serial Plolter |  Three traces |   OK   |             |             |             |         |
+|      7 | Current, Temperature Only  | In line DC current meter |    Due input |  85 mA |             |   270mA   |  200mA     |         |
+|      8 | Check thermocouples  | Connect three |   Serial Plolter |  Three traces |   OK   |      OK   |      OK     |             |         |
 |      9 | future use  |  |      |               |             |             |             |         |            |
 
 
@@ -94,18 +94,18 @@ Open the Arduino Serial Monitor. Observe the data.
 
 
 **Results continued...**
-| Test ID 	| Test Name  | Setup | Test Location | Requirements  | Results SN 9 | Results SN 10 | Results SN 11 | Results SN 12 | Results SN 13 	|
+| Test ID 	 | Test Name  | Setup | Test Location | Requirements  | Results SN 9 | Results SN 10 | Results SN 11 | Results SN 12 | Results SN 13 	|
 |--------:	|------------ | -------- |---------- | ------------	|--------------	|----------	|----------- |--------------- |--------------- |
-|      10 | SSR1, SSR2, SSR3 LED Blink  |  |      |               |             |             |             |         |            |
-|      11 | Mini12864 Display           |  |      |               |             |             |             |         |            |
-|      12 |Encoder Rotation Knob        |  |      |               |             |             |             |         |            |
-|      13 |Encoder knob switch          |  |      |               |             |             |             |         |            |
-|      14 | PCB button SHUT DOWN        |  |      |               |             |             |             |         |            |
-|      15 | LAN CONNECTION              |  |      |               |             |             |             |         |            |
-|      16 | Stack voltage at reset 1V   |  |      |               |             |             |             |         |            |
-|      17 | Stack power to load         |  |      |               |             |             |             |         |            |
-|      18 | Cumulocity reporting        |  |      |               |             |             |             |         |            |
-|      19 | Reset to safe               |  |      |               |             |             |             |         |            |
+|      10 | SSR1, SSR2, SSR3 LED Blink  |  |      |               |    OK       |          OK    |       OK      |               |                |
+|      11 | Mini12864 Display           |  |      |               |             |          OK    |       OK      |               |                |
+|      12 |Encoder Rotation Knob        |  |      |               |             |          OK    |       OK      |               |                |
+|      13 |Encoder knob switch          |  |      |               |             |          OK    |       OK      |               |                |
+|      14 | PCB button SHUT DOWN        |  |      |               |             |          OK    |       OK      |               |                |
+|      15 | LAN CONNECTION              |  |      |               |             |          OK    |       OK      |               |                |
+|      16 | Stack voltage at reset 1V   |  |      |               |             |          OK    |       OK      |               |                |
+|      17 | Stack power to load         |  |      |               |             |          OK    |       OK      |               |                |
+|      18 | Cumulocity reporting        |  |      |               |             |          OK    |       OK      |               |                |
+|      19 | Reset to safe               |  |      |               |             |          OK    |       OK      |               |                |
 |      20 | PxxxxxxxxxxxxxxxxxN         |  |      |               |             |             |             |         |            |
 
 ### Stack Power Supply Control 
