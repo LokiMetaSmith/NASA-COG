@@ -61,7 +61,7 @@
 // for redundancy or great flow against pressure.
 #define NUMBER_OF_FANS 1
 
-using namespace CogCore;
+
 
 // because these are interrupts, they cannot be members,
 // and making them static is complicated...
@@ -110,7 +110,7 @@ public:
   float evaluateFan(	CriticalErrorCondition ec, \
 						float &_normalized_PWM
 						);
-  void update(float pwm_ratio);
+  void updatePWM(float pwm_ratio);
 };
 
 

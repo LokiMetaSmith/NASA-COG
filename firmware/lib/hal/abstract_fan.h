@@ -16,15 +16,18 @@
 #ifndef ABSTRACT_FAN_H
 #define ABSTRACT_FAN_H
 
-#include <core.h>
 #ifdef ARDUINO
 #include <Arduino.h>
 #else
 #include <math.h>
 #endif
+//#include <core_defines.h>
+//#include <core.h>
 #include <machine.h>
-#include <core_defines.h>
-#include <core.h>
+
+
+//class MachineConfig;  // Forward declaration for MachineConfig
+
 class AbstractFAN {
 private:
   const char * name;

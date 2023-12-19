@@ -18,7 +18,7 @@
 #define DEBUG_LEVEL 0
 
 const char * AbstractFAN::getName(){
-  return &name;
+  return name;
 }
 uint8_t AbstractFAN::getID(){
   return id;

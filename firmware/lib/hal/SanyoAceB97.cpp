@@ -190,7 +190,7 @@ void SanyoAceB97::E_STOP() {
 
 // At present, we will use the same ratio for all fans;
 // this is an oversimplification
-void SanyoAceB97::update(float pwm_ratio) {
+void SanyoAceB97::updatePWM(float pwm_ratio) {
 	
   evaluateFan( BLOWER_UNRESPONSIVE, pwm_ratio);
   fanSpeedPerCentage((int)( pwm_ratio * 100));

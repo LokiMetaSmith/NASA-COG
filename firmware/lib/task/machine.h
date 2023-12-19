@@ -21,7 +21,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Hardware Abstraction Layer
 // #include "SensirionSFM3X00.h"
 //#include <SanyoAceB97.h>
-#include <abstract_fan.h>
+//#include <abstract_fan.h>
 
 #include <OnePinHeater.h>
 

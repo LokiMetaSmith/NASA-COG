@@ -142,10 +142,10 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
   //add a state for error: no error
   for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++)
   {
-	  if (msr->CriticalError[i].fault_present)//critical error detected
+	  if (errors[i].fault_present)//critical error detected
 	  {
 		sprintf(buffer+strlen(buffer), "\"CriticalError\": ");  
-		sprintf(buffer+strlen(buffer),msr->CriticalErrorNames[i]);
+		sprintf(buffer+strlen(buffer),CriticalErrorNames[i]);
 		strcat(buffer, ",\n");
 	  }
   }

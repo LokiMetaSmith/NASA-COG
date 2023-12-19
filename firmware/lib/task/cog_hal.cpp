@@ -19,6 +19,7 @@
 
 #include <cog_hal.h>
 #include <TF800A12K.h>
+#include <SanyoAceB97.h>
 
 bool COG_HAL::init() {
 
@@ -67,6 +68,6 @@ bool COG_HAL::init() {
 // but this is genertic.
 void COG_HAL::_updateFanPWM(float unitInterval) {
   for (int i = 0; i < NUM_FANS; i++) {
-     _fans[i].updatePWM(unitInterval);
+     _fans[i]->updatePWM(unitInterval);
   }
 }

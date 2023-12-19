@@ -484,7 +484,7 @@ namespace CogApp
     }
     // Report fan speed
     getConfig()->report->fan_rpm =
-      getHAL()->_fans[0]._calcRPM(0);
+      getHAL()->_fans[0]->getRPM();
 
 
     // MachineState ms = getConfig()->ms;
