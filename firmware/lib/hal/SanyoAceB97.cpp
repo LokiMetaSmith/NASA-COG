@@ -108,24 +108,6 @@ bool SanyoAceB97::evaluateFan(float pwm_ratio,float rpms) {
   }
   return true;
 }
-// float SanyoAceB97::evaluateFan(CriticalErrorCondition ec, float &_normalized_PWM){
-// 	//constants for fan _normalized_PWM and the output TACH and RPM, technially only one tack or rpm should be needed
-// 	if(_normalized_PWM >=0.2){
-// 		if(abs((6000*_normalized_PWM +10) - _calcRPM(this->id)) > 100){
-// 			// As long as there is not a fault present, this creates;
-// 			// if one is already present, we leave it.
-// 			if (!getConfig()->errors[ec].fault_present) {
-// 				getConfig()->errors[ec].fault_present = true;
-// 				getConfig()->errors[ec].begin_condition_ms = millis();
-// 				return 0;
-// 			}
-
-// 		}
-// 	}
-// 	return _normalized_PWM;
-//   }
-
-
 
 void SanyoAceB97::printRPMS() {
   CogCore::Debug<const char *>("RPMS:\n");

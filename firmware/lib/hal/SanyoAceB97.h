@@ -101,15 +101,13 @@ public:
 
   };
 
-
-
   void printRPMS();
   void fanSpeedPerCentage(int s);
   void updatePWM(float pwm_ratio);
   float getRPM();
   bool evaluateFan(float pwm_ratio,float rpms);
   static const int ABSOLUTE_RPM_TOLERANCE = 1000;
-  static constexpr float APPROXIMATE_PWM_TO_RPMS = 7300.0 / 100.0 ;
+  static constexpr float APPROXIMATE_PWM_TO_RPMS = 7300.0;
 };
 
 

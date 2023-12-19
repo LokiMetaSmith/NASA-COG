@@ -491,11 +491,20 @@ namespace CogApp
     // check fan speed...
     float fan_pwm_ratio = getConfig()->report->fan_pwm;
     float fan_rpm = getConfig()->report->fan_rpm;
+    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    CogCore::Debug<bool>(
+                         getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
+    if (DEBUG_LEVEL > 0) {
+      CogCore::Debug<const char *>("Fan Inputs : ");
+      CogCore::DebugLn<float>(fan_pwm_ratio);
+      CogCore::DebugLn<float>(fan_rpm);
+    }
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
-      if (!getConfig()->errors[BLOWER_UNRESPONSIVE].fault_present) {
-        getConfig()->errors[BLOWER_UNRESPONSIVE].fault_present = true;
-        getConfig()->errors[BLOWER_UNRESPONSIVE].begin_condition_ms = millis();
-	}
+      CogCore::Debug<const char *>("YYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+      if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
+        getConfig()->errors[FAN_UNRESPONSIVE].fault_present = true;
+        getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
+      }
     }
 
 

@@ -95,8 +95,8 @@ enum CriticalErrorCondition {
   POST_GETTER_TC_BAD,
   POST_STACK_TC_BAD,
   COULD_NOT_INIT_3_THERMOCOUPLES,
-  BLOWER_LOSS_PWR,
-  BLOWER_UNRESPONSIVE,
+  FAN_LOSS_PWR,
+  FAN_UNRESPONSIVE,
   HEATER_UNRESPONSIVE,
   STACK_LOSS_PWR,
   PSU_UNRESPONSIVE,
@@ -199,6 +199,7 @@ public:
 
 
   const unsigned long THERMOCOUPLE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 60 * 1000;
 
   // TODO: This would better be attached to the statemanager
   // class, as it is used in those task---but also in the
@@ -231,8 +232,8 @@ public:
   static const int INIT_LOG_RECORDER_LONG_PERIOD_MS = 600000; //10 minute record interval
   static const int INIT_LOG_RECORDER_SHORT_PERIOD_MS = 1000;  //1 second record interval
 
-  static const int DISPLAY_UPDATE_MS = 2000; 
-  
+  static const int DISPLAY_UPDATE_MS = 2000;
+
 void _reportFanSpeed();
 
   static const int NUM_MACHINE_STATES = 8;

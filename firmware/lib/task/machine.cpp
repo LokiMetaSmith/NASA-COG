@@ -99,6 +99,16 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         }
         CogCore::Debug<const char *>("Fan RPM      : ");
         CogCore::DebugLn<float>(msr->fan_rpm);
+        //add a state for error: no error
+        for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++)
+          {
+	  if (errors[i].fault_present)//critical error detected
+            {
+              CogCore::Debug<const char *>("CriticalError: ");
+              CogCore::Debug<const char *>(CriticalErrorNames[i]);
+              CogCore::Debug<const char *>("\n");
+            }
+          }
 }
 
 void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
@@ -144,14 +154,14 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
   {
 	  if (errors[i].fault_present)//critical error detected
 	  {
-		sprintf(buffer+strlen(buffer), "\"CriticalError\": ");  
+		sprintf(buffer+strlen(buffer), "\"CriticalError\": ");
 		sprintf(buffer+strlen(buffer),CriticalErrorNames[i]);
 		strcat(buffer, ",\n");
 	  }
   }
   sprintf(buffer+strlen(buffer), "\"FanRPM\": %.2f",msr->fan_rpm);
   strcat(buffer, "\n");
-  
+
 }
 
 void MachineConfig::change_ramp(float ramp) {
@@ -178,27 +188,27 @@ void MachineConfig::initErrors() {
  clearThermocoupleErrors();
  clearFanErrors();
  clearMainsPowerErrors();
- 
+
 
  errors[POST_HEATER_TC_BAD].toleration_ms = THERMOCOUPLE_FAULT_TOLERATION_TIME_MS;
  errors[POST_GETTER_TC_BAD].toleration_ms = THERMOCOUPLE_FAULT_TOLERATION_TIME_MS;
  errors[POST_STACK_TC_BAD].toleration_ms  = THERMOCOUPLE_FAULT_TOLERATION_TIME_MS;
  // No toleration for initialization erorrs.
  errors[COULD_NOT_INIT_3_THERMOCOUPLES].toleration_ms = 0;
- errors[BLOWER_LOSS_PWR].toleration_ms = 0;
- errors[BLOWER_UNRESPONSIVE].toleration_ms = 0;
+ errors[FAN_LOSS_PWR].toleration_ms = 0;
+ errors[FAN_UNRESPONSIVE].toleration_ms = FAN_FAULT_TOLERATION_TIME_MS;
  errors[HEATER_UNRESPONSIVE].toleration_ms = 0;
  errors[STACK_LOSS_PWR].toleration_ms = 0;
  errors[PSU_UNRESPONSIVE].toleration_ms = 0;
  errors[MAINS_LOSS_PWR].toleration_ms = 0;
- 
- 
+
+
  errors[POST_HEATER_TC_BAD].response_state = EmergencyShutdown;
  errors[POST_GETTER_TC_BAD].response_state = EmergencyShutdown;
  errors[POST_STACK_TC_BAD].response_state  = EmergencyShutdown;
  errors[COULD_NOT_INIT_3_THERMOCOUPLES].response_state  = EmergencyShutdown;
- errors[BLOWER_LOSS_PWR].response_state = EmergencyShutdown;
- errors[BLOWER_UNRESPONSIVE].response_state = EmergencyShutdown;
+ errors[FAN_LOSS_PWR].response_state = EmergencyShutdown;
+ errors[FAN_UNRESPONSIVE].response_state = EmergencyShutdown;
  errors[HEATER_UNRESPONSIVE].response_state = EmergencyShutdown;
  errors[STACK_LOSS_PWR].response_state = EmergencyShutdown;
  errors[PSU_UNRESPONSIVE].response_state = EmergencyShutdown;
@@ -218,8 +228,8 @@ void MachineConfig::clearThermocoupleErrors() {
 }
 
 void MachineConfig::clearFanErrors()  {
- errors[BLOWER_LOSS_PWR].fault_present = false;
- errors[BLOWER_UNRESPONSIVE].fault_present = false;
+ errors[FAN_LOSS_PWR].fault_present = false;
+ errors[FAN_UNRESPONSIVE].fault_present = false;
 }
 
 void MachineConfig::clearMainsPowerErrors()  {
