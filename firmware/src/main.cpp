@@ -328,6 +328,7 @@ void setup()
   logRecorderTask.DEBUG_LOG_RECORDER = 0;
   core.DEBUG_CORE = 0;
   core._scheduler.DEBUG_SCHEDULER = 0;
+  core._scheduler._idleTask.DEBUG_IDLETASK = 0;
   dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
   heaterPIDTask.DEBUG_PID = 0;
   cogTask.DEBUG_FAN = 0;
@@ -338,7 +339,12 @@ void setup()
   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
   readTempsTask.DEBUG_READ_TEMPS = 0;
   oedcsSerialInputTask.DEBUG_SERIAL = 0;
+  heartbeatTask.DEBUG_HEARTBEAT = 0;
+  // Now
+  heartbeatTask.debug_number_of_heartbeats = millis() / 500;
   getConfig()->script->DEBUG_MS = 0;
+
+
   CogCore::Debug<const char *>("Added tasks\n");
 
   // Now we will set the initial tunings for the heater_pid tasks

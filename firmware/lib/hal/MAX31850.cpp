@@ -179,7 +179,7 @@ namespace Temperature {
   float MAX31850Temperature::GetTemperature(int idx) {
     float tempC;
 
-#ifdef USE_ADRESS_BASED_RETRIEVAL
+#ifdef USE_ADDRESS_BASED_RETRIEVAL
     switch(idx) {
     case 0:
       tempC = this->sensors.getTempC(postHeaterThermometer);
@@ -189,11 +189,11 @@ namespace Temperature {
       break;
     case 2:
       tempC = this->sensors.getTempC(postStackThermometer);
-      brak;
+      break;
     default: {
       CogCore::Debug<const char *>("INTERNAL ERROR! BAD IDX FOR MAX31850: ");
       CogCore::Debug<uint32_t>(idx);
-      OxCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("\n");
     }
     }
 #else

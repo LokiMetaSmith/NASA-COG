@@ -20,28 +20,35 @@ using namespace std;
 
 namespace CogApp
 {
-    bool HeartbeatTask::_init()
-    {
-        CogCore::Debug<const char *>("HeartbeatTask init\n");
+  bool HeartbeatTask::_init()
+  {
+    CogCore::Debug<const char *>("HeartbeatTask init\n");
 
-        pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
-        digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+    pinMode(LED_BUILTIN, OUTPUT);      // set the LED pin mode
+    digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
 
-        return true;
+    return true;
+  }
+
+  bool HeartbeatTask::_run()
+  {
+    debug_number_of_heartbeats++;
+    // Note:adding a heartbeat task
+    // CogCore::Debug<const char *>("HeartbeatTask run\n");
+    //Toggeling the LED
+    bool beat_high = digitalRead(LED_BUILTIN);
+    if (beat_high == LOW) {
+      digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+    } else {
+      digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
     }
 
-    bool HeartbeatTask::_run()
-    {
-	  //adding error handling tasks for events that aren't directly actuated	
-	  	 
-		
-      // Note:adding a heartbeat task
-      // CogCore::Debug<const char *>("HeartbeatTask run\n");
-        //Toggeling the LED
-            if (digitalRead(LED_BUILTIN) == LOW) {
-            digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-            } else {
-            digitalWrite(LED_BUILTIN, LOW);   // turn the LED on (HIGH is the voltage level)
+    beat_high = digitalRead(LED_BUILTIN);
+    if (DEBUG_HEARTBEAT > 0) {
+        CogCore::Debug<const char *>("Setting HEARTBEAT: ");
+        CogCore::DebugLn<bool>(beat_high);
+        CogCore::Debug<const char *>("beats / runtime, should trend to 2.0: ");
+        CogCore::DebugLn<float>((float) debug_number_of_heartbeats * 1000.0 / (float) millis());
             }     
         return true;
     }
