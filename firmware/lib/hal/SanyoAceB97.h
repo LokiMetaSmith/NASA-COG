@@ -72,7 +72,7 @@ void tachISR0();
 
 
 class SanyoAceB97 : public AbstractFAN{
-private:
+public:
   const char *name;
   uint8_t id;
   uint8_t pin;
