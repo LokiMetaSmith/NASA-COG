@@ -105,18 +105,18 @@ void HeaterPIDTask::shutHeaterDown() {
 
 double HeaterPIDTask::evaluateHeater(	int idx, \
 							CriticalErrorCondition ec, \
-							double &previous_input_temperature, 
+							double &previous_input_temperature,
 							double &current_input_temperature,
 							double &goal_temperature)
 {
 
-	time_now = millis();
-	
+	unsigned long time_now = millis();
+
 	if(previous_input_temperature != current_input_temperature)
 	{
 		last_temp_change = time_now;
 	}
-	
+
 	if ((time_now - last_temp_change) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
 	{
 	  // As long as there is not a fault present, this creates;
@@ -147,7 +147,7 @@ bool HeaterPIDTask::_run()
   }
 
 
-  
+
   MachineState ms = getConfig()->ms;
   if ((ms == Off) || (ms == EmergencyShutdown) || (ms == OffUserAck)) {
     // in this case, we do nothing...but we will put the set point
@@ -161,10 +161,10 @@ bool HeaterPIDTask::_run()
   double previousInput = this->Input_temperature_C;
 
   this->Input_temperature_C = getConfig()->report->post_heater_C;
-  
+
   //evaluate the temerature and verify it's changing within the predescribed time interval
   evaluateHeater(0,HEATER_UNRESPONSIVE,previousInput,this->Input_temperature_C,this->HeaterSetPoint_C);
-  
+
   // didn't hang when return was here.
   pidControllerHeater->Compute();
 

@@ -83,24 +83,24 @@ unsigned long SanyoAceB97::_calcRPM(uint8_t i){
 }
 
 
-float SanyoAceB97::evaluateFan(CriticalErrorCondition ec, float &_normalized_PWM){
-	//constants for fan _normalized_PWM and the output TACH and RPM, technially only one tack or rpm should be needed
-	if(_normalized_PWM >=0.2){
-		if(abs((6000*_normalized_PWM +10) - _calcRPM(this->id)) > 100){
-			// As long as there is not a fault present, this creates;
-			// if one is already present, we leave it.
-			if (!getConfig()->errors[ec].fault_present) {
-				getConfig()->errors[ec].fault_present = true;
-				getConfig()->errors[ec].begin_condition_ms = millis();
-				return 0;
-			}
-			
-		}	
-	}
-	return _normalized_PWM;
-  }
-	
-	
+// float SanyoAceB97::evaluateFan(CriticalErrorCondition ec, float &_normalized_PWM){
+// 	//constants for fan _normalized_PWM and the output TACH and RPM, technially only one tack or rpm should be needed
+// 	if(_normalized_PWM >=0.2){
+// 		if(abs((6000*_normalized_PWM +10) - _calcRPM(this->id)) > 100){
+// 			// As long as there is not a fault present, this creates;
+// 			// if one is already present, we leave it.
+// 			if (!getConfig()->errors[ec].fault_present) {
+// 				getConfig()->errors[ec].fault_present = true;
+// 				getConfig()->errors[ec].begin_condition_ms = millis();
+// 				return 0;
+// 			}
+
+// 		}
+// 	}
+// 	return _normalized_PWM;
+//   }
+
+
 
 void SanyoAceB97::printRPMS() {
   CogCore::Debug<const char *>("RPMS:\n");
@@ -169,33 +169,34 @@ void SanyoAceB97::_init() {
   attachInterrupt(digitalPinToInterrupt(TACH_PIN[0]),tachISR0,FALLING);
 }
 
-void SanyoAceB97::E_STOP() {
-#ifdef FAN_LOCKOUT
-  digitalWrite(fan_Enable, LOW);
+// void SanyoAceB97::E_STOP() {
+// #ifdef FAN_LOCKOUT
+//   digitalWrite(fan_Enable, LOW);
 
 
-  for(int i = 0; i < NUMBER_OF_FANS; i++) {
-    pinMode(PWM_PIN[i], OUTPUT);
-		  digitalWrite(PWM_PIN[i], HIGH);
-  }
-#else
-    for(int i = 0; i < NUMBER_OF_FANS; i++) {
-    pinMode(PWM_PIN[i], OUTPUT);
-		  digitalWrite(PWM_PIN[i], LOW);
-  }
+//   for(int i = 0; i < NUMBER_OF_FANS; i++) {
+//     pinMode(PWM_PIN[i], OUTPUT);
+// 		  digitalWrite(PWM_PIN[i], HIGH);
+//   }
+// #else
+//     for(int i = 0; i < NUMBER_OF_FANS; i++) {
+//     pinMode(PWM_PIN[i], OUTPUT);
+// 		  digitalWrite(PWM_PIN[i], LOW);
+//   }
 
-#endif
-}
+// #endif
+// }
 
 
 // At present, we will use the same ratio for all fans;
 // this is an oversimplification
 void SanyoAceB97::updatePWM(float pwm_ratio) {
-	
-  evaluateFan( BLOWER_UNRESPONSIVE, pwm_ratio);
+
+  //  evaluateFan( BLOWER_UNRESPONSIVE, pwm_ratio);
+
   fanSpeedPerCentage((int)( pwm_ratio * 100));
   _pwm_ratio[0] = pwm_ratio;
-  
+
   if (DEBUG_FAN > 0 ) {
     CogCore::Debug<const char *>("PWM ratio:  num / ratio : ");
     CogCore::Debug<uint32_t>(pwm_ratio);

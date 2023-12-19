@@ -77,7 +77,7 @@ private:
   uint8_t id;
   uint8_t pin;
   uint8_t fan_Enable;
-  
+
 
   // This is a ration from 0.0 to 1.0
   float _pwm_ratio[NUMBER_OF_FANS] = {0.0};
@@ -95,21 +95,21 @@ public:
   SanyoAceB97() {
     _init();
   };
-  void E_STOP();
+  //  void E_STOP();
   SanyoAceB97(const char * name, uint8_t id){
     _init();
     this->name = name;
     this->id = id;
   };
   ~SanyoAceB97(){
-	  
+
   };
 
   void printRPMS();
   void fanSpeedPerCentage(int s);
-  float evaluateFan(	CriticalErrorCondition ec, \
-						float &_normalized_PWM
-						);
+  // float evaluateFan(	CriticalErrorCondition ec, \
+  //       					float &_normalized_PWM
+  //       					);
   void updatePWM(float pwm_ratio);
 };
 
