@@ -235,6 +235,10 @@ void setup() {
   Serial.print("Compiled at: ");
   Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
 
+  //disable the Ethernet and SD card if it's present
+  pinMode(4, INPUT_PULLUP);  
+  pinMode(10, INPUT_PULLUP);  
+  
   pinMode(SHUT_DOWN, INPUT_PULLUP);
   pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
