@@ -31,8 +31,8 @@ bool COG_HAL::init() {
   pinMode(RF_STACK, OUTPUT);
 
 
-  _fans[0] = SanyoAceB97("FIRST_FAN",0);
-  _fans[0]._init();
+  _fans[0] = new SanyoAceB97("FIRST_FAN",0);
+  _fans[0]->init();
 
   // TODO: This block of code appears in cog_hal.cpp
   // as well. There should be a way to move this into the

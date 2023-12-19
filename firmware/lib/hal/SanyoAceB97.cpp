@@ -56,6 +56,18 @@
   }
 //}
 
+SanyoAceB97::SanyoAceB97()  {
+    init();
+  };
+
+SanyoAceB97::SanyoAceB97(const char * name, uint8_t id){
+    init();
+    this->name = name;
+    this->id = id;
+};
+
+
+
 // using namespace tach_data;
 
 unsigned long SanyoAceB97::_calcRPM(uint8_t i){
@@ -82,6 +94,9 @@ unsigned long SanyoAceB97::_calcRPM(uint8_t i){
   }
 }
 
+float SanyoAceB97::getRPM(){
+  return (float) _calcRPM(0);
+}
 
 // float SanyoAceB97::evaluateFan(CriticalErrorCondition ec, float &_normalized_PWM){
 // 	//constants for fan _normalized_PWM and the output TACH and RPM, technially only one tack or rpm should be needed
@@ -141,7 +156,7 @@ void SanyoAceB97::fanSpeedPerCentage(int s)
 }
 
 // This would be clearer in the the .h!! or in the machine hal for the specific device
-void SanyoAceB97::_init() {
+bool SanyoAceB97::init() {
 
   PWM_PIN[0] = 9;
   TACH_PIN[0] = A0;
@@ -167,6 +182,7 @@ void SanyoAceB97::_init() {
     pinMode(TACH_PIN[i],INPUT_PULLUP);
   }
   attachInterrupt(digitalPinToInterrupt(TACH_PIN[0]),tachISR0,FALLING);
+  return true;
 }
 
 // void SanyoAceB97::E_STOP() {

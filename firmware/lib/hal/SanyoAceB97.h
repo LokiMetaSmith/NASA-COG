@@ -90,17 +90,13 @@ public:
   int OPERATING_PWM_THROTTLE = 255;
   int DEBUG_FAN = 1;
 public:
-  void _init();
+  bool init();
   unsigned long _calcRPM(uint8_t i);
-  SanyoAceB97() {
-    _init();
-  };
+
+  SanyoAceB97();
   //  void E_STOP();
-  SanyoAceB97(const char * name, uint8_t id){
-    _init();
-    this->name = name;
-    this->id = id;
-  };
+
+  SanyoAceB97(const char * name, uint8_t id);
   ~SanyoAceB97(){
 
   };
@@ -111,6 +107,7 @@ public:
   //       					float &_normalized_PWM
   //       					);
   void updatePWM(float pwm_ratio);
+  float getRPM();
 };
 
 

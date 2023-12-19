@@ -39,12 +39,13 @@ public:
     this->name = name;
     this->id = id;
   };
-  virtual int init() { return -1; };
-  virtual ~AbstractFAN(){};
   const char * getName();
   uint8_t getID();
-  virtual void updatePWM(float normal_PWM, MachineConfig *config);
-  virtual float getRPM( MachineConfig *config);
+
+  virtual bool init() { return false; };
+  virtual ~AbstractFAN(){};
+  virtual void updatePWM(float normal_PWM);
+  virtual float getRPM();
 };
 
 
