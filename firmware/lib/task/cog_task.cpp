@@ -483,8 +483,20 @@ namespace CogApp
       CogCore::Debug<const char *>("AC Power (+24V) FAIL.\n");
     }
     // Report fan speed
-    getConfig()->report->fan_rpm =
-      getHAL()->_fans[0]->getRPM();
+    float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
+
+    // TODO: This is a good candidate to move to a "system-check task"
+    getConfig()->report->fan_rpm = calculated_fan_speed_rpms;
+
+    // check fan speed...
+    float fan_pwm_ratio = getConfig()->report->fan_pwm;
+    float fan_rpm = getConfig()->report->fan_rpm;
+    if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
+      if (!getConfig()->errors[BLOWER_UNRESPONSIVE].fault_present) {
+        getConfig()->errors[BLOWER_UNRESPONSIVE].fault_present = true;
+        getConfig()->errors[BLOWER_UNRESPONSIVE].begin_condition_ms = millis();
+	}
+    }
 
 
     // MachineState ms = getConfig()->ms;
@@ -603,9 +615,9 @@ bool CogTask::updatePowerMonitor()
       float totalWattage_w;
       float stackWattage_w;
       float heaterWattage_w;
-      float fanSpeed_p;
+      float tFanSpeed_p;
 
-      oneButtonAlgorithm(totalWattage_w,stackWattage_w,heaterWattage_w,fanSpeed_p);
+      oneButtonAlgorithm(totalWattage_w,stackWattage_w,heaterWattage_w,tFanSpeed_p);
         float dc = computeHeaterDutyCycleFromWattage(heaterWattage_w);
       if (DEBUG_LEVEL_OBA > 0) {
         CogCore::Debug<const char *>("One Button Summary\n");
@@ -619,7 +631,7 @@ bool CogTask::updatePowerMonitor()
         CogCore::Debug<float>(heaterWattage_w);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Fan Speed   % : ");
-        CogCore::Debug<float>(fanSpeed_p);
+        CogCore::Debug<float>(tFanSpeed_p);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("DC          % : ");
         CogCore::Debug<float>(dc * 100.0);
@@ -642,10 +654,7 @@ bool CogTask::updatePowerMonitor()
       getConfig()->CURRENT_STACK_WATTAGE_W = stackWattage_w;
       _updateStackWattage(stackWattage_w);
 
-      // This is measured as a percentage...
-      //      _updateFanSpeed(fanSpeed_p);
-      c.tS_p = fanSpeed_p;
-
+      c.tS_p = tFanSpeed_p;
 
       getConfig()->CURRENT_HEATER_WATTAGE_W = heaterWattage_w;
 

@@ -98,6 +98,16 @@ float SanyoAceB97::getRPM(){
   return (float) _calcRPM(0);
 }
 
+
+bool SanyoAceB97::evaluateFan(float pwm_ratio,float rpms) {
+  if(pwm_ratio >=0.2){
+    if(abs((pwm_ratio*SanyoAceB97::APPROXIMATE_PWM_TO_RPMS) - rpms)
+       > SanyoAceB97::ABSOLUTE_RPM_TOLERANCE) {
+      return false;
+    }
+  }
+  return true;
+}
 // float SanyoAceB97::evaluateFan(CriticalErrorCondition ec, float &_normalized_PWM){
 // 	//constants for fan _normalized_PWM and the output TACH and RPM, technially only one tack or rpm should be needed
 // 	if(_normalized_PWM >=0.2){
