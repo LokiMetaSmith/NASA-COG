@@ -44,13 +44,17 @@ namespace CogCore {
 //         current        number  max
 
 class IdleTask: public Task {
+public:
+  int DEBUG_IDLETASK = 0;
     private:
         bool _init() override {
             CogCore::Debug<const char *>("Init idle task\n");
             return true;
         }
         bool _run() override {
-            // CogCore::Debug<const char *>("Run idle task\n");
+          if (DEBUG_IDLETASK > 0) {
+            CogCore::Debug<const char *>("Run idle task\n");
+          }
             return true;
         }
 };
@@ -68,7 +72,6 @@ struct SchedulerProperties {
 class Scheduler {
     private:
         Task* _lastTaskRan;
-        IdleTask _idleTask; // Special task not part of the task map
         static const int32_t MAX_TASKS = 40; // TODO: make this better
         CogCollections::Map<TaskId, Task*, MAX_TASKS> map;
         TaskId _currentRunningTaskId = 0;
@@ -77,6 +80,7 @@ class Scheduler {
         void setupIdleTask();
         Task* getNextTaskToRun(TimeMs currentTime);
     public:
+        IdleTask _idleTask; // Special task not part of the task map
         int DEBUG_SCHEDULER = 0;
         bool Init();
         bool AddTask(Task *task, TaskProperties *properties);

@@ -40,6 +40,8 @@ namespace CogApp
     class HeartbeatTask : public CogCore::Task
     {
     public:
+      unsigned long debug_number_of_heartbeats = 0;
+      int DEBUG_HEARTBEAT = 0;
     private:
       bool _init() override;
       bool _run() override;

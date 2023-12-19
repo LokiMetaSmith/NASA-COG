@@ -41,7 +41,8 @@ void Scheduler::setupIdleTask() {
 Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
     // Record how long the previous task took to run
   if (DEBUG_SCHEDULER > 1) {
-    CogCore::Debug<const char *>("getNextTask\n");
+    CogCore::Debug<const char *>("getNextTask: ");
+    CogCore::DebugLn<uint32_t>(millis());
   }
 
     if (_lastTaskRan != nullptr) {
@@ -63,10 +64,9 @@ Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
         task->_timeUntilDeadline = currentTime - (lastRunTime + period);
 
         if (DEBUG_SCHEDULER > 1) {
-	  CogCore::Debug<uint32_t>(task->_timeUntilDeadline);
+	  CogCore::Debug<int32_t>(task->_timeUntilDeadline);
 	  CogCore::Debug<const char *>("\n");
         }
-
 
         if (task->_timeUntilDeadline > maxTimeUntilDeadline) {
             maxTimeUntilDeadline = task->_timeUntilDeadline;
@@ -77,13 +77,15 @@ Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
             nextTask = nullptr;
         }
     }
-  if (DEBUG_SCHEDULER > 1) {
+  if (DEBUG_SCHEDULER > 0) {
     if (nextTask == nullptr) {
+      CogCore::Debug<const char *>("nexTask: IDLE\n");
     } else {
       CogCore::Debug<const char *>("nexTask\n");
       CogCore::Debug<const char *>(nextTask->_properties.name);
       CogCore::Debug<const char *>("\n");
-      delay(50);
+      if (DEBUG_SCHEDULER > 2)
+        delay(50);
     }
   }
 
@@ -140,14 +142,21 @@ TaskState Scheduler::RunNextTask(uint32_t msNow) {
         break;
     }
 
+    unsigned long ms ;
   if (DEBUG_SCHEDULER > 1) {
     CogCore::Debug<const char *>("About to Run task!\n");
     CogCore::Debug<const char *>(nextTask->_properties.name);
+    CogCore::Debug<const char *>(" : ");
+    ms = millis();
+    CogCore::DebugLn<uint32_t>(ms);
     CogCore::Debug<const char *>("\n");
   }
     nextTask->Run(msNow);
   if (DEBUG_SCHEDULER > 1) {
-    CogCore::Debug<const char *>("Finished Run!\n");
+    CogCore::Debug<const char *>("Finished Run! ");
+    CogCore::Debug<const char *>(" : ");
+    CogCore::DebugLn<uint32_t>(millis() - ms);
+    CogCore::Debug<const char *>("\n");
   }
     _lastTaskRan = nextTask;
     return nextTask->GetState();
