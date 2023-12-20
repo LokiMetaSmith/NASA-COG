@@ -57,7 +57,7 @@ bool DutyCycleTask::_init()
 }
 
 /* There is a significant danger here that we will change the duty cycle
-   more rapidly than our turn-on time and turm-off time can support. This is
+   more rapidly than our turn-on time and turn-off time can support. This is
    a rather subtle problem that will have to be thought about carefully.
    I suspect that when we reset we should somehow use the state of the
    system, which was probably either in the middle of an On state or Off

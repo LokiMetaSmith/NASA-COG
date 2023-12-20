@@ -180,7 +180,8 @@ public:
   const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
   const float BOUND_MAX_WATTAGE = 300.0;
   const float BOUND_MAX_RAMP = 3.0;
-  const float BOUND_MAX_TEMP_TRANSITION = 10.0;
+  const float BOUND_MAX_TEMP_TRANSITION = 20.0;
+  const float BOUND_MAX_TEMP_TRANSITION_TIME = 10000.0;
   // TODO: Need to check this.
 
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming

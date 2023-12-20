@@ -117,14 +117,17 @@ double HeaterPIDTask::evaluateHeater(	int idx, \
 		last_temp_change = time_now;
 	}
 
-	if ((time_now - last_temp_change) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
+	if (abs(time_now - last_temp_change) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME)
 	{
-	  // As long as there is not a fault present, this creates;
-      // if one is already present, we leave it.
-      if (!getConfig()->errors[ec].fault_present) {
-        getConfig()->errors[ec].fault_present = true;
-        getConfig()->errors[ec].begin_condition_ms = millis();
-      }
+		if(  abs(previous_input_temperature != current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
+		{
+			// As long as there is not a fault present, this creates;
+			// if one is already present, we leave it.
+			if (!getConfig()->errors[ec].fault_present) {
+				getConfig()->errors[ec].fault_present = true;
+				getConfig()->errors[ec].begin_condition_ms = millis();
+			}
+		}
 	}
 }
 

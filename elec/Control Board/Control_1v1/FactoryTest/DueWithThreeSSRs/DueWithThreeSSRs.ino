@@ -21,9 +21,16 @@
 #define LICENSE "GNU Affero General Public License, version 3 "
 
 #define BAUD_RATE 115200
+//
+#include <SPI.h>
+#include <Ethernet.h>
+
+
 
 #include <RotaryEncoder.h>
 #include <U8g2lib.h>
+
+
 #include <Adafruit_NeoPixel.h>
 
 #define NEOPIX_DIN 43
@@ -31,11 +38,13 @@
 Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIX_DIN, NEO_RGB + NEO_KHZ400);
 
 //Name the pins from the Due
-#define CS 48
-#define DC 47
-#define RESET 46
+#define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
+#define DC 47 //display data / command line, keep high for display cs control
+#define RESET 46 // display reset, keep high or don't care
+#define ETHERNET_CS 10//HIGH->Enabled, LOW->Disabled
+
 // OLED Display
-U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ CS, /* dc=*/ DC, /* reset=*/ RESET); //Rotation 180
+U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DC, /* reset=*/ RESET); //Rotation 180
 
 
 //Check power supplies. Reports status on serial port, OLED display.
@@ -80,6 +89,8 @@ class PowerSense
         Serial.print(my_pinName);  //
         Serial.print(": ");  //
         Serial.println(voltage);  // RAW Read of the ADC
+
+        digitalWrite(DISPLAY_CS, LOW);       // select Display mode
         //Update OLED display
         u8g2.setFont(u8g2_font_6x10_mf); //Not transparent font
         u8g2.setFontMode(0);
@@ -90,6 +101,7 @@ class PowerSense
         u8g2.print(my_pinName);
         u8g2.print(voltage);
         u8g2.sendBuffer();
+        digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
       }
     }
 };//end PowersSense
@@ -140,6 +152,28 @@ class Flasher
       }
     }
 };
+
+  void UpdateEthernet()
+  {
+    digitalWrite(ETHERNET_CS, HIGH);       // select ethernet mode
+    digitalWrite(DC, HIGH); 
+    delay(1000);  // Hold the splash screen a second
+    auto link = Ethernet.linkStatus();
+    digitalWrite(ETHERNET_CS, LOW);       // deselect ethernet mode
+     Serial.print("Link status: ");
+    switch (link) {
+    case Unknown:
+      Serial.println("Unknown");
+      break;
+    case LinkON:
+      Serial.println("ON");
+      break;
+    case LinkOFF:
+      Serial.println("OFF");
+      break;
+    }
+  }  
+   
 
 // Resistive dividers Vin = Vadc*3.3/1032 *(R1+R1)/R2
 //Read every two seconds
@@ -235,6 +269,12 @@ void setup() {
   Serial.print("Compiled at: ");
   Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
 
+  pinMode(ETHERNET_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
+  pinMode(4, OUTPUT);      // On the Ethernet Shield, CS is pin 4
+  pinMode(DISPLAY_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
+  pinMode(DC, OUTPUT); 
+  pinMode(RESET, OUTPUT); 
+
   pinMode(SHUT_DOWN, INPUT_PULLUP);
   pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
@@ -246,7 +286,8 @@ void setup() {
   pinMode(PS2_EN, OUTPUT);
   digitalWrite(PS1_EN, HIGH); //Set high to enable PS1
   digitalWrite(PS2_EN, HIGH); //Set high to enable PS2
-
+  // You can use Ethernet.init(pin) to configure the CS pin
+  Ethernet.init(ETHERNET_CS);  // Most Arduino shields
   setupBacklights(); //Setup the neopixels
   setupu8g2(); //Setup the graphics display
   delay(1000);  // Hold the splash screen a second
@@ -279,8 +320,8 @@ void loop() {
     pos = 0;
     encoder.setPosition(0);
   }
-
-  if (!updatePowerMonitor()) {
+  UpdateEthernet();
+  if (!updatePowerMonitor()) { 
     ;
   }
 
