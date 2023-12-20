@@ -368,10 +368,12 @@ namespace CogApp
 
     // Now we want to limit this with amps
     const float wattsLimitedByAmperage = getConfig()->MAX_AMPERAGE * getConfig()->MAX_AMPERAGE * R_O;
-    const float limitedWattage = min(presetLimitedWattage,wattsLimitedByAmperage);
+    float limitedWattage = min(presetLimitedWattage,wattsLimitedByAmperage);
+    // proposed code:
+    limitedWattage = min(limitedWattage,sw);
+
     // This is actually a constant in our program, so it makes little sense
     getConfig()->report->max_stack_amps_A = getConfig()->MAX_AMPERAGE;
-
 
     //    c.W_w = actualWattage;
     // Now we want to compute the part of the limitedWattage that adds heat
