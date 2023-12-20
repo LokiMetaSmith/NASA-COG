@@ -24,7 +24,12 @@ using namespace std;
         CogCore::Debug<const char *>("DisplayTask init\n");
 
         pinMode(DISPLAY_CS, OUTPUT);      // set the display pin CS pin mode 
-		digitalWrite(DISPLAY_CS, LOW);   // turn the CS on (HIGH is the logic level and is normally held high) 
+		pinMode(DISPLAY_DC, OUTPUT);
+		
+		digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
+		digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
+		
+		
         return true;
     }
 

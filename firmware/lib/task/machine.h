@@ -67,7 +67,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE 1.75
 
 #endif
-#define DISPLAY_CS 48
+//Name the pins from the Due
+#define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
+#define DISPLAY_DC 47 //display data / command line, keep high for display cs control
+#define RESET 46 // display reset, keep high or don't care
+
+
 
 #include <machine_core_defs.h>
 
