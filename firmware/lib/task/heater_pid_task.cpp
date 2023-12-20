@@ -165,8 +165,9 @@ bool HeaterPIDTask::_run()
 
   this->Input_temperature_C = getConfig()->report->post_heater_C;
 
-  //evaluate the temerature and verify it's changing within the predescribed time interval
-  evaluateHeater(0,HEATER_UNRESPONSIVE,previousInput,this->Input_temperature_C,this->HeaterSetPoint_C);
+  // WARNING! This will probably move.
+  // //evaluate the temerature and verify it's changing within the predescribed time interval
+  // evaluateHeater(0,HEATER_UNRESPONSIVE,previousInput,this->Input_temperature_C,this->HeaterSetPoint_C);
 
   // didn't hang when return was here.
   pidControllerHeater->Compute();

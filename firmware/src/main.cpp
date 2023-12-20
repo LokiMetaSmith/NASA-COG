@@ -295,7 +295,7 @@ void setup()
     abort();
   }
 
-  
+
   CogCore::TaskProperties DisplayProperties;
   DisplayProperties.name = "Display";
   DisplayProperties.id = 50;
@@ -303,12 +303,12 @@ void setup()
   DisplayProperties.priority = CogCore::TaskPriority::Low;
   DisplayProperties.state_and_config = (void *) &machineConfig;
   bool displayAdd = core.AddTask(&displayTask, &DisplayProperties);
-  
+
   if (!displayAdd) {
     CogCore::Debug<const char *>("displayAdd Failed\n");
     abort();
-  }  
-  
+  }
+
   core.ResetHardwareWatchdog();
 
   heaterPIDTask.whichHeater = (Stage2Heater) 0;
@@ -332,7 +332,7 @@ void setup()
   dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
   heaterPIDTask.DEBUG_PID = 0;
   cogTask.DEBUG_FAN = 0;
-  cogTask.DEBUG_LEVEL = 0;
+  cogTask.DEBUG_LEVEL = 2;
   cogTask.DEBUG_LEVEL_OBA = 0;
   cogTask.wattagePIDObject->DEBUG_PID = 0;
   OEDCSNetworkTask.DEBUG_UDP = 0;
