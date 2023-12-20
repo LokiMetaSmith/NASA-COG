@@ -121,6 +121,7 @@ namespace CogApp
     bool heaterWattsAtFullPowerPred(float watts);
     void oneButtonAlgorithm(float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p);
     void runOneButtonAlgorithm();
+	void evaluateHeaterEnvelop(CriticalErrorCondition ec, double goal_temperature,double current_input_temperature, double value_PID);
     float computeNernstVoltage(float T_K);
     float computePumpingWork(float T_k,float V,float R_O, float I_A);
     void changeRamps(unsigned long ms);
@@ -170,7 +171,7 @@ namespace CogApp
   private:
     bool _run() override;
     bool _init() override;
-
+    long time_last_temp_changed_ms; //last time the temperature changed
   };
 
 

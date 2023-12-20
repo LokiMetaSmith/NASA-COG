@@ -35,7 +35,7 @@ HeaterPIDTask::HeaterPIDTask() {
 bool HeaterPIDTask::_init()
 {
   CogCore::Debug<const char *>("HeaterPIDTask init\n");
-  last_temp_change = millis(); //initialize last_temp_change when the task starts
+ 
   return true;
 }
 
@@ -101,35 +101,7 @@ void HeaterPIDTask::shutHeaterDown() {
   getConfig()->report->heater_duty_cycle = 0.0;
   dutyCycleTask->dutyCycle = 0.0;
 }
-//  evaluateHeater(previousInput,this->Input_temperature_C,this->HeaterSetPoint_C,s)
 
-double HeaterPIDTask::evaluateHeater(	int idx, \
-							CriticalErrorCondition ec, \
-							double &previous_input_temperature,
-							double &current_input_temperature,
-							double &goal_temperature)
-{
-
-	unsigned long time_now = millis();
-
-	if(previous_input_temperature != current_input_temperature)
-	{
-		last_temp_change = time_now;
-	}
-
-	if (abs(time_now - last_temp_change) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME)
-	{
-		if(  abs(previous_input_temperature != current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
-		{
-			// As long as there is not a fault present, this creates;
-			// if one is already present, we leave it.
-			if (!getConfig()->errors[ec].fault_present) {
-				getConfig()->errors[ec].fault_present = true;
-				getConfig()->errors[ec].begin_condition_ms = millis();
-			}
-		}
-	}
-}
 
 bool HeaterPIDTask::_run()
 {

@@ -92,7 +92,7 @@ public:
   virtual bool init() = 0;
 };
 
-#define NUM_CRITICAL_ERROR_DEFINITIONS 10
+#define NUM_CRITICAL_ERROR_DEFINITIONS 11
 // WARNING! Do not reorder these!!
 // The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
 enum CriticalErrorCondition {
@@ -103,6 +103,7 @@ enum CriticalErrorCondition {
   FAN_LOSS_PWR,
   FAN_UNRESPONSIVE,
   HEATER_UNRESPONSIVE,
+  HEATER_OUT_OF_BOUNDS,
   STACK_LOSS_PWR,
   PSU_UNRESPONSIVE,
   MAINS_LOSS_PWR
@@ -116,6 +117,7 @@ constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINI
 	"Lost 24v Power",
 	"TACH unresponsive",
 	"Lost control of Heater",
+	"pid pegged, temp out of bounds",
 	"Lost control of the Stack",
 	"Lost control of the programmable PSU",
 	"Lost mains power, on UPS"
