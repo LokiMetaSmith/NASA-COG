@@ -62,6 +62,8 @@ class DutyCycleTask : public CogCore::Task
     unsigned long prorata_on_in_window_ms = 0;
 
     unsigned long time_of_last_check = 0;
+    float temperature_at_time_of_last_check;
+    const float TEMPERATURE_LIMIT = -0.5;
 
     // By placing a pointer here, we can have
     // individual control of however many heaters are in the system.

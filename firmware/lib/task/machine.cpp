@@ -197,7 +197,7 @@ void MachineConfig::initErrors() {
  errors[COULD_NOT_INIT_3_THERMOCOUPLES].toleration_ms = 0;
  errors[FAN_LOSS_PWR].toleration_ms = 0;
  errors[FAN_UNRESPONSIVE].toleration_ms = FAN_FAULT_TOLERATION_TIME_MS;
- errors[HEATER_UNRESPONSIVE].toleration_ms = 0;
+ errors[HEATER_UNRESPONSIVE].toleration_ms = HEATER_FAULT_TOLERATION_TIME_MS;
  errors[STACK_LOSS_PWR].toleration_ms = 0;
  errors[PSU_UNRESPONSIVE].toleration_ms = 0;
  errors[MAINS_LOSS_PWR].toleration_ms = 0;

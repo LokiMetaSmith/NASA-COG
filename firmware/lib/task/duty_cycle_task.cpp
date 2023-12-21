@@ -120,6 +120,34 @@ bool DutyCycleTask::_run()
     recorded_duty_cycle = 0.0;
   }
 
+
+  // Now, if we have been on up until now, and the temperature has actually
+  // gone down, we probably have a broken heater, and we will mark an error
+  if (PERIOD_MS >= 3000) {
+    float current_temp = getConfig()->report->post_heater_C;
+
+    if (isOn) {
+      CogCore::Debug<const char *>("IS ON!");
+      CogCore::Debug<const char *>("TESTING\n");
+      CogCore::DebugLn<bool>(isOn);
+      CogCore::DebugLn<float>(current_temp);
+      CogCore::DebugLn<float>(temperature_at_time_of_last_check);
+      CogCore::DebugLn<float>(current_temp - temperature_at_time_of_last_check);
+
+      if ((!getConfig()->errors[HEATER_UNRESPONSIVE].fault_present) &&
+          (current_temp > 60.0) &&
+          (current_temp - temperature_at_time_of_last_check) < TEMPERATURE_LIMIT) {
+        getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
+        getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
+        CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN");
+      }
+      if ((getConfig()->errors[HEATER_UNRESPONSIVE].fault_present) &&
+          (current_temp - temperature_at_time_of_last_check) > 1.0) {
+        getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = false;
+        CogCore::Debug<const char *>("HEATER_UNRESPONSIVE WITHDRAWN");
+      }
+    }
+  }
   // now we decided to turn on or off (until called before)!
   isOn = ((dutyCycle > 0.0) && (recorded_duty_cycle <= dutyCycle));
 
@@ -143,6 +171,7 @@ bool DutyCycleTask::_run()
   }
 
   time_of_last_check = ms;
+  temperature_at_time_of_last_check = getConfig()->report->post_heater_C;
 
   one_pin_heater->setHeater(0,isOn);
 

@@ -145,8 +145,6 @@ namespace CogApp
 
 
   float CogTask::computeFanSpeedTarget(float currentTargetTemp, float temp, float heaterWatts,float A, float B, float C) {
-    CogCore::DebugLn<const char *>("QQQQQQQQQQQQQQQQQQQQQ");
-
     const bool NEW_STRATEGY = true;
     // The NEW_STRATEGY is based on learnings that we have to adjust the fan dynamically.
     // The idea is to adjust the fan between three values: MIN, MAX, and PREFERRED.
