@@ -12,18 +12,26 @@ Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIX_DIN, NEO_RGB + NEO_KHZ400);
 //#define DISPLAY_DC 47               // Data on display
 //#define DISPLAY_CS 48               // Chip select for display
 
-// OLED Display  Use U8X8_PIN_NONE if the reset pin is not connected
-//U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET); //Rotation 180
 
 //#define DISPLAY_CLK 13 //Default SPI pins
 //#define DISPLAY_MOSI 11
 
 #define DISPLAY_CLK 13  //OEDCS SPI for display
 #define DISPLAY_MOSI 11
+
+// OLED Display  Use U8X8_PIN_NONE if the reset pin is not connected
+// This compiles but interferes with LAN, Text on display
+U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET); //Rotation 180
+//U8G2_ST7567_OS12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET); //Rotation 180
+
 // U8G2_ST7567_JLX12864_F_4W_SW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET); //Rotation 180
 //U8G2_ST7567_OS12864_F_4W_SW_SPI u8g2(U8G2_R2, /* clock=*/ 13, /* data=*/ 11, /* cs=*/ 7, /* dc=*/ 9, /* reset=*/ 8);
 
-U8G2_ST7567_OS12864_F_4W_SW_SPI u8g2(U8G2_R2, /* clock=*/ DISPLAY_CLK, /* data=*/ DISPLAY_MOSI, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET);
+
+//This compiles, does NOT interfer with LAN but no text on display
+//U8G2_ST7567_OS12864_F_4W_SW_SPI u8g2(U8G2_R2, /* clock=*/ DISPLAY_CLK, /* data=*/ DISPLAY_MOSI, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET);
+
+//This compiles, does NOT interfer with LAN but no text on display
 //U8G2_ST7567_OS12864_F_4W_SW_SPI u8g2(U8G2_R2, /* clock=*/ DISPLAY_CLK, /* data=*/ DISPLAY_MOSI, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ U8X8_PIN_NONE);
 
 

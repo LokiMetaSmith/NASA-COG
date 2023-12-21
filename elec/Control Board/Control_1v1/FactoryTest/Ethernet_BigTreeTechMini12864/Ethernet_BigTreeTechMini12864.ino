@@ -15,7 +15,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "Ethernet_BigTreeTechMini12864"
-#define VERSION ";_Rev_0.3"
+#define VERSION ";_Rev_0.4"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -67,8 +67,8 @@ void setup() {
 
   //Display setup
   setupBacklights();  //Setup the neopixels
-//  setupDisplay();     //The Graphic display
-//  splashScreen();     //A message
+  setupDisplay();     //The Graphic display
+  splashScreen();     //A message
 
 }//end setup()
 
