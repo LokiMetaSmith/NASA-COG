@@ -62,6 +62,7 @@ namespace CogApp
     getConfig()->fanDutyCycle = 0.0;
     const float MAXIMUM_TOTAL_WATTAGE = MachineConfig::HEATER_MAXIMUM_WATTAGE + getConfig()->MAX_STACK_WATTAGE;
     wattagePIDObject = new WattagePIDObject(MAXIMUM_TOTAL_WATTAGE);
+	time_last_temp_changed_ms = millis(); //initialize time_last_temp_changed_ms when the task starts
     return true;
   }
 
@@ -284,6 +285,38 @@ namespace CogApp
     }
   }
 
+  //  evaluateHeater(previousInput,this->Input_temperature_C,this->HeaterSetPoint_C,s)
+
+void CogTask::evaluateHeaterEnvelop(	
+							CriticalErrorCondition ec, 
+							double current_input_temperature,
+							double goal_temperature, 
+							double value_PID)
+{
+
+    if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
+	{
+		unsigned long time_now = millis(); 
+		if(goal_temperature != current_input_temperature)
+		{
+			time_last_temp_changed_ms = time_now;
+		}
+		//last_temp_change is the time when the temp changed last
+		if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME)
+		{
+			if(  abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
+			{
+				// As long as there is not a fault present, this creates;
+				// if one is already present, we leave it.
+				if (!getConfig()->errors[ec].fault_present) {
+					getConfig()->errors[ec].fault_present = true;
+					getConfig()->errors[ec].begin_condition_ms = millis();
+				}
+			}
+		}
+	}
+}
+
 
   float CogTask::computeNernstVoltage(float T_K) {
     // P2 is the pressureized side.
@@ -451,7 +484,7 @@ namespace CogApp
     MachineState ms = getConfig()->ms;
     if (ms != NormalOperation) {
       if (c.pause_substate == 0) {
-        // Is this useing the correct variables?
+        // Is this using the correct variables?
         float diff = getConfig()->TARGET_TEMP_C - getConfig()->SETPOINT_TEMP_C;
         // Here I am trying to make sure we don't raise the SETPOINT_TEMP_C past our target
         // or lower it past our target.
@@ -506,7 +539,10 @@ namespace CogApp
         getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
       }
     }
-
+	evaluateHeaterEnvelop(HEATER_OUT_OF_BOUNDS, 
+						getConfig()->SETPOINT_TEMP_C,
+						getConfig()->TARGET_TEMP_C, 
+						getConfig()->report->heater_duty_cycle);
 
     // MachineState ms = getConfig()->ms;
     // if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
