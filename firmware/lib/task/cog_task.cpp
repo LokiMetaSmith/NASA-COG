@@ -285,37 +285,52 @@ namespace CogApp
     }
   }
 
-  //  evaluateHeater(previousInput,this->Input_temperature_C,this->HeaterSetPoint_C,s)
 
-void CogTask::evaluateHeaterEnvelop(	
-							CriticalErrorCondition ec, 
-							double current_input_temperature,
-							double goal_temperature, 
-							double value_PID)
-{
+  void CogTask::evaluateHeaterEnvelope(
+                                      CriticalErrorCondition ec,
+                                      double current_input_temperature,
+                                      double goal_temperature,
+                                      double value_PID)
+  {
 
     if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
-	{
-		unsigned long time_now = millis(); 
-		if(goal_temperature != current_input_temperature)
-		{
-			time_last_temp_changed_ms = time_now;
-		}
-		//last_temp_change is the time when the temp changed last
-		if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME)
-		{
-			if(  abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
-			{
-				// As long as there is not a fault present, this creates;
-				// if one is already present, we leave it.
-				if (!getConfig()->errors[ec].fault_present) {
-					getConfig()->errors[ec].fault_present = true;
-					getConfig()->errors[ec].begin_condition_ms = millis();
-				}
-			}
-		}
-	}
-}
+      {
+        unsigned long time_now = millis();
+        if(goal_temperature != current_input_temperature)
+          {
+            time_last_temp_changed_ms = time_now;
+          }
+        //last_temp_change is the time when the temp changed last
+        if (DEBUG_LEVEL > 1) {
+          CogCore::Debug<const char *>("TESTING ENVELOPE\n");
+        }
+        if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS)
+          {
+            if (DEBUG_LEVEL > 1) {
+              CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
+            }
+            if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
+              {
+                if (DEBUG_LEVEL > 1) {
+                  CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
+                  CogCore::Debug<float>(abs(goal_temperature - current_input_temperature));
+                  CogCore::Debug<const char *>("\n");
+                }
+                // As long as there is not a fault present, this creates;
+                // if one is already present, we leave it.
+                if (!getConfig()->errors[ec].fault_present) {
+                  getConfig()->errors[ec].fault_present = true;
+                  getConfig()->errors[ec].begin_condition_ms = millis();
+                }
+              } else
+              {
+                if (!getConfig()->errors[ec].fault_present) {
+                  getConfig()->errors[ec].fault_present = false;
+                }
+              }
+          }
+      }
+  }
 
 
   float CogTask::computeNernstVoltage(float T_K) {
@@ -539,10 +554,10 @@ void CogTask::evaluateHeaterEnvelop(
         getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
       }
     }
-	evaluateHeaterEnvelop(HEATER_OUT_OF_BOUNDS, 
-						getConfig()->SETPOINT_TEMP_C,
-						getConfig()->TARGET_TEMP_C, 
-						getConfig()->report->heater_duty_cycle);
+    evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
+                           getConfig()->SETPOINT_TEMP_C,
+                           getConfig()->TARGET_TEMP_C,
+                           getConfig()->report->heater_duty_cycle);
 
     // MachineState ms = getConfig()->ms;
     // if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
