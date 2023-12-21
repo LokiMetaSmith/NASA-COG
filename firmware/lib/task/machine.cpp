@@ -197,11 +197,12 @@ void MachineConfig::initErrors() {
  errors[COULD_NOT_INIT_3_THERMOCOUPLES].toleration_ms = 0;
  errors[FAN_LOSS_PWR].toleration_ms = 0;
  errors[FAN_UNRESPONSIVE].toleration_ms = FAN_FAULT_TOLERATION_TIME_MS;
- errors[HEATER_UNRESPONSIVE].toleration_ms = 0;
+ errors[HEATER_UNRESPONSIVE].toleration_ms = HEATER_FAULT_TOLERATION_TIME_MS;
  errors[STACK_LOSS_PWR].toleration_ms = 0;
  errors[PSU_UNRESPONSIVE].toleration_ms = 0;
  errors[MAINS_LOSS_PWR].toleration_ms = 0;
 
+ errors[HEATER_OUT_OF_BOUNDS].toleration_ms =  ENVELOPE_FAULT_TOLERATION_TIME_MS;
 
  errors[POST_HEATER_TC_BAD].response_state = EmergencyShutdown;
  errors[POST_GETTER_TC_BAD].response_state = EmergencyShutdown;
@@ -213,6 +214,7 @@ void MachineConfig::initErrors() {
  errors[STACK_LOSS_PWR].response_state = EmergencyShutdown;
  errors[PSU_UNRESPONSIVE].response_state = EmergencyShutdown;
  errors[MAINS_LOSS_PWR].response_state = EmergencyShutdown;
+ errors[HEATER_OUT_OF_BOUNDS].response_state = EmergencyShutdown;
 }
 
 void MachineConfig::clearThermocoupleErrors() {
@@ -237,6 +239,7 @@ void MachineConfig::clearMainsPowerErrors()  {
  errors[STACK_LOSS_PWR].fault_present = false;
  errors[PSU_UNRESPONSIVE].fault_present = false;
  errors[MAINS_LOSS_PWR].fault_present = false;
+ errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
 }
 
 void MachineConfig::clearErrors() {

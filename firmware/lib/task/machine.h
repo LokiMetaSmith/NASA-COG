@@ -188,7 +188,7 @@ public:
   const float BOUND_MAX_WATTAGE = 300.0;
   const float BOUND_MAX_RAMP = 3.0;
   const float BOUND_MAX_TEMP_TRANSITION = 20.0;
-  const float BOUND_MAX_TEMP_TRANSITION_TIME = 10000.0;
+  const unsigned long BOUND_MAX_TEMP_TRANSITION_TIME_MS = 10000;
   // TODO: Need to check this.
 
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
@@ -210,6 +210,8 @@ public:
   // WARNING! THIS IS DISABLING THE ERROR FOR TESTING
   // WHILE WE FIGURE OUT THE TACH ERROR
   const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 60 * 60 * 1000;
+  const unsigned long HEATER_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
+  const unsigned long ENVELOPE_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
 
   // TODO: This would better be attached to the statemanager
   // class, as it is used in those task---but also in the
