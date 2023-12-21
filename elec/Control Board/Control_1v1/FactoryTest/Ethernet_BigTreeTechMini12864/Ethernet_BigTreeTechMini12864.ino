@@ -67,30 +67,61 @@ void setup() {
 
   //Display setup
   setupBacklights();  //Setup the neopixels
+  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  digitalWrite(4, HIGH);       // deselect SD mode
+  digitalWrite(10, HIGH);       // deselect SD mode
   setupDisplay();     //The Graphic display
+  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  digitalWrite(4, HIGH);       // deselect SD mode
+  digitalWrite(10, HIGH);       // deselect SD mode
   splashScreen();     //A message
+  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  digitalWrite(4, HIGH);       // deselect SD mode
+  digitalWrite(10, HIGH);       // deselect SD mode
 
 }//end setup()
 
 void loop() {
   digitalWrite(10, HIGH);       // select ethernet mode
-    digitalWrite(4, LOW);       // deselect SD mode
+  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  digitalWrite(4, LOW);       // deselect SD mode
   auto link = Ethernet.linkStatus();
   digitalWrite(10, LOW);       // deselect ethernet mode
-    digitalWrite(4, LOW);       // deselect SD mode
+  digitalWrite(4, LOW);       // deselect SD mode
   Serial.print("Link status: ");
+
+#define DISPLAY_LINK  //
+
   switch (link) {
     case Unknown:
       Serial.println("Unknown?");
-//      reportLAN_DisplayUnknown();
+#ifdef DISPLAY_LINK
+      digitalWrite(4, HIGH);       // deselect SD mode
+      digitalWrite(10, HIGH);       // deselect SD mode
+      reportLAN_DisplayUnknown();
+      digitalWrite(4, HIGH);       // deselect SD mode
+      digitalWrite(10, HIGH);       // deselect SD mode
+#endif
       break;
     case LinkON:
       Serial.println("ON");
-//      reportLAN_DisplayOn();
+#ifdef DISPLAY_LINK
+      digitalWrite(4, HIGH);       // deselect SD mode
+      digitalWrite(10, HIGH);       // deselect SD mode
+      reportLAN_DisplayOn();
+      digitalWrite(4, HIGH);       // deselect SD mode
+      digitalWrite(10, HIGH);       // deselect SD mode
+#endif
       break;
     case LinkOFF:
       Serial.println("OFF");
-//      reportLAN_DisplayOff();
+#ifdef DISPLAY_LINK
+      digitalWrite(4, HIGH);       // deselect SD mode
+      digitalWrite(10, HIGH);       // deselect SD mode
+      reportLAN_DisplayOff();
+      digitalWrite(4, HIGH);       // deselect SD mode
+      digitalWrite(10, HIGH);       // deselect SD mode
+#endif
       break;
   }
   delay(1000);
