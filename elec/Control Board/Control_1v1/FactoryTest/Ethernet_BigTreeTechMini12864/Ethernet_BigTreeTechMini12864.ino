@@ -15,7 +15,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "Ethernet_BigTreeTechMini12864"
-#define VERSION ";_Rev_0.2"
+#define VERSION ";_Rev_0.3"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -41,20 +41,20 @@ void setup() {
 
   pinMode(DISPLAY_CS, OUTPUT);
   pinMode(DISPLAY_DC, OUTPUT);
-  pinMode(DISPLAY_RESET, OUTPUT);
+  pinMode(DISPLAY_RESET, INPUT_PULLUP);
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
   digitalWrite(DISPLAY_DC, HIGH);
-  digitalWrite(DISPLAY_RESET, HIGH);
+  //digitalWrite(DISPLAY_RESET, HIGH);
 
   //Name the pins from the Ethernet Shield
-#define LAN_CS 10     // Chip select for LAN 
-#define LAN_SD_CS 4   // Chip select for SD card on LAN sheild
+#define LAN_CS0 10     // Chip select for LAN 
+#define LAN_SD_CS1 4   // Chip select for SD card on LAN sheild
 
   // LAN setup
   // You can use Ethernet.init(pin) to configure the CS pin
-  pinMode(LAN_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
-  pinMode(LAN_SD_CS, OUTPUT);      // On the Ethernet Shield, CS is pin 4
-  Ethernet.init(LAN_CS);  // Most Arduino shields
+  pinMode(LAN_CS0, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
+  pinMode(LAN_SD_CS1, OUTPUT);      // On the Ethernet Shield, CS is pin 4
+  Ethernet.init(LAN_CS0);  // Most Arduino shields
   //Ethernet.init(5);   // MKR ETH Shield
   //Ethernet.init(0);   // Teensy 2.0
   //Ethernet.init(20);  // Teensy++ 2.0
