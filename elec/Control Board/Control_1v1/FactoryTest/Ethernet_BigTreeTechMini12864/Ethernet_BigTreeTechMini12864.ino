@@ -67,30 +67,30 @@ void setup() {
 
   //Display setup
   setupBacklights();  //Setup the neopixels
-  setupDisplay();     //The Graphic display
-  splashScreen();     //A message
+//  setupDisplay();     //The Graphic display
+//  splashScreen();     //A message
 
 }//end setup()
 
 void loop() {
   digitalWrite(10, HIGH);       // select ethernet mode
-  //  digitalWrite(4, LOW);       // deselect SD mode
+    digitalWrite(4, LOW);       // deselect SD mode
   auto link = Ethernet.linkStatus();
   digitalWrite(10, LOW);       // deselect ethernet mode
-  //  digitalWrite(4, LOW);       // deselect SD mode
+    digitalWrite(4, LOW);       // deselect SD mode
   Serial.print("Link status: ");
   switch (link) {
     case Unknown:
       Serial.println("Unknown?");
-      reportLAN_DisplayUnknown();
+//      reportLAN_DisplayUnknown();
       break;
     case LinkON:
       Serial.println("ON");
-      reportLAN_DisplayOn();
+//      reportLAN_DisplayOn();
       break;
     case LinkOFF:
       Serial.println("OFF");
-      reportLAN_DisplayOff();
+//      reportLAN_DisplayOff();
       break;
   }
   delay(1000);
