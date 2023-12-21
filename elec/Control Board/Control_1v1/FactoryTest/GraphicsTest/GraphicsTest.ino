@@ -564,6 +564,10 @@ void draw(void) {
 
 
 void setup(void) {
+  //disable the Ethernet and SD card if it's present
+  pinMode(4, INPUT_PULLUP);  
+  pinMode(10, INPUT_PULLUP);  
+  
   u8g2.begin();
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
 

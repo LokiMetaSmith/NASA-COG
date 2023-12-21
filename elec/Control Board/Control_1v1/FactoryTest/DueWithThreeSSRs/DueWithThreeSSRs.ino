@@ -16,7 +16,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS_Factory_Test"
-#define VERSION ";_Rev_0.4"
+#define VERSION ";_Rev_0.5"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -217,10 +217,11 @@ Flasher led2(SSR2, 350, 350);
 
 //Tests for press of switch, "SHUT DOWN". Buzzes on BigTreeTech MINI 12864
 void updateSHUTDOWN() {
-  if (digitalRead(49) == LOW) {
+  if (digitalRead(SHUT_DOWN) == LOW) {
     Serial.println("Shutdown button pressed");
     digitalWrite(SSR3, LOW);
     digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
+    delay(10);
   } else {
     digitalWrite(SSR3, HIGH);
   }
@@ -229,7 +230,7 @@ void updateSHUTDOWN() {
 //Check for encoder button pressed and return true
 bool updateENC_BUT() {
   if (digitalRead(ENC_SW) == LOW) {
-    Serial.println("Button");
+    Serial.println("ENC pressed");
     digitalWrite(SSR3, LOW);
     digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
     return true; //Reset the position
