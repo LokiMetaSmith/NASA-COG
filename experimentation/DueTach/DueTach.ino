@@ -8,7 +8,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "DueTach"
-#define VERSION ";_Rev_0.1"
+#define VERSION ";_Rev_0.2"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -21,6 +21,8 @@
 #define NUMBER_OF_FANS 1
 
 #define PERIOD 1000
+
+int g_loopdelay = 1;
 
 unsigned long volatile tach_data_ts[NUMBER_OF_FANS];
 unsigned long volatile tach_data_cnt[NUMBER_OF_FANS];
@@ -58,23 +60,39 @@ void refresh_tach_data(uint8_t i) {
     tach_data_cnt[i] = 0;
     Serial.print(tach_data_duration[i]);
     Serial.print(", ");
-    Serial.println(tach_data_ocnt[i]*30);
+    Serial.println(tach_data_ocnt[i] * 30);
+
+    //Calculate RPM like in OEDCS but div by 2.0
+    float num_revolutions = (float) tach_data_ocnt[i] / 2.0;
+    float one_revolution_time_ms = (float) tach_data_duration[i];
+    long rpm = (long) (60000.0 * ( num_revolutions / one_revolution_time_ms));
+    Serial.print(tach_data_duration[i]);
+    Serial.print(", ");
+    Serial.println(rpm);
+
   }
 }
-//}
 
 
+//For serial input and user interface
+String inputString = "";         // a String to hold incoming data
+bool stringComplete = false;  // whether the string is complete
+bool autoIncerment = false;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(BAUD_RATE);
   Serial.println();
+
+  Serial.print("Period ms, RPM, ");
   Serial.print(PROG_NAME);
   Serial.println(VERSION);
-  Serial.print("Compiled at: ");
-  Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
+  //  Serial.print("Compiled at: ");
+  //  Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
 
-//We need to enable the blower if we are to have any tac to count
+
+
+  //We need to enable the blower if we are to have any tac to count
   pinMode(BLOWER_ENABLE, OUTPUT);
   digitalWrite(BLOWER_ENABLE, HIGH); //Set high to enable blower power.
   analogWrite(nFAN1_PWM, 200);  // Set for low RPM
@@ -88,8 +106,72 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  updateSerialInput();
   refresh_tach_data(0);  //Prints the duration of the tac count and the count*30=RPM
-//  updateBlowerSpeed();
+  //  updateBlowerSpeed();
+  updateCompetingFunction();
 
+}//end loop()
+
+
+/*
+  SerialEvent occurs whenever a new data comes in the hardware serial RX. This
+  routine is run between each time loop() runs, so using delay inside loop can
+  delay response. Multiple bytes of data may be available.
+*/
+//void serialEvent1() {
+void serialEvent() {
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag so the main loop can
+    // do something about it:
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
+}//end serialEvent1()
+
+
+void updateSerialInput(void) {
+  // Get user input, a string when a newline arrives:
+  //Manages the state of auto incrementing.
+  if (stringComplete) {
+    //    Serial.println("Got a new string");
+    //    Serial.println(inputString);  //For debuging string input.
+
+    //    if (inputString == "L\n") {
+    //      Serial.println("Set Linearize the fan");
+    //    }//Test for "L"
+    //    if (inputString == "l\n") {
+    //      Serial.println("Clear Linearize the fan");
+    //    }//Test for "l"
+
+    if (inputString.toInt() < 0) {
+      autoIncerment = false; // set for
+      //      Serial.println("Set auto increment false");
+    }
+    if (inputString.toInt() > 9999) {
+      autoIncerment = true; // set for
+      //      Serial.println("Set auto increment true");
+    } else {
+      //      updatelinearFanPWM(inputString);
+      updateLoopDelay(inputString.toInt()); //Make a delay.
+    }
+    inputString = "";
+    stringComplete = false;
+  }//end processing string.
+}//end updateSerialInput
+
+void updateLoopDelay(int myLoopdelay) {
+  g_loopdelay = myLoopdelay;
+  Serial.print("New loop delay");
+  Serial.print(g_loopdelay);
+}//end updateLoopDelay()
+
+//A function to hog time in the main loop.
+void updateCompetingFunction() {
+  delay(g_loopdelay);
 }
