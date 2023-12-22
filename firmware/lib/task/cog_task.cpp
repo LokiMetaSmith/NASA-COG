@@ -555,8 +555,8 @@ namespace CogApp
       }
     }
     evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
+                           getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
-                           getConfig()->TARGET_TEMP_C,
                            getConfig()->report->heater_duty_cycle);
 
     // MachineState ms = getConfig()->ms;
