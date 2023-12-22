@@ -70,11 +70,9 @@ unsigned long SanyoAceB97::_calcRPM(uint8_t i){
     CogCore::Debug<const char *>("\n" );
   }
   if (tach_data_duration[i] != 0) {
-    // According to the documentation, there will be two falling
-    // edges in one revolution..
     // This calculation does not match the documentaiton.
     // https://docs.rs-online.com/1c09/0900766b816e68bb.pdf
-    float num_revolutions = (float) tach_data_ocnt[0] / 8.0;
+    float num_revolutions = (float) tach_data_ocnt[0] / 2.0;
     float one_revolution_time_ms = (float) tach_data_duration[0];
     long rpm = (long) (60000.0 * ( num_revolutions / one_revolution_time_ms));
     return rpm;
