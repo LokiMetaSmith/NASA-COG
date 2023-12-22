@@ -8,7 +8,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "DueTach"
-#define VERSION ";_Rev_0.2"
+#define VERSION ";_Rev_0.3"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -54,7 +54,9 @@ void tachISR3() {
 void refresh_tach_data(uint8_t i) {
   unsigned long m = millis();
   if (tach_data_ts[i] + PERIOD < m) {
+    noInterrupts();
     tach_data_ocnt[i] = tach_data_cnt[i];
+    interrupts();
     tach_data_duration[i] = m - tach_data_ts[i];
     tach_data_ts[i] = m;
     tach_data_cnt[i] = 0;
