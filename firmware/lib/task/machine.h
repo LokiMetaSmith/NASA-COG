@@ -70,7 +70,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 //Name the pins from the Due
 #define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
 #define DISPLAY_DC 47 //display data / command line, keep high for display cs control
-#define RESET 46 // display reset, keep high or don't care
+#define DISPLAY_RESET 46 // display reset, keep high or don't care
 
 
 

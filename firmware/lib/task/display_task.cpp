@@ -25,11 +25,12 @@ using namespace std;
 
         pinMode(DISPLAY_CS, OUTPUT);      // set the display pin CS pin mode 
 		pinMode(DISPLAY_DC, OUTPUT);
-		
+		pinMode(DISPLAY_RESET, OUTPUT);
 		digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
-		digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
-		
-		
+		digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+		digitalWrite(DISPLAY_RESET, HIGH);
+		 
+		delay(5);
         return true;
     }
 

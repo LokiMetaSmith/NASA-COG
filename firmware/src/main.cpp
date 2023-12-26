@@ -54,7 +54,7 @@ using namespace CogCore;
 static Core core;
 
 /***** Declare your tasks here *****/
-
+DisplayTask displayTask;
 CogApp::OEDCSNetworkTask OEDCSNetworkTask;
 CogApp::CogTask cogTask;
 CogApp::OEDCSSerialInputTask oedcsSerialInputTask;
@@ -62,7 +62,7 @@ CogApp::FaultTask faultTask;
 
 CogApp::HeartbeatTask heartbeatTask;
 CogApp::Log_Recorder_Task logRecorderTask;
-DisplayTask displayTask;
+
 
 HeaterPIDTask heaterPIDTask;
 DutyCycleTask dutyCycleTask;
@@ -172,6 +172,20 @@ void setup()
 
   /***** Configure and add your tasks here *****/
 
+  
+  CogCore::TaskProperties DisplayProperties;
+  DisplayProperties.name = "Display";
+  DisplayProperties.id = 50;
+  DisplayProperties.period = MachineConfig::DISPLAY_UPDATE_MS;
+  DisplayProperties.priority = CogCore::TaskPriority::Low;
+  DisplayProperties.state_and_config = (void *) &machineConfig;
+  bool displayAdd = core.AddTask(&displayTask, &DisplayProperties);
+
+  if (!displayAdd) {
+    CogCore::Debug<const char *>("displayAdd Failed\n");
+    abort();
+  }
+  
   CogCore::TaskProperties readTempsProperties;
   readTempsProperties.name = "readTemps";
   readTempsProperties.id = 19;
@@ -296,18 +310,6 @@ void setup()
   }
 
 
-  CogCore::TaskProperties DisplayProperties;
-  DisplayProperties.name = "Display";
-  DisplayProperties.id = 50;
-  DisplayProperties.period = MachineConfig::DISPLAY_UPDATE_MS;
-  DisplayProperties.priority = CogCore::TaskPriority::Low;
-  DisplayProperties.state_and_config = (void *) &machineConfig;
-  bool displayAdd = core.AddTask(&displayTask, &DisplayProperties);
-
-  if (!displayAdd) {
-    CogCore::Debug<const char *>("displayAdd Failed\n");
-    abort();
-  }
 
   core.ResetHardwareWatchdog();
 

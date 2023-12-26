@@ -38,6 +38,13 @@ SL_PS::SL_PS(const char * name, uint8_t id) {
 int SL_PS::init() {
 
   int retval = 0;
+  
+  //PS1  is attached to Serial1
+  pinMode( PS1_EN, OUTPUT);
+  digitalWrite(PS1_EN, LOW);
+
+  pinMode( PS1_AUX_SENSE, INPUT);
+
 
   Serial1.begin(4800);
   // This would be better done as an error message than a hard loop...
