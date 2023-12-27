@@ -8,7 +8,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "DueTach"
-#define VERSION ";_Rev_0.4"
+#define VERSION ";_Rev_0.5"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -54,15 +54,17 @@ void tachISR3() {
 void refresh_tach_data(uint8_t i) {
   unsigned long m = millis();
   if (tach_data_ts[i] + PERIOD < m) {
-    noInterrupts();
+//    noInterrupts();
     tach_data_ocnt[i] = tach_data_cnt[i];
     tach_data_duration[i] = m - tach_data_ts[i];
     tach_data_ts[i] = m;
     tach_data_cnt[i] = 0;
-    interrupts();
-    Serial.print(tach_data_duration[i]);
-    Serial.print(", ");
-    Serial.println(tach_data_ocnt[i] * 30);
+//    interrupts();
+
+//    Serial.print(tach_data_duration[i]);
+//    Serial.print(", ");
+//    Serial.print(tach_data_ocnt[i] * 30);
+//    Serial.print(", ");
 
     //Calculate RPM like in OEDCS but div by 2.0
     float num_revolutions = (float) tach_data_ocnt[i] / 2.0;
@@ -86,7 +88,7 @@ void setup() {
   Serial.begin(BAUD_RATE);
   Serial.println();
 
-  Serial.print("Period ms, RPM, ");
+  Serial.print("Period_ms, RPM, ");
   Serial.print(PROG_NAME);
   Serial.println(VERSION);
   //  Serial.print("Compiled at: ");
@@ -169,7 +171,10 @@ void updateSerialInput(void) {
 
 void updateLoopDelay(int myLoopdelay) {
   g_loopdelay = myLoopdelay;
-  Serial.print("New loop delay");
+  Serial.print("Period_ms, RPM, ");
+  Serial.print(PROG_NAME);
+  Serial.println(VERSION);
+  Serial.print(", New_loop_delay");
   Serial.print(g_loopdelay);
 }//end updateLoopDelay()
 
