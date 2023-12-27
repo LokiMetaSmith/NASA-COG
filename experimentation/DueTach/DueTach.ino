@@ -8,7 +8,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "DueTach"
-#define VERSION ";_Rev_0.4"
+#define VERSION ";_Rev_0.5"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
