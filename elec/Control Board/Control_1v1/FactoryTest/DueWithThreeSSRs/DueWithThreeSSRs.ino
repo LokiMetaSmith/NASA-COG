@@ -39,12 +39,12 @@ Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIX_DIN, NEO_RGB + NEO_KHZ400);
 
 //Name the pins from the Due
 #define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
-#define DC 47 //display data / command line, keep high for display cs control
-#define RESET 46 // display reset, keep high or don't care
+#define DISPLAY_DC 47 //display data / command line, keep high for display cs control
+#define DISPLAY_RESET 46 // display reset, keep high or don't care
 #define ETHERNET_CS 10//HIGH->Enabled, LOW->Disabled
 
 // OLED Display
-U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DC, /* reset=*/ RESET); //Rotation 180
+U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET); //Rotation 180
 
 
 //Check power supplies. Reports status on serial port, OLED display.
@@ -156,7 +156,7 @@ class Flasher
   void UpdateEthernet()
   {
     digitalWrite(ETHERNET_CS, HIGH);       // select ethernet mode
-    digitalWrite(DC, HIGH); 
+    digitalWrite(DISPLAY_DC, HIGH); 
     delay(1000);  // Hold the splash screen a second
     auto link = Ethernet.linkStatus();
     digitalWrite(ETHERNET_CS, LOW);       // deselect ethernet mode
@@ -178,8 +178,8 @@ class Flasher
 // Resistive dividers Vin = Vadc*3.3/1032 *(R1+R1)/R2
 //Read every two seconds
 //              Signal name, Pin number, R1, R2, Xoffset, Yoffset
-PowerSense SENSE_24V("+24V ", 1, 2000, 30000, 4700, 0, 50); //Read A1. R101+R105+R106, R102.
-PowerSense SENSE_12V("+12V ", 2, 2000, 30000, 10000, 64, 50); //Read A2. R103+R107+R108, R104.
+PowerSense SENSE_24V("+24V ", 1, 2000, 40000, 4700, 0, 50); //Read A1. R101+R105+R106, R102.
+PowerSense SENSE_12V("+12V ", 2, 2000, 40000, 10000, 64, 50); //Read A2. R103+R107+R108, R104.
 PowerSense SENSE_AUX1("AUX1 ", 3, 2000, 10000, 14700, 0, 60); //Read A3. R123, R124+R125.
 PowerSense SENSE_AUX2("AUX2 ", 6, 2000, 10000, 14700, 64, 60); //Read A6 R126, R127+R128.
 
@@ -262,7 +262,7 @@ bool updatePowerMonitor(void) {
     return false;
   }
 }
-
+class PSU{
 // #define ADDRESS 0x04
 #define ADDRESS 0x00
 #define MYDELAY 500
@@ -288,7 +288,7 @@ uint16_t set_current; // 72-73 r/w
 uint8_t control; //  7C  r/w
 uint8_t on_off;
 String serial1Buffer;
-
+public:
 int setPS_Addr(uint8_t addr) {
   Serial1.print("ADDS "); Serial1.print(addr); Serial1.print("\r\n");
   delay(50);
@@ -562,9 +562,9 @@ void test_PS(){
 
 
 }
-
+};
 void setup() {
-  serial1Buffer.reserve(256);
+  //serial1Buffer.reserve(256);
 
   Serial.begin(BAUD_RATE);
   Serial.println();
@@ -579,9 +579,11 @@ void setup() {
   pinMode(ETHERNET_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
   pinMode(4, OUTPUT);      // On the Ethernet Shield, CS is pin 4
   pinMode(DISPLAY_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
-  pinMode(DC, OUTPUT); 
-  pinMode(RESET, OUTPUT); 
-
+  pinMode(DISPLAY_DC, OUTPUT); 
+  pinMode(DISPLAY_RESET, OUTPUT); 
+		digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
+		digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+		digitalWrite(DISPLAY_RESET, HIGH);
   pinMode(SHUT_DOWN, INPUT_PULLUP);
   pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
@@ -598,7 +600,7 @@ void setup() {
   setupBacklights(); //Setup the neopixels
   setupu8g2(); //Setup the graphics display
 
-  test_PS();
+
   delay(1000);  // Hold the splash screen a second
 }//End setup()
 
@@ -633,5 +635,5 @@ void loop() {
   if (!updatePowerMonitor()) { 
     ;
   }
-
+  PSU test_PS();
 }//end of loop()
