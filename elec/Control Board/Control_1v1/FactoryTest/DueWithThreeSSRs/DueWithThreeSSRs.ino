@@ -289,16 +289,44 @@ uint8_t control; //  7C  r/w
 uint8_t on_off;
 String serial1Buffer;
 public:
+int evalResponse() {
+  bool validEntry = true;
+  char buff[255];
+ 
+  uint8_t c = 0 ; 
+  //while( validEntry)
+   
+    while(validEntry){
+      c = Serial1.readBytesUntil('\n', buff, sizeof buff);
+      if ( c == 3 && (buff[0] == '=' && buff[1] == '>'))
+      { 
+       // Serial.println("Command executed/recieved successfully.");
+        error = 0;
+      }
+      if ( c == 3 && (buff[0] == '?' && buff[1] == '>'))
+      {
+       Serial.println("Command error, not accepted.");
+        validEntry=false;
+        error =  1;
+      }
+      if ( c == 3 && (buff[0] == '!' && buff[1] == '>'))
+      {
+        Serial.println("Command correct but execution error (e.g. parameters out of range).");
+        validEntry=false;
+        error = 2;
+      }
+      else
+      {
+        validEntry=false;
+        //return 0;
+      }
+    }
+    return 1;
+}
 int setPS_Addr(uint8_t addr) {
   Serial1.print("ADDS "); Serial1.print(addr); Serial1.print("\r\n");
   delay(50);
-  bool validEntry = true;
-  char buff[5];
- 
-  uint8_t c = Serial1.readBytesUntil('\n', buff, sizeof buff);
-  while( validEntry)
-  if (c != 3 || buff[0] != '=' || buff[1] != '>') return 0;
-  return 1;
+  return evalResponse();
 }
 
 int setPS_Val(uint8_t addr, const char *loc, const char *val) {
@@ -347,20 +375,35 @@ int setPS_GCurrent(uint8_t addr, uint16_t amps) {
 }
 
 char *getPS_Val(uint8_t addr, const char *val) {
-  static char rval[50];
+  static char rval[250];
+  static char b[50];
+  rval[0]  = '\0';
+  b[0]  = '\0'; 
   if (!setPS_Addr(addr)) {
     Serial.println("didn't set address");
     return 0;
   }
-
+  int c = 0;
   Serial1.print(val); Serial1.print("\r\n");
   delay(100);
-  int c = Serial1.readBytesUntil('\n', rval, sizeof rval);
-  rval[c-1] = '\0';
-  delay(10);
-  char b[5];
   c = Serial1.readBytesUntil('\n', b, sizeof b);
-  if (c != 3 || b[0] != '=' || b[1] != '>') return NULL;
+  b[c-1] = '\0';
+
+  for(int i=0; i<5;i++ )
+  {
+    if(b[0] != '=' && b[1] != '>') {
+      strcat(rval,b);
+    }
+    if(b[0] == '?' && b[1] == '>') {
+      Serial.println("Command error, not accepted.");
+    }
+    if(b[0] == '!' && b[1] == '>') {
+      Serial.println("Command correct but execution error (e.g. parameters out of range).");
+    }
+    delay(10);  
+    c = Serial1.readBytesUntil('\n', b, sizeof b);
+    b[c-1] = '\0';
+  }
   return rval;
 }
 
@@ -398,7 +441,7 @@ void getPS_Country(int addr) {
   char *r = getPS_Val(addr, "INFO 6");
   strncpy(country, r, sizeof country);
 }
-
+//12.00V 66.67A
 void getPS_RateVoltage(int addr) {
   char *r = getPS_Val(addr, "RATE?");
   char b[20];
@@ -406,6 +449,7 @@ void getPS_RateVoltage(int addr) {
   char *ptr = NULL;
   rate_voltage = -1;
   if ((ptr = strchr(b, ' '))) {
+    ptr = strchr(b, 'V');
     *ptr = '\0';
     rate_voltage = int(atof(b) * 100);
   }
@@ -416,8 +460,11 @@ void getPS_RateCurrent(int addr) {
   char b[20];
   strncpy(b, r, sizeof b);
   char *ptr = NULL;
+  char *ptr_2 = NULL;
   rate_current = -1;
   if ((ptr = strchr(b, ' '))) {
+    ptr_2 = strchr(ptr, 'A');
+    *ptr_2 = '\0';
     rate_current = int(atof(ptr + 1) * 100);
   }
 }
@@ -481,7 +528,8 @@ void getPS_Control(int addr) {
 }
 
 void test_PS(){
-
+Serial.println("Start of test_PS");
+  
   getPS_Manuf(ADDRESS);
   Serial.print("Manuf: ");
   if (!strlen(manuf)) strcpy(manuf, "UNKWN");
@@ -563,6 +611,9 @@ void test_PS(){
 
 }
 };
+
+PSU test_PSU1;
+
 void setup() {
   //serial1Buffer.reserve(256);
 
@@ -589,7 +640,7 @@ void setup() {
   pinMode(SSR3, OUTPUT);
   pinMode(BEEPER, OUTPUT);
   pinMode(BLOWER_ENABLE, OUTPUT);
-  digitalWrite(BLOWER_ENABLE, HIGH); //Set high to enable blower power.
+  digitalWrite(BLOWER_ENABLE, LOW); //Set high to enable blower power.
   analogWrite(nFAN1_PWM, 200);  // Set for low RPM
   pinMode(PS1_EN, OUTPUT);
   pinMode(PS2_EN, OUTPUT);
@@ -635,5 +686,5 @@ void loop() {
   if (!updatePowerMonitor()) { 
     ;
   }
-  PSU test_PS();
+  test_PSU1.test_PS();
 }//end of loop()
