@@ -16,7 +16,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS_Factory_Test"
-#define VERSION ";_Rev_0.5.5"
+#define VERSION ";_Rev_0.6"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -102,6 +102,7 @@ class PowerSense
         u8g2.print(voltage);
         u8g2.sendBuffer();
         digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+        digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
       }
     }
 };//end PowersSense
@@ -155,11 +156,11 @@ class Flasher
 
   void UpdateEthernet()
   {
-    digitalWrite(ETHERNET_CS, HIGH);       // select ethernet mode
-    digitalWrite(DISPLAY_DC, HIGH); 
+    digitalWrite(ETHERNET_CS, LOW);       // select ethernet mode
     delay(1000);  // Hold the splash screen a second
     auto link = Ethernet.linkStatus();
-    digitalWrite(ETHERNET_CS, LOW);       // deselect ethernet mode
+    delay(1000);  // Hold the splash screen a second
+    digitalWrite(ETHERNET_CS, HIGH);       // deselect ethernet mode
      Serial.print("Link status: ");
     switch (link) {
     case Unknown:
@@ -172,6 +173,7 @@ class Flasher
       Serial.println("OFF");
       break;
     }
+
   }  
    
 
@@ -584,17 +586,17 @@ Serial.println("Start of test_PS");
   else Serial.println(rate_current);
   delay(MYDELAY);
 
-  getPS_MaxVoltage(ADDRESS);
-  Serial.print("MaxVoltage: ");
-  if (max_voltage < 0) Serial.println("UNKWN");
-  else Serial.println(max_voltage);
-  delay(MYDELAY);
+  // getPS_MaxVoltage(ADDRESS);
+  // Serial.print("MaxVoltage: ");
+  // if (max_voltage < 0) Serial.println("UNKWN");
+  // else Serial.println(max_voltage);
+  // delay(MYDELAY);
 
-  getPS_MaxCurrent(ADDRESS);
-  Serial.print("MaxCurrent: ");
-  if (max_current < 0) Serial.println("UNKWN");
-  else Serial.println(max_current);
-  delay(MYDELAY);
+  // getPS_MaxCurrent(ADDRESS);
+  // Serial.print("MaxCurrent: ");
+  // if (max_current < 0) Serial.println("UNKWN");
+  // else Serial.println(max_current);
+  // delay(MYDELAY);
 
 //  snprintf(packetBuffer, sizeof packetBuffer, "{ \"Manufacturer\": \"%s\", \"Model\": \"%s\", \"VoltString\": \"%s\", \"Revision\": \"%s\", \"Serial\": \"%s\", \"VoltageRating\": %d, \"CurrentRating\": %d, \"MaxVoltage\": %d, \"MaxCurrent\": %d}", manuf, model, voltage_string, revision, serial, rate_voltage, rate_current, max_voltage, max_current);
 //  sendMsg(packetBuffer);
@@ -628,20 +630,21 @@ void setup() {
   while (!Serial1);
 
   pinMode(ETHERNET_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
+  digitalWrite(ETHERNET_CS, HIGH); 
   pinMode(4, OUTPUT);      // On the Ethernet Shield, CS is pin 4
   pinMode(DISPLAY_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
   pinMode(DISPLAY_DC, OUTPUT); 
   pinMode(DISPLAY_RESET, OUTPUT); 
-		digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
-		digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
-		digitalWrite(DISPLAY_RESET, HIGH);
+  digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
+  digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+  digitalWrite(DISPLAY_RESET, HIGH);
   pinMode(SHUT_DOWN, INPUT_PULLUP);
   pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
   pinMode(BEEPER, OUTPUT);
   pinMode(BLOWER_ENABLE, OUTPUT);
-  digitalWrite(BLOWER_ENABLE, LOW); //Set high to enable blower power.
-  analogWrite(nFAN1_PWM, 200);  // Set for low RPM
+  digitalWrite(BLOWER_ENABLE, HIGH); //Set high to enable blower power.
+  analogWrite(nFAN1_PWM, 220);  // Set for low RPM
   pinMode(PS1_EN, OUTPUT);
   pinMode(PS2_EN, OUTPUT);
   digitalWrite(PS1_EN, HIGH); //Set high to enable PS1
@@ -649,9 +652,11 @@ void setup() {
   // You can use Ethernet.init(pin) to configure the CS pin
   Ethernet.init(ETHERNET_CS);  // Most Arduino shields
   setupBacklights(); //Setup the neopixels
+
   setupu8g2(); //Setup the graphics display
-
-
+  digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
+  digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+  test_PSU1.test_PS();  //run once to test psu
   delay(1000);  // Hold the splash screen a second
 }//End setup()
 
@@ -668,8 +673,8 @@ void loop() {
   } // if
 
   led0.Update();
-  led1.Update();
-  led2.Update();
+  led1.Update();  //cannot be used on systems with a stack
+  led2.Update();  //cannot be used on systems with a stack 
   //led3.Update();  //Does not work on Due hardware.
   SENSE_24V.Update(); //Read A1 every two seconds.
   SENSE_12V.Update(); //Read A2 every two seconds.
@@ -686,5 +691,5 @@ void loop() {
   if (!updatePowerMonitor()) { 
     ;
   }
-  test_PSU1.test_PS();
+ 
 }//end of loop()
