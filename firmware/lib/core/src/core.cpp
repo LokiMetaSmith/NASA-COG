@@ -26,7 +26,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #define HARDWARE_WATCHDOG_TIMOUT_MS 16000
 void watchdogSetup() {
-  watchdogEnable(16000);
+  watchdogEnable(HARDWARE_WATCHDOG_TIMOUT_MS);
 }
 
 
@@ -44,7 +44,7 @@ namespace CogCore {
   // The WATCHDOG is nice but annoying if too fast;
   // I'm configuring it to every 25 seconds
   // #define WATCHDOG_TIMEOUT_MS 250
-#define WATCHDOG_TIMEOUT_MS 250000
+#define WATCHDOG_TIMEOUT_MS 25000
   // This is the longest hardware watchdog timeout we are allowed
 
 bool Core::_criticalError = false;

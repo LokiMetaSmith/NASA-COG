@@ -328,8 +328,8 @@ void setup()
 
   // now set up debugging levels...
   logRecorderTask.DEBUG_LOG_RECORDER = 0;
-  core.DEBUG_CORE = 0;
-  core._scheduler.DEBUG_SCHEDULER = 0;
+  core.DEBUG_CORE = 2;
+  core._scheduler.DEBUG_SCHEDULER = 2;
   core._scheduler._idleTask.DEBUG_IDLETASK = 0;
   dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
   heaterPIDTask.DEBUG_PID = 0;

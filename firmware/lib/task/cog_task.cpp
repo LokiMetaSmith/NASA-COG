@@ -632,17 +632,21 @@ bool CogTask::updatePowerMonitor()
         // SENSE_24V on A1.
         // Full scale is 1023, ten bits for 3.3V.
         //30K into 4K7
-        const long R1=30000;
+		const long FullScale = 1023;
+        const float percentOK = 0.25;
+        const long R1=40000;
         const long R2=4700;
         const float Vcc = 3.3;
         bool powerIsGood = false;
-        int lowThreshold24V = 1023 * 3 / 4;
-
+        const int lowThreshold24V =  (24*(R2/(R1+R2))/Vcc)*FullScale *(1 - percentOK);
+		const int highThreshold24V =  (24*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+        int _v24read = analogRead(A1);
+		
         if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
         if (DEBUG_LEVEL >0 )  CogCore::Debug<uint32_t>(analogRead(SENSE_24V) * ((Vcc * (R1+R2))/(1023.0 * R2)));
         if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("\n");
 
-        if (analogRead(A1) > lowThreshold24V) {
+        if (( _v24read > lowThreshold24V) && ( _v24read < lowThreshold24V) ) {
             powerIsGood = true;
             if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
             return true;

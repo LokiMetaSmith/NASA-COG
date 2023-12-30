@@ -21,11 +21,9 @@
 #define LICENSE "GNU Affero General Public License, version 3 "
 
 #define BAUD_RATE 115200
-//
+
 #include <SPI.h>
 #include <Ethernet.h>
-
-
 
 #include <RotaryEncoder.h>
 #include <U8g2lib.h>
@@ -42,11 +40,36 @@ Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIX_DIN, NEO_RGB + NEO_KHZ400);
 #define DISPLAY_DC 47 //display data / command line, keep high for display cs control
 #define DISPLAY_RESET 46 // display reset, keep high or don't care
 #define ETHERNET_CS 10//HIGH->Enabled, LOW->Disabled
-
+int link_status;
 // OLED Display
 U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET); //Rotation 180
 
 
+//Display link status
+void reportLAN_DisplayUnknown(void) {
+      u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
+      u8g2.setFontMode(0);
+      u8g2.setCursor(0, 41);
+      u8g2.print(F("Link: Unknown?"));
+      u8g2.sendBuffer();
+}//end unknown
+
+void reportLAN_DisplayOn(void) {
+      u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
+      u8g2.setFontMode(0);
+      u8g2.setCursor(0, 41);
+      u8g2.print(F("Link: On           "));
+      u8g2.sendBuffer();
+}//end On
+
+
+void reportLAN_DisplayOff(void) {
+      u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
+      u8g2.setFontMode(0);
+      u8g2.setCursor(0, 41);
+      u8g2.print(F("Link: Off         "));
+      u8g2.sendBuffer();
+}//end Off
 //Check power supplies. Reports status on serial port, OLED display.
 class PowerSense
 {
@@ -92,11 +115,23 @@ class PowerSense
 
         digitalWrite(DISPLAY_CS, LOW);       // select Display mode
         //Update OLED display
+
         u8g2.setFont(u8g2_font_6x10_mf); //Not transparent font
         u8g2.setFontMode(0);
         u8g2.setCursor(my_offsetX, my_offsetY);
         u8g2.print("               ");
         u8g2.sendBuffer();
+        switch (link_status) {
+          case Unknown:
+            reportLAN_DisplayUnknown();
+            break;
+          case LinkON:
+            reportLAN_DisplayOn();
+            break;
+          case LinkOFF:
+            reportLAN_DisplayOff();    
+            break;
+        }
         u8g2.setCursor(my_offsetX, my_offsetY);
         u8g2.print(my_pinName);
         u8g2.print(voltage);
@@ -157,12 +192,10 @@ class Flasher
   void UpdateEthernet()
   {
     digitalWrite(ETHERNET_CS, LOW);       // select ethernet mode
-    delay(1000);  // Hold the splash screen a second
-    auto link = Ethernet.linkStatus();
-    delay(1000);  // Hold the splash screen a second
+    link_status = Ethernet.linkStatus();
     digitalWrite(ETHERNET_CS, HIGH);       // deselect ethernet mode
      Serial.print("Link status: ");
-    switch (link) {
+    switch (link_status) {
     case Unknown:
       Serial.println("Unknown");
       break;
@@ -205,6 +238,7 @@ PowerSense SENSE_AUX2("AUX2 ", 6, 2000, 10000, 14700, 64, 60); //Read A6 R126, R
 // Programable Power Supply Enable
 #define PS1_EN 23
 #define PS2_EN 8
+
 
 
 // Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
@@ -267,7 +301,7 @@ bool updatePowerMonitor(void) {
 class PSU{
 // #define ADDRESS 0x04
 #define ADDRESS 0x00
-#define MYDELAY 500
+#define MYDELAY 10
 uint8_t error = 0;// error
 char manuf[17]; // INFO 0
 char model[17];  // INFO 1
@@ -289,7 +323,7 @@ uint16_t set_voltage; // 70-71 r/w
 uint16_t set_current; // 72-73 r/w
 uint8_t control; //  7C  r/w
 uint8_t on_off;
-String serial1Buffer;
+
 public:
 int evalResponse() {
   bool validEntry = true;
@@ -394,7 +428,7 @@ char *getPS_Val(uint8_t addr, const char *val) {
   for(int i=0; i<5;i++ )
   {
     if(b[0] != '=' && b[1] != '>') {
-      strcat(rval,b);
+      strncat(rval,b, sizeof b);
     }
     if(b[0] == '?' && b[1] == '>') {
       Serial.println("Command error, not accepted.");
@@ -632,6 +666,7 @@ void setup() {
   pinMode(ETHERNET_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
   digitalWrite(ETHERNET_CS, HIGH); 
   pinMode(4, OUTPUT);      // On the Ethernet Shield, CS is pin 4
+  digitalWrite(4, HIGH);
   pinMode(DISPLAY_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
   pinMode(DISPLAY_DC, OUTPUT); 
   pinMode(DISPLAY_RESET, OUTPUT); 
@@ -687,9 +722,9 @@ void loop() {
     pos = 0;
     encoder.setPosition(0);
   }
-  UpdateEthernet();
+  
   if (!updatePowerMonitor()) { 
-    ;
+    UpdateEthernet();
   }
  
 }//end of loop()

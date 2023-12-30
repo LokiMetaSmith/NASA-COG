@@ -334,6 +334,8 @@ NetworkUDP::printNet() {
 
 uint8_t
 NetworkUDP::networkStart() {
+  pinMode(4, OUTPUT);      // On the Ethernet Shield, CS is pin 4
+  digitalWrite(4, HIGH);       // deselect SD mode
   Ethernet.init(10);
 
   if (W5100.init() == 0) return 1;
