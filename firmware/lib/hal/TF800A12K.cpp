@@ -38,6 +38,13 @@ SL_PS::SL_PS(const char * name, uint8_t id) {
 int SL_PS::init() {
 
   int retval = 0;
+  
+  //PS1  is attached to Serial1
+  pinMode( PS1_EN, OUTPUT);
+  digitalWrite(PS1_EN, HIGH);
+
+  pinMode( PS1_AUX_SENSE, INPUT);
+
 
   Serial1.begin(4800);
   // This would be better done as an error message than a hard loop...
@@ -180,7 +187,9 @@ int SL_PS::setPS_Addr(uint8_t addr) {
   if (c != 3 || buff[0] != '=' || buff[1] != '>') return 0;
   return 1;
 }
-
+//= > CR LF -> Command executed successfully.
+//? > CR LF -> Command error, not accepted.
+//! > CR LF -> Command correct but execution error (e.g. parameters out of range).
 int SL_PS::setPS_Val(uint8_t addr, const char *loc, const char *val) {
   if (!setPS_Addr(addr)) {
     CogCore::Debug<const char *>("setPS_Val didn't set address\n");
@@ -220,20 +229,35 @@ int SL_PS::setPS_Current(uint8_t addr, uint16_t amps) {
 }
 
 char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
-  static char rval[50];
+  static char rval[250];
+  static char b[50];
+  rval[0]  = '\0';
+  b[0]  = '\0'; 
   if (!setPS_Addr(addr)) {
-    CogCore::Debug<const char *>("getPS_Val didn't set address\n");
+    Serial.println("didn't set address");
     return 0;
   }
-
+  int c = 0;
   Serial1.print(val); Serial1.print("\r\n");
   delay(100);
-  int c = Serial1.readBytesUntil('\n', rval, sizeof rval);
-  rval[c-1] = '\0';
-  delay(10);
-  char b[5];
   c = Serial1.readBytesUntil('\n', b, sizeof b);
-  if (c != 3 || b[0] != '=' || b[1] != '>') return NULL;
+  b[c-1] = '\0';
+
+  for(int i=0; i<5;i++ )
+  {
+    if(b[0] != '=' && b[1] != '>') {
+      strncat(rval,b, sizeof b);
+    }
+    if(b[0] == '?' && b[1] == '>') {
+      Serial.println("Command error, not accepted.");
+    }
+    if(b[0] == '!' && b[1] == '>') {
+      Serial.println("Command correct but execution error (e.g. parameters out of range).");
+    }
+    delay(10);  
+    c = Serial1.readBytesUntil('\n', b, sizeof b);
+    b[c-1] = '\0';
+  }
   return rval;
 }
 
@@ -279,6 +303,7 @@ void SL_PS::getPS_RateVoltage(int addr) {
   char *ptr = NULL;
   rate_voltage = -1;
   if ((ptr = strchr(b, ' '))) {
+    ptr = strchr(b, 'V');
     *ptr = '\0';
     rate_voltage = int(atof(b) * 100);
   }
@@ -289,8 +314,11 @@ void SL_PS::getPS_RateCurrent(int addr) {
   char b[20];
   strncpy(b, r, sizeof b);
   char *ptr = NULL;
+  char *ptr_2 = NULL;
   rate_current = -1;
   if ((ptr = strchr(b, ' '))) {
+    ptr_2 = strchr(ptr, 'A');
+    *ptr_2 = '\0';
     rate_current = int(atof(ptr + 1) * 100);
   }
 }

@@ -46,6 +46,10 @@
 #ifndef SANYOACEB97_H
 #define SANYOACEB97_H
 
+
+#include <abstract_fan.h>
+
+
 #ifdef ARDUINO
 #include <Arduino.h>
 #else
@@ -57,6 +61,8 @@
 // for redundancy or great flow against pressure.
 #define NUMBER_OF_FANS 1
 
+
+
 // because these are interrupts, they cannot be members,
 // and making them static is complicated...
 
@@ -65,13 +71,14 @@ void tachISR(uint8_t i);
 void tachISR0();
 
 
-class SanyoAceB97 {
-private:
+class SanyoAceB97 : public AbstractFAN{
+public:
   const char *name;
   uint8_t id;
   uint8_t pin;
   uint8_t fan_Enable;
-  
+
+
   // This is a ration from 0.0 to 1.0
   float _pwm_ratio[NUMBER_OF_FANS] = {0.0};
 
@@ -83,25 +90,24 @@ private:
   int OPERATING_PWM_THROTTLE = 255;
   int DEBUG_FAN = 1;
 public:
-  void _init();
+  bool init();
   unsigned long _calcRPM(uint8_t i);
-  SanyoAceB97() {
-    _init();
-  };
-  void E_STOP();
-  SanyoAceB97(const char * name, uint8_t id){
-    _init();
-    this->name = name;
-    this->id = id;
-  };
+
+  SanyoAceB97();
+  //  void E_STOP();
+
+  SanyoAceB97(const char * name, uint8_t id);
   ~SanyoAceB97(){
-	  
+
   };
 
   void printRPMS();
   void fanSpeedPerCentage(int s);
-
-  void update(float pwm_ratio);
+  void updatePWM(float pwm_ratio);
+  float getRPM();
+  bool evaluateFan(float pwm_ratio,float rpms);
+  static const int ABSOLUTE_RPM_TOLERANCE = 1000;
+  static constexpr float APPROXIMATE_PWM_TO_RPMS = 7300.0;
 };
 
 

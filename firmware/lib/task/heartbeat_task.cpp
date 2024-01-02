@@ -49,8 +49,8 @@ namespace CogApp
         CogCore::DebugLn<bool>(beat_high);
         CogCore::Debug<const char *>("beats / runtime, should trend to 2.0: ");
         CogCore::DebugLn<float>((float) debug_number_of_heartbeats * 1000.0 / (float) millis());
-      }
-    return true;
-  }
+            }     
+        return true;
+    }
 
 }

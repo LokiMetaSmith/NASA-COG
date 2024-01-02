@@ -33,7 +33,7 @@
     Stage2Heater whichHeater;
     PID *pidControllerHeater;
     int DEBUG_PID = 0;
-    // This is intentionally unintialized here
+    // This is intentionally uninitialized here
     // because it is configured from machine.h
     //    int PERIOD_MS;
 
@@ -43,8 +43,7 @@
     double HeaterSetPoint_C = 25.0;
     double Input_temperature_C = 25.0;
     DutyCycleTask *dutyCycleTask;
-
-    // This function sets the above parameters and
+    //This function sets the above parameters and
     // also sets them into the PID loop.
     void SetTunings(double, double, double);
     void printTunings();
@@ -60,7 +59,8 @@
     // I want zero overshoot, so I am setting this to zero!
     double FKi = 0.0;
     double FKd = 0.0;
-
+	
+	
     bool _init() override;
     bool _run() override;
     // This would go into the abstract class.

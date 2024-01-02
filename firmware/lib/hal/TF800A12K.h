@@ -33,11 +33,24 @@
 #define ADDRESS 0x00
 #define MYDELAY 100
 
+//pin defines, should probably go somewhere else such as cog_hal
+
+//PS1  is attached to Serial1
+#define PS1_EN 23
+#define PS1_AUX_SENSE A3 //A6
+
+
+//PS2  is attached to Serial2
+#define PS2_EN 8
+#define PS2_AUX_SENSE A4 //A6
+
+
+
 
 // TODO: This could potentially become part of
 // an abstract "power supply"
 class SL_PS : public AbstractPS  {
-public:
+private:
   int DEBUG_SL_PS = 0;
   int init(); // return -1 if it failes!
   uint8_t address = ADDRESS;

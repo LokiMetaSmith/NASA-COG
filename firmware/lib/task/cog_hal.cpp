@@ -19,6 +19,7 @@
 
 #include <cog_hal.h>
 #include <TF800A12K.h>
+#include <SanyoAceB97.h>
 
 bool COG_HAL::init() {
 
@@ -30,8 +31,8 @@ bool COG_HAL::init() {
   pinMode(RF_STACK, OUTPUT);
 
 
-  _fans[0] = SanyoAceB97("FIRST_FAN",0);
-  _fans[0]._init();
+  _fans[0] = new SanyoAceB97("FIRST_FAN",0);
+  _fans[0]->init();
 
   // TODO: This block of code appears in cog_hal.cpp
   // as well. There should be a way to move this into the
@@ -51,6 +52,7 @@ bool COG_HAL::init() {
       delay(100);
   }
 
+  //init  PSU
 
   _stacks[0] = new SL_PS("FIRST_STACK",0);
   _stacks[0]->init();
@@ -66,6 +68,6 @@ bool COG_HAL::init() {
 // but this is genertic.
 void COG_HAL::_updateFanPWM(float unitInterval) {
   for (int i = 0; i < NUM_FANS; i++) {
-     _fans[i].update(unitInterval);
+     _fans[i]->updatePWM(unitInterval);
   }
 }

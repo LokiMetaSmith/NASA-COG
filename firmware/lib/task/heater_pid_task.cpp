@@ -35,6 +35,7 @@ HeaterPIDTask::HeaterPIDTask() {
 bool HeaterPIDTask::_init()
 {
   CogCore::Debug<const char *>("HeaterPIDTask init\n");
+ 
   return true;
 }
 
@@ -100,6 +101,8 @@ void HeaterPIDTask::shutHeaterDown() {
   getConfig()->report->heater_duty_cycle = 0.0;
   dutyCycleTask->dutyCycle = 0.0;
 }
+
+
 bool HeaterPIDTask::_run()
 {
   // if we are running the One Button Algorithm
@@ -118,6 +121,8 @@ bool HeaterPIDTask::_run()
    CogCore::Debug<const char *>("\n");
   }
 
+
+
   MachineState ms = getConfig()->ms;
   if ((ms == Off) || (ms == EmergencyShutdown) || (ms == OffUserAck)) {
     // in this case, we do nothing...but we will put the set point
@@ -131,6 +136,10 @@ bool HeaterPIDTask::_run()
   double previousInput = this->Input_temperature_C;
 
   this->Input_temperature_C = getConfig()->report->post_heater_C;
+
+  // WARNING! This will probably move.
+  // //evaluate the temerature and verify it's changing within the predescribed time interval
+  // evaluateHeater(0,HEATER_UNRESPONSIVE,previousInput,this->Input_temperature_C,this->HeaterSetPoint_C);
 
   // didn't hang when return was here.
   pidControllerHeater->Compute();

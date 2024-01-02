@@ -20,7 +20,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 // Hardware Abstraction Layer
 // #include "SensirionSFM3X00.h"
-#include <SanyoAceB97.h>
+//#include <SanyoAceB97.h>
+//#include <abstract_fan.h>
+
 #include <OnePinHeater.h>
 
 #include <machine_script.h>
@@ -65,6 +67,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE 1.75
 
 #endif
+//Name the pins from the Due
+#define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
+#define DISPLAY_DC 47 //display data / command line, keep high for display cs control
+#define DISPLAY_RESET 46 // display reset, keep high or don't care
+
 
 
 #include <machine_core_defs.h>
@@ -85,16 +92,36 @@ public:
   virtual bool init() = 0;
 };
 
-#define NUM_CRITICAL_ERROR_DEFINITIONS 3
-
+#define NUM_CRITICAL_ERROR_DEFINITIONS 11
 // WARNING! Do not reorder these!!
-// The code currently depends on the 0,1, and 2 being the the thermocouple errors.
+// The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
 enum CriticalErrorCondition {
   POST_HEATER_TC_BAD,
   POST_GETTER_TC_BAD,
   POST_STACK_TC_BAD,
-  COULD_NOT_INIT_3_THERMOCOUPLES
+  COULD_NOT_INIT_3_THERMOCOUPLES,
+  FAN_LOSS_PWR,
+  FAN_UNRESPONSIVE,
+  HEATER_UNRESPONSIVE,
+  HEATER_OUT_OF_BOUNDS,
+  STACK_LOSS_PWR,
+  PSU_UNRESPONSIVE,
+  MAINS_LOSS_PWR
 };
+
+constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINITIONS] = {
+    "Post Heater TC-A Bad",
+    "Post Getter TC-B Bad",
+    "Post Stack  TC-C Bad",
+    "Can not init three TC's",
+	"Lost 24v Power",
+	"TACH unresponsive",
+	"Lost control of Heater",
+	"pid pegged, temp out of bounds",
+	"Lost control of the Stack",
+	"Lost control of the programmable PSU",
+	"Lost mains power, on UPS"
+  };
 
 class CriticalError {
 public:
@@ -160,6 +187,9 @@ public:
   const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
   const float BOUND_MAX_WATTAGE = 300.0;
   const float BOUND_MAX_RAMP = 3.0;
+  const float BOUND_MAX_TEMP_TRANSITION = 20.0;
+  const unsigned long BOUND_MAX_TEMP_TRANSITION_TIME_MS = 10000;
+  // TODO: Need to check this.
 
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
 // V = 115, W = 918.402
@@ -177,6 +207,11 @@ public:
 
 
   const unsigned long THERMOCOUPLE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  // WARNING! THIS IS DISABLING THE ERROR FOR TESTING
+  // WHILE WE FIGURE OUT THE TACH ERROR
+  const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 60 * 60 * 1000;
+  const unsigned long HEATER_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
+  const unsigned long ENVELOPE_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
 
   // TODO: This would better be attached to the statemanager
   // class, as it is used in those task---but also in the
@@ -204,10 +239,12 @@ public:
   static const int TEMP_READ_PERIOD_MS = 225; // this is intentionally a little less than half the PID PERIOD
   static const int INIT_PID_PERIOD_MS = 500;
 
-  static const int INIT_HEARTBEAT_PERIOD_MS = 500;
+  static const int INIT_HEARTBEAT_PERIOD_MS = 500; // heartbeat task period
 
   static const int INIT_LOG_RECORDER_LONG_PERIOD_MS = 600000; //10 minute record interval
   static const int INIT_LOG_RECORDER_SHORT_PERIOD_MS = 1000;  //1 second record interval
+
+  static const int DISPLAY_UPDATE_MS = 2000;
 
 void _reportFanSpeed();
 
@@ -296,7 +333,8 @@ void _reportFanSpeed();
   void initErrors();
   void clearErrors();
   void clearThermocoupleErrors();
-
+  void clearFanErrors();
+  void clearMainsPowerErrors();
   // This is the number of periods around a point in time we will
   // average to produce a smooth temperature. (Our thermocouples have
   // only 0.25 C resolution, which is low for a 0.5C/minute control

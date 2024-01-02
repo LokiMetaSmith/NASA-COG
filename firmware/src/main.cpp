@@ -44,6 +44,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <OEDCSNetworkTask.h>
 #include <heartbeat_task.h>
 #include <log_recorder_task.h>
+#include <display_task.h>
 
 #ifdef TEST_FANS_ONLY
 #include <fanTEST_task.h>
@@ -53,7 +54,7 @@ using namespace CogCore;
 static Core core;
 
 /***** Declare your tasks here *****/
-
+DisplayTask displayTask;
 CogApp::OEDCSNetworkTask OEDCSNetworkTask;
 CogApp::CogTask cogTask;
 CogApp::OEDCSSerialInputTask oedcsSerialInputTask;
@@ -158,12 +159,12 @@ void setup()
   machineConfig.hal->DEBUG_HAL = 0;
   bool initSuccess  = machineConfig.hal->init();
   if (!initSuccess) {
-    Debug<const char *>("Could not init Hardware Abastraction Layer Properly!\n");
-    Debug<const char *>("Could not init Hardware Abastraction Layer Properly!\n");
+    Debug<const char *>("Could not init Hardware Abstraction Layer Properly!\n");
+    Debug<const char *>("Could not init Hardware Abstraction Layer Properly!\n");
     delay(50);
     abort();
   } else {
-    Debug<const char *>("Successful init of Hardware Abastraction Layer!\n");
+    Debug<const char *>("Successful init of Hardware Abstraction Layer!\n");
   }
 
   // Now we will set the machine state to "Off"
@@ -171,6 +172,20 @@ void setup()
 
   /***** Configure and add your tasks here *****/
 
+  
+  CogCore::TaskProperties DisplayProperties;
+  DisplayProperties.name = "Display";
+  DisplayProperties.id = 50;
+  DisplayProperties.period = MachineConfig::DISPLAY_UPDATE_MS;
+  DisplayProperties.priority = CogCore::TaskPriority::Low;
+  DisplayProperties.state_and_config = (void *) &machineConfig;
+  bool displayAdd = core.AddTask(&displayTask, &DisplayProperties);
+
+  if (!displayAdd) {
+    CogCore::Debug<const char *>("displayAdd Failed\n");
+    abort();
+  }
+  
   CogCore::TaskProperties readTempsProperties;
   readTempsProperties.name = "readTemps";
   readTempsProperties.id = 19;
@@ -263,7 +278,7 @@ void setup()
   bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
 
   if (!heaterPIDAdd) {
-    CogCore::Debug<const char *>("heaterPIDAdd Faild\n");
+    CogCore::Debug<const char *>("heaterPIDAdd Failed\n");
     abort();
   }
 
@@ -276,7 +291,7 @@ void setup()
   bool heartbeatAdd = core.AddTask(&heartbeatTask, &HeartbeatProperties);
 
   if (!heartbeatAdd) {
-    CogCore::Debug<const char *>("heartbeatAdd Faild\n");
+    CogCore::Debug<const char *>("heartbeatAdd Failed\n");
     abort();
   }
 
@@ -284,16 +299,17 @@ void setup()
   Log_RecorderProperties.name = "Log_Recorder";
   Log_RecorderProperties.id = 40;
   Log_RecorderProperties.period = MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS;
-
   Log_RecorderProperties.priority = CogCore::TaskPriority::High;
   Log_RecorderProperties.state_and_config = (void *) &machineConfig;
   cogTask.logRecorderTask = &logRecorderTask;
   bool Log_RecorderAdd = core.AddTask(&logRecorderTask, &Log_RecorderProperties);
 
   if (!Log_RecorderAdd) {
-    CogCore::Debug<const char *>("Log_RecorderAdd Faild\n");
+    CogCore::Debug<const char *>("Log_RecorderAdd Failed\n");
     abort();
   }
+
+
 
   core.ResetHardwareWatchdog();
 
@@ -312,13 +328,13 @@ void setup()
 
   // now set up debugging levels...
   logRecorderTask.DEBUG_LOG_RECORDER = 0;
-  core.DEBUG_CORE = 0;
-  core._scheduler.DEBUG_SCHEDULER = 0;
+  core.DEBUG_CORE = 2;
+  core._scheduler.DEBUG_SCHEDULER = 2;
   core._scheduler._idleTask.DEBUG_IDLETASK = 0;
   dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
   heaterPIDTask.DEBUG_PID = 0;
   cogTask.DEBUG_FAN = 0;
-  cogTask.DEBUG_LEVEL = 0;
+  cogTask.DEBUG_LEVEL = 2;
   cogTask.DEBUG_LEVEL_OBA = 0;
   cogTask.wattagePIDObject->DEBUG_PID = 0;
   OEDCSNetworkTask.DEBUG_UDP = 0;

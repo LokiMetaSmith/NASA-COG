@@ -64,8 +64,9 @@ Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
         task->_timeUntilDeadline = currentTime - (lastRunTime + period);
 
         if (DEBUG_SCHEDULER > 1) {
-	  CogCore::Debug<int32_t>(task->_timeUntilDeadline);
-	  CogCore::Debug<const char *>("\n");
+	      CogCore::Debug<const char *>(task->_properties.name);
+	      CogCore::Debug<uint32_t>(task->_timeUntilDeadline);
+	      CogCore::Debug<const char *>(":timeUntilDeadline\n");
         }
 
         if (task->_timeUntilDeadline > maxTimeUntilDeadline) {

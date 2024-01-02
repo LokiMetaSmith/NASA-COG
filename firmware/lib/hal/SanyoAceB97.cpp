@@ -22,15 +22,14 @@
 
 #define PERIOD 1000
 
-  unsigned long volatile tach_data_ts[NUMBER_OF_FANS];
-  unsigned long volatile tach_data_cnt[NUMBER_OF_FANS];
-  unsigned long volatile tach_data_ocnt[NUMBER_OF_FANS];
-  unsigned long volatile tach_data_duration[NUMBER_OF_FANS];
-
 
 //Calculates the RPM based on the timestamps of the last 2 interrupts. Can be called at any time.
 //namespace tach_data {
 
+  unsigned long volatile tach_data_ts[NUMBER_OF_FANS];
+  unsigned long volatile tach_data_cnt[NUMBER_OF_FANS];
+  unsigned long volatile tach_data_ocnt[NUMBER_OF_FANS];
+  unsigned long volatile tach_data_duration[NUMBER_OF_FANS];
 
 // This can be used to add time to the interrupt for testing;
 // so far I have not seen that that creates a problem
@@ -57,6 +56,18 @@
   }
 //}
 
+SanyoAceB97::SanyoAceB97()  {
+    init();
+  };
+
+SanyoAceB97::SanyoAceB97(const char * name, uint8_t id){
+    init();
+    this->name = name;
+    this->id = id;
+};
+
+
+
 // using namespace tach_data;
 
 unsigned long SanyoAceB97::_calcRPM(uint8_t i){
@@ -81,6 +92,20 @@ unsigned long SanyoAceB97::_calcRPM(uint8_t i){
   }
 }
 
+float SanyoAceB97::getRPM(){
+  return (float) _calcRPM(0);
+}
+
+
+bool SanyoAceB97::evaluateFan(float pwm_ratio,float rpms) {
+  if(pwm_ratio >=0.2){
+    if(abs((pwm_ratio*SanyoAceB97::APPROXIMATE_PWM_TO_RPMS) - rpms)
+       > SanyoAceB97::ABSOLUTE_RPM_TOLERANCE) {
+      return false;
+    }
+  }
+  return true;
+}
 
 void SanyoAceB97::printRPMS() {
   CogCore::Debug<const char *>("RPMS:\n");
@@ -121,7 +146,7 @@ void SanyoAceB97::fanSpeedPerCentage(int s)
 }
 
 // This would be clearer in the the .h!! or in the machine hal for the specific device
-void SanyoAceB97::_init() {
+bool SanyoAceB97::init() {
 
   PWM_PIN[0] = 9;
   TACH_PIN[0] = A0;
@@ -147,33 +172,35 @@ void SanyoAceB97::_init() {
     pinMode(TACH_PIN[i],INPUT_PULLUP);
   }
   attachInterrupt(digitalPinToInterrupt(TACH_PIN[0]),tachISR0,FALLING);
+  return true;
 }
 
-void SanyoAceB97::E_STOP() {
-#ifdef FAN_LOCKOUT
-  digitalWrite(fan_Enable, LOW);
+// void SanyoAceB97::E_STOP() {
+// #ifdef FAN_LOCKOUT
+//   digitalWrite(fan_Enable, LOW);
 
 
-  for(int i = 0; i < NUMBER_OF_FANS; i++) {
-    pinMode(PWM_PIN[i], OUTPUT);
-		  digitalWrite(PWM_PIN[i], HIGH);
-  }
-#else
-    for(int i = 0; i < NUMBER_OF_FANS; i++) {
-    pinMode(PWM_PIN[i], OUTPUT);
-		  digitalWrite(PWM_PIN[i], LOW);
-  }
+//   for(int i = 0; i < NUMBER_OF_FANS; i++) {
+//     pinMode(PWM_PIN[i], OUTPUT);
+// 		  digitalWrite(PWM_PIN[i], HIGH);
+//   }
+// #else
+//     for(int i = 0; i < NUMBER_OF_FANS; i++) {
+//     pinMode(PWM_PIN[i], OUTPUT);
+// 		  digitalWrite(PWM_PIN[i], LOW);
+//   }
 
-#endif
-}
+// #endif
+// }
 
 
 // At present, we will use the same ratio for all fans;
 // this is an oversimplification
-void SanyoAceB97::update(float pwm_ratio) {
+void SanyoAceB97::updatePWM(float pwm_ratio) {
+
+  //  evaluateFan( BLOWER_UNRESPONSIVE, pwm_ratio);
 
   fanSpeedPerCentage((int)( pwm_ratio * 100));
-
   _pwm_ratio[0] = pwm_ratio;
 
   if (DEBUG_FAN > 0 ) {

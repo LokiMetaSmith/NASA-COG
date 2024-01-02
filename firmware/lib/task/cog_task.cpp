@@ -62,6 +62,7 @@ namespace CogApp
     getConfig()->fanDutyCycle = 0.0;
     const float MAXIMUM_TOTAL_WATTAGE = MachineConfig::HEATER_MAXIMUM_WATTAGE + getConfig()->MAX_STACK_WATTAGE;
     wattagePIDObject = new WattagePIDObject(MAXIMUM_TOTAL_WATTAGE);
+	time_last_temp_changed_ms = millis(); //initialize time_last_temp_changed_ms when the task starts
     return true;
   }
 
@@ -145,8 +146,6 @@ namespace CogApp
 
 
   float CogTask::computeFanSpeedTarget(float currentTargetTemp, float temp, float heaterWatts,float A, float B, float C) {
-    CogCore::DebugLn<const char *>("QQQQQQQQQQQQQQQQQQQQQ");
-
     const bool NEW_STRATEGY = true;
     // The NEW_STRATEGY is based on learnings that we have to adjust the fan dynamically.
     // The idea is to adjust the fan between three values: MIN, MAX, and PREFERRED.
@@ -287,6 +286,53 @@ namespace CogApp
   }
 
 
+  void CogTask::evaluateHeaterEnvelope(
+                                      CriticalErrorCondition ec,
+                                      double current_input_temperature,
+                                      double goal_temperature,
+                                      double value_PID)
+  {
+
+    if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
+      {
+        unsigned long time_now = millis();
+        if(goal_temperature != current_input_temperature)
+          {
+            time_last_temp_changed_ms = time_now;
+          }
+        //last_temp_change is the time when the temp changed last
+        if (DEBUG_LEVEL > 1) {
+          CogCore::Debug<const char *>("TESTING ENVELOPE\n");
+        }
+        if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS)
+          {
+            if (DEBUG_LEVEL > 1) {
+              CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
+            }
+            if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
+              {
+                if (DEBUG_LEVEL > 1) {
+                  CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
+                  CogCore::Debug<float>(abs(goal_temperature - current_input_temperature));
+                  CogCore::Debug<const char *>("\n");
+                }
+                // As long as there is not a fault present, this creates;
+                // if one is already present, we leave it.
+                if (!getConfig()->errors[ec].fault_present) {
+                  getConfig()->errors[ec].fault_present = true;
+                  getConfig()->errors[ec].begin_condition_ms = millis();
+                }
+              } else
+              {
+                if (!getConfig()->errors[ec].fault_present) {
+                  getConfig()->errors[ec].fault_present = false;
+                }
+              }
+          }
+      }
+  }
+
+
   float CogTask::computeNernstVoltage(float T_K) {
     // P2 is the pressureized side.
     // P2O2 is the partial pressure of O2 on the pressurized size.
@@ -368,10 +414,12 @@ namespace CogApp
 
     // Now we want to limit this with amps
     const float wattsLimitedByAmperage = getConfig()->MAX_AMPERAGE * getConfig()->MAX_AMPERAGE * R_O;
-    const float limitedWattage = min(presetLimitedWattage,wattsLimitedByAmperage);
+    float limitedWattage = min(presetLimitedWattage,wattsLimitedByAmperage);
+    // proposed code:
+    limitedWattage = min(limitedWattage,sw);
+
     // This is actually a constant in our program, so it makes little sense
     getConfig()->report->max_stack_amps_A = getConfig()->MAX_AMPERAGE;
-
 
     //    c.W_w = actualWattage;
     // Now we want to compute the part of the limitedWattage that adds heat
@@ -451,7 +499,7 @@ namespace CogApp
     MachineState ms = getConfig()->ms;
     if (ms != NormalOperation) {
       if (c.pause_substate == 0) {
-        // Is this useing the correct variables?
+        // Is this using the correct variables?
         float diff = getConfig()->TARGET_TEMP_C - getConfig()->SETPOINT_TEMP_C;
         // Here I am trying to make sure we don't raise the SETPOINT_TEMP_C past our target
         // or lower it past our target.
@@ -483,9 +531,33 @@ namespace CogApp
       CogCore::Debug<const char *>("AC Power (+24V) FAIL.\n");
     }
     // Report fan speed
-    getConfig()->report->fan_rpm =
-      getHAL()->_fans[0]._calcRPM(0);
+    float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
+    // TODO: This is a good candidate to move to a "system-check task"
+    getConfig()->report->fan_rpm = calculated_fan_speed_rpms;
+
+    // check fan speed...
+    float fan_pwm_ratio = getConfig()->report->fan_pwm;
+    float fan_rpm = getConfig()->report->fan_rpm;
+    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    CogCore::Debug<bool>(
+                         getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
+    if (DEBUG_LEVEL > 0) {
+      CogCore::Debug<const char *>("Fan Inputs : ");
+      CogCore::DebugLn<float>(fan_pwm_ratio);
+      CogCore::DebugLn<float>(fan_rpm);
+    }
+    if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
+      CogCore::Debug<const char *>("YYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+      if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
+        getConfig()->errors[FAN_UNRESPONSIVE].fault_present = true;
+        getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
+      }
+    }
+    evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
+                           getTemperatureReadingA_C(),
+                           getConfig()->SETPOINT_TEMP_C,
+                           getConfig()->report->heater_duty_cycle);
 
     // MachineState ms = getConfig()->ms;
     // if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
@@ -560,17 +632,21 @@ bool CogTask::updatePowerMonitor()
         // SENSE_24V on A1.
         // Full scale is 1023, ten bits for 3.3V.
         //30K into 4K7
-        const long R1=30000;
+		const long FullScale = 1023;
+        const float percentOK = 0.25;
+        const long R1=40000;
         const long R2=4700;
         const float Vcc = 3.3;
         bool powerIsGood = false;
-        int lowThreshold24V = 1023 * 3 / 4;
-
+        const int lowThreshold24V =  (24*(R2/(R1+R2))/Vcc)*FullScale *(1 - percentOK);
+		const int highThreshold24V =  (24*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+        int _v24read = analogRead(A1);
+		
         if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
         if (DEBUG_LEVEL >0 )  CogCore::Debug<uint32_t>(analogRead(SENSE_24V) * ((Vcc * (R1+R2))/(1023.0 * R2)));
         if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("\n");
 
-        if (analogRead(A1) > lowThreshold24V) {
+        if (( _v24read > lowThreshold24V) && ( _v24read < lowThreshold24V) ) {
             powerIsGood = true;
             if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
             return true;
@@ -603,9 +679,9 @@ bool CogTask::updatePowerMonitor()
       float totalWattage_w;
       float stackWattage_w;
       float heaterWattage_w;
-      float fanSpeed_p;
+      float tFanSpeed_p;
 
-      oneButtonAlgorithm(totalWattage_w,stackWattage_w,heaterWattage_w,fanSpeed_p);
+      oneButtonAlgorithm(totalWattage_w,stackWattage_w,heaterWattage_w,tFanSpeed_p);
         float dc = computeHeaterDutyCycleFromWattage(heaterWattage_w);
       if (DEBUG_LEVEL_OBA > 0) {
         CogCore::Debug<const char *>("One Button Summary\n");
@@ -619,7 +695,7 @@ bool CogTask::updatePowerMonitor()
         CogCore::Debug<float>(heaterWattage_w);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Fan Speed   % : ");
-        CogCore::Debug<float>(fanSpeed_p);
+        CogCore::Debug<float>(tFanSpeed_p);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("DC          % : ");
         CogCore::Debug<float>(dc * 100.0);
@@ -642,10 +718,7 @@ bool CogTask::updatePowerMonitor()
       getConfig()->CURRENT_STACK_WATTAGE_W = stackWattage_w;
       _updateStackWattage(stackWattage_w);
 
-      // This is measured as a percentage...
-      //      _updateFanSpeed(fanSpeed_p);
-      c.tS_p = fanSpeed_p;
-
+      c.tS_p = tFanSpeed_p;
 
       getConfig()->CURRENT_HEATER_WATTAGE_W = heaterWattage_w;
 
