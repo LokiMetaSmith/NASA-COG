@@ -80,9 +80,9 @@ Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
     }
   if (DEBUG_SCHEDULER > 0) {
     if (nextTask == nullptr) {
-      CogCore::Debug<const char *>("nexTask: IDLE\n");
+      CogCore::Debug<const char *>("nextTask: IDLE\n");
     } else {
-      CogCore::Debug<const char *>("nexTask\n");
+      CogCore::Debug<const char *>("nextTask\n");
       CogCore::Debug<const char *>(nextTask->_properties.name);
       CogCore::Debug<const char *>("\n");
       if (DEBUG_SCHEDULER > 2)

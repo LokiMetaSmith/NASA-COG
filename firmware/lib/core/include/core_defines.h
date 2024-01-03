@@ -9,7 +9,7 @@
 
 namespace CogCore {
 
-typedef uint64_t TimeMs;
+typedef int64_t TimeMs;
 typedef int32_t TaskId;
 
 enum class TaskState {

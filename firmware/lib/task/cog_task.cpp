@@ -638,21 +638,30 @@ bool CogTask::updatePowerMonitor()
         const long R2=4700;
         const float Vcc = 3.3;
         bool powerIsGood = false;
-        const int lowThreshold24V =  (24*(R2/(R1+R2))/Vcc)*FullScale *(1 - percentOK);
-		const int highThreshold24V =  (24*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+        const int lowThreshold24V = 587; //(24*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 782.28
+		const int highThreshold24V = 978; //(24*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
         int _v24read = analogRead(A1);
 		
         if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
         if (DEBUG_LEVEL >0 )  CogCore::Debug<uint32_t>(analogRead(SENSE_24V) * ((Vcc * (R1+R2))/(1023.0 * R2)));
         if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("\n");
 
-        if (( _v24read > lowThreshold24V) && ( _v24read < lowThreshold24V) ) {
+        if (( _v24read > lowThreshold24V) && ( _v24read < highThreshold24V) ) {
             powerIsGood = true;
             if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
             return true;
         }else{
             powerIsGood = false;
             if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
+			    CogCore::Debug<const char *>("lowThreshold24V: ");
+			    CogCore::Debug<int32_t>(lowThreshold24V);
+			    CogCore::Debug<const char *>("\n");
+			    CogCore::Debug<const char *>("highThreshold24V: ");
+			    CogCore::Debug<int32_t>(highThreshold24V);
+			    CogCore::Debug<const char *>("\n");
+				 CogCore::Debug<const char *>("_v24read: ");
+			    CogCore::Debug<int32_t>(_v24read);
+			    CogCore::Debug<const char *>("\n");
             return false;
         }
     }

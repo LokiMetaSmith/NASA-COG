@@ -54,7 +54,7 @@ int SL_PS::init() {
   //    return -1;
   //  }
   while (!Serial1);
-  if (setPS_OnOff(ADDRESS, "OFF")) CogCore::Debug<const char *>("Turned it OFF!\n");
+  if (setPS_OnOff(ADDRESS, "OFF")) CogCore::Debug<const char *>("Turned PSU OFF!\n");
 
   getPS_Manuf(ADDRESS);
   CogCore::Debug<const char *>("GetPS Manuf: ");
@@ -197,7 +197,7 @@ int SL_PS::setPS_Val(uint8_t addr, const char *loc, const char *val) {
   }
 
   Serial1.print(loc); Serial1.print(' '); Serial1.print(val); Serial1.print("\r\n");
-  delay(100);
+  delay(50);
   char b[5];
   int c = Serial1.readBytesUntil('\n', b, sizeof b);
   if (c != 3 || b[0] != '=' || b[1] != '>') return 0;
@@ -239,7 +239,7 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
   }
   int c = 0;
   Serial1.print(val); Serial1.print("\r\n");
-  delay(100);
+  delay(50);
   c = Serial1.readBytesUntil('\n', b, sizeof b);
   b[c-1] = '\0';
 

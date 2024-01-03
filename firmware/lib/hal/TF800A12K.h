@@ -31,7 +31,7 @@
 #include <machine.h>
 
 #define ADDRESS 0x00
-#define MYDELAY 100
+#define MYDELAY 50
 
 //pin defines, should probably go somewhere else such as cog_hal
 
