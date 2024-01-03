@@ -3,29 +3,43 @@ Oxygen Engine Digital Control System, enclosure for.
 
 ## Notes on Unit Fabrication
 * Serial number 1  AKA the Austin Unit.
+LAN TYPE: SEEEDS STUDIO W5200
 MAC Address: FE:ED:1B:70:08:77  
 See images in folder at: https://github.com/PubInv/NASA-COG/tree/develop/docs/OEDCS_June_2023_Version_0.1/Photos
 
 
 * Serial number 2  
 ![image](https://github.com/PubInv/NASA-COG/assets/5836181/655e3bbb-fb48-4e31-902a-e10b74c27fa8)  
+LAN TYPE: ????
 MAC Address: FE:ED:10:69:73:70
 
 * Stage II controler  
 ![image](https://github.com/PubInv/NASA-COG/assets/5836181/a146b12b-d7b1-4ecf-a571-1e2d6c8f414f)  
+LAN TYPE: ????
 MAC Address: FE:ED:14:71:02:77  
 ID = 1361064480,1313945940,842021169,959459378
 
-
-* Serial Number 11 Formerly the Mockup Of Maryville
-LAN TYPE SEEDS STUDIO
-![image](https://github.com/PubInv/NASA-COG/assets/5836181/63be5e1f-a040-488d-ab4e-60636bda7cb7)  
-MAC Address: FE:ED:16:6B:72:67
 
 * Serial Number 9
 LAN TYPE: ARDUINO  
 MAC Address: FE:ED:1D:70:05:6D
 
+* Serial Number 10
+LAN TYPE: ARDUINO  
+MAC Address: FE:ED:12:71:06:65
+
+* Serial Number 11 Formerly the Mockup Of Maryville
+LAN TYPE: SEEEDS STUDIO W5200
+![image](https://github.com/PubInv/NASA-COG/assets/5836181/63be5e1f-a040-488d-ab4e-60636bda7cb7)  
+MAC Address: FE:ED:16:6B:72:67
+
+* Serial Number 12
+LAN TYPE: ARDUINO  
+MAC Address: FE:ED:17:73:0E:69
+
+* Serial Number 13
+LAN TYPE: ???
+MAC Address: ???
 
 ## Mechanical Files
 
