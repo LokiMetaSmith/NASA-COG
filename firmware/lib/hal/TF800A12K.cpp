@@ -56,101 +56,103 @@ int SL_PS::init() {
   while (!Serial1);
   if (setPS_OnOff(ADDRESS, "OFF")) CogCore::Debug<const char *>("Turned PSU OFF!\n");
 
-  getPS_Manuf(ADDRESS);
-  CogCore::Debug<const char *>("GetPS Manuf: ");
-  if (!strlen(manuf)) strcpy(manuf, "UNKWN");
-  CogCore::Debug<const char *>(manuf);
-  delay(MYDELAY);
-   watchdogReset();
+  if (DEBUG_SL_PS > 0) {
+	  getPS_Manuf(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS Manuf: ");
+	  if (!strlen(manuf)) strcpy(manuf, "UNKWN");
+	  CogCore::Debug<const char *>(manuf);
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_Model(ADDRESS);
-  CogCore::Debug<const char *>("GetPS Model: ");
-  if (!strlen(model)) strcpy(manuf, "UNKWN");
-  CogCore::Debug<const char *>(model);
-  CogCore::Debug<const char *>("\n");
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_Model(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS Model: ");
+	  if (!strlen(model)) strcpy(manuf, "UNKWN");
+	  CogCore::Debug<const char *>(model);
+	  CogCore::Debug<const char *>("\n");
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_VoltageString(ADDRESS);
-  CogCore::Debug<const char *>("GetPS VoltageSt: ");
-  if (!strlen(voltage_string)) strcpy(manuf, "UNKWN");
-  CogCore::Debug<const char *>(voltage_string);
-  CogCore::Debug<const char *>("\n");
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_VoltageString(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS VoltageSt: ");
+	  if (!strlen(voltage_string)) strcpy(manuf, "UNKWN");
+	  CogCore::Debug<const char *>(voltage_string);
+	  CogCore::Debug<const char *>("\n");
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_Revision(ADDRESS);
-  CogCore::Debug<const char *>("GetPS Rev: ");
-  if (!strlen(revision)) strcpy(manuf, "UNKWN");
-  CogCore::Debug<const char *>(revision);
-  CogCore::Debug<const char *>("\n");
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_Revision(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS Rev: ");
+	  if (!strlen(revision)) strcpy(manuf, "UNKWN");
+	  CogCore::Debug<const char *>(revision);
+	  CogCore::Debug<const char *>("\n");
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_ManufDate(ADDRESS);
-  CogCore::Debug<const char *>("GetPS ManufDate: ");
-  if (!strlen(manuf_date)) strcpy(manuf, "UNKWN");
-  CogCore::Debug<const char *>(manuf_date);
-  CogCore::Debug<const char *>("\n");
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_ManufDate(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS ManufDate: ");
+	  if (!strlen(manuf_date)) strcpy(manuf, "UNKWN");
+	  CogCore::Debug<const char *>(manuf_date);
+	  CogCore::Debug<const char *>("\n");
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_Serial(ADDRESS);
-  CogCore::Debug<const char *>("GetPS Serial Address: ");
-  if (!strlen(serial)) strcpy(manuf, "UNKWN");
-  CogCore::Debug<const char *>(serial);
-  CogCore::Debug<const char *>("\n");
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_Serial(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS Serial Address: ");
+	  if (!strlen(serial)) strcpy(manuf, "UNKWN");
+	  CogCore::Debug<const char *>(serial);
+	  CogCore::Debug<const char *>("\n");
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_Country(ADDRESS);
-  CogCore::Debug<const char *>("GetPS Country: ");
-  if (!strlen(country)) strcpy(manuf, "UNKWN");
-  CogCore::Debug<const char *>(country);
-  CogCore::Debug<const char *>("\n");
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_Country(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS Country: ");
+	  if (!strlen(country)) strcpy(manuf, "UNKWN");
+	  CogCore::Debug<const char *>(country);
+	  CogCore::Debug<const char *>("\n");
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_RateVoltage(ADDRESS);
-  CogCore::Debug<const char *>("GetPS RateVoltage: ");
-  if (rate_voltage < 0) CogCore::Debug<const char *>("UNKWN");
-  else CogCore::Debug<uint32_t>(rate_voltage);
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_RateVoltage(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS RateVoltage: ");
+	  if (rate_voltage < 0) CogCore::Debug<const char *>("UNKWN");
+	  else CogCore::Debug<uint32_t>(rate_voltage);
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_RateCurrent(ADDRESS);
-  CogCore::Debug<const char *>("GetPS RateCurrent: ");
-  if (rate_current < 0) CogCore::Debug<const char *>("UNKWN");
-  else CogCore::Debug<uint32_t>(rate_current);
-  CogCore::Debug<const char *>("\n");
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_RateCurrent(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS RateCurrent: ");
+	  if (rate_current < 0) CogCore::Debug<const char *>("UNKWN");
+	  else CogCore::Debug<uint32_t>(rate_current);
+	  CogCore::Debug<const char *>("\n");
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_MaxVoltage(ADDRESS);
-  CogCore::Debug<const char *>("GetPS MaxVoltage: ");
-  if (max_voltage < 0) CogCore::Debug<const char *>("UNKWN");
-  else CogCore::Debug<uint32_t>(max_voltage);
-  CogCore::Debug<const char *>("\n");
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_MaxVoltage(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS MaxVoltage: ");
+	  if (max_voltage < 0) CogCore::Debug<const char *>("UNKWN");
+	  else CogCore::Debug<uint32_t>(max_voltage);
+	  CogCore::Debug<const char *>("\n");
+	  delay(MYDELAY);
+	   watchdogReset();
 
 
-  getPS_MaxCurrent(ADDRESS);
-  CogCore::Debug<const char *>("GetPS MaxCurrent: ");
-  if (max_current < 0) CogCore::Debug<const char *>("UNKWN");
-  else CogCore::Debug<uint32_t>(max_current);
-  CogCore::Debug<const char *>("\n");
-  delay(MYDELAY);
-   watchdogReset();
+	  getPS_MaxCurrent(ADDRESS);
+	  CogCore::Debug<const char *>("GetPS MaxCurrent: ");
+	  if (max_current < 0) CogCore::Debug<const char *>("UNKWN");
+	  else CogCore::Debug<uint32_t>(max_current);
+	  CogCore::Debug<const char *>("\n");
+	  delay(MYDELAY);
+	   watchdogReset(); 
+   }//endif (DEBUG_SL_PS > 0) 
 
 
 //  snprintf(packetBuffer, sizeof packetBuffer, "{ \"Manufacturer\": \"%s\", \"Model\": \"%s\", \"VoltString\": \"%s\", \"Revision\": \"%s\", \"Serial\": \"%s\", \"VoltageRating\": %d, \"CurrentRating\": %d, \"MaxVoltage\": %d, \"MaxCurrent\": %d}", manuf, model, voltage_string, revision, serial, rate_voltage, rate_current, max_voltage, max_current);
