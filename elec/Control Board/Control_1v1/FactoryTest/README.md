@@ -147,6 +147,28 @@ Observe that the blower stops.
 Observe that the SSR LEDs go off.
 Recorde results in test **ID19**  
 
+### Capture MAC, Send for Server Setup
+After reset and connection to a LAN the Serial Monitor report displays the device MAC address. Catpure to the table below.
+| Unit Serial Number 	| MAC ADDRESS  |
+|--------	|------------ |
+| 1	| FE:ED:1B:70:08:77 |
+| 2	| FE:ED:10:69:73:70 |
+| 3	| NA |
+| 4	| NA |
+| 5	| NA |
+| 9	| FE:ED:1D:70:05:6D |
+| 10	| FE:ED:12:71:06:65 |
+| 11	| FE:ED:16:6B:72:67 |
+| 12	| FE:ED:17:73:0E:69 |
+| 13	|  |
+
+At end of shift send all new MAC Addresses for addition ot the server.
+
+Other Stage II Controler: FE:ED:14:71:02:77
+
+
+
+
 ### End of Test
 Power off the unit under test.
 Remove all connections including the jumper wire at J14 and J25.
