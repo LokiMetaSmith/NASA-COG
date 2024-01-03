@@ -2,7 +2,7 @@
 Oxygen Engine Digital Control System, enclosure for.
 
 ## Notes on Unit Fabrication
-* Serial number 1  
+* Serial number 1  AKA the Austin Unit.
 MAC Address: FE:ED:1B:70:08:77  
 See images in folder at: https://github.com/PubInv/NASA-COG/tree/develop/docs/OEDCS_June_2023_Version_0.1/Photos
 
@@ -17,9 +17,15 @@ MAC Address: FE:ED:14:71:02:77
 ID = 1361064480,1313945940,842021169,959459378
 
 
-* Mockup Of Maryville
+* Serial Number 11 Formerly the Mockup Of Maryville
+LAN TYPE SEEDS STUDIO
 ![image](https://github.com/PubInv/NASA-COG/assets/5836181/63be5e1f-a040-488d-ab4e-60636bda7cb7)  
 MAC Address: FE:ED:16:6B:72:67
+
+* Serial Number 9
+LAN TYPE: ARDUINO  
+MAC Address: FE:ED:1D:70:05:6D
+
 
 ## Mechanical Files
 
