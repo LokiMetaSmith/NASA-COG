@@ -80,7 +80,7 @@ void _updateStackAmperage(float amperage,MachineConfig *machineConfig) {
 
 // SpudTask *spudTask;
 
-const int DEBUG_LEVEL = 2;
+const int DEBUG_LEVEL = 0;
 using namespace std;
 
 float STACK_AMPERAGE = 3.0;

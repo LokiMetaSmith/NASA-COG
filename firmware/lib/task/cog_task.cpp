@@ -542,6 +542,7 @@ namespace CogApp
     // check fan speed...
     float fan_pwm_ratio = getConfig()->report->fan_pwm;
     float fan_rpm = getConfig()->report->fan_rpm;
+<<<<<<< HEAD
 
     //    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXX\n");
     // CogCore::Debug<bool>(
@@ -552,6 +553,13 @@ namespace CogApp
       CogCore::DebugLn<float>(fan_rpm);
     }
 		//if (DEBUG_FAN > 1) {
+=======
+    //debug block
+	if (DEBUG_FAN > 1 || DEBUG_LEVEL > 0) {
+		CogCore::Debug<const char *>("Fan Fault FAN_UNRESPONSIVE Present: ");
+        CogCore::Debug<bool>(getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
+	    CogCore::Debug<const char *>("\n");
+>>>>>>> 7088188 (removed error define flags and fixed fan fault stuck on)
 	    CogCore::Debug<const char *>("fan_pwm_ratio: ");
 	    CogCore::DebugLn<float>(fan_pwm_ratio);
         CogCore::Debug<const char *>("rpms: ");
@@ -562,19 +570,27 @@ namespace CogApp
 	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio))-fan_rpm);// 346.749 + 11888.545x + -5944.272x^2
 		CogCore::Debug<const char *>("rpm_tested: ");
 		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
-     // }
+    }
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
-      CogCore::Debug<const char *>("YYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+      CogCore::Debug<const char *>("Fan Fault Present");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
         getConfig()->errors[FAN_UNRESPONSIVE].fault_present = true;
         getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
       }
     }
+<<<<<<< HEAD
 
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("QQQQQQQQQQQQQQQQQQQQQQQQQQ");
     }
 
+=======
+	else {
+      if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
+        getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
+        }
+   }
+>>>>>>> 7088188 (removed error define flags and fixed fan fault stuck on)
     evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
                            getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
@@ -786,7 +802,7 @@ namespace CogApp
       if (DEBUG_LEVEL > 2) {
         CogCore::Debug<const char *>("fan speed, amperage\n");
         CogCore::Debug<float>(fs);
-        CogCore::Debug<const char *>(" ");
+        CogCore::Debug<const char *>(", ");
         CogCore::Debug<float>(a);
         CogCore::Debug<const char *>("\n");
       }
