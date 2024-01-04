@@ -44,7 +44,7 @@ enum class CoreState {
 
 class Core {
     public:
-  int DEBUG_CORE = 1;
+        int DEBUG_CORE = 0;
         bool Configure(void *config);
         bool Boot();
         bool AddTask(Task *task, TaskProperties *properties);

@@ -88,7 +88,7 @@ public:
   int SPEED_MAX = 100;// in %
   int SPEED_MIN = 0;//in %
   int OPERATING_PWM_THROTTLE = 255;
-  int DEBUG_FAN = 1;
+  int DEBUG_FAN = 0;
 public:
   bool init();
   unsigned long _calcRPM(uint8_t i);
