@@ -251,8 +251,8 @@ namespace CogApp
         CogCore::DebugLn<const char *>("WARNING: AT PRESENT NO ACTION WILL BE TAKEN!!\n");
         break;
       }
-
-
+      
+	  
     } else {
       float fs_p = computeFanSpeedTargetFromSchedule(temp);
       float diff = currentTargetTemp - temp;
@@ -283,6 +283,8 @@ namespace CogApp
         return fs_p;
       }
     }
+	CogCore::DebugLn<const char *>("WARNING:SHOULD NEVER GET HERE, FELL OUT OF LOOP!!\n");
+	return -1;
   }
 
 
@@ -539,14 +541,26 @@ namespace CogApp
     // check fan speed...
     float fan_pwm_ratio = getConfig()->report->fan_pwm;
     float fan_rpm = getConfig()->report->fan_rpm;
-    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-    CogCore::Debug<bool>(
-                         getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
+    CogCore::Debug<const char *>("Fan Fault FAN_UNRESPONSIVE Present: ");
+    CogCore::Debug<bool>(getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
+	CogCore::Debug<const char *>("\n");
     if (DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Fan Inputs : ");
       CogCore::DebugLn<float>(fan_pwm_ratio);
       CogCore::DebugLn<float>(fan_rpm);
     }
+		//if (DEBUG_FAN > 1) {
+	    CogCore::Debug<const char *>("fan_pwm_ratio: ");
+	    CogCore::DebugLn<float>(fan_pwm_ratio);	
+        CogCore::Debug<const char *>("rpms: ");	  
+        CogCore::DebugLn<float>(fan_rpm);
+	    CogCore::Debug<const char *>("rpm_actual: ");	  
+	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio)));
+		CogCore::Debug<const char *>("rpm_difference: ");	  
+	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio))-fan_rpm);// 346.749 + 11888.545x + -5944.272x^2
+		CogCore::Debug<const char *>("rpm_tested: ");	  
+		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
+     // }
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
       CogCore::Debug<const char *>("YYYYYYYYYYYYYYYYYYYYYYYYYYYY");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {

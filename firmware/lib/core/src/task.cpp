@@ -49,11 +49,11 @@ namespace CogCore
         if (_state == TaskState::Ready) {
             _state = TaskState::Running;
             _lastRun = now;
-            if (DEBUG > 0) {
+            if (DEBUG_TASK > 0) {
 	      CogCore::Debug<const char *>("about to _run\n");
             }
             _run(); // TODO: use result
-            if (DEBUG > 0) {
+            if (DEBUG_TASK > 0) {
 	      CogCore::Debug<const char *>("finished _run\n");
             }
 
@@ -62,7 +62,7 @@ namespace CogCore
             // TODO: report
         }
         _state = TaskState::Ready;
-        if (DEBUG > 0) {
+        if (DEBUG_TASK > 0) {
 	  CogCore::Debug<const char *>("Returning Run\n");
         }
 

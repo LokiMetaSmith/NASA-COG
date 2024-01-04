@@ -57,6 +57,7 @@ int SL_PS::init() {
   if (setPS_OnOff(ADDRESS, "OFF")) CogCore::Debug<const char *>("Turned PSU OFF!\n");
 
   if (DEBUG_SL_PS > 0) {
+	  watchdogReset();
 	  getPS_Manuf(ADDRESS);
 	  CogCore::Debug<const char *>("GetPS Manuf: ");
 	  if (!strlen(manuf)) strcpy(manuf, "UNKWN");
@@ -66,6 +67,7 @@ int SL_PS::init() {
 
 
 	  getPS_Model(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS Model: ");
 	  if (!strlen(model)) strcpy(manuf, "UNKWN");
 	  CogCore::Debug<const char *>(model);
@@ -75,6 +77,7 @@ int SL_PS::init() {
 
 
 	  getPS_VoltageString(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS VoltageSt: ");
 	  if (!strlen(voltage_string)) strcpy(manuf, "UNKWN");
 	  CogCore::Debug<const char *>(voltage_string);
@@ -84,6 +87,7 @@ int SL_PS::init() {
 
 
 	  getPS_Revision(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS Rev: ");
 	  if (!strlen(revision)) strcpy(manuf, "UNKWN");
 	  CogCore::Debug<const char *>(revision);
@@ -93,6 +97,7 @@ int SL_PS::init() {
 
 
 	  getPS_ManufDate(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS ManufDate: ");
 	  if (!strlen(manuf_date)) strcpy(manuf, "UNKWN");
 	  CogCore::Debug<const char *>(manuf_date);
@@ -102,6 +107,7 @@ int SL_PS::init() {
 
 
 	  getPS_Serial(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS Serial Address: ");
 	  if (!strlen(serial)) strcpy(manuf, "UNKWN");
 	  CogCore::Debug<const char *>(serial);
@@ -111,6 +117,7 @@ int SL_PS::init() {
 
 
 	  getPS_Country(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS Country: ");
 	  if (!strlen(country)) strcpy(manuf, "UNKWN");
 	  CogCore::Debug<const char *>(country);
@@ -120,6 +127,7 @@ int SL_PS::init() {
 
 
 	  getPS_RateVoltage(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS RateVoltage: ");
 	  if (rate_voltage < 0) CogCore::Debug<const char *>("UNKWN");
 	  else CogCore::Debug<uint32_t>(rate_voltage);
@@ -128,6 +136,7 @@ int SL_PS::init() {
 
 
 	  getPS_RateCurrent(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS RateCurrent: ");
 	  if (rate_current < 0) CogCore::Debug<const char *>("UNKWN");
 	  else CogCore::Debug<uint32_t>(rate_current);
@@ -137,6 +146,7 @@ int SL_PS::init() {
 
 
 	  getPS_MaxVoltage(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS MaxVoltage: ");
 	  if (max_voltage < 0) CogCore::Debug<const char *>("UNKWN");
 	  else CogCore::Debug<uint32_t>(max_voltage);
@@ -146,6 +156,7 @@ int SL_PS::init() {
 
 
 	  getPS_MaxCurrent(ADDRESS);
+	  watchdogReset();
 	  CogCore::Debug<const char *>("GetPS MaxCurrent: ");
 	  if (max_current < 0) CogCore::Debug<const char *>("UNKWN");
 	  else CogCore::Debug<uint32_t>(max_current);

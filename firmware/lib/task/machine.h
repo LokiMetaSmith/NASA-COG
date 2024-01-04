@@ -209,10 +209,18 @@ public:
   const unsigned long THERMOCOUPLE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   // WARNING! THIS IS DISABLING THE ERROR FOR TESTING
   // WHILE WE FIGURE OUT THE TACH ERROR
-  const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 60 * 60 * 1000;
+  const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
   const unsigned long HEATER_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
   const unsigned long ENVELOPE_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
-
+  const unsigned long COULD_NOT_INIT_3_THERMOCOUPLES_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;;
+  const unsigned long FAN_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long FAN_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long HEATER_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long STACK_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long PSU_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long MAINS_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  
+  
   // TODO: This would better be attached to the statemanager
   // class, as it is used in those task---but also in the
   // separate temp_refresh_task. Until I can refactor

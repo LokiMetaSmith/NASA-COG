@@ -15,7 +15,7 @@
 
 #include "abstract_fan.h"
 
-#define DEBUG_LEVEL 0
+#define DEBUG_LEVEL 2
 
 const char * AbstractFAN::getName(){
   return name;

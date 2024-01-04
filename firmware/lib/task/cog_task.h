@@ -91,8 +91,8 @@ namespace CogApp
   {
   public:
     int PERIOD_MS = 10000;
-    int DEBUG_FAN = 0;
-    int DEBUG_LEVEL = 0;
+    int DEBUG_FAN = 2;
+    int DEBUG_LEVEL = 2;
     int DEBUG_LEVEL_OBA = 0;
 
     unsigned long last_time_ramp_changed_ms = 0;
