@@ -98,8 +98,21 @@ float SanyoAceB97::getRPM(){
 
 
 bool SanyoAceB97::evaluateFan(float pwm_ratio,float rpms) {
+	if (DEBUG_FAN > 1) {
+	    CogCore::Debug<const char *>("pwm_ratio: ");
+	    CogCore::DebugLn<float>(pwm_ratio);	
+        CogCore::Debug<const char *>("rpms: ");	  
+        CogCore::DebugLn<float>(rpms);
+	    CogCore::Debug<const char *>("rpm_actual: ");	  
+	    CogCore::DebugLn<float>((306.709 + (12306.7*pwm_ratio) + (-6070*pwm_ratio*pwm_ratio)));
+		CogCore::Debug<const char *>("rpm_difference: ");	  
+	    CogCore::DebugLn<float>((306.709 + (12306.7*pwm_ratio) + (-6070*pwm_ratio*pwm_ratio))-rpms);// 346.749 + 11888.545x + -5944.272x^2
+		CogCore::Debug<const char *>("rpm_tested: ");	  
+		CogCore::DebugLn<float>(abs((pwm_ratio*SanyoAceB97::APPROXIMATE_PWM_TO_RPMS) - rpms));
+      }
   if(pwm_ratio >=0.2){
-    if(abs((pwm_ratio*SanyoAceB97::APPROXIMATE_PWM_TO_RPMS) - rpms)
+	  
+	  if(abs((pwm_ratio*SanyoAceB97::APPROXIMATE_PWM_TO_RPMS) - rpms)
        > SanyoAceB97::ABSOLUTE_RPM_TOLERANCE) {
       return false;
     }
@@ -134,8 +147,9 @@ void SanyoAceB97::fanSpeedPerCentage(int s)
 
 
   if (DEBUG_FAN > 0 ) {
-    CogCore::Debug<const char *>("Putting out speed to fan control board:");
+    CogCore::Debug<const char *>("Putting out speed to fan control board(%:PWM):");
     CogCore::Debug<int>(s);
+	CogCore::Debug<const char *>(":");
     CogCore::Debug<uint32_t>(q);
     CogCore::Debug<const char *>("\n");
   }

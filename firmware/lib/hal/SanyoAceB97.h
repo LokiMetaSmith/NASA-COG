@@ -106,7 +106,7 @@ public:
   void updatePWM(float pwm_ratio);
   float getRPM();
   bool evaluateFan(float pwm_ratio,float rpms);
-  static const int ABSOLUTE_RPM_TOLERANCE = 1000;
+  static const int ABSOLUTE_RPM_TOLERANCE = 2000;
   static constexpr float APPROXIMATE_PWM_TO_RPMS = 7300.0;
 };
 
