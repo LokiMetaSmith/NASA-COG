@@ -39,7 +39,7 @@ MAC Address: FE:ED:17:73:0E:69
 
 * Serial Number 13
 LAN TYPE: ???
-MAC Address: ???
+MAC Address: FE:ED:1A:71:09:7F
 
 ## Mechanical Files
 
