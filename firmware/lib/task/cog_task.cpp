@@ -251,8 +251,8 @@ namespace CogApp
         CogCore::DebugLn<const char *>("WARNING: AT PRESENT NO ACTION WILL BE TAKEN!!\n");
         break;
       }
-      
-	  
+
+
     } else {
       float fs_p = computeFanSpeedTargetFromSchedule(temp);
       float diff = currentTargetTemp - temp;
@@ -288,7 +288,7 @@ namespace CogApp
   }
 
 
-  void CogTask::evaluateHeaterEnvelope(
+  bool CogTask::evaluateHeaterEnvelope(
                                       CriticalErrorCondition ec,
                                       double current_input_temperature,
                                       double goal_temperature,
@@ -306,32 +306,30 @@ namespace CogApp
         if (DEBUG_LEVEL > 1) {
           CogCore::Debug<const char *>("TESTING ENVELOPE\n");
         }
-        if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS)
-          {
+        if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
             if (DEBUG_LEVEL > 1) {
               CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
             }
-            if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION)
-              {
+            if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION) {
                 if (DEBUG_LEVEL > 1) {
                   CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
                   CogCore::Debug<float>(abs(goal_temperature - current_input_temperature));
                   CogCore::Debug<const char *>("\n");
                 }
+				return false;
                 // As long as there is not a fault present, this creates;
-                // if one is already present, we leave it.
-                if (!getConfig()->errors[ec].fault_present) {
-                  getConfig()->errors[ec].fault_present = true;
-                  getConfig()->errors[ec].begin_condition_ms = millis();
-                }
-              } else
-              {
-                if (!getConfig()->errors[ec].fault_present) {
-                  getConfig()->errors[ec].fault_present = false;
-                }
-              }
+                 // if one is already present, we leave it.
+                // if (!getConfig()->errors[ec].fault_present) {
+                  // getConfig()->errors[ec].fault_present = true;
+                  // getConfig()->errors[ec].begin_condition_ms = millis();
+                // }
+              // } else if (!getConfig()->errors[ec].fault_present) {
+                  // getConfig()->errors[ec].fault_present = false;
+            }
+              
           }
       }
+	  return true;
   }
 
 
@@ -542,14 +540,22 @@ namespace CogApp
     // check fan speed...
     float fan_pwm_ratio = getConfig()->report->fan_pwm;
     float fan_rpm = getConfig()->report->fan_rpm;
-    //debug block
-	if (DEBUG_FAN > 1 || DEBUG_LEVEL > 0) {
-		CogCore::Debug<const char *>("Fan Fault FAN_UNRESPONSIVE Present: ");
+
+    //    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    // CogCore::Debug<bool>(
+    //                         getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
+	if (DEBUG_LEVEL > 0) {
+      CogCore::Debug<const char *>("Fan Inputs : ");
+      CogCore::DebugLn<float>(fan_pwm_ratio);
+      CogCore::DebugLn<float>(fan_rpm);
+      //debug block
+      if (DEBUG_FAN > 1 || DEBUG_LEVEL > 0) {
+        CogCore::Debug<const char *>("Fan Fault FAN_UNRESPONSIVE Present: ");
         CogCore::Debug<bool>(getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
-	    CogCore::Debug<const char *>("\n");
-	    CogCore::Debug<const char *>("fan_pwm_ratio: ");
-	    CogCore::DebugLn<float>(fan_pwm_ratio);	
-        CogCore::Debug<const char *>("rpms: ");	  
+        CogCore::Debug<const char *>("\n");
+        CogCore::Debug<const char *>("fan_pwm_ratio: ");
+        CogCore::DebugLn<float>(fan_pwm_ratio);
+        CogCore::Debug<const char *>("rpms: ");
         CogCore::DebugLn<float>(fan_rpm);
 	    CogCore::Debug<const char *>("rpm_actual: ");	  
 	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio)));
@@ -557,7 +563,9 @@ namespace CogApp
 	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio))-fan_rpm);// 346.749 + 11888.545x + -5944.272x^2
 		CogCore::Debug<const char *>("rpm_tested: ");	  
 		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
-    }
+      }
+	  //end debug block
+	  
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
       CogCore::DebugLn<const char *>("Fan Fault Present");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
@@ -565,52 +573,68 @@ namespace CogApp
         getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
       }
     }
-	else {
-      if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
-        getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
+    else {
+        if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
+          getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
         }
-   }
-    evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
+    }//evaluateFan
+	
+    if (!evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
                            getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
-                           getConfig()->report->heater_duty_cycle);
-						   
-    if (!getHAL()->_stacks[0]->evaluatePS()){
-		   CogCore::DebugLn<const char *>("PSU Fault Present");
-      if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
-        getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
-        getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+                           getConfig()->report->heater_duty_cycle)){
+		CogCore::DebugLn<const char *>("Heater Fault Present");
+	    if (!getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
+        getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = true;
+        getConfig()->errors[HEATER_OUT_OF_BOUNDS].begin_condition_ms = millis();
       }
     }
-	else {
-      if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
-        getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
+    else {
+        if (!getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
+          getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
         }
-   }
-    // MachineState ms = getConfig()->ms;
-    // if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
-    //   unsigned long now_ms = millis();
-    //   unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
-    //   CogCore::Debug<const char *>("delta_ms: ");
-    //   CogCore::DebugLn<long>(delta_ms);
-    //   changeRamps(delta_ms);
-    //   last_time_ramp_changed_ms = now_ms;
-    // }
+    }//evaluateHeaterEnvelope
+	
+						   
 
-    if (DEBUG_LEVEL > 0) {
-      CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
-    }
 
-    this->StateMachineManager::run_generic();
+      if (!getHAL()->_stacks[0]->evaluatePS()){
+        CogCore::DebugLn<const char *>("PSU Fault Present");
+        if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+          getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
+          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+        }
+      }
+      else {
+        if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+          getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
+        }
+      }//evaluatePSU
+      // MachineState ms = getConfig()->ms;
+      // if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
+      //   unsigned long now_ms = millis();
+      //   unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
+      //   CogCore::Debug<const char *>("delta_ms: ");
+      //   CogCore::DebugLn<long>(delta_ms);
+      //   changeRamps(delta_ms);
+      //   last_time_ramp_changed_ms = now_ms;
+      // }
 
-    if (DEBUG_LEVEL > 0) {
-      CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");
-    }
+      if (DEBUG_LEVEL > 0) {
+        CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
+      }
 
-    if (DEBUG_LEVEL > 0) {
-      CogCore::Debug<const char *>("Free Memory: ");
-      CogCore::Debug<int>(freeMemory());
-      CogCore::Debug<const char *>("\n");
+      this->StateMachineManager::run_generic();
+
+      if (DEBUG_LEVEL > 0) {
+        CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");
+      }
+
+      if (DEBUG_LEVEL > 0) {
+        CogCore::Debug<const char *>("Free Memory: ");
+        CogCore::Debug<int>(freeMemory());
+        CogCore::Debug<const char *>("\n");
+      }
     }
   }
 
