@@ -329,20 +329,20 @@ void setup()
   // now set up debugging levels...
   logRecorderTask.DEBUG_LOG_RECORDER = 0;
   core.DEBUG_CORE = 0;
-  core._scheduler.DEBUG_SCHEDULER = 2;
+  core._scheduler.DEBUG_SCHEDULER = 0;
   core._scheduler._idleTask.DEBUG_IDLETASK = 0;
   dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
   heaterPIDTask.DEBUG_PID = 0;
   cogTask.DEBUG_FAN = 0;
-  cogTask.DEBUG_LEVEL = 2;
-  cogTask.SM_DEBUG_LEVEL = 2;
+  cogTask.DEBUG_LEVEL = 0;
+  cogTask.SM_DEBUG_LEVEL = 0;
   cogTask.DEBUG_LEVEL_OBA = 0;
   cogTask.wattagePIDObject->DEBUG_PID = 0;
   OEDCSNetworkTask.DEBUG_UDP = 0;
   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
   readTempsTask.DEBUG_READ_TEMPS = 0;
   oedcsSerialInputTask.DEBUG_SERIAL = 0;
-  heartbeatTask.DEBUG_HEARTBEAT = 2;
+  heartbeatTask.DEBUG_HEARTBEAT = 0;
   // Now
   heartbeatTask.debug_number_of_heartbeats = millis() / 500;
   getConfig()->script->DEBUG_MS = 0;
