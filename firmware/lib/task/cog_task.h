@@ -110,7 +110,7 @@ namespace CogApp
     float getTemperatureReadingA_C();
     float getTemperatureReadingB_C();
     float getTemperatureReadingC_C();
-    bool updatePowerMonitor();
+    bool is24VPowerGood();
 
     // "OneButton Routines"
     float computeHeaterDutyCycleFromWattage(float heaterWattage_w);

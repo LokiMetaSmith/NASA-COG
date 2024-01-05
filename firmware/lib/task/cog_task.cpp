@@ -526,9 +526,10 @@ namespace CogApp
   bool CogTask::_run()
   {
     //Check for AC power, ie for +24V
-    bool powerIsOK = updatePowerMonitor();
+    bool powerIsOK = is24VPowerGood();
     if (!powerIsOK){
-      CogCore::Debug<const char *>("AC Power (+24V) FAIL.\n");
+      CogCore::Debug<const char *>("Probable AC Power (+24V) FAIL.\n");
+      getConfig()->ms = CriticalFault;
     }
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
@@ -539,9 +540,9 @@ namespace CogApp
     // check fan speed...
     float fan_pwm_ratio = getConfig()->report->fan_pwm;
     float fan_rpm = getConfig()->report->fan_rpm;
-    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXX\n");
-    CogCore::Debug<bool>(
-                         getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
+    //    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXX\n");
+    // CogCore::Debug<bool>(
+    //                         getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
     if (DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Fan Inputs : ");
       CogCore::DebugLn<float>(fan_pwm_ratio);
@@ -554,6 +555,11 @@ namespace CogApp
         getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
       }
     }
+
+    if (DEBUG_LEVEL > 0) {
+      CogCore::DebugLn<const char *>("QQQQQQQQQQQQQQQQQQQQQQQQQQ");
+    }
+
     evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
                            getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
@@ -569,7 +575,15 @@ namespace CogApp
     //   last_time_ramp_changed_ms = now_ms;
     // }
 
+    if (DEBUG_LEVEL > 0) {
+      CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
+    }
+
     this->StateMachineManager::run_generic();
+
+    if (DEBUG_LEVEL > 0) {
+      CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");
+    }
 
     if (DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Free Memory: ");
@@ -619,52 +633,65 @@ namespace CogApp
   }
 
   MachineState CogTask::_updatePowerComponentsOff() {
+    if (DEBUG_LEVEL > 2) {
+      CogCore::Debug<const char *>("TURN OFF BEGINNING\n");
+    }
     turnOff();
+    if (DEBUG_LEVEL > 2) {
+      CogCore::Debug<const char *>("TURN OFF END \n");
+    }
     return Off;
   }
+  bool CogTask::is24VPowerGood()
+  {
+    if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
 
-bool CogTask::updatePowerMonitor()
-    {
-      // Note:adding a task
-       if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
+    //Analog read of the +24V expected about 3.25V at ADC input.
+    // SENSE_24V on A1.
+    // Full scale is 1023, ten bits for 3.3V.
+    //30K into 4K7
+    const long FullScale = 1023;
+    const float percentOK = 0.25;
+    const float R1=40000;
+    const float R2=4700;
+    const float Vcc = 3.3;
+    const int lowThreshold24V = 587; //(24*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 782.28
+    // Note: Rob proposes that this should simply by 1024, if only because this makes it easier to test.
+    // I can't see any value in having a highThreshold---are we genuninely attempting to test that
+    // our 24V value is too high? -- rlr
+    // Switch this on control V1.1 C-pre processor flag
+#ifdef CTL_V_1_1
+    const int highThreshold24V = 978; //(24*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+#else
+    const int highThreshold24V = 1024;
+#endif
 
-        //Analog read of the +24V expected about 3.25V at ADC input.
-        // SENSE_24V on A1.
-        // Full scale is 1023, ten bits for 3.3V.
-        //30K into 4K7
-		const long FullScale = 1023;
-        const float percentOK = 0.25;
-        const long R1=40000;
-        const long R2=4700;
-        const float Vcc = 3.3;
-        bool powerIsGood = false;
-        const int lowThreshold24V = 587; //(24*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 782.28
-		const int highThreshold24V = 978; //(24*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-        int _v24read = analogRead(A1);
-		
-        if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
-        if (DEBUG_LEVEL >0 )  CogCore::Debug<uint32_t>(analogRead(SENSE_24V) * ((Vcc * (R1+R2))/(1023.0 * R2)));
-        if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("\n");
+    int _v24read = analogRead(SENSE_24V);
 
-        if (( _v24read > lowThreshold24V) && ( _v24read < highThreshold24V) ) {
-            powerIsGood = true;
-            if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
-            return true;
-        }else{
-            powerIsGood = false;
-            if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
-			    CogCore::Debug<const char *>("lowThreshold24V: ");
-			    CogCore::Debug<int32_t>(lowThreshold24V);
-			    CogCore::Debug<const char *>("\n");
-			    CogCore::Debug<const char *>("highThreshold24V: ");
-			    CogCore::Debug<int32_t>(highThreshold24V);
-			    CogCore::Debug<const char *>("\n");
-				 CogCore::Debug<const char *>("_v24read: ");
-			    CogCore::Debug<int32_t>(_v24read);
-			    CogCore::Debug<const char *>("\n");
-            return false;
-        }
+    if (DEBUG_LEVEL >0 ) {
+      CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
+      CogCore::DebugLn<uint32_t>(_v24read);
+      CogCore::Debug<float>((float) _v24read * ((Vcc * (R1+R2))/(1023.0 * R2)));
+      CogCore::Debug<const char *>("\n");
     }
+
+    if (( _v24read > lowThreshold24V) && ( _v24read < highThreshold24V) ) {
+      if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
+      return true;
+    } else{
+      if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
+      CogCore::Debug<const char *>("lowThreshold24V: ");
+      CogCore::Debug<int32_t>(lowThreshold24V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("highThreshold24V: ");
+      CogCore::Debug<int32_t>(highThreshold24V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("_v24read: ");
+      CogCore::Debug<int32_t>(_v24read);
+      CogCore::Debug<const char *>("\n");
+      return false;
+    }
+  }
 
   float CogTask::computeHeaterDutyCycleFromWattage(float heaterWattage_w) {
     return (heaterWattage_w < 0.0) ?
@@ -736,7 +763,6 @@ bool CogTask::updatePowerMonitor()
   }
 
   void CogTask::_updateCOGSpecificComponents() {
-      bool powerIsGood = updatePowerMonitor();
 
       float t = getTemperatureReadingA_C();
       float fs = getFanSpeed(t);
@@ -753,7 +779,7 @@ bool CogTask::updatePowerMonitor()
       getConfig()->report->fan_pwm = fs;
       _updateStackAmperage(a);
 
-      CogCore::Debug<const char *>("Updating Stack Voltage:\n");
+      CogCore::Debug<const char *>("Updating Stack Voltage (AAA):\n");
       _updateStackVoltage(getConfig()->MAX_STACK_VOLTAGE);
   }
   MachineState CogTask::_updatePowerComponentsWarmup() {
@@ -810,9 +836,15 @@ bool CogTask::updatePowerMonitor()
     _updateStackVoltage(MachineConfig::IDLE_STACK_VOLTAGE);
     return new_ms;
   }
+
+  // After being sure that we've logged this
+  // I think we can shift to the off conditions.
   MachineState CogTask::_updatePowerComponentsCritialFault() {
-    MachineState new_ms = CriticalFault;
+    MachineState new_ms = OffUserAck;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    // TODO: I don't think we want to do this.
+    // Instead we want to call the _run functionality directly
+    // on this task.
     logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
     return new_ms;
   }
@@ -820,7 +852,9 @@ bool CogTask::updatePowerMonitor()
   CogCore:Debug<const char *>("GOT EMERGENCY SHUTDOWN!");
     MachineState new_ms = OffUserAck;
     turnOff();
-    // Not sure when this is restored, or what should be done
+    // TODO: I don't think we want to do this.
+    // Instead we want to call the _run functionality directly
+    // on this task.
     logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
     return new_ms;
   }
@@ -853,13 +887,19 @@ bool CogTask::updatePowerMonitor()
   }
   void CogTask::_updateStackVoltage(float voltage) {
     if (DEBUG_LEVEL > 0) {
-      CogCore::Debug<const char *>("Updating Stack Voltage:\n");
+      CogCore::Debug<const char *>("Updating Stack Voltage (BBB): ");
       CogCore::DebugLn<float>(voltage);
+      CogCore::DebugLn<unsigned long>(millis());
     }
 
     for (int i = 0; i < getHAL()->NUM_STACKS; i++) {
       getHAL()->_stacks[i]->updateVoltage(voltage,getConfig());
     }
+    if (DEBUG_LEVEL > 0) {
+      CogCore::DebugLn<const char *>("Done (BBB): ");
+      CogCore::DebugLn<unsigned long>(millis());
+    }
+
   }
 
   void CogTask::_updateStackAmperage(float amperage) {
@@ -869,7 +909,7 @@ bool CogTask::updatePowerMonitor()
       return;
     }
     if (DEBUG_LEVEL > 0) {
-      CogCore::Debug<const char *>("Updating Stack Amperage:\n");
+      CogCore::Debug<const char *>("Updating Stack Amperage (CCC):\n");
       CogCore::DebugLn<float>(amperage);
     }
 

@@ -38,7 +38,7 @@ SL_PS::SL_PS(const char * name, uint8_t id) {
 int SL_PS::init() {
 
   int retval = 0;
-  
+
   //PS1  is attached to Serial1
   pinMode( PS1_EN, OUTPUT);
   digitalWrite(PS1_EN, HIGH);
@@ -151,8 +151,8 @@ int SL_PS::init() {
 	  else CogCore::Debug<uint32_t>(max_current);
 	  CogCore::Debug<const char *>("\n");
 	  delay(MYDELAY);
-	   watchdogReset(); 
-   }//endif (DEBUG_SL_PS > 0) 
+	   watchdogReset();
+   }//endif (DEBUG_SL_PS > 0)
 
 
 //  snprintf(packetBuffer, sizeof packetBuffer, "{ \"Manufacturer\": \"%s\", \"Model\": \"%s\", \"VoltString\": \"%s\", \"Revision\": \"%s\", \"Serial\": \"%s\", \"VoltageRating\": %d, \"CurrentRating\": %d, \"MaxVoltage\": %d, \"MaxCurrent\": %d}", manuf, model, voltage_string, revision, serial, rate_voltage, rate_current, max_voltage, max_current);
@@ -234,7 +234,7 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
   static char rval[250];
   static char b[50];
   rval[0]  = '\0';
-  b[0]  = '\0'; 
+  b[0]  = '\0';
   if (!setPS_Addr(addr)) {
     Serial.println("didn't set address");
     return 0;
@@ -256,7 +256,7 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
     if(b[0] == '!' && b[1] == '>') {
       Serial.println("Command correct but execution error (e.g. parameters out of range).");
     }
-    delay(10);  
+    delay(10);
     c = Serial1.readBytesUntil('\n', b, sizeof b);
     b[c-1] = '\0';
   }
@@ -429,7 +429,7 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   MachineStatusReport *msr = config->report;
   uint16_t volts = (uint16_t) (voltage * 100.0);
 
-  if (DEBUG_SL_PS > 0) {
+  if (DEBUG_SL_PS_UV > 0) {
     CogCore::Debug<const char *>("Setting SL_PS_Volts: ");
     CogCore::Debug<uint32_t>(volts);
     CogCore::Debug<const char *>("\n");
@@ -444,12 +444,21 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   // I don't like to use delay but I think some time is needed here...
   delay(10);
 
-  if (DEBUG_SL_PS > 0) {
-    CogCore::Debug<const char *>("Voltage Updated");
+  if (DEBUG_SL_PS_UV > 0) {
+    CogCore::Debug<const char *>("SL_PS Voltage Updated 1");
   }
 
   getPS_OutVoltage(this->address);
+  if (DEBUG_SL_PS_UV > 0) {
+    CogCore::DebugLn<const char *>("SL_PS Voltage Updated 1.5");
+  }
+
   getPS_OutCurrent(this->address);
+
+  if (DEBUG_SL_PS_UV > 0) {
+    CogCore::DebugLn<const char *>("SL_PS Voltage Updated 2");
+  }
+
   msr->stack_voltage = out_voltage / 100.0;
   msr->stack_amps = out_current / 100.0;
   if (msr->stack_amps <= 0.0) {
@@ -457,8 +466,17 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   } else {
     msr->stack_ohms = msr->stack_voltage/ msr->stack_amps;
   }
-  if (DEBUG_SL_PS > 0) {
+
+  if (DEBUG_SL_PS_UV > 0) {
+    CogCore::DebugLn<const char *>("SL_PS Voltage Updated 3");
+  }
+
+  if (DEBUG_SL_PS_UV > 0) {
     printFullStatus(this->address);
+  }
+
+  if (DEBUG_SL_PS_UV > 0) {
+    CogCore::DebugLn<const char *>("SL_PS Voltage Updated 4");
   }
 
 }
