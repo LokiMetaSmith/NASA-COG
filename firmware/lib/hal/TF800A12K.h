@@ -77,6 +77,8 @@ private:
 public:
   SL_PS();
   SL_PS(const char * name, uint8_t id);
+  int reInit();
+  bool evaluatePS();
 
   int setPS_Addr(uint8_t addr);
 

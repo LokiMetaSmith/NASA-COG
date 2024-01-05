@@ -573,7 +573,19 @@ namespace CogApp
                            getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
                            getConfig()->report->heater_duty_cycle);
-
+						   
+    if (!getHAL()->_stacks[0]->evaluatePS()){
+		   CogCore::Debug<const char *>("PSU Fault Present");
+      if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+        getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
+        getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+      }
+    }
+	else {
+      if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+        getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
+        }
+   }
     // MachineState ms = getConfig()->ms;
     // if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
     //   unsigned long now_ms = millis();
