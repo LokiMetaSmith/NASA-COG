@@ -39,6 +39,8 @@ public:
   virtual ~AbstractPS(){};
   virtual void updateVoltage(float voltage, MachineConfig *config);
   virtual void updateAmperage(float amperage, MachineConfig *config);
+  virtual int reInit();
+  virtual bool evaluatePS();
 };
 
 

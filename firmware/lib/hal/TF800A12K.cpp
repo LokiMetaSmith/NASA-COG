@@ -131,6 +131,7 @@ int SL_PS::init() {
 	  CogCore::Debug<const char *>("GetPS RateVoltage: ");
 	  if (rate_voltage < 0) CogCore::Debug<const char *>("UNKWN");
 	  else CogCore::Debug<uint32_t>(rate_voltage);
+	  CogCore::Debug<const char *>("\n");
 	  delay(MYDELAY);
 	   watchdogReset();
 
@@ -191,6 +192,65 @@ int SL_PS::init() {
   return retval;
 }
 
+int SL_PS::reInit() {
+  
+  int retval = 0;
+  
+  watchdogReset();
+  // Note! We want to turn off the machine as quickly as possible on startup!
+  if (setPS_OnOff(ADDRESS, "ON")) CogCore::Debug<const char *>("Turned it on\n");
+  else {
+    CogCore::Debug<const char *>("failed to turn PS on\n");
+    retval = -1;
+  }
+  
+  watchdogReset();
+  if (setPS_Voltage(ADDRESS, 0)) CogCore::Debug<const char *>("Set volts to 0.0 volts\n");
+  else {
+    CogCore::Debug<const char *>("failed to set volts\n");
+    retval = -1;
+  }
+  
+  watchdogReset();
+  if (setPS_Current(ADDRESS, 0)) CogCore::Debug<const char *>("Set current to 0.0 amps\n");
+  else {
+    CogCore::Debug<const char *>("failed to set current\n");
+    retval = -1;
+  }
+	return retval;
+}
+bool SL_PS::evaluatePS(){
+  bool retval = false;
+  watchdogReset();
+  	getPS_Control(ADDRESS);
+	watchdogReset();
+	getPS_Status0(ADDRESS);
+	watchdogReset();
+	getPS_Status1(ADDRESS);
+	watchdogReset();
+    CogCore::DebugLn< uint8_t>(status0);
+    CogCore::DebugLn< uint8_t>(status1);
+	if(status0 & 0x01)CogCore::DebugLn<const char *>( "Bit-0 -> OVP Shutdown");
+	if(status0 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> OLP Shutdown");
+	if(status0 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> OTP Shutdown");
+	if(status0 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> FAN Failure");
+	if(status0 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> AUX or SMPS Fail");
+	if(status0 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> HI-TEMP Alarm");
+	if(status0 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> AC Input Power Down");
+	if(status0 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> AC Input Failure");
+	if(status1 & 0x01)CogCore::DebugLn<const char *>( "Inhibit by VCI / ACI or ENB");
+	if(status1 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> Inhibit by Software Command");
+	if(status1 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> (Not used)");
+	if(status1 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> (Not used)");
+	if(status1 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> (POWER)");
+	if(status1 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> (Not used)");
+	if(status1 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> (Not used)");
+	if(status1 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> (REMOTE)");
+	if(control){CogCore::DebugLn<const char *>( "REMOTE");}else{CogCore::Debug<const char *>( "LOCAL");};
+	return true;
+	//return retval;
+}
+
 int SL_PS::setPS_Addr(uint8_t addr) {
   Serial1.print("ADDS "); Serial1.print(addr); Serial1.print("\r\n");
   delay(50);
@@ -242,7 +302,7 @@ int SL_PS::setPS_Current(uint8_t addr, uint16_t amps) {
 }
 
 char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
-  static char rval[250];
+  static char rval[100];
   static char b[50];
   rval[0]  = '\0';
   b[0]  = '\0';
@@ -256,16 +316,20 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
   c = Serial1.readBytesUntil('\n', b, sizeof b);
   b[c-1] = '\0';
 
-  for(int i=0; i<5;i++ )
+  for(int i=0; i<2;i++ )
   {
     if(b[0] != '=' && b[1] != '>') {
       strncat(rval,b, sizeof b);
-    }
+    }else{
+	  return rval;	
+	}
     if(b[0] == '?' && b[1] == '>') {
       Serial.println("Command error, not accepted.");
+	  return rval;
     }
     if(b[0] == '!' && b[1] == '>') {
       Serial.println("Command correct but execution error (e.g. parameters out of range).");
+	  return rval;
     }
     delay(10);
     c = Serial1.readBytesUntil('\n', b, sizeof b);
@@ -392,6 +456,11 @@ void SL_PS::getPS_SetCurrent(int addr) {
 }
 
 void SL_PS::getPS_Control(int addr) {
+  char *r = getPS_Val(addr, "REMS 2");
+  switch (r[0]) {
+  case '0': control = 0; break;
+  case '1': control = 1; break;
+  }
 }
 
 void SL_PS::printFullStatus(int addr) {
