@@ -193,9 +193,9 @@ int SL_PS::init() {
 }
 
 int SL_PS::reInit() {
-  
+
   int retval = 0;
-  
+
   watchdogReset();
   // Note! We want to turn off the machine as quickly as possible on startup!
   if (setPS_OnOff(ADDRESS, "ON")) CogCore::Debug<const char *>("Turned it on\n");
@@ -203,14 +203,14 @@ int SL_PS::reInit() {
     CogCore::Debug<const char *>("failed to turn PS on\n");
     retval = -1;
   }
-  
+
   watchdogReset();
   if (setPS_Voltage(ADDRESS, 0)) CogCore::Debug<const char *>("Set volts to 0.0 volts\n");
   else {
     CogCore::Debug<const char *>("failed to set volts\n");
     retval = -1;
   }
-  
+
   watchdogReset();
   if (setPS_Current(ADDRESS, 0)) CogCore::Debug<const char *>("Set current to 0.0 amps\n");
   else {
@@ -270,7 +270,8 @@ int SL_PS::setPS_Val(uint8_t addr, const char *loc, const char *val) {
   }
 
   Serial1.print(loc); Serial1.print(' '); Serial1.print(val); Serial1.print("\r\n");
-  delay(50);
+  // Do we need this delay?
+  //  delay(50);
   char b[5];
   int c = Serial1.readBytesUntil('\n', b, sizeof b);
   if (c != 3 || b[0] != '=' || b[1] != '>') return 0;
@@ -312,29 +313,48 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
   }
   int c = 0;
   Serial1.print(val); Serial1.print("\r\n");
-  delay(50);
+  // delay(50);
   c = Serial1.readBytesUntil('\n', b, sizeof b);
   b[c-1] = '\0';
+  if (DEBUG_SL_PS_UV > 0) {
+    CogCore::Debug<const char *>("first read: ");
+    CogCore::DebugLn<const char *>(b);
+    CogCore::Debug<const char *>("=====\n");
+  }
 
   for(int i=0; i<2;i++ )
-  {
-    if(b[0] != '=' && b[1] != '>') {
-      strncat(rval,b, sizeof b);
-    }else{
-	  return rval;	
-	}
-    if(b[0] == '?' && b[1] == '>') {
-      Serial.println("Command error, not accepted.");
-	  return rval;
+    {
+      if(b[0] != '=' && b[1] != '>') {
+        strncat(rval,b, sizeof b);
+      }else{
+        if (DEBUG_SL_PS_UV > 0) {
+          CogCore::Debug<const char *>("final: ");
+          CogCore::DebugLn<int>(i);
+          CogCore::Debug<const char *>(" : ");
+          CogCore::DebugLn<const char *>(rval);
+          CogCore::Debug<const char *>("=====\n");
+        }
+        return rval;
+      }
+      if(b[0] == '?' && b[1] == '>') {
+        Serial.println("Command error, not accepted.");
+        return rval;
+      }
+      if(b[0] == '!' && b[1] == '>') {
+        Serial.println("Command correct but execution error (e.g. parameters out of range).");
+        return rval;
+      }
+      //      delay(10);
+      c = Serial1.readBytesUntil('\n', b, sizeof b);
+      b[c-1] = '\0';
+      if (DEBUG_SL_PS_UV > 0) {
+        CogCore::Debug<const char *>("intermediate: ");
+        CogCore::DebugLn<int>(i);
+        CogCore::Debug<const char *>(" : ");
+        CogCore::DebugLn<const char *>(b);
+        CogCore::Debug<const char *>("=====\n");
+      }
     }
-    if(b[0] == '!' && b[1] == '>') {
-      Serial.println("Command correct but execution error (e.g. parameters out of range).");
-	  return rval;
-    }
-    delay(10);
-    c = Serial1.readBytesUntil('\n', b, sizeof b);
-    b[c-1] = '\0';
-  }
   return rval;
 }
 
@@ -525,18 +545,21 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   delay(10);
 
   if (DEBUG_SL_PS_UV > 0) {
-    CogCore::Debug<const char *>("SL_PS Voltage Updated 1");
+    CogCore::Debug<const char *>("SL_PS Voltage Updated 1: ");
+    CogCore::DebugLn<int>(millis());
   }
 
   getPS_OutVoltage(this->address);
   if (DEBUG_SL_PS_UV > 0) {
     CogCore::DebugLn<const char *>("SL_PS Voltage Updated 1.5");
+    CogCore::DebugLn<int>(millis());
   }
 
   getPS_OutCurrent(this->address);
 
   if (DEBUG_SL_PS_UV > 0) {
     CogCore::DebugLn<const char *>("SL_PS Voltage Updated 2");
+    CogCore::DebugLn<int>(millis());
   }
 
   msr->stack_voltage = out_voltage / 100.0;
@@ -549,6 +572,7 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
 
   if (DEBUG_SL_PS_UV > 0) {
     CogCore::DebugLn<const char *>("SL_PS Voltage Updated 3");
+    CogCore::DebugLn<int>(millis());
   }
 
   if (DEBUG_SL_PS_UV > 0) {
