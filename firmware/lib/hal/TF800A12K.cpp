@@ -169,20 +169,20 @@ int SL_PS::init() {
 
 //  snprintf(packetBuffer, sizeof packetBuffer, "{ \"Manufacturer\": \"%s\", \"Model\": \"%s\", \"VoltString\": \"%s\", \"Revision\": \"%s\", \"Serial\": \"%s\", \"VoltageRating\": %d, \"CurrentRating\": %d, \"MaxVoltage\": %d, \"MaxCurrent\": %d}", manuf, model, voltage_string, revision, serial, rate_voltage, rate_current, max_voltage, max_current);
 //  sendMsg(packetBuffer);
-
+ watchdogReset();
   // Note! We want to turn off the machine as quickly as possible on startup!
   if (setPS_OnOff(ADDRESS, "ON")) CogCore::Debug<const char *>("Turned it on\n");
   else {
     CogCore::Debug<const char *>("failed to turn PS on\n");
     retval = -1;
   }
-
+ watchdogReset();
   if (setPS_Voltage(ADDRESS, 0)) CogCore::Debug<const char *>("Set volts to 0.0 volts\n");
   else {
     CogCore::Debug<const char *>("failed to set volts\n");
     retval = -1;
   }
-
+ watchdogReset();
   if (setPS_Current(ADDRESS, 0)) CogCore::Debug<const char *>("Set current to 0.0 amps\n");
   else {
     CogCore::Debug<const char *>("failed to set current\n");
@@ -228,26 +228,34 @@ bool SL_PS::evaluatePS(){
 	watchdogReset();
 	getPS_Status1(ADDRESS);
 	watchdogReset();
-    CogCore::DebugLn< uint8_t>(status0);
-    CogCore::DebugLn< uint8_t>(status1);
-	if(status0 & 0x01)CogCore::DebugLn<const char *>( "Bit-0 -> OVP Shutdown");
-	if(status0 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> OLP Shutdown");
-	if(status0 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> OTP Shutdown");
-	if(status0 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> FAN Failure");
-	if(status0 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> AUX or SMPS Fail");
-	if(status0 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> HI-TEMP Alarm");
-	if(status0 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> AC Input Power Down");
-	if(status0 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> AC Input Failure");
-	if(status1 & 0x01)CogCore::DebugLn<const char *>( "Inhibit by VCI / ACI or ENB");
-	if(status1 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> Inhibit by Software Command");
-	if(status1 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> (Not used)");
-	if(status1 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> (Not used)");
-	if(status1 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> (POWER)");
-	if(status1 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> (Not used)");
-	if(status1 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> (Not used)");
-	if(status1 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> (REMOTE)");
-	if(control){CogCore::DebugLn<const char *>( "REMOTE");}else{CogCore::Debug<const char *>( "LOCAL");};
-	return true;
+	if (DEBUG_SL_PS > 0) {
+		CogCore::DebugLn< uint8_t>(status0);
+		CogCore::DebugLn< uint8_t>(status1);
+		if(status0 & 0x01)CogCore::DebugLn<const char *>( "Bit-0 -> OVP Shutdown");
+		if(status0 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> OLP Shutdown");
+		if(status0 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> OTP Shutdown");
+		if(status0 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> FAN Failure");
+		if(status0 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> AUX or SMPS Fail");
+		if(status0 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> HI-TEMP Alarm");
+		if(status0 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> AC Input Power Down");
+		if(status0 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> AC Input Failure");
+		if(!(status0 & 0xFF))CogCore::DebugLn<const char *>( "status0: OK");
+		if(status1 & 0x01)CogCore::DebugLn<const char *>( "Inhibit by VCI / ACI or ENB");
+		if(status1 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> Inhibit by Software Command");
+		if(status1 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> (Not used)");
+		if(status1 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> (Not used)");
+		if(status1 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> (POWER)");
+		if(status1 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> (Not used)");
+		if(status1 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> (Not used)");
+		if(status1 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> (REMOTE)");
+		if(!(status0 & 0xFF))CogCore::DebugLn<const char *>( "status0: OK");
+		if(!(status1 & 0x6D))CogCore::DebugLn<const char *>( "status1: OK");
+		if(control){CogCore::DebugLn<const char *>( "REMOTE");}else{CogCore::Debug<const char *>( "LOCAL");};
+	};
+	if( !(status0 & 0xFF) && !(status1 & 0x6D))return true;
+	//If everything is working, we will mask with a known good state status0 & 0xFF and status1 0x92 0b1001 0010
+	return false;
+	
 	//return retval;
 }
 
@@ -319,18 +327,19 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
   for(int i=0; i<2;i++ )
   {
     if(b[0] != '=' && b[1] != '>') {
+	  if(b[0] == '?' && b[1] == '>') {
+        Serial.println("Command error, not accepted.");
+	    return rval;
+      }
+      if(b[0] == '!' && b[1] == '>') {
+        Serial.println("Command correct but execution error (e.g. parameters out of range).");
+	    return rval;
+      }
       strncat(rval,b, sizeof b);
     }else{
 	  return rval;	
 	}
-    if(b[0] == '?' && b[1] == '>') {
-      Serial.println("Command error, not accepted.");
-	  return rval;
-    }
-    if(b[0] == '!' && b[1] == '>') {
-      Serial.println("Command correct but execution error (e.g. parameters out of range).");
-	  return rval;
-    }
+    
     delay(10);
     c = Serial1.readBytesUntil('\n', b, sizeof b);
     b[c-1] = '\0';

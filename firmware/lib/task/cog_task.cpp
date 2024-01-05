@@ -559,7 +559,7 @@ namespace CogApp
 		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
     }
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
-      CogCore::Debug<const char *>("Fan Fault Present");
+      CogCore::DebugLn<const char *>("Fan Fault Present");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
         getConfig()->errors[FAN_UNRESPONSIVE].fault_present = true;
         getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
@@ -576,7 +576,7 @@ namespace CogApp
                            getConfig()->report->heater_duty_cycle);
 						   
     if (!getHAL()->_stacks[0]->evaluatePS()){
-		   CogCore::Debug<const char *>("PSU Fault Present");
+		   CogCore::DebugLn<const char *>("PSU Fault Present");
       if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
         getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
         getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();

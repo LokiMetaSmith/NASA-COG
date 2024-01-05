@@ -216,9 +216,9 @@ public:
   const unsigned long FAN_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long FAN_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long HEATER_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  const unsigned long STACK_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  const unsigned long PSU_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  const unsigned long MAINS_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long PSU_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long MAINS_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   
   
   // TODO: This would better be attached to the statemanager

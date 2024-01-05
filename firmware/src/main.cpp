@@ -149,7 +149,7 @@ void setup()
   Debug<const char *>("Core booted...\n");
   delay(100);
 
-  core.ResetHardwareWatchdog();
+  core.ResetAllWatchdogs();
 
   machineConfig.init();
   //  Eventually we will migrate all hardware to the COG_HAL..
@@ -311,7 +311,7 @@ void setup()
 
 
 
-  core.ResetHardwareWatchdog();
+  core.ResetAllWatchdogs();
 
   heaterPIDTask.whichHeater = (Stage2Heater) 0;
 
