@@ -27,6 +27,11 @@ bool COG_HAL::init() {
     CogCore::Debug<const char *>("HAL: About to init Fan!\n");
   }
 
+  // This exist purely for the convenience of having another 3.3V signal for testing!
+  pinMode(FIXED_HIGH_43, OUTPUT);
+  digitalWrite(FIXED_HIGH_43,HIGH);
+
+
   pinMode(MAX31850_DATA_PIN, INPUT);
   pinMode(RF_STACK, OUTPUT);
 

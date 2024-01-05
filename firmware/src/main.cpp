@@ -172,7 +172,7 @@ void setup()
 
   /***** Configure and add your tasks here *****/
 
-  
+
   CogCore::TaskProperties DisplayProperties;
   DisplayProperties.name = "Display";
   DisplayProperties.id = 50;
@@ -185,7 +185,7 @@ void setup()
     CogCore::Debug<const char *>("displayAdd Failed\n");
     abort();
   }
-  
+
   CogCore::TaskProperties readTempsProperties;
   readTempsProperties.name = "readTemps";
   readTempsProperties.id = 19;
@@ -335,6 +335,7 @@ void setup()
   heaterPIDTask.DEBUG_PID = 0;
   cogTask.DEBUG_FAN = 0;
   cogTask.DEBUG_LEVEL = 0;
+  cogTask.SM_DEBUG_LEVEL = 0;
   cogTask.DEBUG_LEVEL_OBA = 0;
   cogTask.wattagePIDObject->DEBUG_PID = 0;
   OEDCSNetworkTask.DEBUG_UDP = 0;

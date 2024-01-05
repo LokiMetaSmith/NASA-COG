@@ -26,13 +26,13 @@ namespace CogApp
 
   bool StateMachineManager::run_generic()
   {
-    if (DEBUG_LEVEL > 0) {
+    if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("starting run generic: ");
     }
 
     MachineState ms = getConfig()->ms;
 
-    if (DEBUG_LEVEL > 0) {
+    if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("ms : ");
       CogCore::Debug<int>(ms);
       CogCore::Debug<const char *>("\n");
@@ -42,7 +42,7 @@ namespace CogApp
     printGenericInstructions();
 
     MachineState new_state = _executeBasedOnState(ms);
-    if (DEBUG_LEVEL > 0) {
+    if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("finished execute\n");
     }
     // if the state really changes, we want to log that and take some action!
@@ -84,7 +84,7 @@ namespace CogApp
   MachineState StateMachineManager::_executeBasedOnState(MachineState ms) {
     MachineState new_ms;
 
-    if (DEBUG_LEVEL > 0) {
+    if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("\nMachine State: ");
       CogCore::Debug<const char *>(getConfig()->MachineStateNames[ms]);
       CogCore::Debug<const char *>(" : ");
@@ -125,6 +125,10 @@ namespace CogApp
     getConfig()->previous_ms = ms;
     getConfig()->ms = new_ms;
     getConfig()->report->ms = new_ms;
+
+    if (SM_DEBUG_LEVEL > 0) {
+      CogCore::Debug<const char *>("end_of_run_generic \n");
+    }
     return new_ms;
   }
 
@@ -191,7 +195,7 @@ namespace CogApp
   MachineState StateMachineManager::_updatePowerComponentsWarmup() {
     MachineState new_ms = Warmup;
 	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS);
-    if (DEBUG_LEVEL > 0) {
+    if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Warmup Mode!\n");
     }
 
@@ -216,7 +220,7 @@ namespace CogApp
       float tt = computeRampUpSetpointTemp(t,
                                            getConfig()->WARM_UP_BEGIN_TEMP,
                                            getConfig()->BEGIN_UP_TIME_MS);
-      if (DEBUG_LEVEL > 0) {
+      if (SM_DEBUG_LEVEL > 0) {
         CogCore::Debug<const char *>("Warmup tt for :");
 	CogCore::Debug<uint32_t>(getConfig()->s2heater);
         CogCore::Debug<float>(tt);
@@ -242,7 +246,7 @@ namespace CogApp
 
   MachineState StateMachineManager::_updatePowerComponentsCooldown() {
     MachineState new_ms = Cooldown;
-    if (DEBUG_LEVEL > 0) {
+    if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Cooldown Mode!\n");
     }
     float t = getTemperatureReadingA_C();
@@ -263,7 +267,7 @@ namespace CogApp
       getConfig()->SETPOINT_TEMP_C = tt;
       heaterPIDTask->HeaterSetPoint_C = tt;
 
-      if (DEBUG_LEVEL > 0) {
+      if (SM_DEBUG_LEVEL > 0) {
         CogCore::Debug<const char *>("CoolDown tt for :");
 	CogCore::Debug<uint32_t>((unsigned long) heaterPIDTask);
 	CogCore::Debug<const char *>("\n");
@@ -281,11 +285,18 @@ namespace CogApp
 
 
   MachineState StateMachineManager::_updatePowerComponentsOperation(IdleOrOperateSubState i_or_o) {
-	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS);
-  
+   	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS);
+      if (SM_DEBUG_LEVEL > 0) {
+        CogCore::Debug<const char *>("SetPeriod Done!\n");
+      }
+
     MachineState new_ms = NormalOperation;
     if (getConfig()->USE_ONE_BUTTON) {
       runOneButtonAlgorithm();
+      if (SM_DEBUG_LEVEL > 0) {
+        CogCore::Debug<const char *>("Run One Button Algorithm Done!");
+      }
+
     } else {
 
       float tt = getConfig()->TARGET_TEMP_C;
