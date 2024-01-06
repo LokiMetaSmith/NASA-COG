@@ -523,8 +523,7 @@ namespace CogApp
     c.W_w = max(c.W_w,0);
   }
 
-  bool CogTask::_run()
-  {
+  bool CogTask::_run() {
     //Check for AC power, ie for +24V
     bool powerIsOK = is24VPowerGood();
     if (!powerIsOK){
@@ -564,7 +563,7 @@ namespace CogApp
 		CogCore::Debug<const char *>("rpm_tested: ");	  
 		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
       }
-	  //end debug block
+	}//end debug block
 	  
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
       CogCore::DebugLn<const char *>("Fan Fault Present");
@@ -635,7 +634,7 @@ namespace CogApp
         CogCore::Debug<int>(freeMemory());
         CogCore::Debug<const char *>("\n");
       }
-    }
+    
   }
 
   // We believe someday an automatic algorithm will be needed here.
