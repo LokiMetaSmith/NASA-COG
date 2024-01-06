@@ -62,8 +62,7 @@ namespace CogApp
       MachineStatusReport msr_lre = getConfig()->_log_entry[j];
       getConfig()->outputReport(&msr_lre);
       oedcsNetworkTask->logReport(&msr_lre);
-      //      watchdogReset();
-      core->resetHardwareAndSoftwareWatchdog();
+      core->ResetAllWatchdogs();
     }
     _nextRecord = 0;
     _numRecords = 0;

@@ -65,16 +65,18 @@ class Core {
         Scheduler _scheduler;
 
         void ResetHardwareWatchdog();
-        void resetHardwareAndSoftwareWatchdog();
+
+        void ResetAllWatchdogs();
     private:
         uint32_t _elapsed;
         Timer _primaryTimer;
         Timer _watchdogTimer;
         CoreState _state;
         void Tick();
-        void CreateWatchdog(uint32_t timeoutMs);
+        void CreateSoftwareWatchdog(uint32_t timeoutMs);
         void CreateHardwareWatchdog();
-        bool ResetWatchdog();
+
+        bool ResetSoftwareWatchdog();
         uint32_t GetElapsedTime();
 
 };

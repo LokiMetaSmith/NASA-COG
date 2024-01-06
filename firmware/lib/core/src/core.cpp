@@ -59,7 +59,7 @@ bool Core::Boot() {
     properties.mode = SchedulerMode::RealTime;
     properties.tickPeriodMs = TICK_PERIOD;
     _scheduler.SetProperties(properties);
-    CreateWatchdog(WATCHDOG_TIMEOUT_MS);
+    CreateSoftwareWatchdog(WATCHDOG_TIMEOUT_MS);
 
     // Note: This CANNOT take a parameter!!
     CreateHardwareWatchdog();
@@ -125,7 +125,7 @@ bool Core::Run() {
         }
         Tick();
         ResetHardwareWatchdog();
-        bool reset = ResetWatchdog();
+        bool reset = ResetSoftwareWatchdog();
         if (reset == false) {
 	  CogCore::Debug<const char *>("Ending Core Run due to internal Watchdog!\n");
           delay(100);
@@ -157,9 +157,14 @@ void Core::Tick() {
 }
 
   //
-void Core::CreateWatchdog(uint32_t timeoutMs) {
+void Core::CreateSoftwareWatchdog(uint32_t timeoutMs) {
     Debug<const char*>("Create watchdog (todo)\n");
     _watchdogTimer.Init();
+}
+
+void Core::ResetAllWatchdogs() {
+    ResetHardwareWatchdog();
+    ResetSoftwareWatchdog();
 }
 
   // WARNING! DO NOT CHANGE THIS NAME OR INTERFACE
@@ -172,14 +177,10 @@ void Core::CreateHardwareWatchdog() {
 }
 
 void Core::ResetHardwareWatchdog() {
-  watchdogReset();
+  watchdogReset(); //arduino hardware reset library function
 }
 
-void Core::resetHardwareAndSoftwareWatchdog() {
-  ResetHardwareWatchdog();
-  ResetWatchdog();
-}
-bool Core::ResetWatchdog() {
+bool Core::ResetSoftwareWatchdog() {
     uint32_t elapsed = _watchdogTimer.Update();
     if (elapsed > WATCHDOG_TIMEOUT_MS) {
           ErrorHandler::Log(ErrorLevel::Critical, ErrorCode::WatchdogExceeded);
