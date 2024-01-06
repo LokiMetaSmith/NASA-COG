@@ -22,20 +22,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <assert.h>
 
 
-// void MachineConfig::dumpAllData10Hz() {
-//   // Loop over Ring buffer and call ouptutReport and
-//   // do a Network output (eventually);
-//   // using...
-
-//   //int msr_lre_size = _log_entry.size();
-//   //CogCore::Debug<int>(msr_lre_size);
-//   for(int i = 0; i < MAX_RECORDS; i++) {
-//     MachineStatusReport msr_lre= _log_entry[i];
-//     outputReport(&msr_lre );
-//     watchdogReset();
-//   }
-
-// }
 void MachineConfig::outputReport(MachineStatusReport *msr) {
         CogCore::Debug<const char *>("\n");
 	CogCore::Debug<const char *>("Timestamp: ");

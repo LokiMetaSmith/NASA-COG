@@ -818,7 +818,6 @@ namespace CogApp
       getConfig()->report->fan_pwm = fs;
       _updateStackAmperage(a);
 
-      CogCore::Debug<const char *>("Updating Stack Voltage (AAA):\n");
       _updateStackVoltage(getConfig()->MAX_STACK_VOLTAGE);
   }
   MachineState CogTask::_updatePowerComponentsWarmup() {
