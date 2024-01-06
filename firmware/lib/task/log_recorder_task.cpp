@@ -14,7 +14,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include "log_recorder_task.h"
-#include <core.h>
+
+
 using namespace std;
 
 
@@ -23,7 +24,8 @@ namespace CogApp
   bool Log_Recorder_Task::_init()
   {
     CogCore::Debug<const char *>("LogRecorderTask init\n");
-    _recordCount = 0;
+    _nextRecord = 0;
+    _numRecords = 0;
     return true;
   }
 
@@ -31,25 +33,39 @@ namespace CogApp
   {
     if (DEBUG_LOG_RECORDER) {
       CogCore::Debug<const char *>("LogRecorderTask run: ");
-      CogCore::Debug<int>(_recordCount);
+      CogCore::Debug<int>(_nextRecord);
       CogCore::Debug<const char *>("\n");
     }
     getConfig()->report->timestamp = millis();
 
-    getConfig()->_log_entry[_recordCount] = *getConfig()->report;
-    
-    _recordCount++;
-    if(_recordCount>getConfig()->MAX_RECORDS)
-      {
-        _recordCount = 0;
-        getConfig()->dumpAllData10Hz();
-      }
- 
+    const int m = getConfig()->MAX_RECORDS;
+    if (_numRecords < m) _numRecords++;
+
+    getConfig()->_log_entry[_nextRecord] = *getConfig()->report;
+    getConfig()->_log_entry[_nextRecord].timestamp = millis();
+    _nextRecord = (_nextRecord + 1) % m;
+
     return true;
   }
-  int Log_Recorder_Task::recordCount()
-  {
-    return _recordCount;
+  void Log_Recorder_Task::dumpRecords() {
+
+    if (DEBUG_LOG_RECORDER) {
+      CogCore::Debug<const char *>("DUMPING LOG RECORDS: ");
+      CogCore::Debug<int>(_numRecords);
+      CogCore::Debug<const char *>("\n");
+    }
+    int firstRecord = _nextRecord - _numRecords;
+    // now make sure positive!
+    firstRecord = firstRecord % getConfig()->MAX_RECORDS;
+    for(int i = 0; i < _numRecords; i++) {
+      int j = (firstRecord + i) % getConfig()->MAX_RECORDS;
+      MachineStatusReport msr_lre = getConfig()->_log_entry[j];
+      getConfig()->outputReport(&msr_lre);
+      oedcsNetworkTask->logReport(&msr_lre);
+      core->ResetAllWatchdogs();
+    }
+    _nextRecord = 0;
+    _numRecords = 0;
   }
-  
+
 }

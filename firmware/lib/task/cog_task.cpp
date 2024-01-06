@@ -326,7 +326,7 @@ namespace CogApp
               // } else if (!getConfig()->errors[ec].fault_present) {
                   // getConfig()->errors[ec].fault_present = false;
             }
-              
+
           }
       }
 	  return true;
@@ -528,7 +528,10 @@ namespace CogApp
     bool powerIsOK = is24VPowerGood();
     if (!powerIsOK){
       CogCore::Debug<const char *>("Probable AC Power (+24V) FAIL.\n");
-      getConfig()->ms = CriticalFault;
+        if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
+          getConfig()->errors[PWR_24V_BAD].fault_present = true;
+          getConfig()->errors[PWR_24V_BAD].begin_condition_ms = millis();
+        }
     }
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
@@ -556,15 +559,15 @@ namespace CogApp
         CogCore::DebugLn<float>(fan_pwm_ratio);
         CogCore::Debug<const char *>("rpms: ");
         CogCore::DebugLn<float>(fan_rpm);
-	    CogCore::Debug<const char *>("rpm_actual: ");	  
+	    CogCore::Debug<const char *>("rpm_actual: ");
 	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio)));
-		CogCore::Debug<const char *>("rpm_difference: ");	  
+		CogCore::Debug<const char *>("rpm_difference: ");
 	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio))-fan_rpm);// 346.749 + 11888.545x + -5944.272x^2
-		CogCore::Debug<const char *>("rpm_tested: ");	  
+		CogCore::Debug<const char *>("rpm_tested: ");
 		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
       }
 	}//end debug block
-	  
+
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
       CogCore::DebugLn<const char *>("Fan Fault Present");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
@@ -577,7 +580,7 @@ namespace CogApp
           getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
         }
     }//evaluateFan
-	
+
     if (!evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
                            getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
@@ -593,8 +596,8 @@ namespace CogApp
           getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
         }
     }//evaluateHeaterEnvelope
-	
-						   
+
+
 
 
       if (!getHAL()->_stacks[0]->evaluatePS()){
@@ -609,15 +612,6 @@ namespace CogApp
           getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
         }
       }//evaluatePSU
-      // MachineState ms = getConfig()->ms;
-      // if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
-      //   unsigned long now_ms = millis();
-      //   unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
-      //   CogCore::Debug<const char *>("delta_ms: ");
-      //   CogCore::DebugLn<long>(delta_ms);
-      //   changeRamps(delta_ms);
-      //   last_time_ramp_changed_ms = now_ms;
-      // }
 
       if (DEBUG_LEVEL > 0) {
         CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
@@ -634,7 +628,7 @@ namespace CogApp
         CogCore::Debug<int>(freeMemory());
         CogCore::Debug<const char *>("\n");
       }
-    
+
   }
 
   // We believe someday an automatic algorithm will be needed here.
@@ -887,20 +881,13 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsCritialFault() {
     MachineState new_ms = OffUserAck;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
-    // TODO: I don't think we want to do this.
-    // Instead we want to call the _run functionality directly
-    // on this task.
-    logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
+    logRecorderTask->dumpRecords();
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsEmergencyShutdown() {
   CogCore:Debug<const char *>("GOT EMERGENCY SHUTDOWN!");
     MachineState new_ms = OffUserAck;
     turnOff();
-    // TODO: I don't think we want to do this.
-    // Instead we want to call the _run functionality directly
-    // on this task.
-    logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsOffUserAck() {

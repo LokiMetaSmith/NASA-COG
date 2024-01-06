@@ -111,6 +111,7 @@ namespace CogApp
     float getTemperatureReadingB_C();
     float getTemperatureReadingC_C();
     bool is24VPowerGood();
+    bool isShutDownButtonPushed();
 
     // "OneButton Routines"
     float computeHeaterDutyCycleFromWattage(float heaterWattage_w);

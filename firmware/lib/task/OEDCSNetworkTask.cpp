@@ -94,13 +94,10 @@ namespace CogApp
       }
     }
 #endif
+    return logReport(getConfig()->report);
+  }
 
-    // This is a preliminary data loggging test. There is no reason
-    // that the datalogging should be done at the frequency as checking
-    // for a new script, but for now we will keep here rather than
-    // creating a new task that we could schedule separately.
-    //    getConfig()->outputReport(getConfig()->report);
-
+  bool OEDCSNetworkTask::logReport(MachineStatusReport* report)  {
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("outputReport\n");
       delay(50);
@@ -108,7 +105,7 @@ namespace CogApp
     char buffer[4096];
     // we need to make sure we start with a null string...
     buffer[0] = 0;
-    getConfig()->createJSONReport(getConfig()->report,buffer);
+    getConfig()->createJSONReport(report,buffer);
     if (DEBUG_UDP > 0) {
       CogCore::Debug<const char *>("Sending buffer:\n");
       CogCore::Debug<const char *>(buffer);
@@ -127,5 +124,4 @@ namespace CogApp
     }
     return true;
   }
-
 }

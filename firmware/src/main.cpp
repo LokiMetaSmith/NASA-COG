@@ -45,6 +45,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <heartbeat_task.h>
 #include <log_recorder_task.h>
 #include <display_task.h>
+#include <shutdown_button_task.h>
 
 #ifdef TEST_FANS_ONLY
 #include <fanTEST_task.h>
@@ -68,7 +69,7 @@ HeaterPIDTask heaterPIDTask;
 DutyCycleTask dutyCycleTask;
 ReadTempsTask readTempsTask;
 SerialReportTask serialReportTask;
-
+ShutdownButtonTask shutdownButtonTask;
 #include <machine.h>
 
 MachineConfig machineConfig;
@@ -159,7 +160,6 @@ void setup()
   machineConfig.hal->DEBUG_HAL = 0;
   bool initSuccess  = machineConfig.hal->init();
   if (!initSuccess) {
-    Debug<const char *>("Could not init Hardware Abstraction Layer Properly!\n");
     Debug<const char *>("Could not init Hardware Abstraction Layer Properly!\n");
     delay(50);
     abort();
@@ -284,7 +284,7 @@ void setup()
 
   CogCore::TaskProperties HeartbeatProperties;
   HeartbeatProperties.name = "Heartbeat";
-  HeartbeatProperties.id = 30;
+  HeartbeatProperties.id = 27;
   HeartbeatProperties.period = MachineConfig::INIT_HEARTBEAT_PERIOD_MS;
   HeartbeatProperties.priority = CogCore::TaskPriority::High;
   HeartbeatProperties.state_and_config = (void *) &machineConfig;
@@ -297,8 +297,8 @@ void setup()
 
   CogCore::TaskProperties Log_RecorderProperties;
   Log_RecorderProperties.name = "Log_Recorder";
-  Log_RecorderProperties.id = 40;
-  Log_RecorderProperties.period = MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS;
+  Log_RecorderProperties.id = 28;
+  Log_RecorderProperties.period = MachineConfig::INIT_LOG_RECORDER_PERIOD_MS;
   Log_RecorderProperties.priority = CogCore::TaskPriority::High;
   Log_RecorderProperties.state_and_config = (void *) &machineConfig;
   cogTask.logRecorderTask = &logRecorderTask;
@@ -308,8 +308,18 @@ void setup()
     CogCore::Debug<const char *>("Log_RecorderAdd Failed\n");
     abort();
   }
+  CogCore::TaskProperties ShutdownButtonProperties;
+  ShutdownButtonProperties.name = "ShutdownButton";
+  ShutdownButtonProperties.id = 29;
+  ShutdownButtonProperties.period = MachineConfig::INIT_SHUTDOWN_BUTTON_PERIOD_MS;
+  ShutdownButtonProperties.priority = CogCore::TaskPriority::High;
+  ShutdownButtonProperties.state_and_config = (void *) &machineConfig;
+  bool shutdownButtonAdd = core.AddTask(&shutdownButtonTask, &ShutdownButtonProperties);
 
-
+  if (!shutdownButtonAdd) {
+    CogCore::Debug<const char *>("ShutdownButtonAdd Failed\n");
+    abort();
+  }
 
   core.ResetAllWatchdogs();
 
@@ -319,6 +329,10 @@ void setup()
 
   cogTask.heaterPIDTask = &heaterPIDTask;
 
+  logRecorderTask.oedcsNetworkTask = &OEDCSNetworkTask;
+  // We need the core on logRecorderTask (and, indeed, any long-running task
+  // so that we can "feed the dog" for the software watchdog there
+  logRecorderTask.core = &core;
 
   // Now we will check for anything that causes us to enter a critical error, such as missing hardware
   // components. We could not have done this earlier, because we want this to have our CogTask and
@@ -343,7 +357,6 @@ void setup()
   readTempsTask.DEBUG_READ_TEMPS = 0;
   oedcsSerialInputTask.DEBUG_SERIAL = 0;
   heartbeatTask.DEBUG_HEARTBEAT = 0;
-  // Now
   heartbeatTask.debug_number_of_heartbeats = millis() / 500;
   getConfig()->script->DEBUG_MS = 0;
 

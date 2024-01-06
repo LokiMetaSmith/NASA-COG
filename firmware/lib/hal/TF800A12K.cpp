@@ -57,132 +57,132 @@ int SL_PS::init() {
   if (setPS_OnOff(ADDRESS, "OFF")) CogCore::Debug<const char *>("Turned PSU OFF!\n");
 
   if (DEBUG_SL_PS > 0) {
-	  watchdogReset();
-	  getPS_Manuf(ADDRESS);
-	  CogCore::Debug<const char *>("GetPS Manuf: ");
-	  if (!strlen(manuf)) strcpy(manuf, "UNKWN");
-	  CogCore::Debug<const char *>(manuf);
-	  delay(MYDELAY);
-	   watchdogReset();
+    watchdogReset();
+    getPS_Manuf(ADDRESS);
+    CogCore::Debug<const char *>("GetPS Manuf: ");
+    if (!strlen(manuf)) strcpy(manuf, "UNKWN");
+    CogCore::Debug<const char *>(manuf);
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_Model(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS Model: ");
-	  if (!strlen(model)) strcpy(manuf, "UNKWN");
-	  CogCore::Debug<const char *>(model);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
+    getPS_Model(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS Model: ");
+    if (!strlen(model)) strcpy(manuf, "UNKWN");
+    CogCore::Debug<const char *>(model);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_VoltageString(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS VoltageSt: ");
-	  if (!strlen(voltage_string)) strcpy(manuf, "UNKWN");
-	  CogCore::Debug<const char *>(voltage_string);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
+    getPS_VoltageString(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS VoltageSt: ");
+    if (!strlen(voltage_string)) strcpy(manuf, "UNKWN");
+    CogCore::Debug<const char *>(voltage_string);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_Revision(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS Rev: ");
-	  if (!strlen(revision)) strcpy(manuf, "UNKWN");
-	  CogCore::Debug<const char *>(revision);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
+    getPS_Revision(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS Rev: ");
+    if (!strlen(revision)) strcpy(manuf, "UNKWN");
+    CogCore::Debug<const char *>(revision);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_ManufDate(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS ManufDate: ");
-	  if (!strlen(manuf_date)) strcpy(manuf, "UNKWN");
-	  CogCore::Debug<const char *>(manuf_date);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
+    getPS_ManufDate(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS ManufDate: ");
+    if (!strlen(manuf_date)) strcpy(manuf, "UNKWN");
+    CogCore::Debug<const char *>(manuf_date);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_Serial(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS Serial Address: ");
-	  if (!strlen(serial)) strcpy(manuf, "UNKWN");
-	  CogCore::Debug<const char *>(serial);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
+    getPS_Serial(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS Serial Address: ");
+    if (!strlen(serial)) strcpy(manuf, "UNKWN");
+    CogCore::Debug<const char *>(serial);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_Country(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS Country: ");
-	  if (!strlen(country)) strcpy(manuf, "UNKWN");
-	  CogCore::Debug<const char *>(country);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
+    getPS_Country(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS Country: ");
+    if (!strlen(country)) strcpy(manuf, "UNKWN");
+    CogCore::Debug<const char *>(country);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_RateVoltage(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS RateVoltage: ");
-	  if (rate_voltage < 0) CogCore::Debug<const char *>("UNKWN");
-	  else CogCore::Debug<uint32_t>(rate_voltage);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
+    getPS_RateVoltage(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS RateVoltage: ");
+    if (rate_voltage < 0) CogCore::Debug<const char *>("UNKWN");
+    else CogCore::Debug<uint32_t>(rate_voltage);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_RateCurrent(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS RateCurrent: ");
-	  if (rate_current < 0) CogCore::Debug<const char *>("UNKWN");
-	  else CogCore::Debug<uint32_t>(rate_current);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
+    getPS_RateCurrent(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS RateCurrent: ");
+    if (rate_current < 0) CogCore::Debug<const char *>("UNKWN");
+    else CogCore::Debug<uint32_t>(rate_current);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_MaxVoltage(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS MaxVoltage: ");
-	  if (max_voltage < 0) CogCore::Debug<const char *>("UNKWN");
-	  else CogCore::Debug<uint32_t>(max_voltage);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
+    getPS_MaxVoltage(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS MaxVoltage: ");
+    if (max_voltage < 0) CogCore::Debug<const char *>("UNKWN");
+    else CogCore::Debug<uint32_t>(max_voltage);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
 
 
-	  getPS_MaxCurrent(ADDRESS);
-	  watchdogReset();
-	  CogCore::Debug<const char *>("GetPS MaxCurrent: ");
-	  if (max_current < 0) CogCore::Debug<const char *>("UNKWN");
-	  else CogCore::Debug<uint32_t>(max_current);
-	  CogCore::Debug<const char *>("\n");
-	  delay(MYDELAY);
-	   watchdogReset();
-   }//endif (DEBUG_SL_PS > 0)
+    getPS_MaxCurrent(ADDRESS);
+    watchdogReset();
+    CogCore::Debug<const char *>("GetPS MaxCurrent: ");
+    if (max_current < 0) CogCore::Debug<const char *>("UNKWN");
+    else CogCore::Debug<uint32_t>(max_current);
+    CogCore::Debug<const char *>("\n");
+    delay(MYDELAY);
+    watchdogReset();
+  }//endif (DEBUG_SL_PS > 0)
 
 
-//  snprintf(packetBuffer, sizeof packetBuffer, "{ \"Manufacturer\": \"%s\", \"Model\": \"%s\", \"VoltString\": \"%s\", \"Revision\": \"%s\", \"Serial\": \"%s\", \"VoltageRating\": %d, \"CurrentRating\": %d, \"MaxVoltage\": %d, \"MaxCurrent\": %d}", manuf, model, voltage_string, revision, serial, rate_voltage, rate_current, max_voltage, max_current);
-//  sendMsg(packetBuffer);
- watchdogReset();
+  //  snprintf(packetBuffer, sizeof packetBuffer, "{ \"Manufacturer\": \"%s\", \"Model\": \"%s\", \"VoltString\": \"%s\", \"Revision\": \"%s\", \"Serial\": \"%s\", \"VoltageRating\": %d, \"CurrentRating\": %d, \"MaxVoltage\": %d, \"MaxCurrent\": %d}", manuf, model, voltage_string, revision, serial, rate_voltage, rate_current, max_voltage, max_current);
+  //  sendMsg(packetBuffer);
+  watchdogReset();
   // Note! We want to turn off the machine as quickly as possible on startup!
   if (setPS_OnOff(ADDRESS, "ON")) CogCore::Debug<const char *>("Turned it on\n");
   else {
     CogCore::Debug<const char *>("failed to turn PS on\n");
     retval = -1;
   }
- watchdogReset();
+  watchdogReset();
   if (setPS_Voltage(ADDRESS, 0)) CogCore::Debug<const char *>("Set volts to 0.0 volts\n");
   else {
     CogCore::Debug<const char *>("failed to set volts\n");
     retval = -1;
   }
- watchdogReset();
+  watchdogReset();
   if (setPS_Current(ADDRESS, 0)) CogCore::Debug<const char *>("Set current to 0.0 amps\n");
   else {
     CogCore::Debug<const char *>("failed to set current\n");
@@ -217,46 +217,61 @@ int SL_PS::reInit() {
     CogCore::Debug<const char *>("failed to set current\n");
     retval = -1;
   }
-	return retval;
+  return retval;
 }
+
+// Return True if Okay, false if bad.
 bool SL_PS::evaluatePS(){
   bool retval = false;
   watchdogReset();
-  	getPS_Control(ADDRESS);
-	watchdogReset();
-	getPS_Status0(ADDRESS);
-	watchdogReset();
-	getPS_Status1(ADDRESS);
-	watchdogReset();
-	if (DEBUG_SL_PS > 0) {
-		CogCore::DebugLn< uint8_t>(status0);
-		CogCore::DebugLn< uint8_t>(status1);
-		if(status0 & 0x01)CogCore::DebugLn<const char *>( "Bit-0 -> OVP Shutdown");
-		if(status0 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> OLP Shutdown");
-		if(status0 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> OTP Shutdown");
-		if(status0 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> FAN Failure");
-		if(status0 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> AUX or SMPS Fail");
-		if(status0 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> HI-TEMP Alarm");
-		if(status0 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> AC Input Power Down");
-		if(status0 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> AC Input Failure");
-		if(!(status0 & 0xFF))CogCore::DebugLn<const char *>( "status0: OK");
-		if(status1 & 0x01)CogCore::DebugLn<const char *>( "Inhibit by VCI / ACI or ENB");
-		if(status1 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> Inhibit by Software Command");
-		if(status1 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> (Not used)");
-		if(status1 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> (Not used)");
-		if(status1 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> (POWER)");
-		if(status1 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> (Not used)");
-		if(status1 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> (Not used)");
-		if(status1 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> (REMOTE)");
-		if(!(status0 & 0xFF))CogCore::DebugLn<const char *>( "status0: OK");
-		if(!(status1 & 0x6D))CogCore::DebugLn<const char *>( "status1: OK");
-		if(control){CogCore::DebugLn<const char *>( "REMOTE");}else{CogCore::Debug<const char *>( "LOCAL");};
-	};
-	if( !(status0 & 0xFF) && !(status1 & 0x6D))return true;
-	//If everything is working, we will mask with a known good state status0 & 0xFF and status1 0x92 0b1001 0010
-	return false;
-	
-	//return retval;
+  getPS_Control(ADDRESS);
+  watchdogReset();
+  getPS_Status0(ADDRESS);
+  watchdogReset();
+  getPS_Status1(ADDRESS);
+  watchdogReset();
+  if (DEBUG_SL_PS > 0) {
+    CogCore::DebugLn< uint8_t>(status0);
+    CogCore::DebugLn< uint8_t>(status1);
+    if(status0 & 0x01)CogCore::DebugLn<const char *>( "Bit-0 -> OVP Shutdown");
+    if(status0 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> OLP Shutdown");
+    if(status0 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> OTP Shutdown");
+    if(status0 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> FAN Failure");
+    if(status0 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> AUX or SMPS Fail");
+    if(status0 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> HI-TEMP Alarm");
+    if(status0 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> AC Input Power Down");
+    if(status0 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> AC Input Failure");
+    if(!(status0 & 0xFF))CogCore::DebugLn<const char *>( "status0: OK");
+    if(status1 & 0x01)CogCore::DebugLn<const char *>( "Inhibit by VCI / ACI or ENB");
+    if(status1 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> Inhibit by Software Command");
+    if(status1 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> (Not used)");
+    if(status1 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> (Not used)");
+    if(status1 & 0x10)CogCore::DebugLn<const char *>( "Bit-4 -> (POWER)");
+    if(status1 & 0x20)CogCore::DebugLn<const char *>( "Bit-5 -> (Not used)");
+    if(status1 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> (Not used)");
+    if(status1 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> (REMOTE)");
+    if(!(status0 & 0xFF))CogCore::DebugLn<const char *>( "status0: OK");
+    if(!(status1 & 0x6D))CogCore::DebugLn<const char *>( "status1: OK");
+    if(control){CogCore::DebugLn<const char *>( "REMOTE");}else{CogCore::Debug<const char *>( "LOCAL");};
+  };
+
+  // I'm commenting this out as it considers my PSU (Austin unit, OEDCS #SN1) to be in error.
+  // I don't know what the bits in status1 that are high are supposed to mean. On my machine they are:
+  // Inhibit by VCI / ACI or ENB
+  // Bit-1 -> Inhibit by Software Command
+  // Bit-4 -> (POWER)
+  // Bit-7 -> (REMOTE)
+  // status0: OK
+  // REMOTE
+  // In binary: 10010011
+  //
+  // if( !(status0 & 0xFF) && !(status1 & 0x6D))return true;
+  // //If everything is working, we will mask with a known good state status0 & 0xFF and status1 0x92 0b1001 0010
+  // return false;
+
+  // This line written by rlr to make it work until we ahve an explanation of what is supposed to be done above...
+  return (!(status0 & 0xFF));
+
 }
 
 int SL_PS::setPS_Addr(uint8_t addr) {
@@ -331,8 +346,8 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
   }
 
   for(int i=0; i<2;i++ )
-  {
-    if(b[0] != '=' && b[1] != '>') {
+    {
+      if(b[0] != '=' && b[1] != '>') {
         if (DEBUG_SL_PS_UV > 0) {
           CogCore::Debug<const char *>("final: ");
           CogCore::DebugLn<int>(i);
@@ -340,22 +355,22 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
           CogCore::DebugLn<const char *>(rval);
           CogCore::Debug<const char *>("=====\n");
         }
-	  if(b[0] == '?' && b[1] == '>') {
-        Serial.println("Command error, not accepted.");
-	    return rval;
+        if(b[0] == '?' && b[1] == '>') {
+          Serial.println("Command error, not accepted.");
+          return rval;
+        }
+        if(b[0] == '!' && b[1] == '>') {
+          Serial.println("Command correct but execution error (e.g. parameters out of range).");
+          return rval;
+        }
+        strncat(rval,b, sizeof b);
+      }else{
+        return rval;
       }
-      if(b[0] == '!' && b[1] == '>') {
-        Serial.println("Command correct but execution error (e.g. parameters out of range).");
-	    return rval;
-      }
-      strncat(rval,b, sizeof b);
-    }else{
-	  return rval;	
-	}
-    
+
       //      delay(10);
-    c = Serial1.readBytesUntil('\n', b, sizeof b);
-    b[c-1] = '\0';
+      c = Serial1.readBytesUntil('\n', b, sizeof b);
+      b[c-1] = '\0';
       if (DEBUG_SL_PS_UV > 0) {
         CogCore::Debug<const char *>("intermediate: ");
         CogCore::DebugLn<int>(i);
@@ -363,7 +378,7 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
         CogCore::DebugLn<const char *>(b);
         CogCore::Debug<const char *>("=====\n");
       }
-  }
+    }
   return rval;
 }
 
@@ -516,8 +531,8 @@ void SL_PS::updateAmperage(float amperage, MachineConfig *config) {
   }
   int ret_val = setPS_Current(this->address, amps);
   if (!ret_val) {
-    CogCore::Debug<const char *>("FAILED TO SET VOLTAGE!\n");
-	msr->ms = CriticalFault;
+    CogCore::Debug<const char *>("FAILED TO SET AMPERAGE!\n");
+    msr->ms = CriticalFault;
   }
   // I don't like to use delay but I think some time is needed here...
   delay(10);
@@ -546,7 +561,7 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   int ret_val = setPS_Voltage(this->address, volts);
   if (!ret_val) {
     CogCore::Debug<const char *>("FAILED TO SET VOLTAGE!\n");
-	msr->ms = CriticalFault;
+    msr->ms = CriticalFault;
   }
 
 
