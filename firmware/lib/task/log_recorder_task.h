@@ -18,6 +18,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifndef LOG_RECORDER_TASK_H
 #define LOG_RECORDER_TASK_H
 
+#include <core.h>
 
 #ifdef ARDUINO
 #include <Arduino.h>
@@ -26,6 +27,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "../collections/circular_array.h"
 #include <machine.h>
 #include <machine_core_defs.h>
+#include <OEDCSNetworkTask.h>
+
+using namespace CogCore;
+
 
 namespace CogApp
 {
@@ -34,16 +39,14 @@ namespace CogApp
   {
   public:
     int DEBUG_LOG_RECORDER = 0;
-    int recordCount();
+    void dumpRecords();
+    OEDCSNetworkTask* oedcsNetworkTask;
+    Core *core;
   private:
     bool _init() override;
     bool _run() override;
-    int _recordCount;
-    //static CogCollections::CircularArray<Error, MAX_ERRORS> errors;
-    //void addLog(MachineStatusReport *msr);
-
-    //CogCollections::CircularArray * recordLog();
-    //void clearLogs();
+    int _nextRecord;
+    int _numRecords = 0;
   };
 }
 

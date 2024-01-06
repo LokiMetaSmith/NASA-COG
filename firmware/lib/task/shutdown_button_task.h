@@ -15,30 +15,20 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#ifndef HEARTBEAT_TASK_H
-#define HEARTBEAT_TASK_H
+#ifndef SHUTDOWN_BUTTON_TASK_H
+#define SHUTDOWN_BUTTON_TASK_H
 
 
-#ifdef ARDUINO
-#include <Arduino.h>
-#endif
 #include <core.h>
-#include "../collections/array.h"
-#include <machine.h>
+#include <cog_hal.h>
 
-
-namespace CogApp
+class ShutdownButtonTask : public CogCore::Task
 {
-    class HeartbeatTask : public CogCore::Task
-    {
-    public:
-      unsigned long debug_number_of_heartbeats = 0;
-      int DEBUG_HEARTBEAT = 0;
-    private:
-      bool _init() override;
-      bool _run() override;
-
-    };
-}
+public:
+  COG_HAL* getHAL();
+private:
+  bool _init() override;
+  bool _run() override;
+};
 
 #endif

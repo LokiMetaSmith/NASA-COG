@@ -22,20 +22,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <assert.h>
 
 
-void MachineConfig::dumpAllData10Hz() {
-  // Loop over Ring buffer and call ouptutReport and
-  // do a Network output (eventually);
-  // using...
+// void MachineConfig::dumpAllData10Hz() {
+//   // Loop over Ring buffer and call ouptutReport and
+//   // do a Network output (eventually);
+//   // using...
 
-  //int msr_lre_size = _log_entry.size();
-  //CogCore::Debug<int>(msr_lre_size);
-  for(int i = 0; i < MAX_RECORDS; i++) {
-    MachineStatusReport msr_lre= _log_entry[i];
-    outputReport(&msr_lre );
-    watchdogReset();
-  }
+//   //int msr_lre_size = _log_entry.size();
+//   //CogCore::Debug<int>(msr_lre_size);
+//   for(int i = 0; i < MAX_RECORDS; i++) {
+//     MachineStatusReport msr_lre= _log_entry[i];
+//     outputReport(&msr_lre );
+//     watchdogReset();
+//   }
 
-}
+// }
 void MachineConfig::outputReport(MachineStatusReport *msr) {
         CogCore::Debug<const char *>("\n");
 	CogCore::Debug<const char *>("Timestamp: ");
@@ -198,6 +198,8 @@ void MachineConfig::initErrors() {
  errors[FAN_LOSS_PWR].toleration_ms = FAN_FAULT_TOLERATION_TIME_MS;
  errors[FAN_UNRESPONSIVE].toleration_ms = FAN_FAULT_TOLERATION_TIME_MS;
  errors[HEATER_UNRESPONSIVE].toleration_ms = HEATER_FAULT_TOLERATION_TIME_MS;
+
+ errors[PWR_24V_BAD].toleration_ms = PWR_24V_FAULT_TOLERATION_TIME_MS;
  errors[STACK_LOSS_PWR].toleration_ms = 0;
  errors[PSU_UNRESPONSIVE].toleration_ms = 0;
  errors[MAINS_LOSS_PWR].toleration_ms = 0;
@@ -240,6 +242,7 @@ void MachineConfig::clearMainsPowerErrors()  {
  errors[PSU_UNRESPONSIVE].fault_present = false;
  errors[MAINS_LOSS_PWR].fault_present = false;
  errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
+ errors[PWR_24V_BAD].fault_present = false;
 }
 
 void MachineConfig::clearErrors() {

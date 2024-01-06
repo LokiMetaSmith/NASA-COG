@@ -507,7 +507,7 @@ void SL_PS::updateAmperage(float amperage, MachineConfig *config) {
   }
   int ret_val = setPS_Current(this->address, amps);
   if (!ret_val) {
-    CogCore::Debug<const char *>("FAILED TO SET VOLTAGE!\n");
+    CogCore::Debug<const char *>("FAILED TO SET AMPERAGE!\n");
 	msr->ms = CriticalFault;
   }
   // I don't like to use delay but I think some time is needed here...

@@ -65,7 +65,7 @@ class Core {
         Scheduler _scheduler;
 
         void ResetHardwareWatchdog();
-
+        void resetHardwareAndSoftwareWatchdog();
     private:
         uint32_t _elapsed;
         Timer _primaryTimer;

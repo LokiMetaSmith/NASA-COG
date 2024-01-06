@@ -62,6 +62,8 @@
 #endif
 
 #define FIXED_HIGH_43 43
+#define SHUT_DOWN_BUTTON 49
+
 
 #ifdef CONTROL_1V1
 /*
@@ -86,6 +88,7 @@ D32	GPAD_nCS		Output		External SPI inverted select (for the GPAD)
 D43     FIXED_HIGH_43           Output          Artifically high just as a convenience.
 D44	LPBK0			Output		Varying loopback signal
 D45	LPBK1			Input		Read of digital loopback signal
+D49     SHUT_DOWN               Input           Enter Emergency Shutdown if pulled low
 D51	HEAT1			Output		Positive SSR signal
 D52 Heat2			Output		Positive SSR signal for heaterPIDTask
 D53 HEAT3			Output		Positive SSR signal for heater PID
@@ -103,6 +106,7 @@ public:
   bool init() override;
   void _updateFanPWM(float unitInterval);
 
+  bool isShutDownButtonPushed();
 
   static const int NUM_HEATERS = 1;
   const int HEATER_PINS[NUM_HEATERS] = {HEATER_PIN};

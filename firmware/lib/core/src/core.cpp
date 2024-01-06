@@ -175,6 +175,10 @@ void Core::ResetHardwareWatchdog() {
   watchdogReset();
 }
 
+void Core::resetHardwareAndSoftwareWatchdog() {
+  ResetHardwareWatchdog();
+  ResetWatchdog();
+}
 bool Core::ResetWatchdog() {
     uint32_t elapsed = _watchdogTimer.Update();
     if (elapsed > WATCHDOG_TIMEOUT_MS) {

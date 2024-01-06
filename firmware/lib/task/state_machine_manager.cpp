@@ -65,17 +65,28 @@ namespace CogApp
 
   MachineState StateMachineManager::checkCriticalFaults(MachineState ms) {
     unsigned long now = millis();
+    MachineState rms = ms;
+    CogCore::Debug<const char *>("CHECKING CRITICAL FAULTS\n");
     for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++) {
       if (getConfig()->errors[i].fault_present) {
+        if (!MachineConfig::IsAShutdownState(getConfig()->ms)) {
+          CogCore::Debug<const char *>("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
+          unsigned long now = millis();
+          CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) -
+                                 ((float) now - (float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
+          CogCore::Debug<const char *>(" SECONDS DUE TO : ");
+          CogCore::DebugLn<const char *>(CriticalErrorNames[i]);
+        }
         if ((((float) now) - ((float) getConfig()->errors[i].begin_condition_ms))
             > (float) getConfig()->errors[i].toleration_ms) {
-          if (getConfig()->errors[i].response_state == EmergencyShutdown) {
-            return EmergencyShutdown;
-          }
+          CogCore::Debug<const char *>("ENTERING CRITICAL FAULT : ");
+          CogCore::DebugLn<const char *>(CriticalErrorNames[i]);
+          logRecorderTask->dumpRecords();
+          rms = CriticalFault;
         }
       }
     }
-    return ms;
+    return rms;
   }
   // There is significant COG dependent logic here.
   // At the expense of extra lines of code, I'm
@@ -194,7 +205,6 @@ namespace CogApp
 
   MachineState StateMachineManager::_updatePowerComponentsWarmup() {
     MachineState new_ms = Warmup;
-	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS);
     if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Warmup Mode!\n");
     }
@@ -238,10 +248,8 @@ namespace CogApp
   }
 
   MachineState StateMachineManager::_updatePowerComponentsCritialFault() {
-	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
   }
   MachineState StateMachineManager::_updatePowerComponentsEmergencyShutdown() {
-	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
   }
 
   MachineState StateMachineManager::_updatePowerComponentsCooldown() {
@@ -285,7 +293,6 @@ namespace CogApp
 
 
   MachineState StateMachineManager::_updatePowerComponentsOperation(IdleOrOperateSubState i_or_o) {
-   	logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_LONG_PERIOD_MS);
       if (SM_DEBUG_LEVEL > 0) {
         CogCore::Debug<const char *>("SetPeriod Done!\n");
       }

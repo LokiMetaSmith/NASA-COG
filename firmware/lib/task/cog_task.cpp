@@ -531,7 +531,10 @@ namespace CogApp
     bool powerIsOK = is24VPowerGood();
     if (!powerIsOK){
       CogCore::Debug<const char *>("Probable AC Power (+24V) FAIL.\n");
-      getConfig()->ms = CriticalFault;
+        if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
+          getConfig()->errors[PWR_24V_BAD].fault_present = true;
+          getConfig()->errors[PWR_24V_BAD].begin_condition_ms = millis();
+        }
     }
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
@@ -878,20 +881,13 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsCritialFault() {
     MachineState new_ms = OffUserAck;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
-    // TODO: I don't think we want to do this.
-    // Instead we want to call the _run functionality directly
-    // on this task.
-    logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
+    logRecorderTask->dumpRecords();
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsEmergencyShutdown() {
   CogCore:Debug<const char *>("GOT EMERGENCY SHUTDOWN!");
     MachineState new_ms = OffUserAck;
     turnOff();
-    // TODO: I don't think we want to do this.
-    // Instead we want to call the _run functionality directly
-    // on this task.
-    logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsOffUserAck() {
