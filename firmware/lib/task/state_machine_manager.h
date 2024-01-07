@@ -33,7 +33,7 @@ namespace CogApp
 
   class StateMachineManager : public CogCore::Task {
   public:
-    int SM_DEBUG_LEVEL = 2;
+    int SM_DEBUG_LEVEL = 0;
     HeaterPIDTask* heaterPIDTask;
     Log_Recorder_Task *logRecorderTask;
 

@@ -35,6 +35,7 @@ bool COG_HAL::init() {
   pinMode(MAX31850_DATA_PIN, INPUT);
   pinMode(RF_STACK, OUTPUT);
 
+  pinMode(SHUT_DOWN_BUTTON,INPUT_PULLUP);
 
   _fans[0] = new SanyoAceB97("FIRST_FAN",0);
   _fans[0]->init();
@@ -75,4 +76,9 @@ void COG_HAL::_updateFanPWM(float unitInterval) {
   for (int i = 0; i < NUM_FANS; i++) {
      _fans[i]->updatePWM(unitInterval);
   }
+}
+
+bool COG_HAL::isShutDownButtonPushed() {
+  bool isPressed = !digitalRead(SHUT_DOWN_BUTTON);
+  return isPressed;
 }

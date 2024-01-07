@@ -1,6 +1,4 @@
 /*
-Copyright (C) 2023 Robert Read, Geoff Mulligan.
-
 This program includes free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
@@ -15,24 +13,27 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#ifndef OEDCS_NETWORK_TASK_H
-#define OEDCS_NETWORK_TASK_H
+#include "shutdown_button_task.h"
 
-#include <Arduino.h>
+using namespace std;
 
-#include <core.h>
-#include <machine.h>
-#include <network_udp.h>
-#include <network_task.h>
 
-namespace CogApp
+bool ShutdownButtonTask::_init()
 {
-  class OEDCSNetworkTask : public NetworkTask {
-  public:
-    bool logReport(MachineStatusReport* report);
-    bool _run() override;
-  };
-
+  CogCore::Debug<const char *>("ShutdownButtonTask init\n");
+  return true;
 }
 
-#endif
+bool ShutdownButtonTask::_run()
+{
+  bool shutdownButtonPushed = getHAL()->isShutDownButtonPushed();
+  if (shutdownButtonPushed) {
+    CogCore::Debug<const char *>("Shut Down Button Is Pushed -- enterring emergency shutdown.\n");
+    CogCore::Debug<const char *>("Note: The proper logging of this is not yet implemented.\n");
+    getConfig()->ms = EmergencyShutdown;
+  }
+}
+
+COG_HAL* ShutdownButtonTask::getHAL() {
+  return (COG_HAL *) (getConfig()->hal);
+}
