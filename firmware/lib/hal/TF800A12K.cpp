@@ -195,7 +195,12 @@ int SL_PS::init() {
 int SL_PS::reInit() {
 
   int retval = 0;
-
+  watchdogReset();
+  getPS_Control(ADDRESS);
+  watchdogReset();
+  getPS_Status0(ADDRESS);
+  watchdogReset();
+  getPS_Status1(ADDRESS);
   watchdogReset();
   // Note! We want to turn off the machine as quickly as possible on startup!
   if (setPS_OnOff(ADDRESS, "ON")) CogCore::Debug<const char *>("Turned it on\n");
@@ -222,16 +227,16 @@ int SL_PS::reInit() {
 
 // Return True if Okay, false if bad.
 bool SL_PS::evaluatePS(){
-  bool retval = false;
-  watchdogReset();
-  getPS_Control(ADDRESS);
+
   watchdogReset();
   getPS_Status0(ADDRESS);
   watchdogReset();
   getPS_Status1(ADDRESS);
   watchdogReset();
   if (DEBUG_SL_PS > 0) {
+	CogCore::Debug<const char *>( "status0: ");
     CogCore::DebugLn< uint8_t>(status0);
+	CogCore::Debug<const char *>( "status1: ");
     CogCore::DebugLn< uint8_t>(status1);
     if(status0 & 0x01)CogCore::DebugLn<const char *>( "Bit-0 -> OVP Shutdown");
     if(status0 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> OLP Shutdown");
@@ -265,12 +270,27 @@ bool SL_PS::evaluatePS(){
   // REMOTE
   // In binary: 10010011
   //
-  // if( !(status0 & 0xFF) && !(status1 & 0x6D))return true;
+   if( !(status0 & 0xFF) && !(status1 & 0x6D)){
+	    return true;
+   } else{
+        CogCore::Debug<const char *>( "status0: ");
+		CogCore::DebugLn< uint8_t>(status0);
+		CogCore::Debug<const char *>( "status1: ");
+		CogCore::DebugLn< uint8_t>(status1);
+   
+	   if( !(status0 & 0xFF)){
+		 CogCore::DebugLn<const char *>( "LOST CONTROL OF PSU, CHECK STACK VOLTAGE");
+	     return true;
+	   }
+	   return false;
+	   
+   }
+   
   // //If everything is working, we will mask with a known good state status0 & 0xFF and status1 0x92 0b1001 0010
   // return false;
 
   // This line written by rlr to make it work until we ahve an explanation of what is supposed to be done above...
-  return (!(status0 & 0xFF));
+  //return (!(status0 & 0xFF));
 
 }
 

@@ -92,7 +92,7 @@ public:
   virtual bool init() = 0;
 };
 
-#define NUM_CRITICAL_ERROR_DEFINITIONS 12
+#define NUM_CRITICAL_ERROR_DEFINITIONS 13
 // WARNING! Do not reorder these!!
 // The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
 enum CriticalErrorCondition {
@@ -101,6 +101,7 @@ enum CriticalErrorCondition {
   POST_STACK_TC_BAD,
   COULD_NOT_INIT_3_THERMOCOUPLES,
   FAN_LOSS_PWR,
+  PWR_12V_BAD,
   PWR_24V_BAD,
   FAN_UNRESPONSIVE,
   HEATER_UNRESPONSIVE,
@@ -116,6 +117,7 @@ constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINI
     "Post Stack  TC-C Bad",
     "Can not init three TC's",
     "Fan Power Loss",
+	"Lost 12v Power",
     "Lost 24v Power",
     "Fan TACH unresponsive",
     "Lost control of Heater",
@@ -211,6 +213,7 @@ public:
   const unsigned long THERMOCOUPLE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   // WARNING! THIS IS DISABLING THE ERROR FOR TESTING
   // WHILE WE FIGURE OUT THE TACH ERROR
+  const unsigned long PWR_12V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
   const unsigned long PWR_24V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
   const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
   const unsigned long HEATER_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;

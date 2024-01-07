@@ -199,7 +199,7 @@ void MachineConfig::initErrors() {
  errors[FAN_UNRESPONSIVE].toleration_ms = FAN_FAULT_TOLERATION_TIME_MS;
  errors[HEATER_UNRESPONSIVE].toleration_ms = HEATER_FAULT_TOLERATION_TIME_MS;
 
-
+ errors[PWR_12V_BAD].toleration_ms = PWR_12V_FAULT_TOLERATION_TIME_MS;
  errors[PWR_24V_BAD].toleration_ms = PWR_24V_FAULT_TOLERATION_TIME_MS;
  errors[STACK_LOSS_PWR].toleration_ms = STACK_FAULT_TOLERATION_TIME_MS;
  errors[PSU_UNRESPONSIVE].toleration_ms = PSU_FAULT_TOLERATION_TIME_MS;
@@ -244,6 +244,7 @@ void MachineConfig::clearMainsPowerErrors()  {
  errors[PSU_UNRESPONSIVE].fault_present = false;
  errors[MAINS_LOSS_PWR].fault_present = false;
  errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
+ errors[PWR_12V_BAD].fault_present = false;
  errors[PWR_24V_BAD].fault_present = false;
 }
 
