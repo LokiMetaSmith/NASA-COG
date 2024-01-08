@@ -426,7 +426,7 @@ int readResp() {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial);
   
   Serial1.begin(4800);
