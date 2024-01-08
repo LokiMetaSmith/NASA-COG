@@ -149,7 +149,7 @@ namespace CogApp
         Debug<const char *>("Already Off.\n");
       }
     } else if (ic.value_c == '2') {
-        Debug<const char *>("Enterring Automatic One-Button Algorithm.");
+        Debug<const char *>("Entering Automatic One-Button Algorithm.");
         mc->clearErrors();
         smm->changeTargetTemp(mc->TARGET_TEMP_C);
         mc->USE_ONE_BUTTON = true;

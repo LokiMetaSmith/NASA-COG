@@ -110,6 +110,7 @@ namespace CogApp
     float getTemperatureReadingA_C();
     float getTemperatureReadingB_C();
     float getTemperatureReadingC_C();
+	bool is12VPowerGood();
     bool is24VPowerGood();
     bool isShutDownButtonPushed();
 

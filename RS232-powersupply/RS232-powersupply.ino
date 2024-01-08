@@ -1,3 +1,19 @@
+/* For testing programable power supplies which are controled on the Due UART 1
+
+
+*/
+
+#define COMPANY_NAME "pubinv.org "
+#define PROG_NAME "RS232-powersupply"
+#define VERSION ":V0.3"
+#define DEVICE_UNDER_TEST "Hardware:_Control_V1.1_Firmware:_"  //A model number
+#define LICENSE "GNU Affero General Public License, version 3 "
+
+#define BAUD_RATE 115200
+#define BAUD_RATE_PS1 4800
+#define BAUD_RATE_PS2 4800
+
+
 //#include <Arduino.h>
 #include <SPI.h>
 #include <Ethernet.h>
@@ -49,6 +65,8 @@ byte mac[][NUMBER_OF_MAC] =
   { 0xDE, 0xAD, 0xBE, 0xEF, 0xBE, 0x14 },
 };
 
+
+// For Power supply
 char manuf[17]; // INFO 0
 char model[17];  // INFO 1
 char voltage_string[5]; // INFO 2
@@ -74,7 +92,16 @@ int setPS_Addr(uint8_t addr) {
   Serial1.print("ADDS "); Serial1.print(addr); Serial1.print("\r\n");
   delay(50);
   char buff[5];
+
+  // Get from the TX raw
+//  uint8_t foo = Serial2.readBytesUntil('\n', buff, sizeof buff);
+//  Serial.print("PowerSupply TX: ");
+//  Serial.print(buff);
+
+
   uint8_t c = Serial1.readBytesUntil('\n', buff, sizeof buff);
+//  Serial.print("PowerSupply buff: ");
+//  Serial.print(buff);
   if (c != 3 || buff[0] != '=' || buff[1] != '>') return 0;
   return 1;
 }
@@ -134,7 +161,7 @@ char *getPS_Val(uint8_t addr, const char *val) {
   Serial1.print(val); Serial1.print("\r\n");
   delay(100);
   int c = Serial1.readBytesUntil('\n', rval, sizeof rval);
-  rval[c-1] = '\0';
+  rval[c - 1] = '\0';
   delay(10);
   char b[5];
   c = Serial1.readBytesUntil('\n', b, sizeof b);
@@ -203,10 +230,10 @@ void getPS_RateCurrent(int addr) {
 void getPS_OnOff(int addr) {
   char *r = getPS_Val(addr, "POWER 2");
   switch (r[0]) {
-  case '0': on_off = 0; break;
-  case '1': on_off = 1; break;
-  case '2': on_off = 0; break;
-  case '3': on_off = 1; break;
+    case '0': on_off = 0; break;
+    case '1': on_off = 1; break;
+    case '2': on_off = 0; break;
+    case '3': on_off = 1; break;
   }
 }
 
@@ -258,9 +285,10 @@ void getPS_SetCurrent(int addr) {
 void getPS_Control(int addr) {
 }
 
+// LAN functions
 // send an NTP request to the time server at the given address
 void getTime() {
-  #define NTP_PACKET_SIZE 48
+#define NTP_PACKET_SIZE 48
   byte ntpBuffer[NTP_PACKET_SIZE];
 
   memset(ntpBuffer, 0, NTP_PACKET_SIZE);  // set all bytes in buffer to 0
@@ -305,7 +333,7 @@ void getTime() {
     // combine the four bytes (two words) into a long integer
     // this is NTP time (seconds since Jan 1 1900):
     uint64_t secsSince1900 = highWord << 16 | lowWord;
-    
+
     //    Serial.print(F("Seconds since Jan 1 1900 = "));
     //    Serial.println(secsSince1900);
 
@@ -322,20 +350,20 @@ void getTime() {
     Serial.print(F("The UTC time is "));       // UTC is the time at Greenwich Meridian (GMT)
     Serial.print((epoch  % 86400L) / 3600); // print the hour (86400 equals secs per day)
     Serial.print(F(":"));
-    
+
     if (((epoch % 3600) / 60) < 10) {
       // In the first 10 minutes of each hour, we'll want a leading '0'
       Serial.print(F("0"));
     }
-    
+
     Serial.print((epoch  % 3600) / 60); // print the minute (3600 equals secs per minute)
     Serial.print(F(":"));
-    
+
     if ((epoch % 60) < 10) {
       // In the first 10 seconds of each minute, we'll want a leading '0'
       Serial.print(F("0"));
     }
-    
+
     Serial.println(epoch % 60); // print the second
   }
 }
@@ -344,21 +372,27 @@ void getTime() {
 void PrintHex8(uint8_t *data, uint8_t length) {
   Serial.print(F("0x"));
   for (int i = 0; i < length; i++) {
-    if (data[i]<0x10) { Serial.print(F("0")); }
-    Serial.print(data[i],HEX);
+    if (data[i] < 0x10) {
+      Serial.print(F("0"));
+    }
+    Serial.print(data[i], HEX);
     Serial.print(F(" "));
   }
 }
 
 // prints 16-bit data in hex with leading zeroes
 void PrintHex16(uint16_t *data, uint8_t length) {
-  Serial.print(F("0x")); 
-  for (int i = 0; i < length; i++) { 
-      uint8_t MSB=byte(data[i]>>8);
-      uint8_t LSB=byte(data[i]);
-      
-      if (MSB<0x10) {Serial.print(F("0"));} Serial.print(MSB,HEX); Serial.print(F(" ")); 
-      if (LSB<0x10) {Serial.print(F("0"));} Serial.print(LSB,HEX); Serial.print(F(" ")); 
+  Serial.print(F("0x"));
+  for (int i = 0; i < length; i++) {
+    uint8_t MSB = byte(data[i] >> 8);
+    uint8_t LSB = byte(data[i]);
+
+    if (MSB < 0x10) {
+      Serial.print(F("0"));
+    } Serial.print(MSB, HEX); Serial.print(F(" "));
+    if (LSB < 0x10) {
+      Serial.print(F("0"));
+    } Serial.print(LSB, HEX); Serial.print(F(" "));
   }
 }
 
@@ -415,7 +449,7 @@ int readResp() {
     }
     Serial.print(F(", port "));
     Serial.println(Udp.remotePort());
-    
+
     // read the packet into packetBufffer
     uint16_t c = Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
     //    Serial.println(F("Contents:"));
@@ -426,45 +460,54 @@ int readResp() {
 }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(BAUD_RATE);
   while (!Serial);
-  
-  Serial1.begin(4800);
+  Serial.print(DEVICE_UNDER_TEST);
+  Serial.print(PROG_NAME);
+  Serial.println(VERSION);
+  Serial.print("Compiled at: ");
+  Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
+
+  Serial1.begin(BAUD_RATE_PS1);
   while (!Serial1);
 
+//  Serial2.begin(BAUD_RATE_PS2);
+//  while (!Serial2);
+
+
+  // Setup LAN
   randomSeed(analogRead(0));
-  
   uint8_t index = random(0, NUMBER_OF_MAC);
-  index=2; // xxxx remove this later
+  index = 2; // xxxx remove this later
   Serial.print(F("Using mac index = "));
   Serial.println(index);
 
-//  Ethernet.begin(mac[index]);
-//
-//  byte tmac[6];
-//  Ethernet.MACAddress(tmac);
-//  Serial.print(F("The MAC address is: "));
-//  for (byte octet = 0; octet < 6; octet++) {
-//    Serial.print(tmac[octet], HEX);
-//    if (octet < 5) {
-//      Serial.print(':');
-//    }
-//  }
-//  Serial.println();
-//
-//  Serial.print(F("Version 5200 ")); Serial.print(readcommreg(0x001F));
-//  Serial.print(F("  PHY Status ")); Serial.print(readcommreg(0x0035));
-//  Serial.println();
-//
-//  Udp.begin((uint16_t)localPort);
-//
-//  Serial.print(F("IP address: ")); Serial.println(Ethernet.localIP());
-//  Serial.print(F("Gateway: ")); Serial.println(Ethernet.gatewayIP());
-//  Serial.print(F("Subnet Mask: ")); Serial.println(Ethernet.subnetMask());
-//  Serial.print(F("DNS Server: ")); Serial.println(Ethernet.dnsServerIP());
-//  Serial.println();
-//
-//  getTime();
+  //  Ethernet.begin(mac[index]);
+  //
+  //  byte tmac[6];
+  //  Ethernet.MACAddress(tmac);
+  //  Serial.print(F("The MAC address is: "));
+  //  for (byte octet = 0; octet < 6; octet++) {
+  //    Serial.print(tmac[octet], HEX);
+  //    if (octet < 5) {
+  //      Serial.print(':');
+  //    }
+  //  }
+  //  Serial.println();
+  //
+  //  Serial.print(F("Version 5200 ")); Serial.print(readcommreg(0x001F));
+  //  Serial.print(F("  PHY Status ")); Serial.print(readcommreg(0x0035));
+  //  Serial.println();
+  //
+  //  Udp.begin((uint16_t)localPort);
+  //
+  //  Serial.print(F("IP address: ")); Serial.println(Ethernet.localIP());
+  //  Serial.print(F("Gateway: ")); Serial.println(Ethernet.gatewayIP());
+  //  Serial.print(F("Subnet Mask: ")); Serial.println(Ethernet.subnetMask());
+  //  Serial.print(F("DNS Server: ")); Serial.println(Ethernet.dnsServerIP());
+  //  Serial.println();
+  //
+  //  getTime();
 
   getPS_Manuf(ADDRESS);
   Serial.print("Manuf: ");
@@ -532,8 +575,8 @@ void setup() {
   else Serial.println(max_current);
   delay(MYDELAY);
 
-//  snprintf(packetBuffer, sizeof packetBuffer, "{ \"Manufacturer\": \"%s\", \"Model\": \"%s\", \"VoltString\": \"%s\", \"Revision\": \"%s\", \"Serial\": \"%s\", \"VoltageRating\": %d, \"CurrentRating\": %d, \"MaxVoltage\": %d, \"MaxCurrent\": %d}", manuf, model, voltage_string, revision, serial, rate_voltage, rate_current, max_voltage, max_current);
-//  sendMsg(packetBuffer);
+  //  snprintf(packetBuffer, sizeof packetBuffer, "{ \"Manufacturer\": \"%s\", \"Model\": \"%s\", \"VoltString\": \"%s\", \"Revision\": \"%s\", \"Serial\": \"%s\", \"VoltageRating\": %d, \"CurrentRating\": %d, \"MaxVoltage\": %d, \"MaxCurrent\": %d}", manuf, model, voltage_string, revision, serial, rate_voltage, rate_current, max_voltage, max_current);
+  //  sendMsg(packetBuffer);
 
   if (setPS_OnOff(ADDRESS, "ON")) Serial.println("Turned it on");
   else Serial.println("failed to turn it on");
@@ -544,7 +587,7 @@ void setup() {
   if (setPS_Current(ADDRESS, 0)) Serial.println("Set current to 5");
   else Serial.println("failed to set current");
 
-}
+}//end setup()
 
 uint16_t count = 1;
 
@@ -554,21 +597,21 @@ void loopOld() {
     if (r > 80) {
       uint8_t v = random(0, 600);
       if (setPS_Voltage(ADDRESS, v)) {
-	Serial.print("Set volts to ");
-	Serial.print(v);
-	Serial.print(" and ");
-	if (setPS_OnOff(ADDRESS, "on")) Serial.println("turn ps on");
-	else Serial.println("failed to set ON");
+        Serial.print("Set volts to ");
+        Serial.print(v);
+        Serial.print(" and ");
+        if (setPS_OnOff(ADDRESS, "on")) Serial.println("turn ps on");
+        else Serial.println("failed to set ON");
       }
       else Serial.println("failed to set volts");
     } else if (r > 60) {
       uint8_t v = random(601, 1150);
       if (setPS_Voltage(ADDRESS, v)) {
-	Serial.print("Set volts to ");
-	Serial.print(v);
-	Serial.print(" and ");
-	if (setPS_OnOff(ADDRESS, "on")) Serial.println("turn ps on");
-	else Serial.println("failed to set ON");
+        Serial.print("Set volts to ");
+        Serial.print(v);
+        Serial.print(" and ");
+        if (setPS_OnOff(ADDRESS, "on")) Serial.println("turn ps on");
+        else Serial.println("failed to set ON");
       }
       else Serial.println("failed to set volts");
     } else if (r > 30) {
@@ -606,7 +649,7 @@ void loopOld() {
   Serial.print(" T: ");
   Serial.print(temp);
   delay(MYDELAY);
-  
+
   getPS_Status0(ADDRESS);
   Serial.print(" S0: ");
   Serial.print(status0, BIN);
@@ -622,23 +665,24 @@ void loopOld() {
   Serial.println(control, BIN);
   delay(MYDELAY);
 
-//  snprintf(packetBuffer, sizeof packetBuffer,
-//	   "{ \"ON\": %s, \"VoltsOut\": %d, \"VoltsSet\": %d, \"Current\": %d, \"CurrentSet\": %d, \"Temp\": %d, \"Status0\": \"0X%X\", \"Status1\": \"0X%X\", \"Control\": %X }",
-//	   on_off ? "true" : "false", out_voltage, set_voltage, out_current, set_current, temp, status0, status1, control);
-//  sendMsg(packetBuffer);
+  //  snprintf(packetBuffer, sizeof packetBuffer,
+  //     "{ \"ON\": %s, \"VoltsOut\": %d, \"VoltsSet\": %d, \"Current\": %d, \"CurrentSet\": %d, \"Temp\": %d, \"Status0\": \"0X%X\", \"Status1\": \"0X%X\", \"Control\": %X }",
+  //     on_off ? "true" : "false", out_voltage, set_voltage, out_current, set_current, temp, status0, status1, control);
+  //  sendMsg(packetBuffer);
 
   count++;
   delay(15 * 1000);
-}
+}//end oldloop()
+
 void loop() {
- // uint8_t v = 200; // I'm not sure what this means
+  // uint8_t v = 200; // I'm not sure what this means
   uint8_t c = 125; // I don't know what this means mean terms of amperage
-//  if (setPS_Voltage(ADDRESS, v)) {
-//    Serial.print("Set volts to ");
-//    Serial.println(v);
-//  } else {
-//    Serial.println("failed to set volts");
-//  }
+  //  if (setPS_Voltage(ADDRESS, v)) {
+  //    Serial.print("Set volts to ");
+  //    Serial.println(v);
+  //  } else {
+  //    Serial.println("failed to set volts");
+  //  }
 
 
   if (setPS_Current(ADDRESS, c)) {
@@ -646,14 +690,14 @@ void loop() {
     Serial.println(c);
   } else {
     Serial.println("failed to set volts");
-  }  
+  }
 
-   if (setPS_GCurrent(ADDRESS, c)) {
+  if (setPS_GCurrent(ADDRESS, c)) {
     Serial.print("Set amps to ");
     Serial.println(c);
   } else {
     Serial.println("failed to set volts");
-  }  
+  }
 
   Serial.println("");
 
@@ -680,7 +724,7 @@ void loop() {
   Serial.print(" T: ");
   Serial.print(temp);
   delay(MYDELAY);
-  
+
   getPS_Status0(ADDRESS);
   Serial.print(" S0: ");
   Serial.print(status0, BIN);
@@ -696,4 +740,5 @@ void loop() {
   Serial.println(control, BIN);
   delay(MYDELAY);
   delay(15 * 1000);
-}
+
+}//end loop()
