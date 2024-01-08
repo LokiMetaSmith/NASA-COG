@@ -533,6 +533,11 @@ namespace CogApp
           getConfig()->errors[PWR_24V_BAD].begin_condition_ms = millis();
         }
     }
+	else {
+        if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
+          getConfig()->errors[PWR_24V_BAD].fault_present = false;
+        }
+    }//evaluateFan
 	
     if (!is12VPowerGood()){
       CogCore::Debug<const char *>("+12V out of tolerance.\n");
@@ -541,6 +546,11 @@ namespace CogApp
           getConfig()->errors[PWR_12V_BAD].begin_condition_ms = millis();
         }
     }
+	else {
+        if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
+          getConfig()->errors[PWR_12V_BAD].fault_present = false;
+        }
+    }//evaluateFan
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
@@ -575,7 +585,8 @@ namespace CogApp
 		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
       }
 	}//end debug block
-/* //REMOVED SO FAN CAN BE DISABLED !!! DO NOT LET THIS BE COMMENTED OUT IN DEVELOP
+#ifndef DISABLE_FAN_EVAL//ADDED SO FAN CAN BE DISABLED !!! DO NOT LET THIS BE COMMENTED OUT IN production
+
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
       CogCore::DebugLn<const char *>("Fan Fault Present");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
@@ -587,8 +598,8 @@ namespace CogApp
         if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
           getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
         }
-    }//evaluateFan */
-
+    }//evaluateFan
+#endif
     if (!evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
                            getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
