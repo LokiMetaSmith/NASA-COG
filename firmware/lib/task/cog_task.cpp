@@ -533,6 +533,14 @@ namespace CogApp
           getConfig()->errors[PWR_24V_BAD].begin_condition_ms = millis();
         }
     }
+	
+    if (!is12VPowerGood()){
+      CogCore::Debug<const char *>("+12V out of tolerance.\n");
+        if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
+          getConfig()->errors[PWR_12V_BAD].fault_present = true;
+          getConfig()->errors[PWR_12V_BAD].begin_condition_ms = millis();
+        }
+    }
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
@@ -681,6 +689,55 @@ namespace CogApp
     }
     return Off;
   }
+  
+  bool CogTask::is12VPowerGood()
+  {
+    if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
+
+    //Analog read of the +12V expected about 3.25V at ADC input.
+    // SENSE_24V on A1.
+    // Full scale is 1023, ten bits for 3.3V.
+    //40K into 10000
+    const long FullScale = 1023;
+    const float percentOK = 0.25;
+    const float R1=40000;
+    const float R2=10000;
+    const float Vcc = 3.3;
+    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+    
+#ifdef CTL_V_1_1
+    const int highThreshold12V = 930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+#else
+    const int highThreshold12V = 1024;
+#endif
+
+    int _v12read = analogRead(SENSE_12V);
+
+    if (DEBUG_LEVEL >0 ) {
+      CogCore::Debug<const char *>("analogRead(SENSE_12V)= ");
+      CogCore::DebugLn<uint32_t>(_v12read);
+      CogCore::Debug<float>((float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2)));
+      CogCore::Debug<const char *>("\n");
+    }
+
+    if (( _v12read > lowThreshold12V) && ( _v12read < highThreshold12V) ) {
+      if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+12V power monitor reports good.\n");
+      return true;
+    } else{
+      if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+12V power monitor reports bad.\n");
+      CogCore::Debug<const char *>("lowThreshold12V: ");
+      CogCore::Debug<int32_t>(lowThreshold12V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("highThreshold12V: ");
+      CogCore::Debug<int32_t>(highThreshold12V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("_v12read: ");
+      CogCore::Debug<int32_t>(_v12read);
+      CogCore::Debug<const char *>("\n");
+      return false;
+    }
+  }
+  
   bool CogTask::is24VPowerGood()
   {
     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
