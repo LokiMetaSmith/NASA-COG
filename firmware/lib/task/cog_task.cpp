@@ -326,7 +326,7 @@ namespace CogApp
               // } else if (!getConfig()->errors[ec].fault_present) {
                   // getConfig()->errors[ec].fault_present = false;
             }
-              
+
           }
       }
 	  return true;
@@ -528,8 +528,29 @@ namespace CogApp
     bool powerIsOK = is24VPowerGood();
     if (!powerIsOK){
       CogCore::Debug<const char *>("Probable AC Power (+24V) FAIL.\n");
-      getConfig()->ms = CriticalFault;
+        if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
+          getConfig()->errors[PWR_24V_BAD].fault_present = true;
+          getConfig()->errors[PWR_24V_BAD].begin_condition_ms = millis();
+        }
     }
+	else {
+        if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
+          getConfig()->errors[PWR_24V_BAD].fault_present = false;
+        }
+    }//evaluateFan
+	
+    if (!is12VPowerGood()){
+      CogCore::Debug<const char *>("+12V out of tolerance.\n");
+        if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
+          getConfig()->errors[PWR_12V_BAD].fault_present = true;
+          getConfig()->errors[PWR_12V_BAD].begin_condition_ms = millis();
+        }
+    }
+	else {
+        if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
+          getConfig()->errors[PWR_12V_BAD].fault_present = false;
+        }
+    }//evaluateFan
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
@@ -556,15 +577,16 @@ namespace CogApp
         CogCore::DebugLn<float>(fan_pwm_ratio);
         CogCore::Debug<const char *>("rpms: ");
         CogCore::DebugLn<float>(fan_rpm);
-	    CogCore::Debug<const char *>("rpm_actual: ");	  
+	    CogCore::Debug<const char *>("rpm_actual: ");
 	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio)));
-		CogCore::Debug<const char *>("rpm_difference: ");	  
+		CogCore::Debug<const char *>("rpm_difference: ");
 	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio))-fan_rpm);// 346.749 + 11888.545x + -5944.272x^2
-		CogCore::Debug<const char *>("rpm_tested: ");	  
+		CogCore::Debug<const char *>("rpm_tested: ");
 		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
       }
 	}//end debug block
-	  
+#ifndef DISABLE_FAN_EVAL//ADDED SO FAN CAN BE DISABLED !!! DO NOT LET THIS BE COMMENTED OUT IN production
+
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
       CogCore::DebugLn<const char *>("Fan Fault Present");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
@@ -577,7 +599,7 @@ namespace CogApp
           getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
         }
     }//evaluateFan
-	
+#endif
     if (!evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
                            getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
@@ -593,8 +615,8 @@ namespace CogApp
           getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
         }
     }//evaluateHeaterEnvelope
-	
-						   
+
+
 
 
       if (!getHAL()->_stacks[0]->evaluatePS()){
@@ -609,15 +631,6 @@ namespace CogApp
           getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
         }
       }//evaluatePSU
-      // MachineState ms = getConfig()->ms;
-      // if (ms == Warmup || ms == NormalOperation || ms == Cooldown)  {
-      //   unsigned long now_ms = millis();
-      //   unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
-      //   CogCore::Debug<const char *>("delta_ms: ");
-      //   CogCore::DebugLn<long>(delta_ms);
-      //   changeRamps(delta_ms);
-      //   last_time_ramp_changed_ms = now_ms;
-      // }
 
       if (DEBUG_LEVEL > 0) {
         CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
@@ -634,7 +647,7 @@ namespace CogApp
         CogCore::Debug<int>(freeMemory());
         CogCore::Debug<const char *>("\n");
       }
-    
+
   }
 
   // We believe someday an automatic algorithm will be needed here.
@@ -687,6 +700,55 @@ namespace CogApp
     }
     return Off;
   }
+  
+  bool CogTask::is12VPowerGood()
+  {
+    if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
+
+    //Analog read of the +12V expected about 3.25V at ADC input.
+    // SENSE_24V on A1.
+    // Full scale is 1023, ten bits for 3.3V.
+    //40K into 10000
+    const long FullScale = 1023;
+    const float percentOK = 0.25;
+    const float R1=40000;
+    const float R2=10000;
+    const float Vcc = 3.3;
+    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+    
+#ifdef CTL_V_1_1
+    const int highThreshold12V = 930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+#else
+    const int highThreshold12V = 1024;
+#endif
+
+    int _v12read = analogRead(SENSE_12V);
+
+    if (DEBUG_LEVEL >0 ) {
+      CogCore::Debug<const char *>("analogRead(SENSE_12V)= ");
+      CogCore::DebugLn<uint32_t>(_v12read);
+      CogCore::Debug<float>((float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2)));
+      CogCore::Debug<const char *>("\n");
+    }
+
+    if (( _v12read > lowThreshold12V) && ( _v12read < highThreshold12V) ) {
+      if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+12V power monitor reports good.\n");
+      return true;
+    } else{
+      if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+12V power monitor reports bad.\n");
+      CogCore::Debug<const char *>("lowThreshold12V: ");
+      CogCore::Debug<int32_t>(lowThreshold12V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("highThreshold12V: ");
+      CogCore::Debug<int32_t>(highThreshold12V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("_v12read: ");
+      CogCore::Debug<int32_t>(_v12read);
+      CogCore::Debug<const char *>("\n");
+      return false;
+    }
+  }
+  
   bool CogTask::is24VPowerGood()
   {
     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
@@ -887,20 +949,13 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsCritialFault() {
     MachineState new_ms = OffUserAck;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
-    // TODO: I don't think we want to do this.
-    // Instead we want to call the _run functionality directly
-    // on this task.
-    logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
+    logRecorderTask->dumpRecords();
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsEmergencyShutdown() {
   CogCore:Debug<const char *>("GOT EMERGENCY SHUTDOWN!");
     MachineState new_ms = OffUserAck;
     turnOff();
-    // TODO: I don't think we want to do this.
-    // Instead we want to call the _run functionality directly
-    // on this task.
-    logRecorderTask->SetPeriod(MachineConfig::INIT_LOG_RECORDER_SHORT_PERIOD_MS);
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsOffUserAck() {

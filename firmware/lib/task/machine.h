@@ -40,6 +40,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // #define RF_FAN 2
 #define RF_HEATER 3
 #define RF_STACK DAC0
+#define SENSE_12V A2
 #define SENSE_24V A1
 #define MAX31850_DATA_PIN 5
 // #define RF_FAN_TACH 5
@@ -92,7 +93,7 @@ public:
   virtual bool init() = 0;
 };
 
-#define NUM_CRITICAL_ERROR_DEFINITIONS 11
+#define NUM_CRITICAL_ERROR_DEFINITIONS 13
 // WARNING! Do not reorder these!!
 // The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
 enum CriticalErrorCondition {
@@ -101,6 +102,8 @@ enum CriticalErrorCondition {
   POST_STACK_TC_BAD,
   COULD_NOT_INIT_3_THERMOCOUPLES,
   FAN_LOSS_PWR,
+  PWR_12V_BAD,
+  PWR_24V_BAD,
   FAN_UNRESPONSIVE,
   HEATER_UNRESPONSIVE,
   HEATER_OUT_OF_BOUNDS,
@@ -114,13 +117,15 @@ constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINI
     "Post Getter TC-B Bad",
     "Post Stack  TC-C Bad",
     "Can not init three TC's",
-	"Lost 24v Power",
-	"TACH unresponsive",
-	"Lost control of Heater",
-	"pid pegged, temp out of bounds",
-	"Lost control of the Stack",
-	"Lost control of the programmable PSU",
-	"Lost mains power, on UPS"
+    "Fan Power Loss",
+	"Lost 12v Power",
+    "Lost 24v Power",
+    "Fan TACH unresponsive",
+    "Lost control of Heater",
+    "pid pegged, temp out of bounds",
+    "Lost control of the Stack",
+    "Lost control of the programmable PSU",
+    "Lost mains power, on UPS"
   };
 
 class CriticalError {
@@ -209,6 +214,8 @@ public:
   const unsigned long THERMOCOUPLE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   // WARNING! THIS IS DISABLING THE ERROR FOR TESTING
   // WHILE WE FIGURE OUT THE TACH ERROR
+  const unsigned long PWR_12V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
+  const unsigned long PWR_24V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
   const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
   const unsigned long HEATER_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
   const unsigned long ENVELOPE_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
@@ -216,11 +223,12 @@ public:
   const unsigned long FAN_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long FAN_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long HEATER_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+
   const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long PSU_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long MAINS_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  
-  
+
+
   // TODO: This would better be attached to the statemanager
   // class, as it is used in those task---but also in the
   // separate temp_refresh_task. Until I can refactor
@@ -248,9 +256,8 @@ public:
   static const int INIT_PID_PERIOD_MS = 500;
 
   static const int INIT_HEARTBEAT_PERIOD_MS = 500; // heartbeat task period
-
-  static const int INIT_LOG_RECORDER_LONG_PERIOD_MS = 600000; //10 minute record interval
-  static const int INIT_LOG_RECORDER_SHORT_PERIOD_MS = 1000;  //1 second record interval
+  static const int INIT_LOG_RECORDER_PERIOD_MS = 1000;
+  static const int INIT_SHUTDOWN_BUTTON_PERIOD_MS = 250;
 
   static const int DISPLAY_UPDATE_MS = 2000;
 
@@ -315,7 +322,7 @@ void _reportFanSpeed();
   static constexpr unsigned int  MAX_RECORDS = 600;
   //CogCollections::CircularArray<MachineStatusReport, MAX_RECORDS> _log_entry;
   MachineStatusReport _log_entry[MAX_RECORDS];
-  void dumpAllData10Hz();
+  //  void dumpAllData10Hz();
 
 
   void outputReport(MachineStatusReport *msr);
