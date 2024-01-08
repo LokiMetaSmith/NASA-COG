@@ -714,13 +714,19 @@ namespace CogApp
     const float R1=40000;
     const float R2=10000;
     const float Vcc = 3.3;
-    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
-    
-#ifdef CTL_V_1_1
-    const int highThreshold12V = 930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+#ifdef DISABLE_12V_EVAL
+    const int highThreshold12V = 950;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+#elseif CTL_V_1_1
+    const int highThreshold12V = 930;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
 #else
     const int highThreshold12V = 1024;
+    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
 #endif
+    
+
+
 
     int _v12read = analogRead(SENSE_12V);
 

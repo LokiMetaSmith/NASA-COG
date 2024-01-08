@@ -247,7 +247,7 @@ bool SL_PS::evaluatePS(){
     if(status0 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> AC Input Power Down");
     if(status0 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> AC Input Failure");
     if(!(status0 & 0xFF))CogCore::DebugLn<const char *>( "status0: OK");
-    if(status1 & 0x01)CogCore::DebugLn<const char *>( "Inhibit by VCI / ACI or ENB");
+    if(status1 & 0x01)CogCore::DebugLn<const char *>( "Bit-0 -> Inhibit by VCI / ACI or ENB");
     if(status1 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> Inhibit by Software Command");
     if(status1 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> (Not used)");
     if(status1 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> (Not used)");
@@ -269,7 +269,8 @@ bool SL_PS::evaluatePS(){
   // status0: OK
   // REMOTE
   // In binary: 10010011
-  //
+  // normally status1: 1001 0010 //in OKC
+  //6D is 0110 1101
    if( !(status0 & 0xFF) && !(status1 & 0x6D)){
 	    return true;
    } else{
