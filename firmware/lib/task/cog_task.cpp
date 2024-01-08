@@ -575,7 +575,7 @@ namespace CogApp
 		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
       }
 	}//end debug block
-
+/* //REMOVED SO FAN CAN BE DISABLED !!! DO NOT LET THIS BE COMMENTED OUT IN DEVELOP
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
       CogCore::DebugLn<const char *>("Fan Fault Present");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
@@ -587,7 +587,7 @@ namespace CogApp
         if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
           getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
         }
-    }//evaluateFan
+    }//evaluateFan */
 
     if (!evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
                            getTemperatureReadingA_C(),
