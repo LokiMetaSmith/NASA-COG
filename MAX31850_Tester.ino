@@ -5,12 +5,16 @@
    Use the serial plotter to view results
    This program forked from Dallas_Tester.ino on 20230921
    Set D9 PWM for about 50% to test PWM on MOM (Mock up of Maryville hardware)
+   Add an EMA filtered output.
 */
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "MAX31850_Tester"
-#define VERSION ";_Rev_0.2"
+#define VERSION ";_Rev_0.3"
 #define DEVICE_UNDER_TEST "Hardware: Mockup Of Maryville"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
+
+
+#define SHUT_DOWN 49
 
 
 #include <OneWire.h>
@@ -21,6 +25,10 @@
 #define ONE_WIRE_BUS 5  // But port 5 on Controller v1.
 
 #define TEMPERATURE_PRECISION 9 // Lower resolution
+
+#define MAX_NUM_THERMOCOUPLES 10 // An arbitrary maximum mumber of thermocouples.
+float now_Temp[MAX_NUM_THERMOCOUPLES]; //
+float ema_Temp[MAX_NUM_THERMOCOUPLES]; //
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(ONE_WIRE_BUS);
@@ -34,45 +42,52 @@ DeviceAddress tempDeviceAddress; // We'll use this variable to store a found dev
 
 #define nFAN1_PWM 9 // The pin D9 for driving the Blower.
 
+// function to print the temperature for a device
+float printTemperature(DeviceAddress deviceAddress)
+{
+  // method 1 - slower
+  //Serial.print("Temp C: ");
+  //Serial.print(sensors.getTempC(deviceAddress));
+  //Serial.print(" Temp F: ");
+  //Serial.print(sensors.getTempF(deviceAddress)); // Makes a second call to getTempC and then converts to Fahrenheit
+
+  // method 2 - faster
+  float tempC = sensors.getTempC(deviceAddress);
+  if (tempC == DEVICE_DISCONNECTED_C)
+  {
+    Serial.println("Error: Could not read temperature data");
+    return (-127);
+  }
+  //  Serial.print("Temp C: ");
+  //  Serial.print(tempC);
+  return (tempC);
+  //  Serial.print(" Temp F: ");
+  //  Serial.println(DallasTemperature::toFahrenheit(tempC)); // Converts tempC to Fahrenheit
+}
+
 void setup(void)
 {
   // start serial port
   Serial.begin(115200);
   delay(500);
 
-    // Start up the library
+  // Start up the library
   sensors.begin();
-   // Grab a count of devices on the wire
+  // Grab a count of devices on the wire
   numberOfDevices = sensors.getDeviceCount();
   //Serial.print("TC0, TC1, ");
   //for (int i = 0; i <= 255; i++)
-  for (int i = 0; i <= numberOfDevices; i++){
+  for (int i = 0; i <= numberOfDevices; i++) {
     Serial.print("TC");
     Serial.print(i);
     Serial.print(", ");
   }
-
-  
   Serial.print(PROG_NAME);
   Serial.println(VERSION);
 
+  pinMode(SHUT_DOWN, INPUT_PULLUP);
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, HIGH);  //Signal start of setup.
-
-
- 
-
-  //Print some status
-  //  // locate devices on the bus
-  //  Serial.print("Locating devices...");
-  //  Serial.print("Found ");
-  //  Serial.print(numberOfDevices, DEC);
-  //  Serial.println(" devices.");
-  //
-  //  // report parasite power requirements
-  //  Serial.print("Parasite power is: ");
-  //  if (sensors.isParasitePowerMode()) Serial.println("ON");
-  //  else Serial.println("OFF");
 
   // Loop through each device, print out address
   for (int i = 0; i < numberOfDevices; i++)
@@ -105,33 +120,27 @@ void setup(void)
     }
   }
 
-//  analogWrite(nFAN1_PWM, 127);  // Set for 50%
+  //  analogWrite(nFAN1_PWM, 127);  // Set for 50%
   analogWrite(nFAN1_PWM, 200);  // Set for low RPM
-  
+
+  //Initilize the EMA
+  for (int k = 0; k < 2; k++)
+  {
+    sensors.requestTemperatures(); // Send the command to get temperatures
+    delay(500);
+    for (int i = 0; i < numberOfDevices; i++)
+    {
+      if (sensors.getAddress(tempDeviceAddress, i)) {
+
+        ema_Temp[i] = printTemperature(tempDeviceAddress); // Use a simple function to print out the data
+        //ema_Temp[i] = 23.5;
+      }
+    }
+  }
   digitalWrite(LED_BUILTIN, LOW);   //Signal end of setup.
 }// end setup()
 
-// function to print the temperature for a device
-void printTemperature(DeviceAddress deviceAddress)
-{
-  // method 1 - slower
-  //Serial.print("Temp C: ");
-  //Serial.print(sensors.getTempC(deviceAddress));
-  //Serial.print(" Temp F: ");
-  //Serial.print(sensors.getTempF(deviceAddress)); // Makes a second call to getTempC and then converts to Fahrenheit
 
-  // method 2 - faster
-  float tempC = sensors.getTempC(deviceAddress);
-  if (tempC == DEVICE_DISCONNECTED_C)
-  {
-    Serial.println("Error: Could not read temperature data");
-    return;
-  }
-  //  Serial.print("Temp C: ");
-  Serial.print(tempC);
-  //  Serial.print(" Temp F: ");
-  //  Serial.println(DallasTemperature::toFahrenheit(tempC)); // Converts tempC to Fahrenheit
-}
 
 void loop(void)
 {
@@ -142,6 +151,7 @@ void loop(void)
   //  Serial.println("DONE");
   digitalWrite(LED_BUILTIN, HIGH);   //Signal end of temp request.
 
+  float ALPHA = 0.05; //Moveing average
 
   // Loop through each device, print out temperature data
   for (int i = 0; i < numberOfDevices; i++)
@@ -154,7 +164,17 @@ void loop(void)
       //		Serial.print(i,DEC);
 
       // It responds almost immediately. Let's print out the data
-      printTemperature(tempDeviceAddress); // Use a simple function to print out the data
+      now_Temp[i] = printTemperature(tempDeviceAddress); // Use a simple function to print out the data
+      Serial.print(now_Temp[i]);
+      Serial.print(", ");
+
+      if (digitalRead(SHUT_DOWN) == LOW) {  //Press button for ten times longer filtering
+        ema_Temp[i] = ((1 - (ALPHA / 10.0)) * ema_Temp[i]) + ((ALPHA / 10.0) * now_Temp[i]) ; // EMA See: https://en.wikipedia.org/wiki/Exponential_smoothing
+      } else {
+        ema_Temp[i] = ((1 - ALPHA) * ema_Temp[i]) + (ALPHA * now_Temp[i]) ; // EMA See: https://en.wikipedia.org/wiki/Exponential_smoothing
+      }
+      Serial.print(ema_Temp[i]);
+      //Serial.print(tempC);
       Serial.print(", ");
 
     }
