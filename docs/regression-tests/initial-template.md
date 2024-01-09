@@ -22,7 +22,7 @@ Test with an ODECS composed of a Control V1.1 with all modifications
 
 All of these requirements must be detected even if the abstract machine is in the “Off” state.
 The system has 120vAC plugged in, and has been “initialized-” “says something on the Serial Terminal to 
-Results will be labeled as “ - Passed by (Initials) on (YYYYMMDD)”
+Results will be labeled as “ - **Passed by (Initials) on (YYYYMMDD)**”
 Results will list the FW version and hardware revision, as well as deviations such as PSU version
 Test will list the load conditions, this is the “plant under control”
 This procedure requires capturing files both from the Serial Monitor to the Due and normal and critical fault log files
