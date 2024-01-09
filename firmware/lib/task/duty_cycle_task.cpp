@@ -127,15 +127,23 @@ bool DutyCycleTask::_run()
     float current_temp = getConfig()->report->post_heater_C;
 
     if (isOn) {
+	 if (DEBUG_DUTY_CYCLE > 1) {
       CogCore::Debug<const char *>("IS ON!");
+	  CogCore::DebugLn<bool>(isOn);
       CogCore::Debug<const char *>("TESTING\n");
-      CogCore::DebugLn<bool>(isOn);
+      CogCore::Debug<const char *>("Current Temp: ");
       CogCore::DebugLn<float>(current_temp);
+	  CogCore::Debug<const char *>("Temp at last time of check: ");
       CogCore::DebugLn<float>(temperature_at_time_of_last_check);
+	  CogCore::Debug<const char *>("Difference (current temp - Temp at last check): ");
       CogCore::DebugLn<float>(current_temp - temperature_at_time_of_last_check);
-
+     }
       if ((!getConfig()->errors[HEATER_UNRESPONSIVE].fault_present) &&
+#ifdef REDUCE_HEATER_UNRESPONSIVE_MIN_TEMP
+          (current_temp > 35.0) &&
+#else
           (current_temp > 60.0) &&
+#endif
           (current_temp - temperature_at_time_of_last_check) < TEMPERATURE_LIMIT) {
         getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
         getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
