@@ -3,7 +3,7 @@
   Tests the SHUT DOWN switch
   Tests BigTreeTech MINI 12864 Rotary Encoder and switch
   Tests four power supplies, 24V, 12V, AUX1 and AUX2.
-
+b
   Setup:
   Connect an LED with series resistor at J13, J30 and J31.
   Pin 1 is positive and Pin 2 is ground.
@@ -13,6 +13,7 @@
   Press the BigTreeTech MINI 12864 Rotary Encoder switch and hear buzzer
   Rotate the BigTreeTech MINI 12864 Rotary Encoder and see the text message about position and direction.
   Ethernet link status reported on serial monitor.
+  Read voltages and display during setup before the long power supply setup.
 */
 
 #define COMPANY_NAME "pubinv.org "
@@ -100,7 +101,7 @@ class PowerSense
     PowerSense(const String pinName, int pin, long period, float R1 = 40000, float R2 = 4700, int offsetX = 0, int offsetY = 0)
     {
       ADCinPin = pin;
-      previousMillis = 0;
+      previousMillis = 0-5000;
       ReadPeriod = period;
       my_pinName = pinName;
       my_R1 = R1;
@@ -655,7 +656,8 @@ class PSU {
       if (setPS_OnOff(ADDRESS, "ON")) Serial.println("Turned it on");
       else Serial.println("failed to turn it on");
 
-      if (setPS_Voltage(ADDRESS, 1000)) Serial.println("Set volts to 5.0");
+      //if (setPS_Voltage(ADDRESS, 1000)) Serial.println("Set volts to 5.0");
+      if (setPS_Voltage(ADDRESS, 500)) Serial.println("Set volts to 5.0");
       else Serial.println("failed to set volts");
 
       if (setPS_Current(ADDRESS, 0)) Serial.println("Set current to 5");
@@ -696,6 +698,7 @@ void setup() {
   pinMode(BLOWER_ENABLE, OUTPUT);
   digitalWrite(BLOWER_ENABLE, HIGH); //Set high to enable blower power.
   analogWrite(nFAN1_PWM, 220);  // Set for low RPM
+  //analogWrite(nFAN1_PWM, 128);  // Set for medium RPM
   pinMode(PS1_EN, OUTPUT);
   pinMode(PS2_EN, OUTPUT);
   digitalWrite(PS1_EN, HIGH); //Set high to enable PS1
@@ -709,6 +712,12 @@ void setup() {
   setupu8g2(); //Setup the graphics display
   digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
   digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+
+  SENSE_24V.Update(); //Read A1 every two seconds.
+  SENSE_12V.Update(); //Read A2 every two seconds.
+  SENSE_AUX1.Update(); //Read A3 every two seconds.
+  SENSE_AUX2.Update(); //Read A4 every two seconds.
+
   Serial.print("Start of test_PSU1: ");
   Serial.println(millis());
   test_PSU1.test_PS();  //run once to test psu
