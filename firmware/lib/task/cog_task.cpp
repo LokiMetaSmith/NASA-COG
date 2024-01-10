@@ -632,6 +632,7 @@ namespace CogApp
       else {
         if (getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
           getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
+		  getHAL()->_stacks[0]->reInit();
         }
       }//evaluatePSU
 
