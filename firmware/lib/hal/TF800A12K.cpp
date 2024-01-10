@@ -192,11 +192,36 @@ int SL_PS::init() {
   return retval;
 }
 
+bool SL_PS::disable() {
+	int retval = 0;
+
+  //PS1  is attached to Serial1, check if AUX is high, if so, disable the PSU
+  if(digitalRead( PS1_AUX_SENSE) == HIGH) {
+	digitalWrite(PS1_EN, LOW);
+	if(digitalRead( PS1_AUX_SENSE) == HIGH) {
+	  CogCore::Debug<const char *>("failed to disable PSU");
+	  return false;
+	}
+	return true;
+  }
+  CogCore::Debug<const char *>("PSU already disabled");
+  return true;
+}
+
 int SL_PS::reInit() {
 	return reInit(0,0);
 }
 
 int SL_PS::reInit(uint16_t volts, uint16_t amps) {
+
+
+  //PS1  is attached to Serial1, check if AUX is high, if so, disable the PSU
+  if(digitalRead( PS1_AUX_SENSE) == LOW) {
+	digitalWrite(PS1_EN, HIGH);
+	if(digitalRead( PS1_AUX_SENSE) == LOW) {
+	  CogCore::Debug<const char *>("failed to enable PSU");
+	}
+  }
 
   int retval = 0;
   watchdogReset();

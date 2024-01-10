@@ -152,6 +152,11 @@ namespace CogApp
         Debug<const char *>("Entering Automatic One-Button Algorithm.");
         mc->clearErrors();
         smm->changeTargetTemp(mc->TARGET_TEMP_C);
+        mc->USE_ONE_BUTTON = true; 
+	} else if (ic.value_c == '3') {
+        Debug<const char *>("Entering Automatic One-Button Algorithm. Set Temp to 750degC");
+        mc->clearErrors();
+        smm->changeTargetTemp(mc->OPERATING_TEMPERATURE_C);
         mc->USE_ONE_BUTTON = true;
     } else {
     }

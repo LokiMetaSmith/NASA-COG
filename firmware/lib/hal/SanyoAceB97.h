@@ -102,7 +102,7 @@ public:
   };
 
   void printRPMS();
-  void fanSpeedPerCentage(int s);
+  void fanSpeedPerCentage(unsigned int s);
   void updatePWM(float pwm_ratio);
   float getRPM();
   bool evaluateFan(float pwm_ratio,float rpms);

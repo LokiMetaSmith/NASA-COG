@@ -80,6 +80,7 @@ public:
   SL_PS(const char * name, uint8_t id);
   int reInit();
   int reInit( uint16_t volts, uint16_t amps);
+  bool disable();
   bool evaluatePS();
 
   int setPS_Addr(uint8_t addr);
