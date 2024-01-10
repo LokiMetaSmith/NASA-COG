@@ -534,8 +534,9 @@ namespace CogApp
         }
     }
 	else {
-        if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
+        if (getConfig()->errors[PWR_24V_BAD].fault_present) {
           getConfig()->errors[PWR_24V_BAD].fault_present = false;
+		  CogCore::Debug<const char *>("Probable AC Power (+24V) RESTORED!!!\n");
         }
     }//evaluateFan
 	
@@ -547,8 +548,10 @@ namespace CogApp
         }
     }
 	else {
-        if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
+        if (getConfig()->errors[PWR_12V_BAD].fault_present) {
           getConfig()->errors[PWR_12V_BAD].fault_present = false;
+		  		  CogCore::Debug<const char *>("Probable AC Power (+12V) RESTORED!!!\n");
+
         }
     }//evaluateFan
     // Report fan speed
@@ -595,7 +598,7 @@ namespace CogApp
       }
     }
     else {
-        if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
+        if (getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
           getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
         }
     }//evaluateFan
@@ -611,7 +614,7 @@ namespace CogApp
       }
     }
     else {
-        if (!getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
+        if (getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
           getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
         }
     }//evaluateHeaterEnvelope
@@ -627,7 +630,7 @@ namespace CogApp
         }
       }
       else {
-        if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+        if (getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
           getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
         }
       }//evaluatePSU
