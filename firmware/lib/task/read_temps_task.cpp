@@ -208,16 +208,19 @@ void ReadTempsTask::updateTemperatures() {
       delay(30);
     }
 
-    for(int i = 0; i < 3; i++) {
-      if (getConfig()->errors[i].fault_present) {
-	CogCore::Debug<const char *>("THERMOCOUPLE FAULT PRESENT ON :");
-	CogCore::Debug<int>(i);
-	CogCore::Debug<const char *>("\n");
-        if (!MachineConfig::IsAShutdownState(getConfig()->ms)) {
-          CogCore::Debug<const char *>("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
-          unsigned long now = millis();
-          CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) - ((float) now - (float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
-          CogCore::Debug<const char *>(" SECONDS.!\n");
+    // This is purely debugging code!
+    if (DEBUG_READ_TEMPS > 0) {
+      for(int i = 0; i < 3; i++) {
+        if (getConfig()->errors[i].fault_present) {
+          CogCore::Debug<const char *>("THERMOCOUPLE FAULT PRESENT ON :");
+          CogCore::Debug<int>(i);
+          CogCore::Debug<const char *>("\n");
+          if (!MachineConfig::IsAShutdownState(getConfig()->ms)) {
+            CogCore::Debug<const char *>("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
+            unsigned long now = millis();
+            CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) - ((float) now - (float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
+            CogCore::Debug<const char *>(" SECONDS.!\n");
+          }
         }
       }
     }
@@ -266,6 +269,17 @@ void ReadTempsTask::updateTemperatures() {
     //bad_temp_reads++;
     bad_temp_reads_stack++;
   }
+
+  // Add the OVER TEMPERATURE checks here.
+  if ((postHeaterTemp > MachineConfig::OVER_TEMPERATURE_C) &&
+      (postGetterTemp > MachineConfig::OVER_TEMPERATURE_C) &&
+      (postStackTemp > MachineConfig::OVER_TEMPERATURE_C)) {
+      if (!getConfig()->errors[SYSTEM_OVER_TEMPERATURE].fault_present) {
+        getConfig()->errors[SYSTEM_OVER_TEMPERATURE].fault_present = true;
+        getConfig()->errors[SYSTEM_OVER_TEMPERATURE].begin_condition_ms = millis();
+      }
+  }
+
 
   // WARNING! This needs to be done for all configs if we are
   // a 2-stage heater; this is handled by the subclass.

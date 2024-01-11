@@ -66,7 +66,6 @@ namespace CogApp
   MachineState StateMachineManager::checkCriticalFaults(MachineState ms) {
     unsigned long now = millis();
     MachineState rms = ms;
-    CogCore::Debug<const char *>("CHECKING CRITICAL FAULTS\n");
     for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++) {
       if (getConfig()->errors[i].fault_present) {
         if (!MachineConfig::IsAShutdownState(getConfig()->ms)) {

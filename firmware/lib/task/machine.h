@@ -93,7 +93,7 @@ public:
   virtual bool init() = 0;
 };
 
-#define NUM_CRITICAL_ERROR_DEFINITIONS 13
+#define NUM_CRITICAL_ERROR_DEFINITIONS 14
 // WARNING! Do not reorder these!!
 // The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
 enum CriticalErrorCondition {
@@ -109,7 +109,8 @@ enum CriticalErrorCondition {
   HEATER_OUT_OF_BOUNDS,
   STACK_LOSS_PWR,
   PSU_UNRESPONSIVE,
-  MAINS_LOSS_PWR
+  MAINS_LOSS_PWR,
+  SYSTEM_OVER_TEMPERATURE
 };
 
 constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINITIONS] = {
@@ -118,14 +119,15 @@ constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINI
     "Post Stack  TC-C Bad",
     "Can not init three TC's",
     "Fan Power Loss",
-	"Lost 12v Power",
+    "Lost 12v Power",
     "Lost 24v Power",
     "Fan TACH unresponsive",
     "Lost control of Heater",
     "pid pegged, temp out of bounds",
     "Lost control of the Stack",
     "Lost control of the programmable PSU",
-    "Lost mains power, on UPS"
+    "Lost mains power, on UPS",
+    "System Over Temperature"
   };
 
 class CriticalError {
@@ -184,6 +186,7 @@ public:
   // These are bounds; we won't let values go outside these.
   // They can only be changed here and forcing a recompilation.
   static constexpr float OPERATING_TEMPERATURE_C = 750.0;
+  static constexpr float OVER_TEMPERATURE_C = 800.0;
   const float BOUND_MAX_TEMP = 750.0;
   const float BOUND_MIN_TEMP = 25.0;
   static constexpr float NOMINAL_AMBIENT_c = 25.0;
