@@ -108,7 +108,7 @@ void DeltaFans::motorControl(int s)
 }
 
 // m = motor -- 0 - 3
-void DeltaFans::PWMMotorControl(float s, int m)
+void DeltaFans::PWMMotorControl(float s, unsigned int m)
 {
   //  int q = map(s*100, SPEED_MIN, SPEED_MAX, 0, 255);
   int q = map(s*50, SPEED_MIN, SPEED_MAX, 0, 255);

@@ -79,12 +79,14 @@ public:
   SL_PS();
   SL_PS(const char * name, uint8_t id);
   int reInit();
+  int reInit( uint16_t volts, uint16_t amps);
+  bool disable();
   bool evaluatePS();
 
   int setPS_Addr(uint8_t addr);
 
   int setPS_Val(uint8_t addr, const char *loc, const char *val);
-
+  int setPS_Control(uint8_t addr,const char *val);
   int setPS_GlobOnOff(uint8_t addr, const char *val);
   int setPS_OnOff(uint8_t addr, const char *val);
   int setPS_Voltage(uint8_t addr, uint16_t volts);

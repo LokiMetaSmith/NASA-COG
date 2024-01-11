@@ -18,7 +18,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define COMPANY_NAME "pubinv.org "
 //#define PROG_NAME "main.cpp"
 #define PROG_NAME "OEDCS"
-#define VERSION "; Rev: 0.3.13"  // Fan controlled version
+#define VERSION "; Rev: 0.3.14"  // Fan controlled version
 #define DEVICE_UNDER_TEST "Hardware: Due"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 

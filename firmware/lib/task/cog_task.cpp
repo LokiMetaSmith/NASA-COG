@@ -534,8 +534,9 @@ namespace CogApp
         }
     }
 	else {
-        if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
+        if (getConfig()->errors[PWR_24V_BAD].fault_present) {
           getConfig()->errors[PWR_24V_BAD].fault_present = false;
+		  CogCore::Debug<const char *>("Probable AC Power (+24V) RESTORED!!!\n");
         }
     }//evaluateFan
 	
@@ -547,8 +548,10 @@ namespace CogApp
         }
     }
 	else {
-        if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
+        if (getConfig()->errors[PWR_12V_BAD].fault_present) {
           getConfig()->errors[PWR_12V_BAD].fault_present = false;
+		  		  CogCore::Debug<const char *>("Probable AC Power (+12V) RESTORED!!!\n");
+
         }
     }//evaluateFan
     // Report fan speed
@@ -595,7 +598,7 @@ namespace CogApp
       }
     }
     else {
-        if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
+        if (getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
           getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
         }
     }//evaluateFan
@@ -611,7 +614,7 @@ namespace CogApp
       }
     }
     else {
-        if (!getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
+        if (getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
           getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
         }
     }//evaluateHeaterEnvelope
@@ -627,8 +630,9 @@ namespace CogApp
         }
       }
       else {
-        if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+        if (getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
           getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
+		  getHAL()->_stacks[0]->reInit();
         }
       }//evaluatePSU
 
@@ -714,13 +718,22 @@ namespace CogApp
     const float R1=40000;
     const float R2=10000;
     const float Vcc = 3.3;
-    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
-    
-#ifdef CTL_V_1_1
-    const int highThreshold12V = 930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+#ifdef DISABLE_12V_EVAL
+    const int highThreshold12V = 1024;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
 #else
-    const int highThreshold12V = 1024;
+    const int highThreshold12V = 930;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
 #endif
+/* 
+#ifdef
+    const int highThreshold12V = 1024;
+    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+#endif */
+
+    
+
+
 
     int _v12read = analogRead(SENSE_12V);
 

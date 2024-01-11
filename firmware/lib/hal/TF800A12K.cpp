@@ -192,34 +192,87 @@ int SL_PS::init() {
   return retval;
 }
 
+bool SL_PS::disable() {
+	int retval = 0;
+
+  //PS1  is attached to Serial1, check if AUX is high, if so, disable the PSU
+  if(digitalRead( PS1_AUX_SENSE) == HIGH) {
+	digitalWrite(PS1_EN, LOW);
+	if(digitalRead( PS1_AUX_SENSE) == HIGH) {
+	  CogCore::Debug<const char *>("failed to disable PSU");
+	  return false;
+	}
+	return true;
+  }
+  CogCore::Debug<const char *>("PSU already disabled");
+  return true;
+}
+
 int SL_PS::reInit() {
+	return reInit(0,0);
+}
+
+int SL_PS::reInit(uint16_t volts, uint16_t amps) {
+
+
+  //PS1  is attached to Serial1, check if AUX is high, if so, disable the PSU
+  if(digitalRead( PS1_AUX_SENSE) == LOW) {
+	digitalWrite(PS1_EN, HIGH);
+	if(digitalRead( PS1_AUX_SENSE) == LOW) {
+	  CogCore::Debug<const char *>("failed to enable PSU");
+	}
+  }
 
   int retval = 0;
   watchdogReset();
-  getPS_Control(ADDRESS);
+  getPS_Control(ADDRESS); //set
   watchdogReset();
   getPS_Status0(ADDRESS);
   watchdogReset();
   getPS_Status1(ADDRESS);
   watchdogReset();
-  // Note! We want to turn off the machine as quickly as possible on startup!
-  if (setPS_OnOff(ADDRESS, "ON")) CogCore::Debug<const char *>("Turned it on\n");
-  else {
-    CogCore::Debug<const char *>("failed to turn PS on\n");
-    retval = -1;
+  if (DEBUG_SL_PS > 0) {
+	CogCore::DebugLn<const char *>( "Pre: setPS_Control");
+	CogCore::Debug<const char *>( "status0: ");
+    CogCore::DebugLn< uint8_t>(status0);
+	CogCore::Debug<const char *>( "status1: ");
+    CogCore::DebugLn< uint8_t>(status1);
   }
+  setPS_GlobOnOff(ADDRESS,"off");
+  setPS_Control(ADDRESS,"REMOTE");
+    watchdogReset();
+  getPS_Control(ADDRESS); //set
+  watchdogReset();
+  getPS_Status0(ADDRESS);
+  watchdogReset();
+  getPS_Status1(ADDRESS);
+  watchdogReset();
+  if (DEBUG_SL_PS > 0) {
+	CogCore::DebugLn<const char *>( "Post: setPS_Control");
+	CogCore::Debug<const char *>( "status0: ");
+    CogCore::DebugLn< uint8_t>(status0);
+	CogCore::Debug<const char *>( "status1: ");
+    CogCore::DebugLn< uint8_t>(status1);
+  }
+  
 
   watchdogReset();
-  if (setPS_Voltage(ADDRESS, 0)) CogCore::Debug<const char *>("Set volts to 0.0 volts\n");
+  if (setPS_Voltage(ADDRESS, volts)) CogCore::Debug<const char *>("Set volts to 0.0 volts\n");
   else {
     CogCore::Debug<const char *>("failed to set volts\n");
     retval = -1;
   }
 
   watchdogReset();
-  if (setPS_Current(ADDRESS, 0)) CogCore::Debug<const char *>("Set current to 0.0 amps\n");
+  if (setPS_Current(ADDRESS, amps)) CogCore::Debug<const char *>("Set current to 0.0 amps\n");
   else {
     CogCore::Debug<const char *>("failed to set current\n");
+    retval = -1;
+  }
+  // Note! We want to turn off the machine as quickly as possible on startup!
+  if (setPS_OnOff(ADDRESS, "ON")) CogCore::Debug<const char *>("Turned it on\n");
+  else {
+    CogCore::Debug<const char *>("failed to turn PS on\n");
     retval = -1;
   }
   return retval;
@@ -227,11 +280,11 @@ int SL_PS::reInit() {
 
 // Return True if Okay, false if bad.
 bool SL_PS::evaluatePS(){
-
+  getPS_Control(ADDRESS);
   watchdogReset();
-  getPS_Status0(ADDRESS);
+  getPS_Status0(ADDRESS);//doesn't trigger any bits
   watchdogReset();
-  getPS_Status1(ADDRESS);
+  getPS_Status1(ADDRESS);//doesn't trigger any bits for control or other flags
   watchdogReset();
   if (DEBUG_SL_PS > 0) {
 	CogCore::Debug<const char *>( "status0: ");
@@ -247,7 +300,7 @@ bool SL_PS::evaluatePS(){
     if(status0 & 0x40)CogCore::DebugLn<const char *>( "Bit-6 -> AC Input Power Down");
     if(status0 & 0x80)CogCore::DebugLn<const char *>( "Bit-7 -> AC Input Failure");
     if(!(status0 & 0xFF))CogCore::DebugLn<const char *>( "status0: OK");
-    if(status1 & 0x01)CogCore::DebugLn<const char *>( "Inhibit by VCI / ACI or ENB");
+    if(status1 & 0x01)CogCore::DebugLn<const char *>( "Bit-0 -> Inhibit by VCI / ACI or ENB");
     if(status1 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> Inhibit by Software Command");
     if(status1 & 0x04)CogCore::DebugLn<const char *>( "Bit-2 -> (Not used)");
     if(status1 & 0x08)CogCore::DebugLn<const char *>( "Bit-3 -> (Not used)");
@@ -269,20 +322,23 @@ bool SL_PS::evaluatePS(){
   // status0: OK
   // REMOTE
   // In binary: 10010011
-  //
-   if( !(status0 & 0xFF) && !(status1 & 0x6D)){
+  // normally status1: 1001 0010 //in OKC
+  //6D is 0110 1101
+   if( !(status0 & 0xFF) && (status1 == 0x92)){
+	   CogCore::DebugLn<const char *>( "PSU GOOD!");
 	    return true;
    } else{
         CogCore::Debug<const char *>( "status0: ");
 		CogCore::DebugLn< uint8_t>(status0);
 		CogCore::Debug<const char *>( "status1: ");
 		CogCore::DebugLn< uint8_t>(status1);
-   
+	CogCore::DebugLn<const char *>( "RUNNING reInit!");	
+       return reInit();
 	   if( !(status0 & 0xFF)){
 		 CogCore::DebugLn<const char *>( "LOST CONTROL OF PSU, CHECK STACK VOLTAGE");
 	     return true;
 	   }
-	   return false;
+	   //return false;
 	   
    }
    
@@ -296,10 +352,14 @@ bool SL_PS::evaluatePS(){
 
 int SL_PS::setPS_Addr(uint8_t addr) {
   Serial1.print("ADDS "); Serial1.print(addr); Serial1.print("\r\n");
-  delay(50);
+  //delay(50);
   this->address = addr;
   char buff[5];
   uint8_t c = Serial1.readBytesUntil('\n', buff, sizeof buff);
+  if (DEBUG_SL_PS > 0) {
+	CogCore::Debug<const char *>( "setPS_Addr reads: ");
+    CogCore::DebugLn< char *>(buff);
+  }
   if (c != 3 || buff[0] != '=' || buff[1] != '>') return 0;
   return 1;
 }
@@ -309,14 +369,22 @@ int SL_PS::setPS_Addr(uint8_t addr) {
 int SL_PS::setPS_Val(uint8_t addr, const char *loc, const char *val) {
   if (!setPS_Addr(addr)) {
     CogCore::Debug<const char *>("setPS_Val didn't set address\n");
-    return 0;
+	reInit();
+    return setPS_Addr(addr);
   }
 
-  Serial1.print(loc); Serial1.print(' '); Serial1.print(val); Serial1.print("\r\n");
+  Serial1.print(loc); 
+  Serial1.print(' '); 
+  Serial1.print(val); 
+  Serial1.print("\r\n");
   // Do we need this delay?
   //  delay(50);
   char b[5];
   int c = Serial1.readBytesUntil('\n', b, sizeof b);
+  if (DEBUG_SL_PS > 0) {
+	CogCore::Debug<const char *>( "setPS_Val reads: ");
+    CogCore::DebugLn< char *>(b);
+  }
   if (c != 3 || b[0] != '=' || b[1] != '>') return 0;
   return 1;
 }
@@ -344,6 +412,13 @@ int SL_PS::setPS_Current(uint8_t addr, uint16_t amps) {
   snprintf(b, sizeof b, "%4.1f", amps / 100.0);
   return setPS_Val(addr, "SI", b);
 }
+
+int SL_PS::setPS_Control(uint8_t addr,const char *val) {
+  if (strcasecmp(val, "LOCAL") == 0) val = "";
+  if (strcasecmp(val, "REMOTE") == 0) val = "1";
+  return setPS_Val(addr, "REMS", val);
+}
+
 
 char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
   static char rval[100];

@@ -567,7 +567,7 @@ void draw(void) {
   }
 }
 
-void setupBacklights(void){
+void setupBacklights(void) {
   pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   pixels.setPixelColor(0, pixels.Color(150, 50, 50)); //encoder back light
   pixels.setPixelColor(1, pixels.Color(150, 50, 50)); //encoder back light
@@ -575,8 +575,8 @@ void setupBacklights(void){
   pixels.show();
 }
 
-void setupu8g2(void) { 
-//Display setup
+void setupu8g2(void) {
+  //Display setup
   u8g2.begin();
   u8g2.setContrast(128);
   u8g2.setFont(u8g2_font_helvB12_tr); //FLE
@@ -584,6 +584,8 @@ void setupu8g2(void) {
   u8g2.setCursor(0, 16);
   u8g2.print(COMPANY_NAME);
   //  u8g2.print("Iot Demo");
+  u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
+  u8g2.setFontMode(0);
   u8g2.setCursor(0, 32);
   u8g2.print(PROG_NAME);
   u8g2.sendBuffer();

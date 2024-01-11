@@ -135,13 +135,13 @@ void SanyoAceB97::printRPMS() {
 // prevents the PWM signal from working properly.
 // Nevertheless I'm leaving it in place in case it
 // is needed for some other purpose.
-void SanyoAceB97::fanSpeedPerCentage(int s)
+void SanyoAceB97::fanSpeedPerCentage(unsigned int s)
 {
 
 #ifdef FAN_LOCKOUT
-	int q = map(s, SPEED_MIN, SPEED_MAX, OPERATING_PWM_THROTTLE, 0); // inverted PWM for Control v1 pcb's
+	unsigned int q = map(s, SPEED_MIN, SPEED_MAX, OPERATING_PWM_THROTTLE, 0); // inverted PWM for Control v1 pcb's
 #else
-	int q = map(s, SPEED_MIN, SPEED_MAX, 0, OPERATING_PWM_THROTTLE);
+	unsigned int q = map(s, SPEED_MIN, SPEED_MAX, 0, OPERATING_PWM_THROTTLE);
 #endif
 
 
@@ -213,7 +213,7 @@ void SanyoAceB97::updatePWM(float pwm_ratio) {
 
   //  evaluateFan( BLOWER_UNRESPONSIVE, pwm_ratio);
 
-  fanSpeedPerCentage((int)( pwm_ratio * 100));
+  fanSpeedPerCentage((unsigned int)( pwm_ratio * 100));
   _pwm_ratio[0] = pwm_ratio;
 
   if (DEBUG_FAN > 0 ) {

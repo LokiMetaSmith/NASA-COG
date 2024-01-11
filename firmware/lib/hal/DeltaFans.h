@@ -80,9 +80,9 @@ public:
   // This is a ration from 0.0 to 1.0
   float _pwm_ratio[NUMBER_OF_FANS] = {0.0,0.0,0.0,0.0};
 
-  int MOTOR_OUT_PIN = 8;
-  int PWM_PIN[NUMBER_OF_FANS];
-  int TACH_PIN[NUMBER_OF_FANS];
+  unsigned int MOTOR_OUT_PIN = 8;
+  unsigned int PWM_PIN[NUMBER_OF_FANS];
+  unsigned int TACH_PIN[NUMBER_OF_FANS];
 
   int SPEED_MAX = 100;// in %
   int SPEED_MIN = 0;//in %
@@ -104,7 +104,7 @@ public:
   void printRPMS();
   void motorControl(int s);
 
-  void PWMMotorControl(float s, int m);
+  void PWMMotorControl(float s, unsigned int m);
   void update(float pwm_ratio);
 };
 
