@@ -271,8 +271,8 @@ void ReadTempsTask::updateTemperatures() {
   }
 
   // Add the OVER TEMPERATURE checks here.
-  if ((postHeaterTemp > MachineConfig::OVER_TEMPERATURE_C) &&
-      (postGetterTemp > MachineConfig::OVER_TEMPERATURE_C) &&
+  if ((postHeaterTemp > MachineConfig::OVER_TEMPERATURE_C) ||
+      (postGetterTemp > MachineConfig::OVER_TEMPERATURE_C) ||
       (postStackTemp > MachineConfig::OVER_TEMPERATURE_C)) {
       if (!getConfig()->errors[SYSTEM_OVER_TEMPERATURE].fault_present) {
         getConfig()->errors[SYSTEM_OVER_TEMPERATURE].fault_present = true;
