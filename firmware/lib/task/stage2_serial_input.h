@@ -1,5 +1,5 @@
 /*
-  serial_input_task.h -- parse serial input to commands
+  stage2_serial_input.h -- parse serial input to commands
   Copyright (C) 2023 Robert Read.
 
 
@@ -17,8 +17,8 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#ifndef SERIAL_TASK_H
-#define SERIAL_TASK_H
+#ifndef STAGE2_SERIAL_INPUT_H
+#define STAGE2_SERIAL_INPUT_H
 
 #include <Arduino.h>
 #include <core.h>
@@ -27,6 +27,7 @@
 #include <stage2_hal.h>
 #include <stage2_heater_task.h>
 #include <cog_task.h>
+#include <serial_input_task.h>
 
 #define INPUT_BUFFER_SIZE 256
 
@@ -34,36 +35,15 @@
 namespace CogApp
 {
 
-  struct InputCommand {
-    char com_c;
-    char value_c;
-    float value_f;
-  };
-
-  class SerialInputTask : public CogCore::Task {
-  private:
-    static const byte numChars = 32;
-    char receivedChars[numChars];
-    char tempChars[numChars];
-    char messageFromPC[numChars] = {0};
-    int integerFromPC = 0;
-    float floatFromPC = 0.0;
-    boolean newData = false;
-    void recvWithEndMarker();
-    InputCommand parseCommandLine();
+  class Stage2SerialInputTask : public SerialInputTask {
   public:
+    Stage2HeaterTask *stage2HeaterTasks[3];
     int DEBUG_SERIAL = 2;
+    int PERIOD_MS = 250;
+    MachineConfig *mcs[3];
+    bool executeCommand(InputCommand ic,MachineConfig* mc,StateMachineManager *smm) override;
     bool _init() override;
     bool _run() override;
-    int DEBUG_LEVEL = 0;
-    void showParsedData(InputCommand ic);
-    virtual bool listen(InputCommand &ic);
-    virtual bool executeCommand(InputCommand ic,
-                                MachineConfig* mc,
-                                StateMachineManager *smm);
-    void processStateChange(InputCommand ic,
-                            MachineConfig *mc,
-                            StateMachineManager *smm);
   };
 
 }

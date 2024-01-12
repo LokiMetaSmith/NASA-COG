@@ -116,20 +116,6 @@ namespace CogApp
     return true;
   }
 
-  bool OEDCSSerialInputTask::_init() {
-    if (DEBUG_SERIAL > 1) {
-      CogCore::Debug<const char *>("OEDSCSerialTask Inited\n");
-    }
-    SerialInputTask::_init();
-    return true;
-  }
-  bool Stage2SerialInputTask::_init() {
-    if (DEBUG_SERIAL > 1) {
-      CogCore::Debug<const char *>("OEDSCSerialTask Inited\n");
-    }
-    SerialInputTask::_init();
-    return true;
-  }
 
   void SerialInputTask::processStateChange(InputCommand ic,MachineConfig *mc,StateMachineManager *smm) {
     if (ic.value_c == '1') {
@@ -152,7 +138,7 @@ namespace CogApp
         Debug<const char *>("Entering Automatic One-Button Algorithm.");
         mc->clearErrors();
         smm->changeTargetTemp(mc->TARGET_TEMP_C);
-        mc->USE_ONE_BUTTON = true; 
+        mc->USE_ONE_BUTTON = true;
 	} else if (ic.value_c == '3') {
         Debug<const char *>("Entering Automatic One-Button Algorithm. Set Temp to 750degC");
         mc->clearErrors();
@@ -225,130 +211,5 @@ namespace CogApp
     default:
       CogCore::Debug<const char *>("Internal Error!\n");
     }
-  }
-
-  bool OEDCSSerialInputTask::executeCommand(InputCommand ic,MachineConfig* mc,StateMachineManager *smm) {
-    if (DEBUG_SERIAL > 1) {
-      CogCore::Debug<const char *>("executeCommand\n");
-    }
-
-    if (ic.com_c == 'S' ||  ic.com_c == 'H' || ic.com_c == 'R' ||
-        ic.com_c == 'P' || ic.com_c == 'I' || ic.com_c == 'D') {
-      SerialInputTask::executeCommand(ic,mc,smm);
-    } else {
-      switch(ic.com_c) {
-      case 'A':
-        {
-          float a = min(mc->BOUND_MAX_AMPERAGE_SETTING,ic.value_f);
-          a = max(0,a);
-          mc->MAX_AMPERAGE = a;
-          mc->report->max_stack_amps_A =
-            mc->MAX_AMPERAGE;
-	  CogCore::Debug<const char *>("Maximum amperage changed to: ");
-	  CogCore::Debug<float>(a);
-	  CogCore::Debug<const char *>("\n");
-        }
-        break;
-      case 'W':
-        {
-          float w = min(mc->BOUND_MAX_WATTAGE,ic.value_f);
-          w = max(0,w);
-          mc->MAX_STACK_WATTAGE = w;
-          mc->report->max_stack_watts_W =
-            mc->MAX_STACK_WATTAGE;
-	  CogCore::Debug<const char *>("Wattage changed to: ");
-	  CogCore::Debug<float>(w);
-	  CogCore::Debug<const char *>("\n");
-          break;
-        }
-      case 'F':
-        {
-          float f = min(1.0,ic.value_f);
-          f =  max(0,f);
-          mc->FAN_SPEED = f;
-          mc->report->fan_pwm =
-            mc->FAN_SPEED;
-	  CogCore::Debug<const char *>("Fan Speed changed to: ");
-	  CogCore::Debug<float>(f);
-	  CogCore::Debug<const char *>("\n");
-          break;
-        }
-      default:
-	CogCore::Debug<const char *>("Unknown command.\n");
-        break;
-      };
-    }
-  }
-
-  bool OEDCSSerialInputTask::_run()
-  {
-    if (DEBUG_SERIAL > 2) {
-      CogCore::Debug<const char *>("OEDCS SerialInput Taske Run\n");
-    }
-    InputCommand ic;
-    if (listen(ic)) {
-      executeCommand(ic,getConfig(),cogTask);
-    }
-  }
-
-  bool Stage2SerialInputTask::executeCommand(InputCommand ic,MachineConfig* mc,StateMachineManager *smm) {
-    if (DEBUG_SERIAL > 1) {
-      CogCore::Debug<const char *>("executeCommand\n");
-    }
-
-    showParsedData(ic);
-    if ((ic.com_c == 'S') ) {
-      processStateChange(ic,mc,smm);
-    } else if ((ic.com_c == 'H') || (ic.com_c == 'R')
-               || ic.com_c == 'P' || ic.com_c == 'I' || ic.com_c == 'D') {
-      SerialInputTask::executeCommand(ic,mc,smm);
-    } else {
-      switch(ic.com_c) {
-      case '1':
-        {
-          mc->hal->s2heaterToControl = Int1;
-          Debug<const char *>("Switching to controlling the Int1 Heater!\n");
-          return false;
-          break;
-        }
-      case '2':
-        {
-          mc->hal->s2heaterToControl = Ext1;
-          Debug<const char *>("Switching to controlling the Ext1 Heater!\n");
-          return false;
-          break;
-        }
-      case '3':
-        {
-          mc->hal->s2heaterToControl = Ext2;
-          Debug<const char *>("Switching to controlling the Ext2 Heater!\n");
-          return false;
-          break;
-        }
-      default: {
-        CogCore::Debug<const char *>("unknown command: ");
-        CogCore::Debug<char>(ic.com_c);
-        CogCore::Debug<const char *>("\n");
-      }
-      }
-    }
-  }
-
-  bool Stage2SerialInputTask::_run()
-  {
-    if (DEBUG_SERIAL > 1) {
-      CogCore::Debug<const char *>("Stage2SerialInputTask run\n");
-    }
-    InputCommand ic;
-    if (listen(ic)) {
-      if (DEBUG_SERIAL > 0) {
-	CogCore::Debug<const char *>("Got command\n");
-        showParsedData(ic);
-      }
-      executeCommand(ic,
-                     mcs[getConfig()->hal->s2heaterToControl],
-                     stage2HeaterTasks[getConfig()->hal->s2heaterToControl]);
-    }
-    return true;
   }
 }

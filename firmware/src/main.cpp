@@ -35,7 +35,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <flash.h>
 #include <network_task.h>
 #include <cog_task.h>
-#include <serial_input_task.h>
+#include <OEDCS_serial_input_task.h>
 #include <fault_task.h>
 #include <duty_cycle_task.h>
 #include <heater_pid_task.h>
