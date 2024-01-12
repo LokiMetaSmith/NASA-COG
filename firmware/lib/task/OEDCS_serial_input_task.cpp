@@ -50,6 +50,15 @@ namespace CogApp
       SerialInputTask::executeCommand(ic,mc,smm);
     } else {
       switch(ic.com_c) {
+      case 'K':
+        {
+          if (mc->ms == OffUserAck) {
+            CogCore::Debug<const char *>("Having received a acKnowledgment, we are now moving to a normal Off state. You can restart the machine from the Off state.\n");
+            mc->ms = Off;
+          } else {
+            CogCore::Debug<const char *>("The acKnowledgment command is only accepted when you are in the OffUserAck state.\n");          }
+        }
+        break;
       case 'A':
         {
           float a = min(mc->BOUND_MAX_AMPERAGE_SETTING,ic.value_f);

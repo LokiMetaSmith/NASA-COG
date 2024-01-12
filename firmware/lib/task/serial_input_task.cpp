@@ -119,7 +119,7 @@ namespace CogApp
 
   void SerialInputTask::processStateChange(InputCommand ic,MachineConfig *mc,StateMachineManager *smm) {
     if (ic.value_c == '1') {
-        mc->USE_ONE_BUTTON = false;
+      mc->USE_ONE_BUTTON = false;
       if (mc->ms == Off) {
         mc->clearErrors();
         smm->changeTargetTemp(mc->TARGET_TEMP_C);
@@ -135,15 +135,15 @@ namespace CogApp
         Debug<const char *>("Already Off.\n");
       }
     } else if (ic.value_c == '2') {
-        Debug<const char *>("Entering Automatic One-Button Algorithm.");
-        mc->clearErrors();
-        smm->changeTargetTemp(mc->TARGET_TEMP_C);
-        mc->USE_ONE_BUTTON = true;
-	} else if (ic.value_c == '3') {
-        Debug<const char *>("Entering Automatic One-Button Algorithm. Set Temp to 750degC");
-        mc->clearErrors();
-        smm->changeTargetTemp(mc->OPERATING_TEMPERATURE_C);
-        mc->USE_ONE_BUTTON = true;
+      Debug<const char *>("Entering Automatic One-Button Algorithm.");
+      mc->clearErrors();
+      smm->changeTargetTemp(mc->TARGET_TEMP_C);
+      mc->USE_ONE_BUTTON = true;
+    } else if (ic.value_c == '3') {
+      Debug<const char *>("Entering Automatic One-Button Algorithm. Set Temp to 750degC");
+      mc->clearErrors();
+      smm->changeTargetTemp(mc->OPERATING_TEMPERATURE_C);
+      mc->USE_ONE_BUTTON = true;
     } else {
     }
   }
