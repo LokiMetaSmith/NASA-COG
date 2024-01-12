@@ -51,7 +51,7 @@
 // an abstract "power supply"
 class SL_PS : public AbstractPS  {
 private:
-  int DEBUG_SL_PS = 2;
+  int DEBUG_SL_PS = 0;
   int DEBUG_SL_PS_UV = 0;
   int init(); // return -1 if it failes!
   uint8_t address = ADDRESS;
