@@ -321,7 +321,7 @@ bool SL_PS::evaluatePS(){
   //6D is 0110 1101
 #ifdef DO_NOT_CHECK_INHIBIT_BY_VCI_ON_PSU
   const int EXPECTED_STATUS1 = 0x93;
-#elif
+#else
   const int EXPECTED_STATUS1 = 0x92;
 #endif
   if( !(status0 & 0xFF) && (status1 == EXPECTED_STATUS1)){
