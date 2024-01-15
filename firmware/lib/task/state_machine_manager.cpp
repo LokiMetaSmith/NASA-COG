@@ -59,7 +59,7 @@ namespace CogApp
     // If we are in the off state there is nothing to do!
     if (ms == OffUserAck) {
       CogCore::Debug<const char *>("AN ERROR OCCURED. WILL NOW ENTER OFF STATE\n");
-      CogCore::Debug<const char *>("UNTIL ACKNOWLEDGED. ENTER A SINGLE 'a' TO ACKNOWLEDGE:\n");
+      CogCore::Debug<const char *>("UNTIL ACKNOWLEDGED. ENTER A SINGLE 'K' TO ACKNOWLEDGE:\n");
     }
   }
 

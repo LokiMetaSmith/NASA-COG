@@ -22,11 +22,6 @@
 #include <TF800A12K.h>
 #include <core.h>
 
-
-
-
-
-
 SL_PS::SL_PS() {
 }
 SL_PS::SL_PS(const char * name, uint8_t id) {
@@ -254,7 +249,7 @@ int SL_PS::reInit(uint16_t volts, uint16_t amps) {
 	CogCore::Debug<const char *>( "status1: ");
     CogCore::DebugLn< uint8_t>(status1);
   }
-  
+
 
   watchdogReset();
   if (setPS_Voltage(ADDRESS, volts)) CogCore::Debug<const char *>("Set volts to 0.0 volts\n");
@@ -287,9 +282,9 @@ bool SL_PS::evaluatePS(){
   getPS_Status1(ADDRESS);//doesn't trigger any bits for control or other flags
   watchdogReset();
   if (DEBUG_SL_PS > 0) {
-	CogCore::Debug<const char *>( "status0: ");
+    CogCore::Debug<const char *>( "status0: ");
     CogCore::DebugLn< uint8_t>(status0);
-	CogCore::Debug<const char *>( "status1: ");
+    CogCore::Debug<const char *>( "status1: ");
     CogCore::DebugLn< uint8_t>(status1);
     if(status0 & 0x01)CogCore::DebugLn<const char *>( "Bit-0 -> OVP Shutdown");
     if(status0 & 0x02)CogCore::DebugLn<const char *>( "Bit-1 -> OLP Shutdown");
@@ -327,24 +322,34 @@ bool SL_PS::evaluatePS(){
   // In binary: 10010011
   // normally status1: 1001 0010 //in OKC
   //6D is 0110 1101
-   if( !(status0 & 0xFF) && (status1 == 0x92)){
-	   CogCore::DebugLn<const char *>( "PSU GOOD!");
-	    return true;
-   } else{
-        CogCore::Debug<const char *>( "status0: ");
-		CogCore::DebugLn< uint8_t>(status0);
-		CogCore::Debug<const char *>( "status1: ");
-		CogCore::DebugLn< uint8_t>(status1);
-	CogCore::DebugLn<const char *>( "RUNNING reInit!");	
-       return reInit();
-	   if( !(status0 & 0xFF)){
-		 CogCore::DebugLn<const char *>( "LOST CONTROL OF PSU, CHECK STACK VOLTAGE");
-	     return true;
-	   }
-	   //return false;
-	   
-   }
-   
+#ifdef DO_NOT_CHECK_INHIBIT_BY_VCI_ON_PSU
+  const int EXPECTED_STATUS1 = 0x93;
+#else
+  const int EXPECTED_STATUS1 = 0x92;
+#endif
+  if( !(status0 & 0xFF) && (status1 == EXPECTED_STATUS1)){
+    if (DEBUG_SL_PS > 0) {
+      CogCore::DebugLn<const char *>( "PSU GOOD!");
+    }
+    return true;
+  } else{
+    CogCore::Debug<const char *>( "status0: ");
+    CogCore::DebugLn< uint8_t>(status0);
+    CogCore::Debug<const char *>( "status1: ");
+    CogCore::DebugLn< uint8_t>(status1);
+    CogCore::DebugLn<const char *>( "RUNNING reInit!");
+
+    // WARNING: LAWRENCE --- this return masks the code below it!
+    // I am not sure what the correct solution is. - rlr
+    return reInit();
+    if( !(status0 & 0xFF)){
+      CogCore::DebugLn<const char *>( "LOST CONTROL OF PSU, CHECK STACK VOLTAGE");
+      return true;
+    }
+    //return false;
+
+  }
+
   // //If everything is working, we will mask with a known good state status0 & 0xFF and status1 0x92 0b1001 0010
   // return false;
 
@@ -376,9 +381,9 @@ int SL_PS::setPS_Val(uint8_t addr, const char *loc, const char *val) {
     return setPS_Addr(addr);
   }
 
-  Serial1.print(loc); 
-  Serial1.print(' '); 
-  Serial1.print(val); 
+  Serial1.print(loc);
+  Serial1.print(' ');
+  Serial1.print(val);
   Serial1.print("\r\n");
   // Do we need this delay?
   //  delay(50);

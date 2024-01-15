@@ -18,7 +18,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define COMPANY_NAME "pubinv.org "
 //#define PROG_NAME "main.cpp"
 #define PROG_NAME "OEDCS"
-#define VERSION "; Rev: 0.3.14"  // Fan controlled version
+#define VERSION "; Rev: 0.3.15"  // Allows "K" command
 #define DEVICE_UNDER_TEST "Hardware: Due"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -35,7 +35,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <flash.h>
 #include <network_task.h>
 #include <cog_task.h>
-#include <serial_input_task.h>
+#include <OEDCS_serial_input_task.h>
 #include <fault_task.h>
 #include <duty_cycle_task.h>
 #include <heater_pid_task.h>

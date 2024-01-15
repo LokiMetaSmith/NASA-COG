@@ -57,10 +57,11 @@ Place holder for July-August 2023 Begin Construction of Unit 2.
 ## Front Panel and Enclosure Folders  Unit 1
 A March 2023 enclosure for prototyping, proof of concept for the COG controller. 
 This prototype has:
-* A programmable power supply (Voltage and current), 
-* Solid state relays for switching AC power to preheaters
+* A programmable power supply (Voltage and current). Power Electrinics, TF800K12A. URL: https://slpower.com/downloads-and-tech-support
+* Solid state relays for switching AC power to preheaters. Sparkfun # COM-13015. URL: https://www.sparkfun.com/products/13015  
 * Power and PWM control for fans to force air into the COG
-* Air Temperature and air flow rate sensors
+* Air Temperature: Adafruit MAX31850 amplifier assemblies. Adafruit Product ID: 1727. URL: https://www.adafruit.com/product/1727
+* Air flow rate sensors  NOT MOUNTED
 * An Arduino Due for system control.
 Navigate into the folders to see more.
 
