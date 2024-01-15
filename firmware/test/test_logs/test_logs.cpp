@@ -1,0 +1,444 @@
+/*
+Log test
+
+	Copyright 2023, Lawrence R. Kincheloe III
+
+  This program includes free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+
+  See the GNU Affero General Public License for more details.
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+*/
+
+
+
+
+#include <cstddef> // NULL
+#include <iomanip>
+//#include <iostream>
+#include <fstream>
+#include <string>
+
+#include <boost/archive/tmpdir.hpp>
+
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/assume_abstract.hpp>
+
+
+
+#include <unity.h>
+#include <stdio.h>
+#include <iostream>
+#include <string.h>
+#include <cstdint>
+#include <debug.h>
+#include <log.h>
+using namespace CogCore;
+
+
+#include <core_defines.h>
+#include <core.h>
+#include <machine.h>
+#include <stage2_config.h>
+#include <stage2_hal.h>
+#include <serialReportTask.h>
+
+
+#include <Arduino.h>
+#include <Adafruit_EEPROM_I2.h>
+
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(MachineConfig)
+std::ostream & operator<<(std::ostream &os, const MachineConfig &mc)
+{
+    return os << mc.ms << ' ' << mc.ms << ' ' << mc.MachineStateNames[mc.ms];
+}
+
+
+Adafruit_EEPROM_I2C i2ceeprom;
+
+#define EEPROM_ADDR 0x50  // the default address!
+
+// class EepromStream : public Stream {
+// public:
+  // EepromStream(int start, int size);
+
+  // void init();
+  // int available();
+  // int read();
+  // size_t write(uint8_t b);
+  // int peek();
+  // void flush();
+  // void rewind();
+
+// private:
+    // int _start;
+    // int _size;
+    // int _position;
+    // int _length;
+// };
+
+// EepromStream::EepromStream(int start, int size):
+  // _size(size-2),
+  // _start(start+2),
+  // _position(0){
+// }
+
+// void EepromStream::init(){
+  // _length = EEPROM.read(_start-2) | EEPROM.read(_start-1) << 8;
+// }
+
+// int EepromStream::available(){
+    // return _length - _position;
+// }
+
+
+// int EepromStream::read(){
+  // if (available()){
+      // return EEPROM.read(_start + _position++);
+  // } else {
+    // return -1;
+  // }
+// }
+
+// size_t EepromStream::write(uint8_t b){
+  // if (_position < _size){
+    // EEPROM.write(_start +_position++, b);
+    // return 1;
+  // } else {
+    // return 0;
+  // }
+// }
+
+// int EepromStream::peek(){
+  // if (available()){
+    // return EEPROM.read(_start + _position + 1);
+  // } else {
+    // return -1;
+  // }
+// }
+
+// void EepromStream::flush(){
+  // EEPROM.write(_start-2, _position & 0xFF);
+  // EEPROM.write(_start-1, (_position >> 8) & 0xFF);
+// #ifdef ESP8266
+  // EEPROM.commit();
+// #endif
+  // _length = _position;
+  // _position = 0;
+// }
+
+// void EepromStream::rewind(){
+  // _position = 0;
+// }
+
+void save_machine_config(const MachineConfig &s, const char * filename){
+	
+	
+    // make an archive
+    std::ofstream ofs(filename);
+	 if (i2ceeprom.begin(0x50)) {
+    boost::archive::text_oarchive oa(ofs);
+    oa << s;
+}
+
+void read_machine_config(MachineConfig &s, const char * filename)
+{
+    // open the archive
+    std::ifstream ifs(filename);
+    boost::archive::text_iarchive ia(ifs);
+
+    // restore the schedule from the archive
+    ia >> s;
+}
+
+using namespace CogCore;
+static Core core;
+
+MachineConfig *machineConfig[3];
+
+// This is a key parameter, which should perhaps be moved to a specific
+// default file to make it clearer!
+using namespace std;
+
+
+using namespace CogApp;
+ReadTempsTask readTempsTask;
+
+HeaterPIDTask heaterPIDTask[3];
+DutyCycleTask dutyCycleTask[3];
+Stage2HeaterTask stage2HeaterTask[3];
+
+SerialReportTask SerialReportTask[3];
+TempRefreshTask tempRefreshTask[3];
+Stage2NetworkTask stage2NetworkTask;
+
+SerialInputTask SerialInputTask;
+
+
+#define ETHERNET_BOARD_PRESENT 1
+// #define ETHERNET_BOARD_PRESENT 0 //No ethernet.
+
+
+MachineConfig *getConfig(int i) {
+  return machineConfig[i];
+}
+
+const int DEBUG_WITH_FAN_ON = 0;
+void setup() {
+
+  CogCore::serialBegin(115200UL);
+  delay(500);
+
+  if (core.Boot() == false) {
+    ErrorHandler::Log(ErrorLevel::Critical, ErrorCode::CoreFailedToBoot);
+    // TODO: Output error message
+    //return EXIT_FAILURE;
+    return;
+  }
+  Stage2HAL *s2hal = new Stage2HAL();
+  bool initSuccess  = s2hal->init();
+  Serial.println("about to start!");
+  if (!initSuccess) {
+    Serial.println("Could not init Hardware Abastraction Layer Properly!");
+  }
+
+  // WARNING!! THIS IS ONLY FOR TESTING THE THERMOCOUPLES
+  if (DEBUG_WITH_FAN_ON) {
+    const int FAN_PIN = 9;
+    pinMode(FAN_PIN, OUTPUT);
+    analogWrite(FAN_PIN, 255/2);
+  }
+
+  for(int i = 0; i < 3; i++) {
+    machineConfig[i] = new MachineConfig();
+    getConfig(i)->hal = s2hal;
+    getConfig(i)->hal->DEBUG_HAL = 0;
+    getConfig(i)->ms = Off;
+
+    // Now this is problematic and probably should be undone
+    getConfig(i)->ms = Off;
+    getConfig(i)->ms = Off;
+    getConfig(i)->ms = Off;
+  }
+
+  Serial.println("About to run test!");
+
+  // Now we have a problem; we want 3 configurations for 3 different
+  // heaters, but not everything can be triplicated.
+  // we will use the "0" config as a special config;
+  // this is the one that will be used for reporting.
+
+  CogCore::TaskProperties readTempsProperties;
+  readTempsProperties.name = "readTemps";
+  readTempsProperties.id = 19;
+  readTempsProperties.period = stage2_readTempsTask.PERIOD_MS;
+  readTempsProperties.priority = CogCore::TaskPriority::High;
+  readTempsProperties.state_and_config = (void *) getConfig(0);
+  delay(300);
+  core.AddTask(&stage2_readTempsTask, &readTempsProperties);
+  delay(100);
+  // For this class, we give it all configs, so it can place
+  // the temperatures in them
+  for (int i = 0; i < 3; i++) {
+    stage2_readTempsTask.mcs[i] = getConfig(i);
+  }
+
+  if (ETHERNET_BOARD_PRESENT) {
+    CogCore::TaskProperties Stage2NetworkProperties;
+    Stage2NetworkProperties.name = "Stage2Network";
+    Stage2NetworkProperties.id = 20;
+    Stage2NetworkProperties.period = stage2NetworkTask.PERIOD_MS;
+    Stage2NetworkProperties.priority = CogCore::TaskPriority::Low;
+    // note we must be cautious here, since there is only one Network interface
+    Stage2NetworkProperties.state_and_config = (void *) getConfig(0);
+    bool stage2Network = core.AddTask(&stage2NetworkTask, &Stage2NetworkProperties);
+    if (!stage2Network) {
+      CogCore::Debug<const char *>("Stage2Network add failed\n");
+      delay(100);
+      abort();
+    }
+
+    for (int i = 0; i < 3; i++) {
+      stage2NetworkTask.mcs[i] = getConfig(i);
+    }
+    stage2NetworkTask.DEBUG_UDP = 0;
+  }
+
+  for(int i = 0; i < 3; i++) {
+    CogCore::TaskProperties stage2SerialReportProperties;
+    stage2SerialReportProperties.name = "stage2SerialReportTemps";
+    stage2SerialReportProperties.id = 21+i;
+    stage2SerialReportProperties.period = stage2SerialReportTask[i].PERIOD_MS;
+    stage2SerialReportProperties.priority = CogCore::TaskPriority::High;
+    stage2SerialReportProperties.state_and_config = (void *) getConfig(i);
+    bool stage2SerialReportAdd = core.AddTask(&stage2SerialReportTask[i], &stage2SerialReportProperties);
+    if (!stage2SerialReportAdd) {
+      CogCore::Debug<const char *>("stage2SerialReport Task add failed\n");
+      abort();
+    }
+
+    CogCore::TaskProperties dutyCycleProperties;
+    dutyCycleProperties.name = "dutyCycle";
+    dutyCycleProperties.id = 24+i;
+    dutyCycleProperties.period = dutyCycleTask[i].PERIOD_MS;
+    dutyCycleProperties.priority = CogCore::TaskPriority::Low;
+    dutyCycleProperties.state_and_config = (void *) getConfig(i);
+    core.AddTask(&dutyCycleTask[i], &dutyCycleProperties);
+    dutyCycleTask[i].whichHeater = (Stage2Heater) i;
+
+    CogCore::TaskProperties HeaterPIDProperties;
+    HeaterPIDProperties.name = "HeaterPID";
+    HeaterPIDProperties.id = 27+i;
+    HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
+    HeaterPIDProperties.priority = CogCore::TaskPriority::High;
+    HeaterPIDProperties.state_and_config = (void *) getConfig(i);
+    core.AddTask(&heaterPIDTask[i], &HeaterPIDProperties);
+    heaterPIDTask[i].whichHeater = (Stage2Heater) i;
+
+    dutyCycleTask[i].one_pin_heater = getConfig(i)->hal->_ac_heaters[i];
+
+    CogCore::TaskProperties stage2HeaterProperties ;
+    stage2HeaterProperties.name = "stage2HeaterTask";
+    stage2HeaterProperties.id = 30+i;
+    stage2HeaterProperties.period = stage2HeaterTask[i].PERIOD_MS;
+    stage2HeaterProperties.priority = CogCore::TaskPriority::High;
+    stage2HeaterProperties.state_and_config = (void *) getConfig(i);
+    bool stage2HeaterTaskAdded = core.AddTask(&stage2HeaterTask[i], &stage2HeaterProperties);
+    if (!stage2HeaterTaskAdded) {
+      CogCore::Debug<const char *>("stage add Failed\n");
+      delay(100);
+      abort();
+    }
+    stage2HeaterTask[i].whichHeater = (Stage2Heater) i;
+    stage2HeaterTask[i].heaterPIDTask = &heaterPIDTask[i];
+
+    getConfig(i)->ms = Off;
+
+    heaterPIDTask[i].dutyCycleTask = &dutyCycleTask[i];
+
+  }
+
+  // Let's put our DEBUG_LEVELS here...
+  for(int i = 0; i < 3; i++) {
+    heaterPIDTask[i].DEBUG_PID = 0;
+    stage2HeaterTask[i].DEBUG_LEVEL = 0;
+    dutyCycleTask[i].DEBUG_DUTY_CYCLE = 0;
+    //    tempRefreshTask[i].DEBUG = 0;
+  }
+    stage2NetworkTask.DEBUG_UDP = 0;
+
+    core.DEBUG_CORE = 0;
+    core._scheduler.DEBUG_SCHEDULER = 0;
+    stage2_readTempsTask.DEBUG_READ_TEMPS = 0;
+
+  // This is used to determine which machine will
+  // be set by keyboard commands; you switch between them
+  // with simple commands
+  getConfig(0)->s2heater = Int1;
+  getConfig(1)->s2heater = Ext1;
+  getConfig(2)->s2heater = Ext2;
+  for(int i = 0; i < 3; i++) {
+    getConfig(i)->IS_STAGE2_HEATER_CONFIG = true;
+  }
+
+  CogCore::TaskProperties serialProperties;
+  serialProperties.name = "stage2SerialInput";
+  serialProperties.id = 39;
+  serialProperties.period = 250;
+  serialProperties.priority = CogCore::TaskPriority::High;
+  serialProperties.state_and_config = (void *) getConfig(0);
+  bool serialAdd = core.AddTask(&stage2SerialInputTask, &serialProperties);
+  if (!serialAdd) {
+    CogCore::Debug<const char *>("stage2SerialInputTask add failed\n");
+    delay(100);
+    abort();
+  }
+  stage2SerialInputTask.DEBUG_SERIAL = 0;
+  for (int i = 0; i < 3; i++) {
+    stage2SerialInputTask.mcs[i] = getConfig(i);
+    stage2SerialInputTask.stage2HeaterTasks[i] = &stage2HeaterTask[i];
+  }
+
+  s2hal->s2heaterToControl = Int1;
+
+  core.DEBUG_CORE = 0;
+
+  CogCore::Debug<const char *>("Added tasks\n");
+ // We want to make sure we have run the temps before we start up.
+
+  // I turn three times to make sure we get a temp...
+  stage2_readTempsTask._run();
+  stage2_readTempsTask._run();
+  stage2_readTempsTask._run();
+  for (int i = 0; i < 3; i++) {
+    getConfig(i)->GLOBAL_RECENT_TEMP = getConfig(i)->report->post_heater_C;
+    Serial.print("starting temp is: ");
+    Serial.println(getConfig(i)->GLOBAL_RECENT_TEMP);
+  }
+
+
+  // Now we will set the initial tunings for the heater_pid tasks
+  // This is a place where one could change the settings for
+  // one of the heaters but not another.
+
+  heaterPIDTask[Int1].SetTunings(s2hal->INIT_INT1_Kp,
+                                 s2hal->INIT_INT1_Ki,
+                                 s2hal->INIT_INT1_Kd);
+
+  heaterPIDTask[Ext1].SetTunings(s2hal->INIT_EXT1_Kp,
+                                 s2hal->INIT_EXT1_Ki,
+                                 s2hal->INIT_EXT1_Kd);
+
+  heaterPIDTask[Ext2].SetTunings(s2hal->INIT_EXT2_Kp,
+                                 s2hal->INIT_EXT2_Ki,
+                                 s2hal->INIT_EXT2_Kd);
+
+
+  CogCore::Debug<const char *>("Starting\n");
+
+}
+
+void loop() {
+  CogCore::Debug<const char *>("Loop starting...\n");
+
+  delay(100);
+  // Blocking call
+  if (core.Run() == false) {
+    CogCore::ErrorHandler::Log(CogCore::ErrorLevel::Critical, CogCore::ErrorCode::CoreFailedToRun);
+    CogCore::Debug<const char *>("Aborting! TEST OVER\n");
+    delay(300);
+#ifdef ARDUINO
+    // Loop endlessly to stop the program from running
+    CogCore::Debug<const char *>("Aborting! TEST OVER\n");
+    delay(300);
+    abort();
+    // while (true) {}
+#endif
+    return;
+  } else {
+    CogCore::Debug<const char *>("Run Completely\n");
+  }
+
+}
+
+#ifndef ARDUINO
+int main(int argc, char **argv)
+{
+  setup();
+  loop();
+  abort();
+}
+#endif
+
