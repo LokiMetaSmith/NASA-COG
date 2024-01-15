@@ -23,7 +23,7 @@
 #include <machine.h>
 #include <abstract_ps.h>
 #include <abstract_fan.h>
-
+#include <BigTreeTechMini12864.h>
 //#define RF_FAN 2
 //#define _HEATER 3
 //#define _STACK DAC0
@@ -35,17 +35,34 @@
 //#define RF_MOSTPLUS_FLOW_PIN A0
 //#define RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE 1.75
 //(MAXCLK, MAXCS, MAXDO);
-#ifdef DISPLAY_ENABLED
+//#ifdef DISPLAY_ENABLED
 //#define LCD_CLOCK  // Clock (Common), sometimes called SCK or SCL
 //#define LCD_MOSI   // MOSI (common), sometimes called SDA or DATA
 #define LCD_RESET 46 // LCD reset, sometimes called RST or RSTB
 #define LCD_CS 48    // LCD CS, sometimes called EN or SS
 #define LCD_RS 47    // LCD RS, sometimes called A0 or DC
+
+//Name the display pins on the Due GPIO
+#define DISPLAY_RESET 46            // display reset, keep high or don't care
+#define DISPLAY_DC 47               // Display data / command line, keep high for display cs control
+#define DISPLAY_CS 48               // Chip select for display, display LOW->Enabled, HIGH->Disabled
+
+#define ETHERNET_CS 10
+#define SD_CARD_CS  4
+
 #define U8_DC 47  //LCD A0
 #define U8_CS 48 //D0LCD_CS
 #define U8_RST 46 //LCD_RESET_PIN
+
+#define DISPLAY_CLK 13  //OEDCS SPI for display
+#define DISPLAY_MOSI 11
+
 #define U8_Width 128
 #define U8_Height 64
+
+
+
+#define BEEPER 50   //A buzzer.
 #define BEEPER_PIN 50 // buzzer pin
 //#define U8_MISO 50
 //#define U8_MOSI 51
@@ -53,13 +70,24 @@
 //#define SDSS   53 //sd card ss select
 //#define SD_CS     49  //sd card card detect
 //GPIO Defines
+//Rotary Encoder on BigTreeTech MINI 12864
+#define PIN_IN1 40
+#define PIN_IN2 41
+#define ENC_SW 42   //A switch
+
 #define encA               40
 #define encB               41
 #define encButton          42
+
+#define LED_RED 43
+#define LED_BLUE 44
+#define LED_GREEN 45
+#define NEOPIX_DIN 43
+#define NUMPIXELS 3
 #define LED_DIN    37 //NEOPIXEL Digital INIT_Kd
 //#define LED_PIN_GREEN  23 //active high
 //#define LED_PIN_BLUE   53 //active high
-#endif
+//#endif
 
 #define FIXED_HIGH_43 43
 #define SHUT_DOWN_BUTTON 49
@@ -102,7 +130,8 @@ public:
   AbstractFAN* _fans[NUM_FANS];
   const static int NUM_STACKS = 1;
   AbstractPS* _stacks[NUM_STACKS];
-
+  Mini12864* _displays[1];
+  
   bool init() override;
   void _updateFanPWM(float unitInterval);
 

@@ -28,7 +28,8 @@ class NetworkUDP  {
 
     bool sendData(char *data, unsigned long current_time, uint16_t timeout);
     // returns true if we are reading a packet
-
+    void enableEthernet();
+	void disableEthernet();
     void printTime(unsigned long time);
     bool getPacket();
     uint8_t networkCheck();
