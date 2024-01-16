@@ -275,6 +275,14 @@ void ReadTempsTask::updateTemperatures() {
       (postGetterTemp > MachineConfig::OVER_TEMPERATURE_C) ||
       (postStackTemp > MachineConfig::OVER_TEMPERATURE_C)) {
       if (!getConfig()->errors[SYSTEM_OVER_TEMPERATURE].fault_present) {
+        CogCore::Debug<const char *>("Bad  Temp Reads:");
+        CogCore::Debug<unsigned long>(bad_temp_reads_heater);
+        CogCore::Debug<const char *>(", ");
+        CogCore::Debug<unsigned long>(bad_temp_reads_getter);
+        CogCore::Debug<const char *>(", ");
+        CogCore::Debug<unsigned long>(bad_temp_reads_stack);
+        CogCore::Debug<const char *>("\n");
+
         getConfig()->errors[SYSTEM_OVER_TEMPERATURE].fault_present = true;
         getConfig()->errors[SYSTEM_OVER_TEMPERATURE].begin_condition_ms = millis();
       }

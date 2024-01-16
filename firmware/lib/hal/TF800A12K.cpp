@@ -567,6 +567,7 @@ void SL_PS::getPS_OutVoltage(int addr) {
   out_voltage = int(atof(r) * 100);
 }
 
+// CORRUP THIS WITH A TEST
 void SL_PS::getPS_OutCurrent(int addr) {
   char *r = getPS_Val(addr, "RI?");
   out_current = int(atof(r) * 100);

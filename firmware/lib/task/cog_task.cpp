@@ -539,7 +539,7 @@ namespace CogApp
 		  CogCore::Debug<const char *>("Probable AC Power (+24V) RESTORED!!!\n");
         }
     }//evaluateFan
-	
+
     if (!is12VPowerGood()){
       CogCore::Debug<const char *>("+12V out of tolerance.\n");
         if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
@@ -554,6 +554,18 @@ namespace CogApp
 
         }
     }//evaluateFan
+
+    // PLACE STACK OVER WATTAGE TEST HERE....
+    const float MAXIMUM_STACK_OVER_WATTAGE_W = 20.0;
+    const float MAXIMUM_STACK_OVER_WATTAGE_PC = 20.0;
+    float measured_wattage = getConfig()->report->amps * getConfig()->report->volts;
+    if ((measured_wattage > (((100.0 + MAXIMUM_STACK_OVER_WATTAGE_PC) / 100.0) * DESIRED_WATTAGE))
+      ||
+        (measure_wattage > (desired_wattage + MAXIMUM_STACK_OVER_WATTAGE_W))
+        ) {
+      // Throw STACK OVER WATTAGE ERROR
+    }
+
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
@@ -704,7 +716,7 @@ namespace CogApp
     }
     return Off;
   }
-  
+
   bool CogTask::is12VPowerGood()
   {
     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
@@ -720,18 +732,18 @@ namespace CogApp
     const float Vcc = 3.3;
 #ifdef DISABLE_12V_EVAL
     const int highThreshold12V = 1024;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
 #else
     const int highThreshold12V = 930;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
 #endif
-/* 
+/*
 #ifdef
     const int highThreshold12V = 1024;
-    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
 #endif */
 
-    
+
 
 
 
@@ -761,7 +773,7 @@ namespace CogApp
       return false;
     }
   }
-  
+
   bool CogTask::is24VPowerGood()
   {
     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
@@ -844,7 +856,7 @@ namespace CogApp
         CogCore::Debug<const char *>("Total Wattage : ");
         CogCore::Debug<float>(totalWattage_w);
         CogCore::Debug<const char *>("\n");
-        CogCore::Debug<const char *>("Stack Wattage : ");
+        CogCore::Debug<const char *>("Desired Stack Wattage : ");
         CogCore::Debug<float>(stackWattage_w);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Heater Wattage: ");
@@ -996,6 +1008,9 @@ namespace CogApp
     a = max(a,getConfig()->TEST_MINIMUM_STACK_AMPS);
     _updateStackVoltage(getConfig()->MAX_STACK_VOLTAGE);
     _updateStackAmperage(a);
+    // IF 1 seconds passes and the PSU is measured as providing a wattage
+    // signifcantly higher than "wattage", then throw a
+    // STACK OVER POWER ERROR.
   }
   void CogTask::_updateStackVoltage(float voltage) {
     if (DEBUG_LEVEL > 0) {
