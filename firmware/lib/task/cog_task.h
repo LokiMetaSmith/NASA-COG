@@ -112,6 +112,8 @@ namespace CogApp
     float getTemperatureReadingC_C();
 	bool is12VPowerGood();
     bool is24VPowerGood();
+    bool isStackWattageGood();
+
     bool isShutDownButtonPushed();
 
     // "OneButton Routines"
