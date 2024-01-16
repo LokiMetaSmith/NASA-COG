@@ -22,8 +22,13 @@ using namespace std;
 
     bool DisplayTask::_init()
     {
+		//SPI0.begin();
+		//SPI0.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
+
         CogCore::Debug<const char *>("DisplayTask init\n");
        display.Mini12864Setup();
+	    //SPI0.endTransaction();
+        //SPI.end();
         return true;
     }
 
@@ -38,8 +43,12 @@ using namespace std;
         //    digitalWrite(DISPLAY_CS, LOW);   // turn the LED on (HIGH is the voltage level)
         //    }    
 		//MachineStatusReport *msr = config->report;
+		//SPI0.begin();
+		//SPI0.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
 		display.Update_Display();	
-        display.updateENC_BUT();		
+        display.updateENC_BUT();
+        //SPI.endTransaction();
+        //SPI0.end();
         return true;
     }
 

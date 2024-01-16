@@ -41,7 +41,8 @@ namespace CogApp
 {
 
   bool NetworkTask::_init() {
-
+	//  SPI.begin()
+  //SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0)); 
     for (uint8_t i = 0; i < 10 && net_udp.networkDown; i++) {
       switch(net_udp.networkStart()) {
       case 0: net_udp.networkDown = 0; break;
@@ -82,7 +83,8 @@ namespace CogApp
     }
 
     net_udp.sendData(buffer, current_epoch_time, 2000);
-
+  //  SPI.endTransaction();
+	//SPI.end();
     return true;
   }
 
@@ -90,7 +92,8 @@ namespace CogApp
     if (DEBUG_UDP > 1) {
       Debug<const char *>("The NetworkUDPTask was run\n");
     }
-
+	//SPI.begin()
+    // SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
     switch(net_udp.networkCheck()) {
     case 1:
     case 2:
@@ -104,6 +107,7 @@ namespace CogApp
     case 100: net_udp.networkDown = 0;
       break;
     }
-
+    //SPI.endTransaction();
+	//SPI.end();
   }
 }
