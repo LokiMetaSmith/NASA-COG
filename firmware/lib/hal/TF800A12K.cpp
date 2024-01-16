@@ -39,7 +39,8 @@ int SL_PS::init() {
   digitalWrite(PS1_EN, HIGH);
 
   pinMode( PS1_AUX_SENSE, INPUT);
-
+  
+  pinMode(6, INPUT_PULLUP);    //TEST OVER CURRENT EVENT, sets reported amperage to 60
 
   Serial1.begin(4800);
   // This would be better done as an error message than a hard loop...
@@ -572,7 +573,13 @@ void SL_PS::getPS_OutVoltage(int addr) {
 
 void SL_PS::getPS_OutCurrent(int addr) {
   char *r = getPS_Val(addr, "RI?");
-  out_current = int(atof(r) * 100);
+  if (digitalRead(6)) {
+    out_current = int(atof(r) * 100);
+  }else{
+	CogCore::Debug<const char *>("getPS_OutCurrent Current: 60");
+	out_current = 6000;
+  }
+  
 }
 
 void SL_PS::getPS_Status0(int addr) {
