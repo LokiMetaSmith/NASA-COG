@@ -166,12 +166,13 @@ bool SanyoAceB97::init() {
 
   PWM_PIN[0] = 9;
   TACH_PIN[0] = A0;
-  fan_Enable = 22;
+  // Add a symbolic constant here
+  //o  fan_Enable = BLOWER_ENABLE;
 
-  #ifdef FAN_LOCKOUT
-      pinMode(fan_Enable, OUTPUT);
-	  digitalWrite(fan_Enable, HIGH);
-  #endif
+#ifdef FAN_LOCKOUT
+  pinMode(BLOWER_ENABLE, OUTPUT);
+  digitalWrite(BLOWER_ENABLE, HIGH);
+#endif
 
 
   for(int i = 0; i < NUMBER_OF_FANS; i++) {
@@ -214,7 +215,7 @@ bool SanyoAceB97::init() {
 // this is an oversimplification
 void SanyoAceB97::updatePWM(float pwm_ratio) {
 
-  //  evaluateFan( BLOWER_UNRESPONSIVE, pwm_ratio);
+  digitalWrite(BLOWER_ENABLE, (0.0 == pwm_ratio) ? LOW : HIGH);
 
   fanSpeedPerCentage((unsigned int)( pwm_ratio * 100));
   _pwm_ratio[0] = pwm_ratio;

@@ -16,9 +16,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 // Program information
 #define COMPANY_NAME "pubinv.org "
-//#define PROG_NAME "main.cpp"
 #define PROG_NAME "OEDCS"
-#define VERSION "; Rev: 0.3.15"  // Allows "K" command
+#define VERSION "; Rev: 0.3.16.rlr"  // Test blower enable
 #define DEVICE_UNDER_TEST "Hardware: Due"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
