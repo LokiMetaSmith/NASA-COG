@@ -681,7 +681,9 @@ namespace CogApp
 
 
   void CogTask::turnOff() {
-    CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
+    if (DEBUG_LEVEL > 1) {
+      CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
+    }
     float fs = 0.0;
     getConfig()->fanDutyCycle = fs;
     getConfig()->FAN_SPEED = 0.0;
