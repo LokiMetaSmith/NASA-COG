@@ -216,7 +216,7 @@ bool SanyoAceB97::init() {
 void SanyoAceB97::updatePWM(float pwm_ratio) {
 
   if (DEBUG_FAN > 0 ) {
-    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXx ");
+    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXx \n");
     CogCore::Debug<const char *>("FAN ENABLED: ");
     CogCore::Debug<uint32_t>((0.0 == pwm_ratio) ? LOW : HIGH);
     CogCore::Debug<const char *>("\n");
