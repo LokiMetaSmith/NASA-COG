@@ -113,7 +113,7 @@ namespace CogApp
 	bool is12VPowerGood();
     bool is24VPowerGood();
     bool isStackWattageGood();
-
+    bool isStackWattageGood(float );
     bool isShutDownButtonPushed();
 
     // "OneButton Routines"
