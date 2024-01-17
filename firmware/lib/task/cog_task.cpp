@@ -67,8 +67,9 @@ namespace CogApp
   }
 
   void CogTask::printGenericInstructions() {
-    CogCore::Debug<const char *>("Enter s:0 to Turn Off, s:1 to Enter Manual Mode, s:2 to Turn Enter Automatic Control.\n");
-    CogCore::Debug<const char *>("Enter a:XX.X to set (a)mperage, (w)attage, (f)an speed (h)eater set p., and (r)amp rate.\n");
+    CogCore::Debug<const char *>("Enter s:0 to Turn Off, s:1 to Enter Troubleshooting Mode (NOT SUPPORTED FOR PRODUCTION),\n");
+    CogCore::Debug<const char *>("Enter s:2 to Turn Enter Automatic Control.\n");
+    CogCore::Debug<const char *>("Enter a:XX.X to set (a)mperage limit, (w)attage limit, (h)eater set p.\n");
   }
 
   COG_HAL* CogTask::getHAL() {
