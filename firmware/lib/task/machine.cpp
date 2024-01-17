@@ -187,7 +187,7 @@ void MachineConfig::initErrors() {
 
  errors[PWR_12V_BAD].toleration_ms = PWR_12V_FAULT_TOLERATION_TIME_MS;
  errors[PWR_24V_BAD].toleration_ms = PWR_24V_FAULT_TOLERATION_TIME_MS;
- errors[STACK_LOSS_PWR].toleration_ms = STACK_FAULT_TOLERATION_TIME_MS;
+ errors[STACK_LOSS_CTL].toleration_ms = STACK_FAULT_TOLERATION_TIME_MS;
  errors[PSU_UNRESPONSIVE].toleration_ms = PSU_FAULT_TOLERATION_TIME_MS;
  errors[MAINS_LOSS_PWR].toleration_ms = MAINS_FAULT_TOLERATION_TIME_MS;
 
@@ -201,7 +201,7 @@ void MachineConfig::initErrors() {
  errors[FAN_LOSS_PWR].response_state = EmergencyShutdown;
  errors[FAN_UNRESPONSIVE].response_state = EmergencyShutdown;
  errors[HEATER_UNRESPONSIVE].response_state = EmergencyShutdown;
- errors[STACK_LOSS_PWR].response_state = EmergencyShutdown;
+ errors[STACK_LOSS_CTL].response_state = EmergencyShutdown;
  errors[PSU_UNRESPONSIVE].response_state = EmergencyShutdown;
  errors[MAINS_LOSS_PWR].response_state = EmergencyShutdown;
  errors[HEATER_OUT_OF_BOUNDS].response_state = EmergencyShutdown;
@@ -226,7 +226,7 @@ void MachineConfig::clearFanErrors()  {
 
 void MachineConfig::clearMainsPowerErrors()  {
  errors[HEATER_UNRESPONSIVE].fault_present = false;
- errors[STACK_LOSS_PWR].fault_present = false;
+ errors[STACK_LOSS_CTL].fault_present = false;
  errors[PSU_UNRESPONSIVE].fault_present = false;
  errors[MAINS_LOSS_PWR].fault_present = false;
  errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
