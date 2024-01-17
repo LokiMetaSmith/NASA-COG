@@ -65,8 +65,9 @@
 #define SHUT_DOWN_BUTTON 49
 
 
-#ifdef CONTROL_1V1
+#ifdef CTL_V_1_1
 
+#define BLOWER_ENABLE 22
 
 /*
 A0	FAN1_FG			Input		Blower 1 Tachometer
