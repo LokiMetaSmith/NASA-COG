@@ -571,6 +571,7 @@ void SL_PS::getPS_OutVoltage(int addr) {
   out_voltage = int(atof(r) * 100);
 }
 
+// CORRUP THIS WITH A TEST
 void SL_PS::getPS_OutCurrent(int addr) {
   char *r = getPS_Val(addr, "RI?");
   if (digitalRead(6)) {
@@ -698,6 +699,7 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
 
   msr->stack_voltage = out_voltage / 100.0;
   msr->stack_amps = out_current / 100.0;
+  msr->stack_watts = msr->stack_voltage * msr->stack_amps;
   if (msr->stack_amps <= 0.0) {
     msr->stack_ohms = -999.0;
   } else {

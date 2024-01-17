@@ -286,7 +286,21 @@ namespace CogApp
 	CogCore::DebugLn<const char *>("WARNING:SHOULD NEVER GET HERE, FELL OUT OF LOOP!!\n");
 	return -1;
   }
-
+  bool CogTask::isStackWattageGood()
+  {
+	  return isStackWattageGood(getConfig()->report->stack_watts);
+  }
+  bool CogTask::isStackWattageGood(float testWattage)
+  {
+    float measured_wattage = getConfig()->report->stack_amps * getConfig()->report->stack_voltage;
+    if ((measured_wattage > (((100.0 + getConfig()->MAXIMUM_STACK_OVER_WATTAGE_PC) / 100.0) * testWattage))
+      ||
+        (measured_wattage > (testWattage + getConfig()->MAXIMUM_STACK_OVER_WATTAGE_W))
+        ) {
+	  return false;
+    }
+	return true;
+  }
 
   bool CogTask::evaluateHeaterEnvelope(
                                       CriticalErrorCondition ec,
@@ -407,7 +421,7 @@ namespace CogApp
 
     float R_O = getConfig()->report->stack_ohms;
 
-    const float actualWattage = getConfig()->report->stack_watts;
+    //const float actualWattage = getConfig()->report->stack_watts; //doesn't appear to be used LRK
 
     const float presetLimitedWattage = getConfig()->MAX_STACK_WATTAGE;
     getConfig()->report->max_stack_watts_W = getConfig()->MAX_STACK_WATTAGE;
@@ -538,8 +552,8 @@ namespace CogApp
           getConfig()->errors[PWR_24V_BAD].fault_present = false;
 		  CogCore::Debug<const char *>("Probable AC Power (+24V) RESTORED!!!\n");
         }
-    }//evaluateFan
-	
+    }//evaluate24v power
+
     if (!is12VPowerGood()){
       CogCore::Debug<const char *>("+12V out of tolerance.\n");
         if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
@@ -553,7 +567,24 @@ namespace CogApp
 		  		  CogCore::Debug<const char *>("Probable AC Power (+12V) RESTORED!!!\n");
 
         }
-    }//evaluateFan
+    }//evaluate12vPower
+
+	// if (!isStackWattageGood()){
+      // CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
+        // if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
+          // getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
+          // getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = millis();
+        // }
+    // }
+	// else {
+        // if (getConfig()->errors[STACK_LOSS_CTL].fault_present) {
+          // getConfig()->errors[STACK_LOSS_CTL].fault_present = false;
+		  		  // CogCore::Debug<const char *>("Stack Wattage now in tolerance!!!\n");
+        // }
+    // }//evaluate Stack Wattage
+
+	
+
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
@@ -681,6 +712,9 @@ namespace CogApp
 
 
   void CogTask::turnOff() {
+    if (DEBUG_LEVEL > 1) {
+      CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
+    }
     float fs = 0.0;
     getConfig()->fanDutyCycle = fs;
     getConfig()->FAN_SPEED = 0.0;
@@ -704,7 +738,7 @@ namespace CogApp
     }
     return Off;
   }
-  
+
   bool CogTask::is12VPowerGood()
   {
     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
@@ -720,18 +754,18 @@ namespace CogApp
     const float Vcc = 3.3;
 #ifdef DISABLE_12V_EVAL
     const int highThreshold12V = 1024;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
 #else
     const int highThreshold12V = 930;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
 #endif
-/* 
+/*
 #ifdef
     const int highThreshold12V = 1024;
-    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
 #endif */
 
-    
+
 
 
 
@@ -761,7 +795,7 @@ namespace CogApp
       return false;
     }
   }
-  
+
   bool CogTask::is24VPowerGood()
   {
     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
@@ -844,7 +878,7 @@ namespace CogApp
         CogCore::Debug<const char *>("Total Wattage : ");
         CogCore::Debug<float>(totalWattage_w);
         CogCore::Debug<const char *>("\n");
-        CogCore::Debug<const char *>("Stack Wattage : ");
+        CogCore::Debug<const char *>("Desired Stack Wattage : ");
         CogCore::Debug<float>(stackWattage_w);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Heater Wattage: ");
@@ -873,7 +907,19 @@ namespace CogApp
 
       getConfig()->CURRENT_STACK_WATTAGE_W = stackWattage_w;
       _updateStackWattage(stackWattage_w);
-
+      if(!(isStackWattageGood(stackWattage_w))){
+		   CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
+        if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
+          getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
+          getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = millis();
+        }
+      }
+	  else {
+        if (getConfig()->errors[STACK_LOSS_CTL].fault_present) {
+          getConfig()->errors[STACK_LOSS_CTL].fault_present = false;
+		  		  CogCore::Debug<const char *>("Stack Wattage now in tolerance!!!\n");
+        }
+      }//evaluate Stack Wattage
       c.tS_p = tFanSpeed_p;
 
       getConfig()->CURRENT_HEATER_WATTAGE_W = heaterWattage_w;
@@ -897,9 +943,22 @@ namespace CogApp
       }
       getHAL()->_updateFanPWM(fs);
       getConfig()->report->fan_pwm = fs;
+	  
       _updateStackAmperage(a);
-
       _updateStackVoltage(getConfig()->MAX_STACK_VOLTAGE);
+	  if(!(isStackWattageGood(a * getConfig()->MAX_STACK_VOLTAGE))){
+		   CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
+        if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
+          getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
+          getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = millis();
+        }
+      }else {
+        if (getConfig()->errors[STACK_LOSS_CTL].fault_present) {
+          getConfig()->errors[STACK_LOSS_CTL].fault_present = false;
+		  		  CogCore::Debug<const char *>("Stack Wattage now in tolerance!!!\n");
+        }
+      }//evaluate Stack Wattage
+		  
   }
   MachineState CogTask::_updatePowerComponentsWarmup() {
     MachineState new_ms = Warmup;
@@ -961,6 +1020,7 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsCritialFault() {
     MachineState new_ms = OffUserAck;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    turnOff();
     logRecorderTask->dumpRecords();
     return new_ms;
   }
@@ -973,6 +1033,8 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsOffUserAck() {
     MachineState new_ms = CriticalFault;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    // We need to be sure we are off in all of the Off states...
+    turnOff();
     return new_ms;
   }
 
@@ -996,6 +1058,21 @@ namespace CogApp
     a = max(a,getConfig()->TEST_MINIMUM_STACK_AMPS);
     _updateStackVoltage(getConfig()->MAX_STACK_VOLTAGE);
     _updateStackAmperage(a);
+	 if(!(isStackWattageGood(a * getConfig()->MAX_STACK_VOLTAGE))){
+		   CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
+        if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
+          getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
+          getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = millis();
+        }
+      }else {
+        if (getConfig()->errors[STACK_LOSS_CTL].fault_present) {
+          getConfig()->errors[STACK_LOSS_CTL].fault_present = false;
+		  		  CogCore::Debug<const char *>("Stack Wattage now in tolerance!!!\n");
+        }
+      }//evaluate Stack Wattage
+    // IF 1 seconds passes and the PSU is measured as providing a wattage
+    // significantly higher than "wattage", then throw a
+    // STACK_LOSS_CTL.
   }
   void CogTask::_updateStackVoltage(float voltage) {
     if (DEBUG_LEVEL > 0) {

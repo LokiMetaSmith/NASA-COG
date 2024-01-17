@@ -94,6 +94,8 @@
 
 
 #ifdef CONTROL_1V1
+
+
 /*
 A0	FAN1_FG			Input		Blower 1 Tachometer
 A1  SENSE_24V       Analog Input
