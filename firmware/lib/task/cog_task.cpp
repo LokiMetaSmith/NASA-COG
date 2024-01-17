@@ -712,6 +712,9 @@ namespace CogApp
 
 
   void CogTask::turnOff() {
+    if (DEBUG_LEVEL > 1) {
+      CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
+    }
     float fs = 0.0;
     getConfig()->fanDutyCycle = fs;
     getConfig()->FAN_SPEED = 0.0;
@@ -1017,6 +1020,7 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsCritialFault() {
     MachineState new_ms = OffUserAck;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    turnOff();
     logRecorderTask->dumpRecords();
     return new_ms;
   }
@@ -1029,6 +1033,8 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsOffUserAck() {
     MachineState new_ms = CriticalFault;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    // We need to be sure we are off in all of the Off states...
+    turnOff();
     return new_ms;
   }
 

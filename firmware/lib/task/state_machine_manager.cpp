@@ -58,7 +58,7 @@ namespace CogApp
   void StateMachineManager::printOffWarnings(MachineState ms) {
     // If we are in the off state there is nothing to do!
     if (ms == OffUserAck) {
-      CogCore::Debug<const char *>("AN ERROR OCCURED. WILL NOW ENTER OFF STATE\n");
+      CogCore::Debug<const char *>("AN ERROR OCCURRED. WILL NOW ENTER OFF STATE\n");
       CogCore::Debug<const char *>("UNTIL ACKNOWLEDGED. ENTER A SINGLE 'K' TO ACKNOWLEDGE:\n");
     }
   }
@@ -80,6 +80,7 @@ namespace CogApp
             > (float) getConfig()->errors[i].toleration_ms) {
           CogCore::Debug<const char *>("ENTERING CRITICAL FAULT : ");
           CogCore::DebugLn<const char *>(CriticalErrorNames[i]);
+          turnOff();
           logRecorderTask->dumpRecords();
           rms = CriticalFault;
         }
