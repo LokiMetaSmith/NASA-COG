@@ -31,6 +31,7 @@ namespace CogApp
 
   bool Log_Recorder_Task::_run()
   {
+    // Removing this guard
     if (DEBUG_LOG_RECORDER) {
       CogCore::Debug<const char *>("LogRecorderTask run: ");
       CogCore::Debug<int>(_nextRecord);
@@ -49,11 +50,11 @@ namespace CogApp
   }
   void Log_Recorder_Task::dumpRecords() {
 
-    if (DEBUG_LOG_RECORDER) {
-      CogCore::Debug<const char *>("DUMPING LOG RECORDS: ");
-      CogCore::Debug<int>(_numRecords);
-      CogCore::Debug<const char *>("\n");
-    }
+    //    if (DEBUG_LOG_RECORDER) {
+    CogCore::Debug<const char *>("DUMPING LOG RECORDS: ");
+    CogCore::Debug<int>(_numRecords);
+    CogCore::Debug<const char *>("\n");
+    //    }
     int firstRecord = _nextRecord - _numRecords;
     // now make sure positive!
     firstRecord = firstRecord % getConfig()->MAX_RECORDS;

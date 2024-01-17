@@ -101,7 +101,7 @@ bool SanyoAceB97::evaluateFan(float pwm_ratio,float rpms) {
   if(pwm_ratio >=0.2){
     float expected = (306.709 + (12306.7*pwm_ratio) + (-6070*pwm_ratio*pwm_ratio));
     float difference = rpms - expected;
-    if (DEBUG_FAN > 1) {
+    if (DEBUG_FAN > 0) {
       CogCore::Debug<const char *>("pwm_ratio: ");
       CogCore::DebugLn<float>(pwm_ratio);
       CogCore::Debug<const char *>("rpms measured: ");
@@ -215,6 +215,14 @@ bool SanyoAceB97::init() {
 // this is an oversimplification
 void SanyoAceB97::updatePWM(float pwm_ratio) {
 
+  if (DEBUG_FAN > 0 ) {
+    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXXXXx ");
+    CogCore::Debug<const char *>("FAN ENABLED: ");
+    CogCore::Debug<uint32_t>((0.0 == pwm_ratio) ? LOW : HIGH);
+    CogCore::Debug<const char *>("\n");
+    CogCore::Debug<float>(pwm_ratio);
+    CogCore::Debug<const char *>("\n");
+  }
   digitalWrite(BLOWER_ENABLE, (0.0 == pwm_ratio) ? LOW : HIGH);
 
   fanSpeedPerCentage((unsigned int)( pwm_ratio * 100));

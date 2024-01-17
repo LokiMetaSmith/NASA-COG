@@ -539,7 +539,7 @@ namespace CogApp
 		  CogCore::Debug<const char *>("Probable AC Power (+24V) RESTORED!!!\n");
         }
     }//evaluateFan
-	
+
     if (!is12VPowerGood()){
       CogCore::Debug<const char *>("+12V out of tolerance.\n");
         if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
@@ -681,6 +681,7 @@ namespace CogApp
 
 
   void CogTask::turnOff() {
+    CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
     float fs = 0.0;
     getConfig()->fanDutyCycle = fs;
     getConfig()->FAN_SPEED = 0.0;
@@ -704,7 +705,7 @@ namespace CogApp
     }
     return Off;
   }
-  
+
   bool CogTask::is12VPowerGood()
   {
     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
@@ -720,18 +721,18 @@ namespace CogApp
     const float Vcc = 3.3;
 #ifdef DISABLE_12V_EVAL
     const int highThreshold12V = 1024;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
 #else
     const int highThreshold12V = 930;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
 #endif
-/* 
+/*
 #ifdef
     const int highThreshold12V = 1024;
-    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 
+    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
 #endif */
 
-    
+
 
 
 
@@ -761,7 +762,7 @@ namespace CogApp
       return false;
     }
   }
-  
+
   bool CogTask::is24VPowerGood()
   {
     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
