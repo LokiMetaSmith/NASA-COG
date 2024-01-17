@@ -78,7 +78,6 @@ public:
   uint8_t pin;
   uint8_t fan_Enable;
 
-
   // This is a ration from 0.0 to 1.0
   float _pwm_ratio[NUMBER_OF_FANS] = {0.0};
 
