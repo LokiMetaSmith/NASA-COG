@@ -21,7 +21,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <network_task.h>
 #include <stdio.h>
 #include <string.h>
-#include <PIRCS.h>
 #include <machine.h>
 
 #include <SPI.h>         // needed for Arduino versions later than 0018

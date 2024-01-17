@@ -46,6 +46,7 @@
 #ifndef SANYOACEB97_H
 #define SANYOACEB97_H
 
+#define BLOWER_ENABLE 22
 
 #include <abstract_fan.h>
 
@@ -76,7 +77,7 @@ public:
   const char *name;
   uint8_t id;
   uint8_t pin;
-  uint8_t fan_Enable;
+  //  uint8_t fan_Enable = BLOWER_ENABLE;
 
   // This is a ration from 0.0 to 1.0
   float _pwm_ratio[NUMBER_OF_FANS] = {0.0};
