@@ -962,6 +962,7 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsCritialFault() {
     MachineState new_ms = OffUserAck;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    turnOff();
     logRecorderTask->dumpRecords();
     return new_ms;
   }
@@ -974,6 +975,8 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsOffUserAck() {
     MachineState new_ms = CriticalFault;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    // We need to be sure we are off in all of the Off states...
+    turnOff();
     return new_ms;
   }
 

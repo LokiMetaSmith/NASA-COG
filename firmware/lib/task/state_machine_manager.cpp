@@ -80,6 +80,7 @@ namespace CogApp
             > (float) getConfig()->errors[i].toleration_ms) {
           CogCore::Debug<const char *>("ENTERING CRITICAL FAULT : ");
           CogCore::DebugLn<const char *>(CriticalErrorNames[i]);
+          turnOff();
           logRecorderTask->dumpRecords();
           rms = CriticalFault;
         }
