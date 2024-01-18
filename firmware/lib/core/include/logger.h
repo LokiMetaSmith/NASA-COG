@@ -30,7 +30,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 namespace CogCore {
 
 struct LogRecord {
-    int timestamp;
+    unsigned long timestamp;
     LogLevel level;
     LogMessage message;
 };

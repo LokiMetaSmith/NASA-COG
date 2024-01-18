@@ -99,7 +99,7 @@ float SanyoAceB97::getRPM(){
 
 bool SanyoAceB97::evaluateFan(float pwm_ratio,float rpms) {
   if(pwm_ratio >=0.2){
-    float expected = (306.709 + (12306.7*pwm_ratio) + (-6070*pwm_ratio*pwm_ratio));
+    float expected = BLOWER_RESTRICTION * (306.709 + (12306.7*pwm_ratio) + (-6070*pwm_ratio*pwm_ratio));
     float difference = rpms - expected;
     if (DEBUG_FAN > 0) {
       CogCore::Debug<const char *>("pwm_ratio: ");
@@ -141,11 +141,11 @@ void SanyoAceB97::printRPMS() {
 void SanyoAceB97::fanSpeedPerCentage(unsigned int s)
 {
 
-#ifdef FAN_LOCKOUT
+//#ifdef FAN_LOCKOUT
 	unsigned int q = map(s, SPEED_MIN, SPEED_MAX, OPERATING_PWM_THROTTLE, 0); // inverted PWM for Control v1 pcb's
-#else
-	unsigned int q = map(s, SPEED_MIN, SPEED_MAX, 0, OPERATING_PWM_THROTTLE);
-#endif
+//#else
+//	unsigned int q = map(s, SPEED_MIN, SPEED_MAX, 0, OPERATING_PWM_THROTTLE);
+//#endif
 
 
   if (DEBUG_FAN > 0 ) {
@@ -169,10 +169,10 @@ bool SanyoAceB97::init() {
   // Add a symbolic constant here
   //o  fan_Enable = BLOWER_ENABLE;
 
-#ifdef FAN_LOCKOUT
+//#ifdef FAN_LOCKOUT
   pinMode(BLOWER_ENABLE, OUTPUT);
   digitalWrite(BLOWER_ENABLE, HIGH);
-#endif
+//#endif
 
 
   for(int i = 0; i < NUMBER_OF_FANS; i++) {
@@ -181,11 +181,11 @@ bool SanyoAceB97::init() {
     tach_data_ocnt[i] = 0;
     tach_data_duration[i] = 0;
     pinMode(PWM_PIN[i], OUTPUT);
-#ifdef FAN_LOCKOUT
-	digitalWrite(PWM_PIN[i], HIGH);
-#else
-	digitalWrite(PWM_PIN[i], LOW);
-#endif
+//#ifdef FAN_LOCKOUT
+	digitalWrite(PWM_PIN[i], HIGH); //inverted PWM, set HIGH to turn blower off
+//#else
+//	digitalWrite(PWM_PIN[i], LOW);
+//#endif
     pinMode(TACH_PIN[i],INPUT_PULLUP);
   }
   attachInterrupt(digitalPinToInterrupt(TACH_PIN[0]),tachISR0,FALLING);

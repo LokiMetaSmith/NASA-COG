@@ -48,6 +48,8 @@ public:
   virtual float getRPM();
   // Return false if the Fan is not working
   virtual bool evaluateFan(float pwm_ratio,float rpms);
+  
+  static constexpr float BLOWER_RESTRICTION = BLOWER_RESTRICTION_CONST;
 };
 
 
