@@ -40,7 +40,8 @@ namespace CogApp
 {
 
   bool NetworkTask::_init() {
-
+   	net_udp.enableEthernet();
+    delay(5000);
     for (uint8_t i = 0; i < 10 && net_udp.networkDown; i++) {
       switch(net_udp.networkStart()) {
       case 0: net_udp.networkDown = 0; break;
@@ -79,8 +80,9 @@ namespace CogApp
     case 3: strcat(buffer, "\"SOFTWARE\""); break;
     case 4: strcat(buffer, "\"USER\""); break;
     }
-    net_udp.sendData(buffer, current_epoch_time, 2000);
 
+    net_udp.sendData(buffer, current_epoch_time, 2000);
+    net_udp.disableEthernet();
     return true;
   }
 
@@ -88,7 +90,8 @@ namespace CogApp
     if (DEBUG_UDP > 1) {
       Debug<const char *>("The NetworkUDPTask was run\n");
     }
-
+    net_udp.enableEthernet();
+	delay(5000);
     switch(net_udp.networkCheck()) {
     case 1:
     case 2:
@@ -102,5 +105,6 @@ namespace CogApp
     case 100: net_udp.networkDown = 0;
       break;
     }
+	net_udp.disableEthernet();
   }
 }

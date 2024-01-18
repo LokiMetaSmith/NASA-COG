@@ -22,6 +22,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #endif
 #include <core.h>
 #include <machine.h>
+//#include <BigTreeTechMini12864.h>
 
 
 #ifndef RIBBONFISH
@@ -37,6 +38,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     {
     public:
     private:
+	  
       bool _init() override;
       bool _run() override;
       // This would go into the abstract class.

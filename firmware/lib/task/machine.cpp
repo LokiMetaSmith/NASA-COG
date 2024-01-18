@@ -25,7 +25,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 void MachineConfig::outputReport(MachineStatusReport *msr) {
         CogCore::Debug<const char *>("\n");
 	CogCore::Debug<const char *>("Timestamp: ");
-        CogCore::Debug<long>(msr->timestamp);
+        CogCore::Debug<unsigned long>(msr->timestamp);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Machine State: ");
         CogCore::Debug<const char *>(MachineConfig::MachineStateNames[msr->ms]);

@@ -14,23 +14,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include "display_task.h"
-
+#include <BigTreeTechMini12864.h>
+#include <machine.h>
 using namespace std;
 
- 
+ Mini12864 display;
 
     bool DisplayTask::_init()
     {
         CogCore::Debug<const char *>("DisplayTask init\n");
-
-        pinMode(DISPLAY_CS, OUTPUT);      // set the display pin CS pin mode 
-		pinMode(DISPLAY_DC, OUTPUT);
-		pinMode(DISPLAY_RESET, OUTPUT);
-		digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
-		digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
-		digitalWrite(DISPLAY_RESET, HIGH);
-		 
-		delay(5);
+       display.Mini12864Setup();
         return true;
     }
 
@@ -43,7 +36,10 @@ using namespace std;
          //   digitalWrite(DISPLAY_CS, HIGH);   // turn the LED on (HIGH is the voltage level)
         //    } else {
         //    digitalWrite(DISPLAY_CS, LOW);   // turn the LED on (HIGH is the voltage level)
-        //    }     
+        //    }    
+		//MachineStatusReport *msr = config->report;
+		display.Update_Display();	
+        display.updateENC_BUT();		
         return true;
     }
 

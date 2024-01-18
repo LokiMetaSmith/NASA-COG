@@ -81,7 +81,7 @@ struct MachineStatusReport {
   float fan_rpm;
   float heater_duty_cycle;
 
-  long timestamp;
+  unsigned long timestamp;
 
 };
 

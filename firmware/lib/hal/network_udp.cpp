@@ -57,7 +57,17 @@ NetworkUDP::networkCheck() {
   return 100;
 }
 
-void
+void 
+NetworkUDP::enableEthernet() {	
+        digitalWrite(W5200_CS, LOW);       // select Network mode
+}
+
+void 
+NetworkUDP::disableEthernet() {
+        digitalWrite(W5200_CS, HIGH);       // deselect Network mode        
+}
+
+void 
 NetworkUDP::printPacketInfo(int packetsize) {
   IPAddress remoteIp = Udp.remoteIP();
   if (DEBUG_UDP > 1) {

@@ -309,6 +309,9 @@ bool SL_PS::evaluatePS(){
     if(control){CogCore::DebugLn<const char *>( "REMOTE");}else{CogCore::Debug<const char *>( "LOCAL");};
   };
 
+  
+    if(status0 & 0x40)CogCore::DebugLn<const char *>( "BROWN OUT DETECTED");
+
   // I'm commenting this out as it considers my PSU (Austin unit, OEDCS #SN1) to be in error.
   // I don't know what the bits in status1 that are high are supposed to mean. On my machine they are:
   // Inhibit by VCI / ACI or ENB

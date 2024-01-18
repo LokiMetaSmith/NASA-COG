@@ -104,7 +104,7 @@ class MachineScript {
   static const int MAX_NUM_PHASES = 100;
   int DEBUG_MS = 0;
   char *name;
-  long timeStamp;
+  unsigned long timeStamp;
   bool dryRun;
   int numPhases = 0;
 
