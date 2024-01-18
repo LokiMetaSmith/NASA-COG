@@ -3,7 +3,6 @@
   Tests the SHUT DOWN switch
   Tests BigTreeTech MINI 12864 Rotary Encoder and switch
   Tests four power supplies, 24V, 12V, AUX1 and AUX2.
-b
   Setup:
   Connect an LED with series resistor at J13, J30 and J31.
   Pin 1 is positive and Pin 2 is ground.
@@ -101,7 +100,7 @@ class PowerSense
     PowerSense(const String pinName, int pin, long period, float R1 = 40000, float R2 = 4700, int offsetX = 0, int offsetY = 0)
     {
       ADCinPin = pin;
-      previousMillis = 0-5000;
+      previousMillis = millis();
       ReadPeriod = period;
       my_pinName = pinName;
       my_R1 = R1;
@@ -205,11 +204,16 @@ void UpdateEthernet()
   
   if (((currentMillis - previousLinkMillis) >= LINK_TIME) || (currentMillis < previousLinkMillis))  {
     previousLinkMillis = currentMillis; 
+ //   digitalWrite(DISPLAY_DC, LOW);   // turn the CS on (HIGH is the logic level and is normally held high)
+  //   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  //  digitalWrite(DISPLAY_DC, LOW);
     digitalWrite(ETHERNET_CS, LOW);       // select ethernet mode
+  //  digitalWrite(ETHERNET_CS, HIGH);       // deselect ethernet mode
+   //       delay(1000);  // Hold the splash screen a second
     link_status = Ethernet.linkStatus();
-    //  delay(1000);  // Hold the splash screen a second
+       delay(1000);  // Hold the splash screen a second
     auto link = Ethernet.linkStatus();
-    //  delay(1000);  // Hold the splash screen a second
+      delay(1000);  // Hold the splash screen a second
     digitalWrite(ETHERNET_CS, HIGH);       // deselect ethernet mode
     Serial.print("Link status: ");
     switch (link_status) {
@@ -720,7 +724,7 @@ void setup() {
 
   Serial.print("Start of test_PSU1: ");
   Serial.println(millis());
-  test_PSU1.test_PS();  //run once to test psu
+ // test_PSU1.test_PS();  //run once to test psu
   Serial.print("End of test_PSU1: ");
   Serial.println(millis()); delay(1000); // Hold the splash screen a second
 }//End setup()

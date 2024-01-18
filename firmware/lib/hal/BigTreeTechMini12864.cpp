@@ -24,8 +24,7 @@ RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
 void Mini12864::Mini12864Setup(void) {
 	
 
-        // pinMode(DISPLAY_CS, OUTPUT);      // set the display pin CS pin mode 
-		// pinMode(DISPLAY_DC, OUTPUT);
+
 		// pinMode(DISPLAY_RESET, OUTPUT);
 		// digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high) 
 		// digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
@@ -34,7 +33,10 @@ void Mini12864::Mini12864Setup(void) {
 		delay(5);
   pinMode(ETHERNET_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
   digitalWrite(ETHERNET_CS, HIGH);
-  pinMode(4, OUTPUT);      // On the Ethernet Shield, CS is pin 4
+  pinMode(SD_CARD_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
+  digitalWrite(SD_CARD_CS, HIGH);
+  
+  //pinMode(4, OUTPUT);      // On the Ethernet Shield, CS is pin 4
   pinMode(DISPLAY_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
   pinMode(DISPLAY_DC, OUTPUT);
   pinMode(DISPLAY_RESET, OUTPUT);
@@ -42,7 +44,10 @@ void Mini12864::Mini12864Setup(void) {
   digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
   digitalWrite(DISPLAY_RESET, HIGH);
  // pinMode(SHUT_DOWN, INPUT_PULLUP);
+ 
   pinMode(ENC_SW, INPUT_PULLUP);
+  pinMode(PIN_IN1, INPUT_PULLUP);    
+  pinMode(PIN_IN2, INPUT_PULLUP);
 
 
   
