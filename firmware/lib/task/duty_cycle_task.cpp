@@ -150,7 +150,7 @@ bool DutyCycleTask::_run()
         CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN");
       }
       if ((getConfig()->errors[HEATER_UNRESPONSIVE].fault_present) &&
-          (current_temp - temperature_at_time_of_last_check) > 1.0) {
+          (current_temp - temperature_at_time_of_last_check) > TEMPERATURE_UPSWING_THRESHOLD) {
         getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = false;
         CogCore::Debug<const char *>("HEATER_UNRESPONSIVE WITHDRAWN");
       }
