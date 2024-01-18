@@ -100,7 +100,7 @@ class PowerSense
     PowerSense(const String pinName, int pin, long period, float R1 = 40000, float R2 = 4700, int offsetX = 0, int offsetY = 0)
     {
       ADCinPin = pin;
-      previousMillis = 0;
+      previousMillis = millis();
       ReadPeriod = period;
       my_pinName = pinName;
       my_R1 = R1;
@@ -204,14 +204,14 @@ void UpdateEthernet()
   
   if (((currentMillis - previousLinkMillis) >= LINK_TIME) || (currentMillis < previousLinkMillis))  {
     previousLinkMillis = currentMillis; 
-    digitalWrite(DISPLAY_DC, LOW);   // turn the CS on (HIGH is the logic level and is normally held high)
-     digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-    digitalWrite(DISPLAY_DC, LOW);
+ //   digitalWrite(DISPLAY_DC, LOW);   // turn the CS on (HIGH is the logic level and is normally held high)
+  //   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  //  digitalWrite(DISPLAY_DC, LOW);
     digitalWrite(ETHERNET_CS, LOW);       // select ethernet mode
-    digitalWrite(ETHERNET_CS, HIGH);       // deselect ethernet mode
-          delay(1000);  // Hold the splash screen a second
+  //  digitalWrite(ETHERNET_CS, HIGH);       // deselect ethernet mode
+   //       delay(1000);  // Hold the splash screen a second
     link_status = Ethernet.linkStatus();
-
+       delay(1000);  // Hold the splash screen a second
     auto link = Ethernet.linkStatus();
       delay(1000);  // Hold the splash screen a second
     digitalWrite(ETHERNET_CS, HIGH);       // deselect ethernet mode
