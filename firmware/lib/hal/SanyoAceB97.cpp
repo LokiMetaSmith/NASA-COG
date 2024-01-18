@@ -17,6 +17,7 @@
 
 
 #include "SanyoAceB97.h"
+#include <cog_hal.h>
 #include <math.h>
 #include <debug.h>
 

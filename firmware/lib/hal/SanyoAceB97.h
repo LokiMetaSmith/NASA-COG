@@ -46,8 +46,7 @@
 #ifndef SANYOACEB97_H
 #define SANYOACEB97_H
 
-#define BLOWER_ENABLE 22
-
+#include <cog_hal.h>
 #include <abstract_fan.h>
 
 
