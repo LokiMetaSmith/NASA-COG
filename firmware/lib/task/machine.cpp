@@ -98,6 +98,8 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
 }
 
 void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
+  sprintf(buffer+strlen(buffer), "\"RawMillis\": %ld",msr->timestamp);
+  strcat(buffer, ",\n");
   sprintf(buffer+strlen(buffer), "\"MachineState\": %d",msr->ms);
   strcat(buffer, ",\n");
   sprintf(buffer+strlen(buffer), "\"TargetC\": %.2f",msr->target_temp_C);
