@@ -111,6 +111,8 @@ namespace CogApp
       CogCore::Debug<const char *>("\n");
       delay(50);
     }
+    // Conjecture: This should use the report timestamp
+    //
     unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("About to Send Data!\n");
