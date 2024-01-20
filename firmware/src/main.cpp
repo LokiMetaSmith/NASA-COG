@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define VERSION "; Rev: 0.3.19"  //fixed issue with 5 second log reports
+#define VERSION "; Rev: 0.3.20"  // changing wattage match test
 #define DEVICE_UNDER_TEST "Hardware: Due"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -349,7 +349,7 @@ void setup()
   cogTask.DEBUG_FAN = 0;
   cogTask.DEBUG_LEVEL = 0;
   cogTask.SM_DEBUG_LEVEL = 0;
-  cogTask.DEBUG_LEVEL_OBA = 2;
+  cogTask.DEBUG_LEVEL_OBA = 0;
   cogTask.wattagePIDObject->DEBUG_PID = 0;
   OEDCSNetworkTask.DEBUG_UDP = 0;
   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
