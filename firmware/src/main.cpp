@@ -349,7 +349,7 @@ void setup()
   cogTask.DEBUG_FAN = 0;
   cogTask.DEBUG_LEVEL = 0;
   cogTask.SM_DEBUG_LEVEL = 0;
-  cogTask.DEBUG_LEVEL_OBA = 0;
+  cogTask.DEBUG_LEVEL_OBA = 2;
   cogTask.wattagePIDObject->DEBUG_PID = 0;
   OEDCSNetworkTask.DEBUG_UDP = 0;
   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
