@@ -192,9 +192,10 @@ public:
   static constexpr float NOMINAL_AMBIENT_c = 25.0;
 
   //these are the +/- over wattage and percent settings
+  const float MINIMUM_ACCURATE_WATTAGE_W = 20.0;
   const float MAXIMUM_STACK_OVER_WATTAGE_W = 20.0;
   const float MAXIMUM_STACK_OVER_WATTAGE_PC = 20.0;
-  
+
   const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
   const float BOUND_MAX_WATTAGE = 300.0;
   const float BOUND_MAX_RAMP = 3.0;
