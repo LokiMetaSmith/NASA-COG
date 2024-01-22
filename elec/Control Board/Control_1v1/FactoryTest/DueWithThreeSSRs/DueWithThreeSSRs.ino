@@ -13,12 +13,13 @@
   Rotate the BigTreeTech MINI 12864 Rotary Encoder and see the text message about position and direction.
   Ethernet link status reported on serial monitor.
   Read voltages and display during setup before the long power supply setup.
+  Note the power supply test takes about 38 seconds.
 */
 
 #define COMPANY_NAME "pubinv.org "
 //#define PROG_NAME "OEDCS_Factory_Test"
 #define PROG_NAME "DueWithThreeSSRs"
-#define VERSION ";_Rev_0.7"
+#define VERSION ";_Rev_0.8" //Enable power supply test during setup()
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -204,16 +205,11 @@ void UpdateEthernet()
   
   if (((currentMillis - previousLinkMillis) >= LINK_TIME) || (currentMillis < previousLinkMillis))  {
     previousLinkMillis = currentMillis; 
- //   digitalWrite(DISPLAY_DC, LOW);   // turn the CS on (HIGH is the logic level and is normally held high)
-  //   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  //  digitalWrite(DISPLAY_DC, LOW);
     digitalWrite(ETHERNET_CS, LOW);       // select ethernet mode
-  //  digitalWrite(ETHERNET_CS, HIGH);       // deselect ethernet mode
-   //       delay(1000);  // Hold the splash screen a second
     link_status = Ethernet.linkStatus();
-       delay(1000);  // Hold the splash screen a second
+ //      delay(1000);  // Hold the splash screen a second
     auto link = Ethernet.linkStatus();
-      delay(1000);  // Hold the splash screen a second
+//      delay(1000);  // Hold the splash screen a second
     digitalWrite(ETHERNET_CS, HIGH);       // deselect ethernet mode
     Serial.print("Link status: ");
     switch (link_status) {
@@ -724,7 +720,7 @@ void setup() {
 
   Serial.print("Start of test_PSU1: ");
   Serial.println(millis());
- // test_PSU1.test_PS();  //run once to test psu
+  test_PSU1.test_PS();  //run once to test psu
   Serial.print("End of test_PSU1: ");
   Serial.println(millis()); delay(1000); // Hold the splash screen a second
 }//End setup()
