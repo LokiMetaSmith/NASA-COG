@@ -41,7 +41,7 @@ namespace CogApp
 
   bool NetworkTask::_init() {
 	//  SPI.begin()
-  //SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0)); 
+  //SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
     for (uint8_t i = 0; i < 10 && net_udp.networkDown; i++) {
       switch(net_udp.networkStart()) {
       case 0: net_udp.networkDown = 0; break;
@@ -55,20 +55,20 @@ namespace CogApp
 
     if (net_udp.networkDown) {
       // Be sure to call safeDelay or watchdogReset
-      while(1) {
+      // while(1) {
 	CogCore::Debug<const char *>("CRITICAL ERROR! CONFIGURED FOR ETHERNET, BUT NONE FOUND!\n");
-        watchdogReset();
-        delay(5000);
+        //        watchdogReset();
+        //        delay(5000);
       // WARNING --- there is a danger that this
       // prevents the system from coming up at all
       // if we have not connectivity...that might not be
       // the best behavior, but by our current understanding
       // it is safe.
       // REQUEST_EXTERNAL_RESET ; //this will reset processor
-      }
+      // }
+    } else {
+      CogCore::Debug<const char *>("Network started\n\n");
     }
-
-    CogCore::Debug<const char *>("Network started\n\n");
 
     unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
     char buffer[1024];
