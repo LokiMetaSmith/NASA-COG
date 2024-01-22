@@ -34,13 +34,6 @@ int SL_PS::init() {
 
   int retval = 0;
 
-  //PS1  is attached to Serial1
-  pinMode( PS1_EN, OUTPUT);
-  digitalWrite(PS1_EN, HIGH);
-
-  pinMode( PS1_AUX_SENSE, INPUT);
-  
-  pinMode(6, INPUT_PULLUP);    //TEST OVER CURRENT EVENT, sets reported amperage to 60
 
   Serial1.begin(4800);
   // This would be better done as an error message than a hard loop...
@@ -185,6 +178,15 @@ int SL_PS::init() {
     retval = -1;
   }
 
+  
+  //PS1  is attached to Serial1
+  pinMode( PS1_EN, OUTPUT);
+  digitalWrite(PS1_EN, HIGH);
+
+  pinMode( PS1_AUX_SENSE, INPUT);
+  
+  pinMode(6, INPUT_PULLUP);    //TEST OVER CURRENT EVENT, sets reported amperage to 60
+  
   return retval;
 }
 
