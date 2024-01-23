@@ -64,7 +64,7 @@ namespace CogApp
     // Target Heater Wattage
     float tH_w = 0;
     // Target Fan Speed
-    float tS_p = 100.0;
+    float tS_p = MachineConfig::FAN_SPEED_PREFERRED_p;
     // Heater ramp rate (degrees C per minute)
     const float Hr_Cdm =0.5;
     // Stack Watts ramp rate (watts per minute)

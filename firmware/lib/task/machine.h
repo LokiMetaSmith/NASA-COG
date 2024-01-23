@@ -373,7 +373,7 @@ void _reportFanSpeed();
 
   const float FAN_SPEED_MAX_p = 80;
   const float FAN_SPEED_MIN_p = 30;
-  const float FAN_SPEED_PREFERRED_p = 40;
+  static constexpr float FAN_SPEED_PREFERRED_p = 40;
   const float LOW_TEMP_TRIGGER = 20;
   const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 800.0;
   const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
