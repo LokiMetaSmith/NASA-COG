@@ -82,7 +82,7 @@ public:
 
   void _readTemperatureSensors();
   void _configTemperatureSensors();
-  virtual void updateTemperatures();
+  void updateTemperatures() ;
   void addTempToQueue(float c);
   float tempFromTime(int t_ms);
   void calculateDdelta();

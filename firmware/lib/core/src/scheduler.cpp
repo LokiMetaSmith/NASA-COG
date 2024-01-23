@@ -30,7 +30,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <error_handler.h>
 
 namespace CogCore {
-
+Scheduler::Scheduler() 
+{
+	_properties.mode = SchedulerMode::RealTime;
+}
 
 void Scheduler::setupIdleTask() {
     _idleTask._properties.priority = static_cast<TaskPriority>(TaskPriorityOS::Idle);

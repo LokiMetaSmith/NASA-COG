@@ -178,7 +178,6 @@ int SL_PS::init() {
     retval = -1;
   }
 
-  
   //PS1  is attached to Serial1
   pinMode( PS1_EN, OUTPUT);
   digitalWrite(PS1_EN, HIGH);

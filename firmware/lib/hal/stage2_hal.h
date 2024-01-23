@@ -93,10 +93,9 @@ D49 HEAT3			Output		Positive SSR signal for heater PID
 
 class Stage2HAL : public MachineHAL {
 public:
+  Stage2HAL();
   bool init() override;
   Stage2Heater s2heaterToControl = Int1;
-  const int NUM_HEATERS = 3;
-  const int HEATER_PINS[3] = {INT1_OUTPUT_PIN,EXT1_OUTPUT_PIN,EXT2_OUTPUT_PIN}; //  Int1,Ext1, Ext2
   const int NUM_THERMOCOUPLES = 3;
   const int THERMOCOUPLE_PINS[3] = {INT1_MAXCS,EXT1_MAXCS,EXT2_MAXCS};  // Int1, Ext1, Ext2
   float getTemperatureReading(Stage2Heater s2h,MachineConfig *mc);

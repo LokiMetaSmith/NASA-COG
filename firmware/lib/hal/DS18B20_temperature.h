@@ -45,7 +45,7 @@ namespace Temperature {
   class DS18B20Temperature : public AbstractTemperature {
   public:
     SensorConfig _config;
-    float _temperature;
+
     OneWire oneWire;
     DallasTemperature sensors;
     // Pass our oneWire reference to Dallas Temperature.
@@ -53,9 +53,9 @@ namespace Temperature {
     DS18B20Temperature();
     DS18B20Temperature(SensorConfig &config);
     void Config(SensorConfig &config);
-    float ReadTemperature();
-    float GetTemperature();
-    float GetTemperature(int idx);
+    float ReadTemperature() override;
+    float GetTemperature() override;
+    float GetTemperature(int idx) override;
     SensorConfig GetConfig() const;
 
     //    ~DS18B20Temperature() {};

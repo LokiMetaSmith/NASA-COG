@@ -96,6 +96,7 @@ namespace CogApp
     int DEBUG_LEVEL_OBA = 0;
 
     unsigned long last_time_ramp_changed_ms = 0;
+    unsigned long time_last_temp_changed_ms = 0; //last time the temperature changed
 
     OneButtonControl c;
     //    PreSetParameters p;
@@ -107,9 +108,9 @@ namespace CogApp
     const static int NUM_TEMP_INDICES = 2;
     const static int NUM_FANS = 1;
 
-    float getTemperatureReadingA_C();
-    float getTemperatureReadingB_C();
-    float getTemperatureReadingC_C();
+    float getTemperatureReadingA_C() override;
+    float getTemperatureReadingB_C() override;
+    float getTemperatureReadingC_C() override;
 	bool is12VPowerGood();
     bool is24VPowerGood();
     bool isStackWattageGood();
@@ -124,7 +125,7 @@ namespace CogApp
     float computeFanSpeedTarget(float currentTargetTemp,float temp, float heaterWatts, float A, float B, float C);
     bool heaterWattsAtFullPowerPred(float watts);
     void oneButtonAlgorithm(float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p);
-    void runOneButtonAlgorithm();
+    void runOneButtonAlgorithm() override;
 	bool evaluateHeaterEnvelope(CriticalErrorCondition ec, double goal_temperature,double current_input_temperature, double value_PID);
     float computeNernstVoltage(float T_K);
     float computePumpingWork(float T_k,float V,float R_O, float I_A);
@@ -171,11 +172,10 @@ namespace CogApp
     MachineState _updatePowerComponentsCritialFault() override;
     MachineState _updatePowerComponentsEmergencyShutdown() override;
     MachineState _updatePowerComponentsOffUserAck() override;
-
   private:
     bool _run() override;
     bool _init() override;
-    long time_last_temp_changed_ms; //last time the temperature changed
+    
   };
 
 

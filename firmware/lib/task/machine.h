@@ -84,11 +84,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 class MachineHAL {
 public:
-  int NUM_HEATERS;
+   int NUM_HEATERS;
   OnePinHeater **_ac_heaters;
   int DEBUG_HAL = 0;
   Stage2Heater s2heaterToControl = Int1;
-  int *HEATER_PINS;
+   int *HEATER_PINS;
   bool init_heaters();
   virtual bool init() = 0;
 };

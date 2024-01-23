@@ -20,6 +20,14 @@
 #include <stage2_hal.h>
 #include <debug.h>
 
+Stage2HAL::Stage2HAL() {
+  NUM_HEATERS = 3;
+  HEATER_PINS[0] = INT1_OUTPUT_PIN;
+  HEATER_PINS[1] = EXT1_OUTPUT_PIN;
+  HEATER_PINS[2] = EXT2_OUTPUT_PIN; //  Int1,Ext1, Ext2
+ 
+}
+
 bool Stage2HAL::init() {
   pinMode(MAX31850_DATA_PIN, INPUT);
 

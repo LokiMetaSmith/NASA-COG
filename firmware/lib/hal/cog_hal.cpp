@@ -21,6 +21,11 @@
 #include <TF800A12K.h>
 #include <SanyoAceB97.h>
 
+COG_HAL::COG_HAL() {
+   NUM_HEATERS = 1;
+   HEATER_PINS[NUM_HEATERS] = {HEATER_PIN};
+}
+
 bool COG_HAL::init() {
 
   if (DEBUG_HAL > 0) {
