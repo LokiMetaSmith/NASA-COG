@@ -93,4 +93,7 @@ namespace CogApp
   void Stage2HeaterTask::turnOff() {
     StateMachineManager::turnOff();
   }
+  void Stage2HeaterTask::turnOn() {
+    StateMachineManager::turnOn();
+  }
 }

@@ -226,7 +226,7 @@ public:
   const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
   const unsigned long HEATER_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
   const unsigned long ENVELOPE_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
-  const unsigned long COULD_NOT_INIT_3_THERMOCOUPLES_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;;
+  const unsigned long COULD_NOT_INIT_3_THERMOCOUPLES_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long FAN_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long FAN_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long HEATER_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
@@ -373,7 +373,7 @@ void _reportFanSpeed();
 
   const float FAN_SPEED_MAX_p = 80;
   const float FAN_SPEED_MIN_p = 30;
-  const float FAN_SPEED_PREFERRED_p = 40;
+  static constexpr float FAN_SPEED_PREFERRED_p = 40;
   const float LOW_TEMP_TRIGGER = 20;
   const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 800.0;
   const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
