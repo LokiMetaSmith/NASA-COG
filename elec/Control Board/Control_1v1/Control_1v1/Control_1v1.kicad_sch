@@ -5914,10 +5914,20 @@
     (uuid ff7a495c-e404-4b83-b7b1-98a7f73a3835)
   )
 
+  (arc (start 448.31 175.26) (mid 453.8576 179.6643) (end 454.678 186.7)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (uuid 024f34b9-4c47-476a-811d-0abd5c4484af)
+  )
   (arc (start 215.9 124.46) (mid 197.3854 129.1532) (end 180.975 119.38)
     (stroke (width 0) (type default))
     (fill (type none))
     (uuid b5c79160-792d-45eb-9e96-ac251d785009)
+  )
+  (arc (start 454.025 191.135) (mid 452.8081 201.6773) (end 444.5 208.28)
+    (stroke (width 0) (type default))
+    (fill (type none))
+    (uuid ce7be9e9-fdca-4929-8bc0-1a1705755aac)
   )
 
   (image (at 508 294.64) (scale 0.75)
@@ -6371,6 +6381,11 @@
   (text "RESET D46\nDC D47\nCS D48" (at 407.67 247.015 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid bd8d97dd-799d-4a5b-93a4-0a77dc52b054)
+  )
+  (text "REWORK:\nChange R108 from 10K to 20K\nChange R106 from 10K to 20K"
+    (at 437.515 190.5 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid c25c54d6-f2df-4a3e-8531-dd5eced80036)
   )
   (text "One Wire Thermocouple amplifiter and Interface\nDATA is bidorectional on the Due GPIO"
     (at 92.71 154.94 0)
