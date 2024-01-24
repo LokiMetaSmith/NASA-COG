@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.3.24"  // fixing the timeing bug
+#define OEDCS_VERSION "; Rev: 0.3.25"  // refactored some lint suggestions and added a better PSU EN routine
 #define DEVICE_UNDER_TEST "Hardware: Due"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -150,11 +150,13 @@ void setup()
   core.ResetAllWatchdogs();
 
   machineConfig.init();
+   
   //  Eventually we will migrate all hardware to the COG_HAL..
   COG_HAL* hal = new COG_HAL();
+
   machineConfig.hal = hal;
 
-  machineConfig.hal->DEBUG_HAL = 0;
+  machineConfig.hal->DEBUG_HAL = 2;
   bool initSuccess  = machineConfig.hal->init();
   if (!initSuccess) {
     Debug<const char *>("Could not init Hardware Abstraction Layer Properly!\n");
@@ -368,10 +370,11 @@ void setup()
 
 
   // We want to make sure we have run the temps before we start up.
+  readTempsTask._run();
+  readTempsTask._run();
+  readTempsTask._run();
+  //Debug<const char *>("BBBBBB!\n"); compiler fails when readTempTask runs, suspect issue inside how TC's are inited ;;platform_packages = toolchain-gccarmnoneeabi @ ~1.90301.0
 
-  readTempsTask._run();
-  readTempsTask._run();
-  readTempsTask._run();
   getConfig()->GLOBAL_RECENT_TEMP = getConfig()->report->post_heater_C;
   Debug<const char *>("starting temp is: ");
   Debug<uint32_t>(getConfig()->GLOBAL_RECENT_TEMP);

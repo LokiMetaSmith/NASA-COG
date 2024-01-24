@@ -134,14 +134,15 @@ public:
   const static int NUM_STACKS = 1;
   AbstractPS* _stacks[NUM_STACKS];
   Mini12864* _displays[1];
-  
+
+    const static int NUM_HEATERS = 1;
+	   int HEATER_PINS[NUM_HEATERS];
   bool init() override;
   void _updateFanPWM(float unitInterval);
 
   bool isShutDownButtonPushed();
-
-  static const int NUM_HEATERS = 1;
-  const int HEATER_PINS[NUM_HEATERS] = {HEATER_PIN};
+   COG_HAL();
+   ~COG_HAL()=default;
 
   // These are lightly tested at present
   const double INIT_Kp = 0.005;

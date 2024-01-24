@@ -61,17 +61,17 @@ public:
 
 enum class SchedulerMode {
     RoundRobin = 0,
-    RealTime,
+    RealTime   = 1,
 };
 
 struct SchedulerProperties {
     SchedulerMode mode;
-    uint32_t tickPeriodMs;
+    uint32_t tickPeriodMs = 0;
 };
 
 class Scheduler {
     private:
-        Task* _lastTaskRan;
+        Task* _lastTaskRan = 0;
         static const int32_t MAX_TASKS = 40; // TODO: make this better
         CogCollections::Map<TaskId, Task*, MAX_TASKS> map;
         TaskId _currentRunningTaskId = 0;
@@ -80,6 +80,8 @@ class Scheduler {
         void setupIdleTask();
         Task* getNextTaskToRun(TimeMs currentTime);
     public:
+	    Scheduler() ;
+        ~Scheduler() = default;
         IdleTask _idleTask; // Special task not part of the task map
         int DEBUG_SCHEDULER = 0;
         bool Init();

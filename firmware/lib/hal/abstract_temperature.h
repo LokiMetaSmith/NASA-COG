@@ -57,10 +57,10 @@ namespace Temperature {
         public:
             SensorConfig _config;
       // This actually needs to be an array!
-            float _temperature;
+             float _temperature;
         public:
-      AbstractTemperature();
-      AbstractTemperature(SensorConfig &config);
+            AbstractTemperature();
+            AbstractTemperature(SensorConfig &config);
 
       // Note: The "ReadTemperature" function may do
       // whatever is necessary to object (possibly hardware)
