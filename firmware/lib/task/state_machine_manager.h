@@ -57,6 +57,7 @@ namespace CogApp
     void transitionToCooldown(float tt);
     void changeTargetTemp(float t);
     virtual void turnOff();
+    virtual void turnOn();
     virtual void printGenericInstructions();
     virtual void printOffWarnings(MachineState ms);
 

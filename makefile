@@ -143,6 +143,12 @@ oedcs1_1:
 	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
 
 
+oedcs1_1_MOOK:
+	cd firmware \
+	&& pio run -e due_ctl_1_1_MOOK -t upload  \
+	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
+
+
 oedcsMOM:
 	cd firmware \
 	&& pio run -e due_OEDCS2_MOM -t upload  \

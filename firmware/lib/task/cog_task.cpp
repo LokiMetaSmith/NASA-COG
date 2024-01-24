@@ -514,9 +514,15 @@ namespace CogApp
   // Note: This is ms since the LAST TIME
   void CogTask::changeRamps(unsigned long delta_ms) {
 
-    // delta_ms it the number of mount that we want to do...
+    // delta_ms it the number of change that we want to do...
     // but all of our ramp rates are in terms of minutes
-    const float minutes = ((float)delta_ms) / (60.0 * 1000.0);
+    // However, if for some reason delta_ms is very long, we don't want
+    // to jump rapidly, so we will camp it at one minute!
+
+    const float minutes = ((float)((delta_ms > 60 * 1000.0) ?
+                                   60 * 1000.0 :
+                                   delta_ms)
+                           ) / (60.0 * 1000.0);
       if (DEBUG_LEVEL_OBA > 2) {
         CogCore::Debug<const char *>("Change Ramps Run! Minutes: ");
         CogCore::Debug<const char *>("\n");
@@ -528,7 +534,7 @@ namespace CogApp
     c.W_w += (((c.tW_w - c.W_w) > 0) ? 1.0 : -1.0) * c.Wr_Wdm * minutes;
 
     c.S_p += (((c.tS_p - c.S_p) > 0) ? 1.0 : -1.0) * c.Sr_Pdm * minutes;
-    c.S_p = max(0,c.S_p);
+    c.S_p = min(max(0.0,c.S_p),100.0);
 
     MachineState ms = getConfig()->ms;
     if (ms != NormalOperation) {
@@ -727,6 +733,12 @@ namespace CogApp
     return min(max_a_from_raw,max_a_from_wattage);
   }
 
+  void CogTask::turnOn() {
+    if (DEBUG_LEVEL > 1) {
+      CogCore::Debug<const char *>("TURNING ON  -- TURNING ON -- TURNING ON\n");
+    }
+    last_time_ramp_changed_ms = 0;
+  }
 
   void CogTask::turnOff() {
     if (DEBUG_LEVEL > 1) {
@@ -879,6 +891,7 @@ namespace CogApp
       unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
       changeRamps(delta_ms);
       getConfig()->report->target_fan_pc = c.tS_p;
+      // This should never be above 100, but it is!
       _updateFanSpeed(c.S_p);
 
       last_time_ramp_changed_ms = now_ms;
@@ -948,8 +961,9 @@ namespace CogApp
   void CogTask::_updateCOGSpecificComponents() {
 
       float t = getTemperatureReadingA_C();
-      float fs = getFanSpeed(t);
       float a = computeAmperage(t);
+      // TODO: t is not used here, and it should be removed to clarify it...
+      float fs = getFanSpeed(t);
 
       if (DEBUG_LEVEL > 2) {
         CogCore::Debug<const char *>("fan speed, amperage\n");
@@ -1076,21 +1090,6 @@ namespace CogApp
     _updateStackVoltage(getConfig()->MAX_STACK_VOLTAGE);
     _updateStackAmperage(a);
     getConfig()->CURRENT_STACK_WATTAGE_W = wattage;
-      //    if(!(isStackWattageGood(a * getConfig()->MAX_STACK_VOLTAGE))){
-      //   	   CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
-      //   if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
-      //     getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
-      //     getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = millis();
-      //   }
-      // }else {
-      //   if (getConfig()->errors[STACK_LOSS_CTL].fault_present) {
-      //     getConfig()->errors[STACK_LOSS_CTL].fault_present = false;
-      //   	  		  CogCore::Debug<const char *>("Stack Wattage now in tolerance!!!\n");
-      //   }
-      // }//evaluate Stack Wattage
-    // IF 1 seconds passes and the PSU is measured as providing a wattage
-    // significantly higher than "wattage", then throw a
-    // STACK_LOSS_CTL.
   }
   void CogTask::_updateStackVoltage(float voltage) {
     if (DEBUG_LEVEL > 0) {

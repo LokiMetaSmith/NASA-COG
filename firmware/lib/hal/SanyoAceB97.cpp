@@ -143,16 +143,27 @@ void SanyoAceB97::fanSpeedPerCentage(unsigned int s)
 {
 
 //#ifdef FAN_LOCKOUT
-	unsigned int q = map(s, SPEED_MIN, SPEED_MAX, OPERATING_PWM_THROTTLE, 0); // inverted PWM for Control v1 pcb's
+  unsigned int q = map(s, SPEED_MIN, SPEED_MAX, OPERATING_PWM_THROTTLE, 0); // inverted PWM for Control v1 pcb's
 //#else
 //	unsigned int q = map(s, SPEED_MIN, SPEED_MAX, 0, OPERATING_PWM_THROTTLE);
 //#endif
 
+  if (q > 255) {
+    CogCore::Debug<const char *>("++++++++++++++++++++++++++++++++++++\n");
+    CogCore::Debug<const char *>("++++++++++++++++++++++++++++++++++++\n");
+    CogCore::Debug<const char *>("INTERNAL ERROR - DO NOT IGNORE THIS \n");
+    CogCore::Debug<const char *>("our PWM value was computed to be greater than 255!\n");
+    CogCore::Debug<const char *>("Putting out speed to fan control board(%:PWM):\n");
+    CogCore::Debug<uint32_t>(s);
+    CogCore::Debug<const char *>(":");
+    CogCore::Debug<uint32_t>(q);
+    CogCore::Debug<const char *>("\n");
+  }
 
   if (DEBUG_FAN > 0 ) {
     CogCore::Debug<const char *>("Putting out speed to fan control board(%:PWM):");
     CogCore::Debug<int>(s);
-	CogCore::Debug<const char *>(":");
+    CogCore::Debug<const char *>(":");
     CogCore::Debug<uint32_t>(q);
     CogCore::Debug<const char *>("\n");
   }

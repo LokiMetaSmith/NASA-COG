@@ -52,7 +52,7 @@ namespace CogApp
     // Computing Pumping Wattage
     float PW_w = 0;
     // Current Fan Speed
-    float S_p = 50;
+    float S_p = MachineConfig::FAN_SPEED_PREFERRED_p;
     // Current Total Wattage
     float TW_w = 0;
     // Current Heater Wattage
@@ -149,6 +149,7 @@ namespace CogApp
     COG_HAL* getHAL();
 
     void turnOff() override;
+    void turnOn() override;
     void printGenericInstructions() override;
 
     float getFanSpeed(float t);
