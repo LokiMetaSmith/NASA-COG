@@ -22,8 +22,8 @@
 #include <SanyoAceB97.h>
 
 COG_HAL::COG_HAL() {
-   NUM_HEATERS = 1;
-   HEATER_PINS[NUM_HEATERS] = {HEATER_PIN};
+	   
+
 }
 
 bool COG_HAL::init() {
@@ -31,7 +31,8 @@ bool COG_HAL::init() {
   if (DEBUG_HAL > 0) {
     CogCore::Debug<const char *>("HAL: About to init Fan!\n");
   }
-
+   HEATER_PINS[0] = HEATER_PIN;
+   
   // This exist purely for the convenience of having another 3.3V signal for testing!
   pinMode(FIXED_HIGH_43, OUTPUT);
   digitalWrite(FIXED_HIGH_43,HIGH);

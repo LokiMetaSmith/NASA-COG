@@ -82,7 +82,7 @@ public:
 
   void _readTemperatureSensors();
   void _configTemperatureSensors();
-  void updateTemperatures() ;
+  void updateTemperatures();
   void addTempToQueue(float c);
   float tempFromTime(int t_ms);
   void calculateDdelta();
@@ -104,7 +104,7 @@ class stage2_ReadTempsTask : public ReadTempsTask
 {
 public:
   MachineConfig* mcs[3];
-  void updateTemperatures();
+  void updateTemperatures() ;
   bool _run() override;
 };
 

@@ -310,7 +310,7 @@ void ReadTempsTask::updateTemperatures() {
     CogCore::Debug<const char *>("\n");
 
 
-    CogCore::Debug<const char *>("Bad  Temp Reads:");
+    CogCore::Debug<const char *>("Bad_Temp_Reads:");
 //    CogCore::Debug<unsigned long>(bad_temp_reads);
     CogCore::Debug<unsigned long>(bad_temp_reads_heater);
     CogCore::Debug<const char *>(", ");
@@ -384,7 +384,8 @@ bool ReadTempsTask::_init()
 {
   CogCore::Debug<const char *>("ReadTempsTask init\n");
   _configTemperatureSensors();
-  CogCore::Debug<const char *>("Config of temperature sensors done\n");
+  CogCore::Debug<const char *>("Config of temperature sensors done: ");
+  CogCore::DebugLn<int>(NUM_TEMP_INDICES);
   for (int i = 0; i < NUM_TEMP_INDICES; i++) {
     temps[i] = 0.0;
   }

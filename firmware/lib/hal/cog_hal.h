@@ -134,7 +134,9 @@ public:
   const static int NUM_STACKS = 1;
   AbstractPS* _stacks[NUM_STACKS];
   Mini12864* _displays[1];
-  
+
+    const static int NUM_HEATERS = 1;
+	   int HEATER_PINS[NUM_HEATERS];
   bool init() override;
   void _updateFanPWM(float unitInterval);
 

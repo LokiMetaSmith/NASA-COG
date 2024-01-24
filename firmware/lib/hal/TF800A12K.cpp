@@ -212,15 +212,7 @@ int SL_PS::reInit() {
 int SL_PS::reInit(uint16_t volts, uint16_t amps) {
 
 
-  //PS1  is attached to Serial1, check if AUX is high, if so, disable the PSU
-  if(digitalRead( PS1_AUX_SENSE) == LOW) {
-	digitalWrite(PS1_EN, HIGH);
-	if(digitalRead( PS1_AUX_SENSE) == LOW) {
-	  CogCore::Debug<const char *>("failed to enable PSU");
-	}
-  }
-
-  int retval = 0;
+  int retval = 1;
   watchdogReset();
   getPS_Control(ADDRESS); //set
   watchdogReset();
@@ -272,6 +264,19 @@ int SL_PS::reInit(uint16_t volts, uint16_t amps) {
     CogCore::Debug<const char *>("failed to turn PS on\n");
     retval = -1;
   }
+  
+  
+  if(retval >=0) 
+  {
+	//PS1  is attached to Serial1, check if AUX is high, if so, disable the PSU
+	if(digitalRead( PS1_AUX_SENSE) == LOW) {
+	  digitalWrite(PS1_EN, HIGH);
+	  if(digitalRead( PS1_AUX_SENSE) == LOW) {
+        CogCore::Debug<const char *>("failed to enable PSU");
+      }
+	}
+  }//if successfully set current and voltage, turn on EN 
+  
   return retval;
 }
 
