@@ -122,6 +122,7 @@ namespace CogApp
       mc->USE_ONE_BUTTON = false;
       if (mc->ms == Off) {
         mc->clearErrors();
+        smm->turnOn();
         smm->changeTargetTemp(mc->TARGET_TEMP_C);
         Debug<const char *>("Turning on: New State: Warmup!");
       } else {
@@ -137,11 +138,13 @@ namespace CogApp
     } else if (ic.value_c == '2') {
       Debug<const char *>("Entering Automatic One-Button Algorithm.");
       mc->clearErrors();
+      smm->turnOn();
       smm->changeTargetTemp(mc->TARGET_TEMP_C);
       mc->USE_ONE_BUTTON = true;
     } else if (ic.value_c == '3') {
       Debug<const char *>("Entering Automatic One-Button Algorithm. Set Temp to 750degC");
       mc->clearErrors();
+      smm->turnOn();
       smm->changeTargetTemp(mc->OPERATING_TEMPERATURE_C);
       mc->USE_ONE_BUTTON = true;
     } else {
@@ -160,6 +163,7 @@ namespace CogApp
     case 'H':
       {
         smm->changeTargetTemp(ic.value_f);
+        smm->turnOn();
 	CogCore::Debug<const char *>("Target Temp changed to: ");
       char t[20];
       sprintf(t, "%10.8f", ic.value_f);
@@ -181,33 +185,34 @@ namespace CogApp
 	CogCore::Debug<const char *>("\n");
       }
       break;
-    case 'P':
-      {
-        double P = ic.value_f;
-        double I = smm->heaterPIDTask->GetKi();
-        double D = smm->heaterPIDTask->GetKd();
-        smm->heaterPIDTask->SetTunings(P,I,D);
-        smm->heaterPIDTask->printTunings();
-      }
-      break;
-    case 'I':
-      {
-        double P = smm->heaterPIDTask->GetKp();
-        double I = ic.value_f;
-        double D = smm->heaterPIDTask->GetKd();
-        smm->heaterPIDTask->SetTunings(P,I,D);
-        smm->heaterPIDTask->printTunings();
-      }
-      break;
-    case 'D':
-      {
-        double P = smm->heaterPIDTask->GetKp();
-        double I = smm->heaterPIDTask->GetKi();
-        double D = ic.value_f;
-        smm->heaterPIDTask->SetTunings(P,I,D);
-        smm->heaterPIDTask->printTunings();
-      }
-      break;
+      // TODO: These are no long supported and should be removed.
+    // case 'P':
+    //   {
+    //     double P = ic.value_f;
+    //     double I = smm->heaterPIDTask->GetKi();
+    //     double D = smm->heaterPIDTask->GetKd();
+    //     smm->heaterPIDTask->SetTunings(P,I,D);
+    //     smm->heaterPIDTask->printTunings();
+    //   }
+    //   break;
+    // case 'I':
+    //   {
+    //     double P = smm->heaterPIDTask->GetKp();
+    //     double I = ic.value_f;
+    //     double D = smm->heaterPIDTask->GetKd();
+    //     smm->heaterPIDTask->SetTunings(P,I,D);
+    //     smm->heaterPIDTask->printTunings();
+    //   }
+    //   break;
+    // case 'D':
+    //   {
+    //     double P = smm->heaterPIDTask->GetKp();
+    //     double I = smm->heaterPIDTask->GetKi();
+    //     double D = ic.value_f;
+    //     smm->heaterPIDTask->SetTunings(P,I,D);
+    //     smm->heaterPIDTask->printTunings();
+    //   }
+    //   break;
     default:
       CogCore::Debug<const char *>("Internal Error!\n");
     }

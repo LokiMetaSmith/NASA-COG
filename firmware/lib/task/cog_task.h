@@ -52,7 +52,7 @@ namespace CogApp
     // Computing Pumping Wattage
     float PW_w = 0;
     // Current Fan Speed
-    float S_p = 50;
+    float S_p = MachineConfig::FAN_SPEED_PREFERRED_p;
     // Current Total Wattage
     float TW_w = 0;
     // Current Heater Wattage
@@ -64,7 +64,7 @@ namespace CogApp
     // Target Heater Wattage
     float tH_w = 0;
     // Target Fan Speed
-    float tS_p = 100.0;
+    float tS_p = MachineConfig::FAN_SPEED_PREFERRED_p;
     // Heater ramp rate (degrees C per minute)
     const float Hr_Cdm =0.5;
     // Stack Watts ramp rate (watts per minute)
@@ -150,6 +150,7 @@ namespace CogApp
     COG_HAL* getHAL();
 
     void turnOff() override;
+    void turnOn() override;
     void printGenericInstructions() override;
 
     float getFanSpeed(float t);

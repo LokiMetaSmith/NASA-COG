@@ -42,7 +42,8 @@ namespace CogApp
       const static int NUM_TEMPERATURE_SENSORS = 3;
       const static int NUM_TEMPERATURE_INDICES = 2;
 
-      void turnOff();
+      void turnOff() override;
+      void turnOn() override;
       void printGenericInstructions() override;
       void printOffWarnings(MachineState ms) override;
 
