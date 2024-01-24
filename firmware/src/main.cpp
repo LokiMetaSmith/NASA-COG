@@ -17,15 +17,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define VERSION "; Rev: 0.3.23"  // Added error: no error and updated JSON format
+#define OEDCS_VERSION "; Rev: 0.3.24"  // fixing the timeing bug
 #define DEVICE_UNDER_TEST "Hardware: Due"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
 
 #ifdef ARDUINO
 #include <Arduino.h>
-//#include <display.h>
-//
 #endif
 
 #include <core.h>
@@ -113,7 +111,7 @@ void setup()
   //Debug<const char *>("Starting COG...\n");
   Debug<const char *>("Starting ");
   Debug<const char *>(PROG_NAME);
-  Debug<const char *>(VERSION);
+  Debug<const char *>(OEDCS_VERSION);
   Debug<const char *>("\n");
 
   Debug<const char *>("Build: ");

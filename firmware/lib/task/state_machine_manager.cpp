@@ -165,6 +165,9 @@ namespace CogApp
     heaterPIDTask->shutHeaterDown();
   }
 
+  void StateMachineManager::turnOn() {
+  }
+
   // if we change the targetTemp, we will enter either
   // Warmup or Cooldown, with new values.
   void StateMachineManager::transitionToWarmup(float recent) {
