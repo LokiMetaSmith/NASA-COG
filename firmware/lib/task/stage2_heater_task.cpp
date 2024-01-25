@@ -78,7 +78,7 @@ namespace CogApp
     getConfig()->idleOrOperate = Idle;
     return new_ms;
   }
-  MachineState Stage2HeaterTask::_updatePowerComponentsCritialFault() {
+  MachineState Stage2HeaterTask::_updatePowerComponentsCriticalFault() {
     MachineState new_ms = CriticalFault;
     return new_ms;
   }

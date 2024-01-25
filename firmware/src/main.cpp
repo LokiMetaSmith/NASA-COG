@@ -353,7 +353,7 @@ void setup()
   cogTask.wattagePIDObject->DEBUG_PID = 0;
   OEDCSNetworkTask.DEBUG_UDP = 0;
   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
-  readTempsTask.DEBUG_READ_TEMPS = 0;
+  readTempsTask.DEBUG_READ_TEMPS = 2;
   oedcsSerialInputTask.DEBUG_SERIAL = 0;
   heartbeatTask.DEBUG_HEARTBEAT = 0;
   heartbeatTask.debug_number_of_heartbeats = millis() / 500;

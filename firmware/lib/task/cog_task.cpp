@@ -312,13 +312,10 @@ namespace CogApp
 	return true;
   }
 
-  bool CogTask::evaluateHeaterEnvelope(
-                                      CriticalErrorCondition ec,
-                                      double current_input_temperature,
+  bool CogTask::evaluateHeaterEnvelope(double current_input_temperature,
                                       double goal_temperature,
                                       double value_PID)
   {
-
     if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
       {
         unsigned long time_now = millis();
