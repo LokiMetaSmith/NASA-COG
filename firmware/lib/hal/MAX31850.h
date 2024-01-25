@@ -45,8 +45,8 @@
 namespace Temperature {
   class MAX31850Temperature : public AbstractTemperature {
   public:
-    SensorConfig _config;
-    float _temperature;
+
+    
     OneWire oneWire;
     DallasTemperature sensors;
     boolean ABORT_DUE_TO_SENSOR_INIT = false;

@@ -45,7 +45,7 @@ namespace CogApp
   private:
     bool _init() override;
     bool _run() override;
-    int _nextRecord;
+    int _nextRecord = 0;
     int _numRecords = 0;
   };
 }

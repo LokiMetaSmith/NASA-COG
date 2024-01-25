@@ -43,8 +43,8 @@ namespace CogApp
   class SerialInputTask : public CogCore::Task {
   private:
     static const byte numChars = 32;
-    char receivedChars[numChars];
-    char tempChars[numChars];
+    char receivedChars[numChars] = {0};
+    char tempChars[numChars] = {0};
     char messageFromPC[numChars] = {0};
     int integerFromPC = 0;
     float floatFromPC = 0.0;

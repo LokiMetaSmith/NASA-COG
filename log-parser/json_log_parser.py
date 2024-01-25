@@ -36,7 +36,7 @@ json_data_file_list =[
 ##matches = json_re_pattern.findall(jstring)
 ##for each in matches
 ##    remove_comma_re_pattern.
-##    
+##
 ###print(matches)
 ##
 ##for match in matches:
@@ -110,9 +110,9 @@ for match in matches:
         setpoint_c = data.get("SetpointC")
         ramp_c = data.get("RampC")
         heater_c = data.get("HeaterC")
- 
-        
-        
+
+
+
         # Check if the required keys exist in the dictionary
         if temperature_value is not None and voltage_value is not None and current_value is not None and time_value is not None and getter_value is not None and ohm_value is not None:
             if ohm_value >= 0.001:
@@ -131,8 +131,8 @@ for match in matches:
             malformed_entries_count += 1
             if malformed_entries_count < 10:
                 print(f"Malformed dictionary entry: {data}")
-       
-       
+
+
     except json.JSONDecodeError as e:
         decoding_JSON_entry_count +=1
         if decoding_JSON_entry_count < 10:
@@ -213,29 +213,28 @@ for transition in state_transitions:
         # Calculate average temperature
         average_temperature = (transition["Temperature"] + transition["Next_Temperature"]) / 2
         average_temperatures.append(average_temperature)
-            
+
     except ZeroDivisionError:
         resistance_diffs.append(np.nan)  # Represent division by zero as NaN
 kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
 
 
-
-
-# Define the function to fit (you may need to change this depending on the shape of your data)
-def nonlinear_model(x, a, b, c):
-    return a * np.exp(-b * np.array(x)) + c
-try:
-    # Use curve_fit to fit the function to the data
-    popt, pcov = curve_fit(nonlinear_model, temperatures_Getter_Stack, ohms)
-except OptimizeWarning as e:
-    print(f"Optimization Warning: {e}")
-    popt = [1, 1, 1]  # Provide default values or handle it accordingly
-    pcov = None
-# Print the optimized parameters
-print("Optimized Parameters:", popt)
-
-# Generate y values using the fitted function
-fit_y = nonlinear_model(temperatures_Getter_Stack, *popt)
+##
+##
+### Define the function to fit (you may need to change this depending on the shape of your data)
+##def nonlinear_model(x, a, b, c):
+##    return a * np.exp(-b * np.array(x)) + c
+##try:
+##    # Use curve_fit to fit the function to the data
+##    popt, pcov = curve_fit(nonlinear_model, temperatures_Getter_Stack, ohms)
+##except OptimizeWarning as e:
+##    print(f"Optimization Warning: {e}")
+##    popt = [1, 1, 1]  # Provide default values or handle it accordingly
+##    pcov = None
+### Print the optimized parameters
+##print("Optimized Parameters:", popt)
+### Generate y values using the fitted function
+##fit_y = nonlinear_model(temperatures_Getter_Stack, *popt)
 
 for i in range( 1, len(heater_c_values)):
     setpoint_vs_temperature_diffs.append( abs(heater_c_values[i]-setpoint_c_values[i]))
@@ -250,7 +249,7 @@ for i in range(1, len(heater_c_values)):
     # Check if a transition occurred
     if current_temperature != next_temperature:
         transition_time = times[i] - times[i - 1]
-        
+
         if transition_time > 10:
             print( times[i])
             print( times[i - 1])
@@ -258,9 +257,9 @@ for i in range(1, len(heater_c_values)):
             transition_times.append(transition_time )
     else:
         steady_temps=steady_temps+1
-    
 
-print(f"times when temp was steady: {steady_temps} ") 
+
+print(f"times when temp was steady: {steady_temps} ")
 # Calculate the average transition time
 if transition_times:
     average_time = sum(transition_times) / len(transition_times)
@@ -288,14 +287,14 @@ print(f"Standard Deviation of setpoint vs Temperature Differences: {setpoint_vs_
 print(f"Standard Deviation of Voltage Differences: {voltage_std}")
 print(f"Standard Deviation of Current Differences: {current_std}")
 print(f"Standard Deviation of Resistance Differences: {resistance_std}")
-print(f"Standard Deviation of TimeStamp Differences: {time_std}")
+print(f"Standard Deviation of TimeStamp Differences: {transition_times_std}")
 # Print resistance vs average temperature
 #for avg_temp, resistance in zip(average_temperatures, resistance_diffs):
 #    print(f"Average Temperature: {avg_temp}, Resistance: {resistance}")
 
 # Prepare the data for clustering
 data = np.array(list(zip(average_temperatures, resistance_diffs)))
-data = data[~np.isnan(data).any(axis=1)]  # Remove rows with NaN values
+#data = data[~np.isnan(data).any(axis=1)]  # Remove rows with NaN values
 
 # Standardize the data
 scaler = StandardScaler()

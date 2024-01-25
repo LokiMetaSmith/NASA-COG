@@ -37,7 +37,7 @@ namespace CogApp
   class OEDCSSerialInputTask : public SerialInputTask {
   public:
     CogTask* cogTask;
-    int DEBUG_SERIAL = 2;
+    
     int PERIOD_MS = 250;
     bool executeCommand(InputCommand ic,MachineConfig* mc,StateMachineManager *smm) override;
     bool _init() override;
