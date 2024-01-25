@@ -154,6 +154,8 @@ public:
   PreSetParameters p;
 
   CriticalError errors[NUM_CRITICAL_ERROR_DEFINITIONS];
+void change_ramp(float ramp);
+
 
   // TEST CONFIGURATION PARAMETERS
   // ALL OF THESE COULD BE CONFIGURABLE, BUT FOR THIS TEST
@@ -170,8 +172,7 @@ public:
   // two numbers
   float RAMP_UP_TARGET_D_MIN = 0.5; // R (degrees C per minute)
   float RAMP_DN_TARGET_D_MIN = -0.5; // R (degrees C per minute)
-  void change_ramp(float ramp);
-  float TARGET_TEMP_C = 30.0; // This is the goal target
+    float TARGET_TEMP_C = 30.0; // This is the goal target
 
   float MAX_AMPERAGE = 30.0; // A (Amperes)
   float MAX_STACK_WATTAGE = 250.0; // W (Wattage)
@@ -183,34 +184,7 @@ public:
 
   float SETPOINT_TEMP_C = 30.0; // This is the CURRENT setpoint, which ramps up or down to TARGET_TEMP.
 
-  // These are bounds; we won't let values go outside these.
-  // They can only be changed here and forcing a recompilation.
-  static constexpr float OPERATING_TEMPERATURE_C = 750.0;
-  static constexpr float OVER_TEMPERATURE_C = 800.0;
-  const float BOUND_MAX_TEMP = 750.0;
-  const float BOUND_MIN_TEMP = 25.0;
-  static constexpr float NOMINAL_AMBIENT_c = 25.0;
-
-  //these are the +/- over wattage and percent settings
-  const float MINIMUM_ACCURATE_WATTAGE_W = 20.0;
-  const float MAXIMUM_STACK_OVER_WATTAGE_W = 20.0;
-  const float MAXIMUM_STACK_OVER_WATTAGE_PC = 20.0;
-
-  const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
-  const float BOUND_MAX_WATTAGE = 300.0;
-  const float BOUND_MAX_RAMP = 3.0;
-  const float BOUND_MAX_TEMP_TRANSITION = 20.0;
-  const unsigned long BOUND_MAX_TEMP_TRANSITION_TIME_MS = 10000;
   // TODO: Need to check this.
-
-// our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
-// V = 115, W = 918.402
-  static constexpr float HEATER_MAXIMUM_WATTAGE = 918;
-  // TODO: This is a bit of a fudge factor...I'm not sure why it is needed
-  // This needs to be figured out.
-  static constexpr float HEATER_MAX_WATTAGE_FOR_DC_CALC = 0.95*HEATER_MAXIMUM_WATTAGE;
-  const float HEATER_MAXIMUM_WATTAGE_SLOP = 50;
-  const float HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITION = HEATER_MAXIMUM_WATTAGE - HEATER_MAXIMUM_WATTAGE_SLOP;
 
   // The beginning temperature of the current warming
   // or cooling cycle.
@@ -218,22 +192,6 @@ public:
    float WARM_UP_BEGIN_TEMP;
 
 
-  const unsigned long THERMOCOUPLE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  // WARNING! THIS IS DISABLING THE ERROR FOR TESTING
-  // WHILE WE FIGURE OUT THE TACH ERROR
-  const unsigned long PWR_12V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
-  const unsigned long PWR_24V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
-  const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
-  const unsigned long HEATER_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
-  const unsigned long ENVELOPE_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
-  const unsigned long COULD_NOT_INIT_3_THERMOCOUPLES_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  const unsigned long FAN_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  const unsigned long FAN_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  const unsigned long HEATER_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-
-  const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  const unsigned long PSU_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  const unsigned long MAINS_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
 
 
   // TODO: This would better be attached to the statemanager
@@ -243,30 +201,6 @@ public:
   // state manager, I need this gloabl.
   float GLOBAL_RECENT_TEMP = 30.0;
 
-  const float MAX_STACK_VOLTAGE = 12.0;
-  static constexpr float IDLE_STACK_VOLTAGE = 1.0;
-  static constexpr float MIN_OPERATING_STACK_VOLTAGE = 1.0;
-  //
-  // Note: The MAX31850, OneWire system, and the MAX31855, both,
-  // can not read reliably faster than 100ms.
-  // We have tested the TEMP_READ_PERIOD_MS at 100,
-  // but see no reason for it to be that fast.
-  // At present the code does not really use or log readings
-  // that are faster than the heater PID task period, so
-  // there is no reason for it to be more than twice as fast as that.
-  // Please refer to the documentation here:
-  // https://www.analog.com/media/en/technical-documentation/data-sheets/MAX31850-MAX31851.pdf
-  // https://www.analog.com/media/en/technical-documentation/data-sheets/MAX31855.pdf
-  // Please make sure that the INIT_PID_PERIOD_MS is more than
-  // the TEMP_READ_PERIOD_MS.
-  static const int TEMP_READ_PERIOD_MS = 225; // this is intentionally a little less than half the PID PERIOD
-  static const int INIT_PID_PERIOD_MS = 500;
-
-  static const int INIT_HEARTBEAT_PERIOD_MS = 500; // heartbeat task period
-  static const int INIT_LOG_RECORDER_PERIOD_MS = 1000;
-  static const int INIT_SHUTDOWN_BUTTON_PERIOD_MS = 250;
-
-  static const int DISPLAY_UPDATE_MS = 2000;
 
 void _reportFanSpeed();
 
@@ -325,10 +259,7 @@ void _reportFanSpeed();
 
   bool init();
 
-  // Ring buffer with 30 seconds of data could be a variable here
-  static constexpr unsigned int  MAX_RECORDS = 600;
   //CogCollections::CircularArray<MachineStatusReport, MAX_RECORDS> _log_entry;
-  MachineStatusReport _log_entry[MAX_RECORDS];
   //  void dumpAllData10Hz();
 
 
@@ -367,8 +298,83 @@ void _reportFanSpeed();
   float Ddelta_C_per_min = 0.0;
 
 
+
+  float CURRENT_TOTAL_WATTAGE_W;
+  float CURRENT_HEATER_WATTAGE_W;
+  float CURRENT_STACK_WATTAGE_W;
+
+  // I believe this should be tested to see if a much slower
+  // rate creates a more stable system. It makes no sense to me
+  // to do this faster then than the 3-second turn-on time for the
+  // heater. I suggest this be set to 20 seconds.
+  static bool IsAShutdownState(MachineState ms);
+
+
+
+
+
+// our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
+// V = 115, W = 918.402
+  static constexpr float HEATER_MAXIMUM_WATTAGE = 918;
+  // TODO: This is a bit of a fudge factor...I'm not sure why it is needed
+  // This needs to be figured out.
+  static constexpr float HEATER_MAX_WATTAGE_FOR_DC_CALC = 0.95*HEATER_MAXIMUM_WATTAGE;
+  const float HEATER_MAXIMUM_WATTAGE_SLOP = 50;
+  const float HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITION = HEATER_MAXIMUM_WATTAGE - HEATER_MAXIMUM_WATTAGE_SLOP;
+
+  const float MAX_STACK_VOLTAGE = 12.0;
+
+  // These are bounds; we won't let values go outside these.
+  // They can only be changed here and forcing a recompilation.
+  static constexpr float OPERATING_TEMPERATURE_C = 750.0;
+  static constexpr float OVER_TEMPERATURE_C = 800.0;
+  const float BOUND_MAX_TEMP = 750.0;
+  const float BOUND_MIN_TEMP = 25.0;
+  static constexpr float NOMINAL_AMBIENT_c = 25.0;
+
+  //these are the +/- over wattage and percent settings
+  const float MINIMUM_ACCURATE_WATTAGE_W = 20.0;
+  const float MAXIMUM_STACK_OVER_WATTAGE_W = 20.0;
+  const float MAXIMUM_STACK_OVER_WATTAGE_PC = 20.0;
+
+  const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
+  const float BOUND_MAX_WATTAGE = 300.0;
+  const float BOUND_MAX_RAMP = 3.0;
+  const float BOUND_MAX_TEMP_TRANSITION = 20.0;
+  const unsigned long BOUND_MAX_TEMP_TRANSITION_TIME_MS = 10000;
+
+  static constexpr float IDLE_STACK_VOLTAGE = 1.0;
+  static constexpr float MIN_OPERATING_STACK_VOLTAGE = 1.0;
+  //
+  // Note: The MAX31850, OneWire system, and the MAX31855, both,
+  // can not read reliably faster than 100ms.
+  // We have tested the TEMP_READ_PERIOD_MS at 100,
+  // but see no reason for it to be that fast.
+  // At present the code does not really use or log readings
+  // that are faster than the heater PID task period, so
+  // there is no reason for it to be more than twice as fast as that.
+  // Please refer to the documentation here:
+  // https://www.analog.com/media/en/technical-documentation/data-sheets/MAX31850-MAX31851.pdf
+  // https://www.analog.com/media/en/technical-documentation/data-sheets/MAX31855.pdf
+  // Please make sure that the INIT_PID_PERIOD_MS is more than
+  // the TEMP_READ_PERIOD_MS.
+  static const int TEMP_READ_PERIOD_MS = 225; // this is intentionally a little less than half the PID PERIOD
+  static const int INIT_PID_PERIOD_MS = 500;
+
+  static const int INIT_HEARTBEAT_PERIOD_MS = 500; // heartbeat task period
+  static const int INIT_LOG_RECORDER_PERIOD_MS = 1000;
+  static const int INIT_SHUTDOWN_BUTTON_PERIOD_MS = 250;
+
+  static const int DISPLAY_UPDATE_MS = 2000;
+
+
+  // Ring buffer with 30 seconds of data could be a variable here
+  static constexpr unsigned int  MAX_RECORDS = 600;
+
+  const float TEST_MINIMUM_STACK_AMPS = 0.1;
+
   // Here are new parameters associated with the "One Button" algorithm
-  bool USE_ONE_BUTTON = true; // if false, use the 5-knob approach
+  bool USE_ONE_BUTTON = true;
   const float DECREASE_STACK_WATTAGE_INCREMENT_W = 1.0;
 
   const float FAN_SPEED_MAX_p = 80;
@@ -379,18 +385,24 @@ void _reportFanSpeed();
   const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
   const float FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c = 20.0;
 
-  float CURRENT_TOTAL_WATTAGE_W;
-  float CURRENT_HEATER_WATTAGE_W;
-  float CURRENT_STACK_WATTAGE_W;
-
-  const float TEST_MINIMUM_STACK_AMPS = 0.1;
-
-  // I believe this should be tested to see if a much slower
-  // rate creates a more stable system. It makes no sense to me
-  // to do this faster then than the 3-second turn-on time for the
-  // heater. I suggest this be set to 20 seconds.
   static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;
-  static bool IsAShutdownState(MachineState ms);
+  const unsigned long THERMOCOUPLE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long PWR_12V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
+  const unsigned long PWR_24V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
+  const unsigned long FAN_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
+  const unsigned long HEATER_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
+  const unsigned long ENVELOPE_FAULT_TOLERATION_TIME_MS = 3 * 60 * 1000;
+  const unsigned long COULD_NOT_INIT_3_THERMOCOUPLES_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long FAN_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long FAN_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long HEATER_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+
+  const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long PSU_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long MAINS_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+
+  MachineStatusReport _log_entry[MAX_RECORDS];
+
 };
 
 
