@@ -119,7 +119,7 @@ namespace CogApp
       new_ms = _updatePowerComponentsCooldown();
       break;
     case CriticalFault:
-      new_ms = _updatePowerComponentsCritialFault();
+      new_ms = _updatePowerComponentsCriticalFault();
       break;
     case EmergencyShutdown:
       new_ms = _updatePowerComponentsEmergencyShutdown();
@@ -250,9 +250,15 @@ namespace CogApp
     return new_ms;
   }
 
-  MachineState StateMachineManager::_updatePowerComponentsCritialFault() {
+  MachineState StateMachineManager::_updatePowerComponentsCriticalFault() {
+	if (SM_DEBUG_LEVEL > 0) {
+      CogCore::Debug<const char *>("Critical Fault!\n");
+    }
   }
   MachineState StateMachineManager::_updatePowerComponentsEmergencyShutdown() {
+	if (SM_DEBUG_LEVEL > 0) {
+      CogCore::Debug<const char *>("Emergency Shutdown!\n");
+    }
   }
 
   MachineState StateMachineManager::_updatePowerComponentsCooldown() {

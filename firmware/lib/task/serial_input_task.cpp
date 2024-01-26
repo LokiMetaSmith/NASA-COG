@@ -142,7 +142,9 @@ namespace CogApp
       smm->changeTargetTemp(mc->TARGET_TEMP_C);
       mc->USE_ONE_BUTTON = true;
     } else if (ic.value_c == '3') {
-      Debug<const char *>("Entering Automatic One-Button Algorithm. Set Temp to 750degC.\n");
+      Debug<const char *>("Entering Automatic One-Button Algorithm. Set Temp to: ");
+      Debug<int>(mc->OPERATING_TEMPERATURE_C);
+      Debug<const char *>("\n");
       mc->clearErrors();
       smm->turnOn();
       smm->changeTargetTemp(mc->OPERATING_TEMPERATURE_C);
@@ -176,7 +178,7 @@ namespace CogApp
       break;
     case 'R':
       {
-        float r = min(mc->BOUND_MAX_RAMP,ic.value_f);
+        float r = min(mc->BOUND_MAX_RAMP_C_PER_MIN,ic.value_f);
         r = max(0.0,r);
         mc->change_ramp(r);
         mc->report->target_ramp_C = r;

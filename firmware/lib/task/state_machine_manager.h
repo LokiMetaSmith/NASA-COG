@@ -43,7 +43,7 @@ namespace CogApp
     virtual MachineState _updatePowerComponentsWarmup() = 0;
     virtual MachineState _updatePowerComponentsIdle() = 0;
     virtual MachineState _updatePowerComponentsCooldown() = 0;
-    virtual MachineState _updatePowerComponentsCritialFault() = 0;
+    virtual MachineState _updatePowerComponentsCriticalFault() = 0;
     virtual MachineState _updatePowerComponentsEmergencyShutdown() = 0;
     virtual MachineState _updatePowerComponentsOffUserAck() = 0;
     virtual float getTemperatureReadingA_C() = 0;

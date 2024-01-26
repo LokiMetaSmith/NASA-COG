@@ -299,7 +299,7 @@ void ReadTempsTask::updateTemperatures() {
   // which is what we are using as a control variable.
   addTempToQueue(getConfig()->report->post_heater_C);
   calculateDdelta();
-  if (DEBUG_READ_TEMPS > 0) {
+  if (DEBUG_READ_TEMPS > 2) {
     CogCore::Debug<const char *>("Good Temp Reads:");
 //    CogCore::Debug<unsigned long>(good_temp_reads);
     CogCore::Debug<unsigned long>(good_temp_reads_heater);

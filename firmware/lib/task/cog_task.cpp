@@ -115,33 +115,6 @@ namespace CogApp
     float w = max(0.0,min(L,y));
     return min(w,targetTotalWattage);
   }
-  // This returns a percentage....
-  float CogTask::computeFanSpeedTargetFromSchedule(float temp) {
-    float t = max(0,temp);
-    float a = getConfig()->FAN_SPEED_MIN_p;
-    float z = getConfig()->FAN_SPEED_MAX_p;
-    float f = z - a;
-    float ambient = getConfig()->NOMINAL_AMBIENT_c;
-    float min_speed_temp = getConfig()->FAN_SPEED_TEMP_FOR_MIN_SPEED_c;
-    float r = min(1.0,
-                  max(0,
-                      min_speed_temp - temp)/
-                  (min_speed_temp - ambient));
-    float retval = r*f + a;
-    if ((DEBUG_LEVEL > 0) || (retval > z || retval < a)) {
-      if ((retval > z || retval < a))
-        CogCore::Debug<const char *>("Internal error: fan speed too high");
-      CogCore::DebugLn<float>(retval);
-      CogCore::Debug<const char *>("temp:");
-      CogCore::DebugLn<float>(temp);
-      CogCore::Debug<const char *>("a,z");
-      CogCore::DebugLn<float>(a);
-      CogCore::DebugLn<float>(z);
-    }
-
-    return retval;
-  }
-
 
   float CogTask::computeFanSpeedTarget(float currentTargetTemp, float temp, float heaterWatts,float A, float B, float C) {
     // const bool NEW_STRATEGY = true;
@@ -279,20 +252,17 @@ namespace CogApp
 	return true;
   }
 
-  bool CogTask::evaluateHeaterEnvelope(
-                                       CriticalErrorCondition ec,
-                                       double current_input_temperature,
-                                       double goal_temperature,
-                                       double value_PID)
+  bool CogTask::evaluateHeaterEnvelope(double current_input_temperature,
+                                      double goal_temperature,
+                                      double value_PID)
   {
-
+	  unsigned long time_now = millis();
     if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
       {
-        unsigned long time_now = millis();
-        if(goal_temperature != current_input_temperature)
-          {
-            time_last_temp_changed_ms = time_now;
-          }
+        // if(abs(goal_temperature - current_input_temperature)>getConfig()->BOUND_MAX_TEMP_TRANSITION)
+          // {
+            // time_last_temp_changed_ms = time_now;
+          // }
         //last_temp_change is the time when the temp changed last
         if (DEBUG_LEVEL > 1) {
           CogCore::Debug<const char *>("TESTING ENVELOPE\n");
@@ -320,7 +290,8 @@ namespace CogApp
 
         }
       }
-    return true;
+	  time_last_temp_changed_ms = time_now;
+	  return true;
   }
 
 
@@ -627,8 +598,7 @@ namespace CogApp
         }
     }//evaluateFan
 #endif
-    if (!evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
-                           getTemperatureReadingA_C(),
+    if (!evaluateHeaterEnvelope(getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
                            getConfig()->report->heater_duty_cycle)){
 		CogCore::DebugLn<const char *>("Heater Fault Present");
@@ -718,7 +688,8 @@ namespace CogApp
     getConfig()->report->fan_pwm = fs;
     dutyCycleTask->dutyCycle = 0;
     getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
-    _updateStackVoltage(getConfig()->MIN_OPERATING_STACK_VOLTAGE);
+    //    _updateStackVoltage(getConfig()->MIN_OPERATING_STACK_VOLTAGE);
+    _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
     // Although after a minute this should turn off, we want
     // to do it immediately
     StateMachineManager::turnOff();
@@ -1009,15 +980,17 @@ namespace CogApp
     CogCore::Debug<const char *>("IN IDLE FUNCTION\n ");
     MachineState new_ms = NormalOperation;
     getConfig()->idleOrOperate = Idle;
-    _updateStackVoltage(MachineConfig::IDLE_STACK_VOLTAGE);
+    //    _updateStackVoltage(MachineConfig::IDLE_STACK_VOLTAGE);
+    _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
     return new_ms;
   }
 
   // After being sure that we've logged this
   // I think we can shift to the off conditions.
-  MachineState CogTask::_updatePowerComponentsCritialFault() {
+  MachineState CogTask::_updatePowerComponentsCriticalFault() {
     MachineState new_ms = OffUserAck;
-    _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    //    _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    //    _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
     turnOff();
     logRecorderTask->dumpRecords();
     return new_ms;
@@ -1030,7 +1003,9 @@ namespace CogApp
   }
   MachineState CogTask::_updatePowerComponentsOffUserAck() {
     MachineState new_ms = CriticalFault;
-    _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    //    _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
+    //    _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
+
     // We need to be sure we are off in all of the Off states...
     turnOff();
     return new_ms;
@@ -1053,7 +1028,7 @@ namespace CogApp
     float r = getConfig()->report->stack_ohms;
     float w = wattage;
     float a = (r <= 0.0) ? 0.0 : sqrt(w/r);
-    a = max(a,getConfig()->TEST_MINIMUM_STACK_AMPS);
+    a = max(a,getConfig()->MIN_OPERATING_STACK_AMPERAGE);
     _updateStackVoltage(getConfig()->MAX_STACK_VOLTAGE);
     _updateStackAmperage(a);
     getConfig()->CURRENT_STACK_WATTAGE_W = wattage;

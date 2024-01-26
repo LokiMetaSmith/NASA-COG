@@ -121,12 +121,12 @@ namespace CogApp
     float computeHeaterDutyCycleFromWattage(float heaterWattage_w);
     float computeTotalWattage(float controlTemp);
     float computeTargetStackWattage(float targetTotalWattage, float heaterWatts, float currentTemp, float B, float C, float targetStackWatts);
-    float computeFanSpeedTargetFromSchedule(float temp);
+    //    float computeFanSpeedTargetFromSchedule(float temp);
     float computeFanSpeedTarget(float currentTargetTemp,float temp, float heaterWatts, float A, float B, float C);
     //    bool heaterWattsAtFullPowerPred(float watts);
     void oneButtonAlgorithm(float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p);
     void runOneButtonAlgorithm() override;
-	bool evaluateHeaterEnvelope(CriticalErrorCondition ec, double goal_temperature,double current_input_temperature, double value_PID);
+	bool evaluateHeaterEnvelope(double goal_temperature,double current_input_temperature, double value_PID);
     float computeNernstVoltage(float T_K);
     float computePumpingWork(float T_k,float V,float R_O, float I_A);
     void changeRamps(unsigned long ms);
@@ -170,7 +170,7 @@ namespace CogApp
     MachineState _updatePowerComponentsWarmup() override;
     MachineState _updatePowerComponentsIdle() override;
     MachineState _updatePowerComponentsCooldown() override;
-    MachineState _updatePowerComponentsCritialFault() override;
+    MachineState _updatePowerComponentsCriticalFault() override;
     MachineState _updatePowerComponentsEmergencyShutdown() override;
     MachineState _updatePowerComponentsOffUserAck() override;
   private:

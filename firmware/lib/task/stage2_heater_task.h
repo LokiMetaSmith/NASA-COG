@@ -59,7 +59,7 @@ namespace CogApp
        MachineState _updatePowerComponentsWarmup() override;
        MachineState _updatePowerComponentsIdle() override;
        MachineState _updatePowerComponentsCooldown() override;
-       MachineState _updatePowerComponentsCritialFault() override;
+       MachineState _updatePowerComponentsCriticalFault() override;
        MachineState _updatePowerComponentsEmergencyShutdown() override;
        MachineState _updatePowerComponentsOffUserAck() override;
 

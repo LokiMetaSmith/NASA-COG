@@ -297,7 +297,8 @@ void _reportFanSpeed();
   // Ddelta is the change in temperature in C per min
   float Ddelta_C_per_min = 0.0;
 
-
+  // Here are new parameters associated with the "One Button" algorithm
+  bool USE_ONE_BUTTON = true;
 
   float CURRENT_TOTAL_WATTAGE_W;
   float CURRENT_HEATER_WATTAGE_W;
@@ -309,8 +310,6 @@ void _reportFanSpeed();
   // heater. I suggest this be set to 20 seconds.
   static bool IsAShutdownState(MachineState ms);
 
-
-
   /********************************************
    Begin compile-time parameters
    ********************************************/
@@ -320,7 +319,7 @@ void _reportFanSpeed();
   // Change this based on the measurement of your CFC
   static constexpr float HEATER_MAXIMUM_WATTAGE = 918;
   // This is a bit of a fudge factor...
-  static constexpr float HEATER_MAX_WATTAGE_FOR_DC_CALC = 0.95*HEATER_MAXIMUM_WATTAGE;
+   static constexpr float HEATER_MAX_WATTAGE_FOR_DC_CALC = 0.95*HEATER_MAXIMUM_WATTAGE;
   //  const float HEATER_MAXIMUM_WATTAGE_SLOP = 50;
   // This is the final definition used
   //  const float HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITION = HEATER_MAXIMUM_WATTAGE - HEATER_MAXIMUM_WATTAGE_SLOP;
@@ -328,28 +327,52 @@ void _reportFanSpeed();
   // This should not change, unless you change your PSU
   const float MAX_STACK_VOLTAGE = 12.0;
 
-  // These are bounds; we won't let values go outside these.
-  // They can only be changed here and forcing a recompilation.
+  // This is the most important parameter!
   static constexpr float OPERATING_TEMPERATURE_C = 750.0;
+
+  // You may have to adjust these based on altitude;
+  // if the air is thin, the fan can over-spin, and
+  // you may want to lower the max speed to 60%.
+  const float FAN_SPEED_MAX_p = 80;
+  const float FAN_SPEED_MIN_p = 30;
+  static constexpr float FAN_SPEED_PREFERRED_p = 40;
+
+
+  // The is an absolute max wattage allowed into the stack.
+  const float BOUND_MAX_WATTAGE = 300.0;
+  // This is the maximum amperage you can set to go into the stack.
+  const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
+  // This is the maximum ramp in degress C per minute.
+  const float BOUND_MAX_RAMP_C_PER_MIN = 3.0;
+  const float BOUND_MAX_TEMP_TRANSITION = 20.0;
+  const unsigned long BOUND_MAX_TEMP_TRANSITION_TIME_MS = 10000;
+
+
+// These are bounds; we won't let values go outside these.
+  // They can only be changed here and forcing a recompilation.
+
+  // This will cause an immediate shutdown if exceeded.
   static constexpr float OVER_TEMPERATURE_C = 800.0;
+
+  // The target temp cannot be changed outside of these bounds.
   const float BOUND_MAX_TEMP = 750.0;
   const float BOUND_MIN_TEMP = 25.0;
-  static constexpr float NOMINAL_AMBIENT_c = 25.0;
 
-  //these are the +/- over wattage and percent settings
+  //  static constexpr float NOMINAL_AMBIENT_c = 25.0;
+
+  // these are the +/- over wattage and percent settings
+  // for the purpose of verifying the operation of the PSU,
+  // which is known to be inaccuarate at low amperage
   const float MINIMUM_ACCURATE_WATTAGE_W = 20.0;
   const float MAXIMUM_STACK_OVER_WATTAGE_W = 20.0;
   const float MAXIMUM_STACK_OVER_WATTAGE_PC = 20.0;
 
-  const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
-  const float BOUND_MAX_WATTAGE = 300.0;
-  const float BOUND_MAX_RAMP = 3.0;
-  const float BOUND_MAX_TEMP_TRANSITION = 20.0;
-  const unsigned long BOUND_MAX_TEMP_TRANSITION_TIME_MS = 10000;
 
-  static constexpr float IDLE_STACK_VOLTAGE = 1.0;
-  static constexpr float MIN_OPERATING_STACK_VOLTAGE = 1.0;
-  //
+  // AmOx has requested that we also have small forward bias,
+  // and the easiest way to accomplish this is with a small amperage
+  // in current control mode.
+  static constexpr float MIN_OPERATING_STACK_AMPERAGE = 0.1;
+
   // Note: The MAX31850, OneWire system, and the MAX31855, both,
   // can not read reliably faster than 100ms.
   // We have tested the TEMP_READ_PERIOD_MS at 100,
@@ -365,31 +388,32 @@ void _reportFanSpeed();
   static const int TEMP_READ_PERIOD_MS = 225; // this is intentionally a little less than half the PID PERIOD
   static const int INIT_PID_PERIOD_MS = 500;
 
+  static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;
+
+
+  // The "heartbeat" on the OEDCS v.1.1 is both a red LED and PIN 13.
   static const int INIT_HEARTBEAT_PERIOD_MS = 500; // heartbeat task period
+
+  // The is the basic recording of values in "emergency logging mode"
   static const int INIT_LOG_RECORDER_PERIOD_MS = 1000;
-  static const int INIT_SHUTDOWN_BUTTON_PERIOD_MS = 250;
 
-  static const int DISPLAY_UPDATE_MS = 2000;
-
-  // Ring buffer with 30 seconds of data could be a variable here
+  // Task2 asked for 10 minutes of logging data at 1 Hz, so 600 records
   static constexpr unsigned int  MAX_RECORDS = 600;
   MachineStatusReport _log_entry[MAX_RECORDS];
 
-  const float TEST_MINIMUM_STACK_AMPS = 0.1;
 
-  // Here are new parameters associated with the "One Button" algorithm
-  bool USE_ONE_BUTTON = true;
+    // if the operating temp is higher than the current setpoint temp and and the heater is off,
+    // we have not choice but to decrease the stack watts...this is a bit of "magic"
+    // that has no good rationale. - rlr
   const float DECREASE_STACK_WATTAGE_INCREMENT_W = 1.0;
 
-  const float FAN_SPEED_MAX_p = 80;
-  const float FAN_SPEED_MIN_p = 30;
-  static constexpr float FAN_SPEED_PREFERRED_p = 40;
-  const float LOW_TEMP_TRIGGER = 20;
-  const float FAN_SPEED_TEMP_FOR_MIN_SPEED_c = 800.0;
-  const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
-  const float FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c = 20.0;
 
-  static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;
+  // If we are LOW_TEMP_TRIGGER below our setpoint, we will lower the fan speed
+  const float LOW_TEMP_TRIGGER = 20;
+
+  //  const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
+  //  const float FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c = 20.0;
+
 
 
   // These are the times that we will tolerate a given
@@ -410,6 +434,16 @@ void _reportFanSpeed();
   const unsigned long MAINS_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
 
 
+  /********************************************
+   FUTURE PARAMETERS, THESE HAVE NO MEANING AT PRESENT
+   ********************************************/
+
+  // // This is currently unused, as we do not support an Idle mode yet...
+  // static constexpr float IDLE_STACK_VOLTAGE = 1.0;
+  // //
+  static const int INIT_SHUTDOWN_BUTTON_PERIOD_MS = 250;
+
+  static const int DISPLAY_UPDATE_MS = 2000;
 
 };
 
