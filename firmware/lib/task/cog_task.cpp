@@ -316,13 +316,13 @@ namespace CogApp
                                       double goal_temperature,
                                       double value_PID)
   {
+	  unsigned long time_now = millis();
     if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
       {
-        unsigned long time_now = millis();
-        if(goal_temperature != current_input_temperature)
-          {
-            time_last_temp_changed_ms = time_now;
-          }
+        // if(abs(goal_temperature - current_input_temperature)>getConfig()->BOUND_MAX_TEMP_TRANSITION)
+          // {
+            // time_last_temp_changed_ms = time_now;
+          // }
         //last_temp_change is the time when the temp changed last
         if (DEBUG_LEVEL > 1) {
           CogCore::Debug<const char *>("TESTING ENVELOPE\n");
@@ -350,6 +350,7 @@ namespace CogApp
 
           }
       }
+	  time_last_temp_changed_ms = time_now;
 	  return true;
   }
 
@@ -657,8 +658,7 @@ namespace CogApp
         }
     }//evaluateFan
 #endif
-    if (!evaluateHeaterEnvelope(HEATER_OUT_OF_BOUNDS,
-                           getTemperatureReadingA_C(),
+    if (!evaluateHeaterEnvelope(getTemperatureReadingA_C(),
                            getConfig()->SETPOINT_TEMP_C,
                            getConfig()->report->heater_duty_cycle)){
 		CogCore::DebugLn<const char *>("Heater Fault Present");
@@ -1045,7 +1045,7 @@ namespace CogApp
 
   // After being sure that we've logged this
   // I think we can shift to the off conditions.
-  MachineState CogTask::_updatePowerComponentsCritialFault() {
+  MachineState CogTask::_updatePowerComponentsCriticalFault() {
     MachineState new_ms = OffUserAck;
     _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
     turnOff();
