@@ -63,7 +63,9 @@ class DutyCycleTask : public CogCore::Task
 
     unsigned long time_of_last_check = 0;
     float temperature_at_time_of_last_check;
-    const float TEMPERATURE_LIMIT = -0.5;
+    // Sadly
+    const float TEMPERATURE_LOW_LIMIT = -1.0;
+    const float TEMPERATURE_HIGH_LIMIT = -1.0;
     const float TEMPERATURE_UPSWING_THRESHOLD = 0.25;
 
     // By placing a pointer here, we can have

@@ -121,9 +121,9 @@ namespace CogApp
     float computeHeaterDutyCycleFromWattage(float heaterWattage_w);
     float computeTotalWattage(float controlTemp);
     float computeTargetStackWattage(float targetTotalWattage, float heaterWatts, float currentTemp, float B, float C, float targetStackWatts);
-    float computeFanSpeedTargetFromSchedule(float temp);
+    //    float computeFanSpeedTargetFromSchedule(float temp);
     float computeFanSpeedTarget(float currentTargetTemp,float temp, float heaterWatts, float A, float B, float C);
-    bool heaterWattsAtFullPowerPred(float watts);
+    //    bool heaterWattsAtFullPowerPred(float watts);
     void oneButtonAlgorithm(float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p);
     void runOneButtonAlgorithm() override;
 	bool evaluateHeaterEnvelope(double goal_temperature,double current_input_temperature, double value_PID);
@@ -176,7 +176,7 @@ namespace CogApp
   private:
     bool _run() override;
     bool _init() override;
-    
+
   };
 
 

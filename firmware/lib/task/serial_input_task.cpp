@@ -142,7 +142,9 @@ namespace CogApp
       smm->changeTargetTemp(mc->TARGET_TEMP_C);
       mc->USE_ONE_BUTTON = true;
     } else if (ic.value_c == '3') {
-      Debug<const char *>("Entering Automatic One-Button Algorithm. Set Temp to 750degC");
+      Debug<const char *>("Entering Automatic One-Button Algorithm. Set Temp to: ");
+      Debug<int>(mc->OPERATING_TEMPERATURE_C);
+      Debug<const char *>("\n");
       mc->clearErrors();
       smm->turnOn();
       smm->changeTargetTemp(mc->OPERATING_TEMPERATURE_C);
@@ -176,7 +178,7 @@ namespace CogApp
       break;
     case 'R':
       {
-        float r = min(mc->BOUND_MAX_RAMP,ic.value_f);
+        float r = min(mc->BOUND_MAX_RAMP_C_PER_MIN,ic.value_f);
         r = max(0.0,r);
         mc->change_ramp(r);
         mc->report->target_ramp_C = r;
@@ -185,34 +187,6 @@ namespace CogApp
 	CogCore::Debug<const char *>("\n");
       }
       break;
-      // TODO: These are no long supported and should be removed.
-    // case 'P':
-    //   {
-    //     double P = ic.value_f;
-    //     double I = smm->heaterPIDTask->GetKi();
-    //     double D = smm->heaterPIDTask->GetKd();
-    //     smm->heaterPIDTask->SetTunings(P,I,D);
-    //     smm->heaterPIDTask->printTunings();
-    //   }
-    //   break;
-    // case 'I':
-    //   {
-    //     double P = smm->heaterPIDTask->GetKp();
-    //     double I = ic.value_f;
-    //     double D = smm->heaterPIDTask->GetKd();
-    //     smm->heaterPIDTask->SetTunings(P,I,D);
-    //     smm->heaterPIDTask->printTunings();
-    //   }
-    //   break;
-    // case 'D':
-    //   {
-    //     double P = smm->heaterPIDTask->GetKp();
-    //     double I = smm->heaterPIDTask->GetKi();
-    //     double D = ic.value_f;
-    //     smm->heaterPIDTask->SetTunings(P,I,D);
-    //     smm->heaterPIDTask->printTunings();
-    //   }
-    //   break;
     default:
       CogCore::Debug<const char *>("Internal Error!\n");
     }
