@@ -141,9 +141,6 @@ namespace CogApp
 
     return retval;
   }
-  bool CogTask::heaterWattsAtFullPowerPred(float watts) {
-    return watts > getConfig()->HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITION;
-  }
 
 
   float CogTask::computeFanSpeedTarget(float currentTargetTemp, float temp, float heaterWatts,float A, float B, float C) {
@@ -252,36 +249,6 @@ namespace CogApp
       CogCore::DebugLn<const char *>("WARNING: AT PRESENT NO ACTION WILL BE TAKEN!!\n");
       break;
     }
-    // } else {
-    //   float fs_p = computeFanSpeedTargetFromSchedule(temp);
-    //   float diff = currentTargetTemp - temp;
-    //   float init_c = getConfig()->FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c;
-    //   // Here we are checking if the heater is at full power.
-    //   // checking the dutyCycle to be 100% is probably the best way to do this,
-    //   // as it takes time to reach there.
-    //   //    if (heaterWattsAtFullPowerPred(heaterWatts) && ((diff > init_c))) {
-    //   if ((dutyCycleTask->dutyCycle >= 0.99) && ((diff > init_c))) {
-    //     float final_c = getConfig()->FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c;
-    //     float min_p = getConfig()->FAN_SPEED_MIN_p;
-    //     // m is literally the slope in our linear equation
-    //     float m =  -(fs_p - min_p)/(init_c - final_c);
-    //     float nfs_p =  min(getConfig()->FAN_SPEED_MAX_p,
-    //                        max(getConfig()->FAN_SPEED_MIN_p,m * diff + fs_p));
-    //     if (DEBUG_LEVEL > 1) {
-    //       CogCore::Debug<const char *>("Full power mod fan percentage");
-    //       CogCore::DebugLn<float>(nfs_p);
-    //       CogCore::DebugLn<float>(m);
-    //       CogCore::DebugLn<float>(diff);
-    //     }
-    //     return nfs_p;
-    //   } else {
-    //     if (DEBUG_LEVEL > 1) {
-    //       CogCore::Debug<const char *>("Schedule percentage");
-    //       CogCore::Debug<float>(fs_p);
-    //     }
-    //     return fs_p;
-    //   }
-    // }
     CogCore::DebugLn<const char *>("WARNING:SHOULD NEVER GET HERE, FELL OUT OF LOOP!!\n");
     return -1;
   }
@@ -313,10 +280,10 @@ namespace CogApp
   }
 
   bool CogTask::evaluateHeaterEnvelope(
-                                      CriticalErrorCondition ec,
-                                      double current_input_temperature,
-                                      double goal_temperature,
-                                      double value_PID)
+                                       CriticalErrorCondition ec,
+                                       double current_input_temperature,
+                                       double goal_temperature,
+                                       double value_PID)
   {
 
     if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
@@ -331,29 +298,29 @@ namespace CogApp
           CogCore::Debug<const char *>("TESTING ENVELOPE\n");
         }
         if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
-            if (DEBUG_LEVEL > 1) {
-              CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
-            }
-            if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION) {
-                if (DEBUG_LEVEL > 1) {
-                  CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
-                  CogCore::Debug<float>(abs(goal_temperature - current_input_temperature));
-                  CogCore::Debug<const char *>("\n");
-                }
-				return false;
-                // As long as there is not a fault present, this creates;
-                 // if one is already present, we leave it.
-                // if (!getConfig()->errors[ec].fault_present) {
-                  // getConfig()->errors[ec].fault_present = true;
-                  // getConfig()->errors[ec].begin_condition_ms = millis();
-                // }
-              // } else if (!getConfig()->errors[ec].fault_present) {
-                  // getConfig()->errors[ec].fault_present = false;
-            }
-
+          if (DEBUG_LEVEL > 1) {
+            CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
           }
+          if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION) {
+            if (DEBUG_LEVEL > 1) {
+              CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
+              CogCore::Debug<float>(abs(goal_temperature - current_input_temperature));
+              CogCore::Debug<const char *>("\n");
+            }
+            return false;
+            // As long as there is not a fault present, this creates;
+            // if one is already present, we leave it.
+            // if (!getConfig()->errors[ec].fault_present) {
+            // getConfig()->errors[ec].fault_present = true;
+            // getConfig()->errors[ec].begin_condition_ms = millis();
+            // }
+            // } else if (!getConfig()->errors[ec].fault_present) {
+            // getConfig()->errors[ec].fault_present = false;
+          }
+
+        }
       }
-	  return true;
+    return true;
   }
 
 

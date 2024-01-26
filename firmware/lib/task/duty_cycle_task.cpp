@@ -148,13 +148,13 @@ bool DutyCycleTask::_run()
         CogCore::Debug<const char *>("AAA\n");
         if (current_temp < tl) {
           CogCore::Debug<const char *>("BBB\n");
-          if (difference < TEMPERATURE_LOW_LIMIT) {
+          if (difference <= TEMPERATURE_LOW_LIMIT) {
             getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
             getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
             CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
           }
         } else {
-          if (difference < TEMPERATURE_HIGH_LIMIT) {
+          if (difference <= TEMPERATURE_HIGH_LIMIT) {
             getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
             getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
             CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");

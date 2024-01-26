@@ -88,7 +88,7 @@ public:
   OnePinHeater **_ac_heaters;
   int DEBUG_HAL = 0;
   Stage2Heater s2heaterToControl = Int1;
-  
+
   bool init_heaters();
   virtual bool init() = 0;
 };
@@ -311,17 +311,21 @@ void _reportFanSpeed();
 
 
 
-
+  /********************************************
+   Begin compile-time parameters
+   ********************************************/
 
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
 // V = 115, W = 918.402
+  // Change this based on the measurement of your CFC
   static constexpr float HEATER_MAXIMUM_WATTAGE = 918;
-  // TODO: This is a bit of a fudge factor...I'm not sure why it is needed
-  // This needs to be figured out.
+  // This is a bit of a fudge factor...
   static constexpr float HEATER_MAX_WATTAGE_FOR_DC_CALC = 0.95*HEATER_MAXIMUM_WATTAGE;
-  const float HEATER_MAXIMUM_WATTAGE_SLOP = 50;
-  const float HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITION = HEATER_MAXIMUM_WATTAGE - HEATER_MAXIMUM_WATTAGE_SLOP;
+  //  const float HEATER_MAXIMUM_WATTAGE_SLOP = 50;
+  // This is the final definition used
+  //  const float HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITION = HEATER_MAXIMUM_WATTAGE - HEATER_MAXIMUM_WATTAGE_SLOP;
 
+  // This should not change, unless you change your PSU
   const float MAX_STACK_VOLTAGE = 12.0;
 
   // These are bounds; we won't let values go outside these.
@@ -367,9 +371,9 @@ void _reportFanSpeed();
 
   static const int DISPLAY_UPDATE_MS = 2000;
 
-
   // Ring buffer with 30 seconds of data could be a variable here
   static constexpr unsigned int  MAX_RECORDS = 600;
+  MachineStatusReport _log_entry[MAX_RECORDS];
 
   const float TEST_MINIMUM_STACK_AMPS = 0.1;
 
@@ -386,6 +390,11 @@ void _reportFanSpeed();
   const float FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c = 20.0;
 
   static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;
+
+
+  // These are the times that we will tolerate a given
+  // detectiable error condition before we treat the error as a critical error.
+  // Normally, these are a number of minutes.
   const unsigned long THERMOCOUPLE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long PWR_12V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
   const unsigned long PWR_24V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
@@ -396,12 +405,11 @@ void _reportFanSpeed();
   const unsigned long FAN_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long FAN_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long HEATER_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-
   const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long PSU_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long MAINS_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
 
-  MachineStatusReport _log_entry[MAX_RECORDS];
+
 
 };
 
