@@ -268,18 +268,18 @@ void setup()
   }
   dutyCycleTask.one_pin_heater = getConfig()->hal->_ac_heaters[0];
 
-  // CogCore::TaskProperties HeaterPIDProperties;
-  // HeaterPIDProperties.name = "HeaterPID";
-  // HeaterPIDProperties.id = 26;
-  // HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
-  // HeaterPIDProperties.priority = CogCore::TaskPriority::High;
-  // HeaterPIDProperties.state_and_config = (void *) &machineConfig;
-  // bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
+  CogCore::TaskProperties HeaterPIDProperties;
+  HeaterPIDProperties.name = "HeaterPID";
+  HeaterPIDProperties.id = 26;
+  HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
+  HeaterPIDProperties.priority = CogCore::TaskPriority::High;
+  HeaterPIDProperties.state_and_config = (void *) &machineConfig;
+  bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
 
-  // if (!heaterPIDAdd) {
-  //   CogCore::Debug<const char *>("heaterPIDAdd Failed\n");
-  //   abort();
-  // }
+  if (!heaterPIDAdd) {
+    CogCore::Debug<const char *>("heaterPIDAdd Failed\n");
+    abort();
+  }
 
   CogCore::TaskProperties HeartbeatProperties;
   HeartbeatProperties.name = "Heartbeat";
