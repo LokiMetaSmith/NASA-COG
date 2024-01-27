@@ -313,8 +313,7 @@ namespace CogApp
     // then we are off the charts and punt here....
     if (I_A <= 0.0) return 0.0;
     const float Nernst_V = computeNernstVoltage(T_K);
-    const float FIXED_V = c.CABLE_O;
-    const float Pumping_V = Nernst_V * c.NUM_WAFERS;
+    const float Pumping_V = Nernst_V * getConfig()->NUM_WAFERS;
     const float effectivePumping_V = max(0,Pumping_V);
     const float Pumping_Work_W = effectivePumping_V * I_A;
     return Pumping_Work_W;

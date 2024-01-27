@@ -319,11 +319,7 @@ void _reportFanSpeed();
   // Change this based on the measurement of your CFC
   static constexpr float HEATER_MAXIMUM_WATTAGE = 918;
   // This is a bit of a fudge factor...
-   static constexpr float HEATER_MAX_WATTAGE_FOR_DC_CALC = 0.95*HEATER_MAXIMUM_WATTAGE;
-  //  const float HEATER_MAXIMUM_WATTAGE_SLOP = 50;
-  // This is the final definition used
-  //  const float HEATER_MAXIMUM_WATTAGE_MEASURED_DEFINITION = HEATER_MAXIMUM_WATTAGE - HEATER_MAXIMUM_WATTAGE_SLOP;
-
+  static constexpr float HEATER_MAX_WATTAGE_FOR_DC_CALC = 0.95*HEATER_MAXIMUM_WATTAGE;
   // This should not change, unless you change your PSU
   const float MAX_STACK_VOLTAGE = 12.0;
 
@@ -342,11 +338,13 @@ void _reportFanSpeed();
   const float BOUND_MAX_WATTAGE = 300.0;
   // This is the maximum amperage you can set to go into the stack.
   const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
-  // This is the maximum ramp in degress C per minute.
+  // This is the maximum ramp in degrees C per minute.
   const float BOUND_MAX_RAMP_C_PER_MIN = 3.0;
   const float BOUND_MAX_TEMP_TRANSITION = 20.0;
   const unsigned long BOUND_MAX_TEMP_TRANSITION_TIME_MS = 10000;
 
+  // The Number of Wafers (used in computing Pumping Voltage)
+  const float NUM_WAFERS = 30;
 
 // These are bounds; we won't let values go outside these.
   // They can only be changed here and forcing a recompilation.
@@ -358,11 +356,9 @@ void _reportFanSpeed();
   const float BOUND_MAX_TEMP = 750.0;
   const float BOUND_MIN_TEMP = 25.0;
 
-  //  static constexpr float NOMINAL_AMBIENT_c = 25.0;
-
   // these are the +/- over wattage and percent settings
   // for the purpose of verifying the operation of the PSU,
-  // which is known to be inaccuarate at low amperage
+  // which is known to be inaccurate at low amperage
   const float MINIMUM_ACCURATE_WATTAGE_W = 20.0;
   const float MAXIMUM_STACK_OVER_WATTAGE_W = 20.0;
   const float MAXIMUM_STACK_OVER_WATTAGE_PC = 20.0;
@@ -390,7 +386,6 @@ void _reportFanSpeed();
 
   static const int WATTAGE_PID_SAMPLE_TIME_MS = 500;
 
-
   // The "heartbeat" on the OEDCS v.1.1 is both a red LED and PIN 13.
   static const int INIT_HEARTBEAT_PERIOD_MS = 500; // heartbeat task period
 
@@ -401,23 +396,16 @@ void _reportFanSpeed();
   static constexpr unsigned int  MAX_RECORDS = 600;
   MachineStatusReport _log_entry[MAX_RECORDS];
 
-
     // if the operating temp is higher than the current setpoint temp and and the heater is off,
     // we have not choice but to decrease the stack watts...this is a bit of "magic"
     // that has no good rationale. - rlr
   const float DECREASE_STACK_WATTAGE_INCREMENT_W = 1.0;
 
-
   // If we are LOW_TEMP_TRIGGER below our setpoint, we will lower the fan speed
   const float LOW_TEMP_TRIGGER = 20;
 
-  //  const float FAN_SPEED_ADJUSTMENT_INITIAL_THRESHOLD_c = 5.0;
-  //  const float FAN_SPEED_ADJUSTMENT_FINAL_THRESHOLD_c = 20.0;
-
-
-
   // These are the times that we will tolerate a given
-  // detectiable error condition before we treat the error as a critical error.
+  // detectable error condition before we treat the error as a critical error.
   // Normally, these are a number of minutes.
   const unsigned long THERMOCOUPLE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long PWR_12V_FAULT_TOLERATION_TIME_MS = 1 * 60 * 1000;
@@ -444,6 +432,9 @@ void _reportFanSpeed();
   static const int INIT_SHUTDOWN_BUTTON_PERIOD_MS = 250;
 
   static const int DISPLAY_UPDATE_MS = 2000;
+
+
+
 
 };
 

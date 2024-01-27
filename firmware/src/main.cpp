@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.3.26"  //
+#define OEDCS_VERSION "; Rev: 0.3.27"  // Further removing dead code
 #define DEVICE_UNDER_TEST "Hardware: Due"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -156,7 +156,7 @@ void setup()
 
   machineConfig.hal = hal;
 
-  machineConfig.hal->DEBUG_HAL = 2;
+  machineConfig.hal->DEBUG_HAL = 0;
   bool initSuccess  = machineConfig.hal->init();
   if (!initSuccess) {
     Debug<const char *>("Could not init Hardware Abstraction Layer Properly!\n");
@@ -268,18 +268,18 @@ void setup()
   }
   dutyCycleTask.one_pin_heater = getConfig()->hal->_ac_heaters[0];
 
-  CogCore::TaskProperties HeaterPIDProperties;
-  HeaterPIDProperties.name = "HeaterPID";
-  HeaterPIDProperties.id = 26;
-  HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
-  HeaterPIDProperties.priority = CogCore::TaskPriority::High;
-  HeaterPIDProperties.state_and_config = (void *) &machineConfig;
-  bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
+  // CogCore::TaskProperties HeaterPIDProperties;
+  // HeaterPIDProperties.name = "HeaterPID";
+  // HeaterPIDProperties.id = 26;
+  // HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
+  // HeaterPIDProperties.priority = CogCore::TaskPriority::High;
+  // HeaterPIDProperties.state_and_config = (void *) &machineConfig;
+  // bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
 
-  if (!heaterPIDAdd) {
-    CogCore::Debug<const char *>("heaterPIDAdd Failed\n");
-    abort();
-  }
+  // if (!heaterPIDAdd) {
+  //   CogCore::Debug<const char *>("heaterPIDAdd Failed\n");
+  //   abort();
+  // }
 
   CogCore::TaskProperties HeartbeatProperties;
   HeartbeatProperties.name = "Heartbeat";
@@ -344,7 +344,7 @@ void setup()
   core.DEBUG_CORE = 0;
   core._scheduler.DEBUG_SCHEDULER = 0;
   core._scheduler._idleTask.DEBUG_IDLETASK = 0;
-  dutyCycleTask.DEBUG_DUTY_CYCLE = 1;
+  dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
   heaterPIDTask.DEBUG_PID = 0;
   cogTask.DEBUG_FAN = 0;
   cogTask.DEBUG_LEVEL = 0;
