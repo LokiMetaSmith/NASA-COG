@@ -180,8 +180,7 @@ namespace CogApp
           a = INCREASE;
           break;
         case true:
-          a = ABORT; // We probably need to use a timer
-          // here to prevent aborting too early. I have not means of doing that at present.
+          a = ABORT;
           break;
         }
         break;
@@ -192,6 +191,11 @@ namespace CogApp
     if (DEBUG_FAN > 0) {
       CogCore::Debug<const char *>("XXXX Mode: ");
       CogCore::DebugLn<int>(a);
+    }
+    if (a != ABORT) {
+      if (getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present) {
+        getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present = false;
+      }
     }
     switch (a) {
     case INCREASE:
@@ -220,6 +224,11 @@ namespace CogApp
       // This is a major problem....we need to scream and croak.
       CogCore::DebugLn<const char *>("ACTION: ABORT DUE TO INABILITY TO PROGESS SAFELY\n");
       CogCore::DebugLn<const char *>("WARNING: AT PRESENT NO ACTION WILL BE TAKEN!!\n");
+      if (!getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present) {
+        getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present = true;
+        getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].begin_condition_ms = millis();
+      }
+      return getConfig()->FAN_SPEED_MAX_p;
       break;
     }
     CogCore::DebugLn<const char *>("WARNING:SHOULD NEVER GET HERE, FELL OUT OF LOOP!!\n");
@@ -253,19 +262,17 @@ namespace CogApp
   }
 
   bool CogTask::evaluateHeaterEnvelope(double current_input_temperature,
-                                      double goal_temperature,
-                                      double value_PID)
+                                       double goal_temperature,
+                                       double value_PID)
   {
-	  unsigned long time_now = millis();
+    unsigned long time_now = millis();
     if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
-      {
-        if (DEBUG_LEVEL > 1) {
-          CogCore::Debug<const char *>("TESTING ENVELOPE\n");
-        }
+    {
+        if (DEBUG_LEVEL > 1) CogCore::Debug<const char *>("TESTING ENVELOPE\n");
+        time_last_temp_changed_ms = time_now;
         if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
-          if (DEBUG_LEVEL > 1) {
-            CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
-          }
+          if (DEBUG_LEVEL > 1) CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
+                   
           if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION) {
             if (DEBUG_LEVEL > 1) {
               CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
@@ -275,9 +282,9 @@ namespace CogApp
             return false; 
           }
         }
-      }
-	  time_last_temp_changed_ms = time_now;
-	  return true;
+    }
+
+    return true;
   }
 
 

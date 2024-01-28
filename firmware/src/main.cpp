@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.3.27"  // Further removing dead code
+#define OEDCS_VERSION "; Rev: 0.3.30"  // changing time of heater evaluate
 #define DEVICE_UNDER_TEST "Hardware: Due"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -268,18 +268,18 @@ void setup()
   }
   dutyCycleTask.one_pin_heater = getConfig()->hal->_ac_heaters[0];
 
-  CogCore::TaskProperties HeaterPIDProperties;
-  HeaterPIDProperties.name = "HeaterPID";
-  HeaterPIDProperties.id = 26;
-  HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
-  HeaterPIDProperties.priority = CogCore::TaskPriority::High;
-  HeaterPIDProperties.state_and_config = (void *) &machineConfig;
-  bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
+  // CogCore::TaskProperties HeaterPIDProperties;
+  // HeaterPIDProperties.name = "HeaterPID";
+  // HeaterPIDProperties.id = 26;
+  // HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
+  // HeaterPIDProperties.priority = CogCore::TaskPriority::High;
+  // HeaterPIDProperties.state_and_config = (void *) &machineConfig;
+  // bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
 
-  if (!heaterPIDAdd) {
-    CogCore::Debug<const char *>("heaterPIDAdd Failed\n");
-    abort();
-  }
+  // if (!heaterPIDAdd) {
+  //   CogCore::Debug<const char *>("heaterPIDAdd Failed\n");
+  //   abort();
+  // }
 
   CogCore::TaskProperties HeartbeatProperties;
   HeartbeatProperties.name = "Heartbeat";
@@ -322,11 +322,11 @@ void setup()
 
   core.ResetAllWatchdogs();
 
-  heaterPIDTask.whichHeater = (Stage2Heater) 0;
+  //  heaterPIDTask.whichHeater = (Stage2Heater) 0;
 
   cogTask.dutyCycleTask = &dutyCycleTask;
 
-  cogTask.heaterPIDTask = &heaterPIDTask;
+  // cogTask.heaterPIDTask = &heaterPIDTask;
 
   logRecorderTask.oedcsNetworkTask = &OEDCSNetworkTask;
   // We need the core on logRecorderTask (and, indeed, any long-running task
