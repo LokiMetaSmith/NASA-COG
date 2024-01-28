@@ -267,38 +267,23 @@ namespace CogApp
   {
     unsigned long time_now = millis();
     if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
-      {
-        // if(abs(goal_temperature - current_input_temperature)>getConfig()->BOUND_MAX_TEMP_TRANSITION)
-        // {
-        // time_last_temp_changed_ms = time_now;
-        // }
-        //last_temp_change is the time when the temp changed last
-        if (DEBUG_LEVEL > 1) {
-          CogCore::Debug<const char *>("TESTING ENVELOPE\n");
-        }
+    {
+        if (DEBUG_LEVEL > 1) CogCore::Debug<const char *>("TESTING ENVELOPE\n");
+        time_last_temp_changed_ms = time_now;
         if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
-          if (DEBUG_LEVEL > 1) {
-            CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
-          }
-          time_last_temp_changed_ms = time_now;
+          if (DEBUG_LEVEL > 1) CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
+                   
           if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION) {
             if (DEBUG_LEVEL > 1) {
               CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
               CogCore::Debug<float>(abs(goal_temperature - current_input_temperature));
               CogCore::Debug<const char *>("\n");
             }
-            return false;
-            // As long as there is not a fault present, this creates;
-            // if one is already present, we leave it.
-            // if (!getConfig()->errors[ec].fault_present) {
-            // getConfig()->errors[ec].fault_present = true;
-            // getConfig()->errors[ec].begin_condition_ms = millis();
-            // }
-            // } else if (!getConfig()->errors[ec].fault_present) {
-            // getConfig()->errors[ec].fault_present = false;
+            return false; 
           }
         }
-      }
+    }
+
     return true;
   }
 
