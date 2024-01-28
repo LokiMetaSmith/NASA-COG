@@ -259,11 +259,6 @@ namespace CogApp
 	  unsigned long time_now = millis();
     if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
       {
-        // if(abs(goal_temperature - current_input_temperature)>getConfig()->BOUND_MAX_TEMP_TRANSITION)
-          // {
-            // time_last_temp_changed_ms = time_now;
-          // }
-        //last_temp_change is the time when the temp changed last
         if (DEBUG_LEVEL > 1) {
           CogCore::Debug<const char *>("TESTING ENVELOPE\n");
         }
@@ -277,17 +272,8 @@ namespace CogApp
               CogCore::Debug<float>(abs(goal_temperature - current_input_temperature));
               CogCore::Debug<const char *>("\n");
             }
-            return false;
-            // As long as there is not a fault present, this creates;
-            // if one is already present, we leave it.
-            // if (!getConfig()->errors[ec].fault_present) {
-            // getConfig()->errors[ec].fault_present = true;
-            // getConfig()->errors[ec].begin_condition_ms = millis();
-            // }
-            // } else if (!getConfig()->errors[ec].fault_present) {
-            // getConfig()->errors[ec].fault_present = false;
+            return false; 
           }
-
         }
       }
 	  time_last_temp_changed_ms = time_now;
