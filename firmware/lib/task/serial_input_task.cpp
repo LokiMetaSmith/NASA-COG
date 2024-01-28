@@ -164,16 +164,18 @@ namespace CogApp
       break;
     case 'H':
       {
-        smm->changeTargetTemp(ic.value_f);
-        smm->turnOn();
-	CogCore::Debug<const char *>("Target Temp changed to: ");
-      char t[20];
-      sprintf(t, "%10.8f", ic.value_f);
-      CogCore::Debug<const char *>(t);
-      CogCore::Debug<const char *>("\n");
-      CogCore::Debug<const char *>("New state is: ");
-      CogCore::Debug<const char *>(MachineConfig::MachineStateNames[mc->ms]);
-      CogCore::Debug<const char *>("\n");
+        if ((mc->ms == Warmup) || (mc->ms == Cooldown) || (mc->ms == NormalOperation)) {
+          smm->changeTargetTemp(ic.value_f);
+          smm->turnOn();
+          CogCore::Debug<const char *>("Target Temp changed to: ");
+          char t[20];
+          sprintf(t, "%10.8f", ic.value_f);
+          CogCore::Debug<const char *>(t);
+          CogCore::Debug<const char *>("\n");
+          CogCore::Debug<const char *>("New state is: ");
+          CogCore::Debug<const char *>(MachineConfig::MachineStateNames[mc->ms]);
+          CogCore::Debug<const char *>("\n");
+        }
       }
       break;
     case 'R':
