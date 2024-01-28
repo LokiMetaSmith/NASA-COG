@@ -283,6 +283,17 @@ void ReadTempsTask::updateTemperatures() {
         CogCore::Debug<unsigned long>(bad_temp_reads_stack);
         CogCore::Debug<const char *>("\n");
 
+        CogCore::Debug<const char *>("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ\n");
+        if (postHeaterTemp > MachineConfig::OVER_TEMPERATURE_C) {
+          CogCore::Debug<const char *>("THE POST HEATER TEMP IS TOO HIGH\n");
+        }
+        if (postGetterTemp > MachineConfig::OVER_TEMPERATURE_C) {
+          CogCore::Debug<const char *>("THE POST GETTER TEMP IS TOO HIGH\n");
+        }
+        if (postStackTemp > MachineConfig::OVER_TEMPERATURE_C) {
+          CogCore::Debug<const char *>("THE POST STACK TEMP IS TOO HIGH\n");
+        }
+
         getConfig()->errors[SYSTEM_OVER_TEMPERATURE].fault_present = true;
         getConfig()->errors[SYSTEM_OVER_TEMPERATURE].begin_condition_ms = millis();
       }
