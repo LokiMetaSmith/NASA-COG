@@ -262,16 +262,16 @@ namespace CogApp
   }
 
   bool CogTask::evaluateHeaterEnvelope(double current_input_temperature,
-                                      double goal_temperature,
-                                      double value_PID)
+                                       double goal_temperature,
+                                       double value_PID)
   {
-	  unsigned long time_now = millis();
+    unsigned long time_now = millis();
     if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
       {
         // if(abs(goal_temperature - current_input_temperature)>getConfig()->BOUND_MAX_TEMP_TRANSITION)
-          // {
-            // time_last_temp_changed_ms = time_now;
-          // }
+        // {
+        // time_last_temp_changed_ms = time_now;
+        // }
         //last_temp_change is the time when the temp changed last
         if (DEBUG_LEVEL > 1) {
           CogCore::Debug<const char *>("TESTING ENVELOPE\n");
@@ -280,6 +280,7 @@ namespace CogApp
           if (DEBUG_LEVEL > 1) {
             CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
           }
+          time_last_temp_changed_ms = time_now;
           if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION) {
             if (DEBUG_LEVEL > 1) {
               CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
@@ -296,11 +297,9 @@ namespace CogApp
             // } else if (!getConfig()->errors[ec].fault_present) {
             // getConfig()->errors[ec].fault_present = false;
           }
-
         }
       }
-	  time_last_temp_changed_ms = time_now;
-	  return true;
+    return true;
   }
 
 
