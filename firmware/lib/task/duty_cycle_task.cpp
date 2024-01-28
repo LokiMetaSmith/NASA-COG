@@ -145,9 +145,7 @@ bool DutyCycleTask::_run()
       float tl = 60.0;
 #endif
       if ((!getConfig()->errors[HEATER_UNRESPONSIVE].fault_present)) {
-        CogCore::Debug<const char *>("AAA\n");
         if (current_temp < tl) {
-          CogCore::Debug<const char *>("BBB\n");
           if (difference <= TEMPERATURE_LOW_LIMIT) {
             getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
             getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();

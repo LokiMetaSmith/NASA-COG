@@ -162,7 +162,7 @@ namespace CogApp
   }
 
   void StateMachineManager::turnOff() {
-    heaterPIDTask->shutHeaterDown();
+    //    heaterPIDTask->shutHeaterDown();
   }
 
   void StateMachineManager::turnOn() {
