@@ -56,7 +56,8 @@ namespace CogApp
     // The time to pause in seconds
     const float PAUSE_TIME_S = 2*60;
     // The cross-stack delta at which to increase the fan speed
-    const float DELTA_LIMIT_K = 30.0;
+    //    const float DELTA_LIMIT_K = 30.0;
+    const float DELTA_LIMIT_K = 0.0;
     // The cross-stack delta at which to abort
     const float DT_MAX_LIMIT_K = 45.0;
 

@@ -150,7 +150,7 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
 	  strcat(buffer, "\"");
 	  sprintf(buffer+strlen(buffer),CriticalErrorNames[i]);
 	  strcat(buffer, "\"");
-	  
+
 	  strcat(buffer, "\n");
 	}
   }
@@ -205,7 +205,7 @@ void MachineConfig::initErrors() {
  errors[STACK_LOSS_CTL].toleration_ms = STACK_FAULT_TOLERATION_TIME_MS;
  errors[PSU_UNRESPONSIVE].toleration_ms = PSU_FAULT_TOLERATION_TIME_MS;
  errors[MAINS_LOSS_PWR].toleration_ms = MAINS_FAULT_TOLERATION_TIME_MS;
-
+ errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].toleration_ms = UNABLE_TO_RAISE_TEMPERATURE_SECURELY_TOLERATION_TIME_MS;
 
  errors[HEATER_OUT_OF_BOUNDS].toleration_ms =  ENVELOPE_FAULT_TOLERATION_TIME_MS;
 
@@ -220,6 +220,7 @@ void MachineConfig::initErrors() {
  errors[PSU_UNRESPONSIVE].response_state = EmergencyShutdown;
  errors[MAINS_LOSS_PWR].response_state = EmergencyShutdown;
  errors[HEATER_OUT_OF_BOUNDS].response_state = EmergencyShutdown;
+ errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].response_state = EmergencyShutdown;
 }
 
 void MachineConfig::clearThermocoupleErrors() {
@@ -247,6 +248,7 @@ void MachineConfig::clearMainsPowerErrors()  {
  errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
  errors[PWR_12V_BAD].fault_present = false;
  errors[PWR_24V_BAD].fault_present = false;
+ errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present = false;
 }
 
 void MachineConfig::clearErrors() {

@@ -93,7 +93,7 @@ public:
   virtual bool init() = 0;
 };
 
-#define NUM_CRITICAL_ERROR_DEFINITIONS 14
+#define NUM_CRITICAL_ERROR_DEFINITIONS 15
 // WARNING! Do not reorder these!!
 // The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
 enum CriticalErrorCondition {
@@ -110,7 +110,8 @@ enum CriticalErrorCondition {
   STACK_LOSS_CTL,
   PSU_UNRESPONSIVE,
   MAINS_LOSS_PWR,
-  SYSTEM_OVER_TEMPERATURE
+  SYSTEM_OVER_TEMPERATURE,
+  UNABLE_TO_RAISE_TEMPERATURE_SECURELY
 };
 
 constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINITIONS] = {
@@ -127,7 +128,8 @@ constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINI
     "Lost control of the Stack",
     "Lost control of the programmable PSU",
     "Lost mains power, on UPS",
-    "System Over Temperature"
+    "System Over Temperature",
+    "Unable to Raise Temperature Securely"
   };
 
 class CriticalError {
@@ -420,6 +422,7 @@ void _reportFanSpeed();
   const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long PSU_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long MAINS_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long UNABLE_TO_RAISE_TEMPERATURE_SECURELY_TOLERATION_TIME_MS = 2 * 60 * 1000;
 
 
   /********************************************
@@ -432,9 +435,6 @@ void _reportFanSpeed();
   static const int INIT_SHUTDOWN_BUTTON_PERIOD_MS = 250;
 
   static const int DISPLAY_UPDATE_MS = 2000;
-
-
-
 
 };
 

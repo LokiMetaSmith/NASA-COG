@@ -180,8 +180,7 @@ namespace CogApp
           a = INCREASE;
           break;
         case true:
-          a = ABORT; // We probably need to use a timer
-          // here to prevent aborting too early. I have not means of doing that at present.
+          a = ABORT;
           break;
         }
         break;
@@ -192,6 +191,11 @@ namespace CogApp
     if (DEBUG_FAN > 0) {
       CogCore::Debug<const char *>("XXXX Mode: ");
       CogCore::DebugLn<int>(a);
+    }
+    if (a != ABORT) {
+      if (getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present) {
+        getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present = false;
+      }
     }
     switch (a) {
     case INCREASE:
@@ -220,6 +224,11 @@ namespace CogApp
       // This is a major problem....we need to scream and croak.
       CogCore::DebugLn<const char *>("ACTION: ABORT DUE TO INABILITY TO PROGESS SAFELY\n");
       CogCore::DebugLn<const char *>("WARNING: AT PRESENT NO ACTION WILL BE TAKEN!!\n");
+      if (!getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present) {
+        getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present = true;
+        getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].begin_condition_ms = millis();
+      }
+      return getConfig()->FAN_SPEED_MAX_p;
       break;
     }
     CogCore::DebugLn<const char *>("WARNING:SHOULD NEVER GET HERE, FELL OUT OF LOOP!!\n");
