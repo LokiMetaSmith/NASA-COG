@@ -147,15 +147,17 @@ bool DutyCycleTask::_run()
       if ((!getConfig()->errors[HEATER_UNRESPONSIVE].fault_present)) {
         if (current_temp < tl) {
           if (difference <= TEMPERATURE_LOW_LIMIT) {
-            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
-            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
-            CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
+            //            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
+            //            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
+            // CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
+            CogCore::Debug<const char *>("HEATER TEMPERATURE WENT DOWN. THIS MAY BE A PROBLEM.\n");
           }
         } else {
           if (difference <= TEMPERATURE_HIGH_LIMIT) {
-            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
-            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
-            CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
+            //            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
+            //            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
+            // CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
+            CogCore::Debug<const char *>("HEATER TEMPERATURE WENT DOWN. THIS MAY BE A PROBLEM.\n");
           }
         }
         if ((getConfig()->errors[HEATER_UNRESPONSIVE].fault_present) &&

@@ -508,36 +508,39 @@ namespace CogApp
     c.W_w = max(c.W_w,0);
   }
 
-  bool CogTask::_run() {
+  bool CogTask::evaluateErrorConditions() {
+    bool retval = true;
     //Check for AC power, ie for +24V
     bool powerIsOK = is24VPowerGood();
     if (!powerIsOK){
       CogCore::Debug<const char *>("Probable AC Power (+24V) FAIL.\n");
-        if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
-          getConfig()->errors[PWR_24V_BAD].fault_present = true;
-          getConfig()->errors[PWR_24V_BAD].begin_condition_ms = millis();
-        }
+      if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
+        getConfig()->errors[PWR_24V_BAD].fault_present = true;
+        getConfig()->errors[PWR_24V_BAD].begin_condition_ms = millis();
+        retval = false;
+      }
     }
-	else {
-        if (getConfig()->errors[PWR_24V_BAD].fault_present) {
-          getConfig()->errors[PWR_24V_BAD].fault_present = false;
-		  CogCore::Debug<const char *>("Probable AC Power (+24V) RESTORED!!!\n");
-        }
+    else {
+      if (getConfig()->errors[PWR_24V_BAD].fault_present) {
+        getConfig()->errors[PWR_24V_BAD].fault_present = false;
+        CogCore::Debug<const char *>("Probable AC Power (+24V) RESTORED!!!\n");
+      }
     }//evaluate24v power
 
     if (!is12VPowerGood()){
       CogCore::Debug<const char *>("+12V out of tolerance.\n");
-        if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
-          getConfig()->errors[PWR_12V_BAD].fault_present = true;
-          getConfig()->errors[PWR_12V_BAD].begin_condition_ms = millis();
-        }
+      if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
+        getConfig()->errors[PWR_12V_BAD].fault_present = true;
+        getConfig()->errors[PWR_12V_BAD].begin_condition_ms = millis();
+        retval = false;
+      }
     }
-	else {
-        if (getConfig()->errors[PWR_12V_BAD].fault_present) {
-          getConfig()->errors[PWR_12V_BAD].fault_present = false;
-		  		  CogCore::Debug<const char *>("Probable AC Power (+12V) RESTORED!!!\n");
+    else {
+      if (getConfig()->errors[PWR_12V_BAD].fault_present) {
+        getConfig()->errors[PWR_12V_BAD].fault_present = false;
+        CogCore::Debug<const char *>("Probable AC Power (+12V) RESTORED!!!\n");
 
-        }
+      }
     }//evaluate12vPower
 
     if (!isStackWattageGood(getConfig()->CURRENT_STACK_WATTAGE_W)){
@@ -545,6 +548,7 @@ namespace CogApp
       if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
         getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
         getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = millis();
+        retval = false;
       }
     }
     else {
@@ -553,15 +557,6 @@ namespace CogApp
         CogCore::Debug<const char *>("Stack Wattage now in tolerance!!!\n");
       }
     }//evaluate Stack Wattage
-
-
-
-    // Report fan speed
-    float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
-
-    // TODO: This is a good candidate to move to a "system-check task"
-    getConfig()->report->fan_rpm = calculated_fan_speed_rpms;
-
     // check fan speed...
     float fan_pwm_ratio = getConfig()->report->fan_pwm;
     float fan_rpm = getConfig()->report->fan_rpm;
@@ -569,7 +564,7 @@ namespace CogApp
     //    CogCore::Debug<const char *>("XXXXXXXXXXXXXXXXXXXXXXXXXX\n");
     // CogCore::Debug<bool>(
     //                         getConfig()->errors[FAN_UNRESPONSIVE].fault_present);
-	if (DEBUG_LEVEL > 0) {
+    if (DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Fan Inputs : ");
       CogCore::DebugLn<float>(fan_pwm_ratio);
       CogCore::DebugLn<float>(fan_rpm);
@@ -582,14 +577,14 @@ namespace CogApp
         CogCore::DebugLn<float>(fan_pwm_ratio);
         CogCore::Debug<const char *>("rpms: ");
         CogCore::DebugLn<float>(fan_rpm);
-	    CogCore::Debug<const char *>("rpm_actual: ");
-	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio)));
-		CogCore::Debug<const char *>("rpm_difference: ");
-	    CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio))-fan_rpm);// 346.749 + 11888.545x + -5944.272x^2
-		CogCore::Debug<const char *>("rpm_tested: ");
-		CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
+        CogCore::Debug<const char *>("rpm_actual: ");
+        CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio)));
+        CogCore::Debug<const char *>("rpm_difference: ");
+        CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio))-fan_rpm);// 346.749 + 11888.545x + -5944.272x^2
+        CogCore::Debug<const char *>("rpm_tested: ");
+        CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
       }
-	}//end debug block
+    }//end debug block
 #ifndef DISABLE_FAN_EVAL//ADDED SO FAN CAN BE DISABLED !!! DO NOT LET THIS BE COMMENTED OUT IN production
 
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
@@ -597,59 +592,80 @@ namespace CogApp
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
         getConfig()->errors[FAN_UNRESPONSIVE].fault_present = true;
         getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
+        retval = false;
       }
     }
     else {
-        if (getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
-          getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
-        }
+      if (getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
+        getConfig()->errors[FAN_UNRESPONSIVE].fault_present = false;
+      }
     }//evaluateFan
 #endif
-    if (!evaluateHeaterEnvelope(getTemperatureReadingA_C(),
-                           getConfig()->SETPOINT_TEMP_C,
-                           getConfig()->report->heater_duty_cycle)){
-		CogCore::DebugLn<const char *>("Heater Fault Present");
-	    if (!getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
-        getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = true;
-        getConfig()->errors[HEATER_OUT_OF_BOUNDS].begin_condition_ms = millis();
-      }
-    }
-    else {
-        if (getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
-          getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
-        }
-    }//evaluateHeaterEnvelope
 
-      if (!getHAL()->_stacks[0]->evaluatePS()){
-        CogCore::DebugLn<const char *>("PSU Fault Present");
-        if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
-          getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
-          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+    // We only want to test this condition when we are in an on state,
+    // because only then does the SETPOINT have meaning.
+    if (!MachineConfig::IsAShutdownState(getConfig()->ms)) {
+      if (!evaluateHeaterEnvelope(getTemperatureReadingA_C(),
+                                  getConfig()->SETPOINT_TEMP_C,
+                                  getConfig()->report->heater_duty_cycle)){
+        CogCore::DebugLn<const char *>("Heater Fault Present");
+        if (!getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
+          getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = true;
+          getConfig()->errors[HEATER_OUT_OF_BOUNDS].begin_condition_ms = millis();
+          retval = false;
         }
       }
       else {
-        if (getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
-          getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
-		  getHAL()->_stacks[0]->reInit();
+        if (getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
+          getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
         }
-      }//evaluatePSU
+      }//evaluateHeaterEnvelope
+    }
 
-      if (DEBUG_LEVEL > 0) {
-        CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
+    if (!getHAL()->_stacks[0]->evaluatePS()){
+      CogCore::DebugLn<const char *>("PSU Fault Present");
+      if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+        getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
+        getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+        retval = false;
       }
-
-      this->StateMachineManager::run_generic();
-
-      if (DEBUG_LEVEL > 0) {
-        CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");
+    }
+    else {
+      if (getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+        getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
+        getHAL()->_stacks[0]->reInit();
       }
+    }//evaluatePSU
 
-      if (DEBUG_LEVEL > 0) {
-        CogCore::Debug<const char *>("Free Memory: ");
-        CogCore::Debug<int>(freeMemory());
-        CogCore::Debug<const char *>("\n");
-      }
+    return retval;
+  }
 
+  bool CogTask::_run() {
+
+
+    // Report fan speed
+    float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
+
+    // TODO: This is a good candidate to move to a "system-check task"
+    getConfig()->report->fan_rpm = calculated_fan_speed_rpms;
+
+    evaluateErrorConditions();
+
+    if (DEBUG_LEVEL > 0) {
+      CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
+    }
+
+    this->StateMachineManager::run_generic();
+
+    if (DEBUG_LEVEL > 0) {
+      CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");
+    }
+
+    if (DEBUG_LEVEL > 0) {
+      CogCore::Debug<const char *>("Free Memory: ");
+      CogCore::Debug<int>(freeMemory());
+      CogCore::Debug<const char *>("\n");
+    }
   }
 
   // We believe someday an automatic algorithm will be needed here.
@@ -697,6 +713,9 @@ namespace CogApp
     getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
     //    _updateStackVoltage(getConfig()->MIN_OPERATING_STACK_VOLTAGE);
     _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
+    // Although debatable, we want to clear all the erorrs when
+    // turning off to avoid overreporting.
+    getConfig()->clearErrors();
     // Although after a minute this should turn off, we want
     // to do it immediately
     StateMachineManager::turnOff();

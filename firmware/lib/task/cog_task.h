@@ -113,7 +113,9 @@ namespace CogApp
     float getTemperatureReadingA_C() override;
     float getTemperatureReadingB_C() override;
     float getTemperatureReadingC_C() override;
-	bool is12VPowerGood();
+
+    bool evaluateErrorConditions();
+    bool is12VPowerGood();
     bool is24VPowerGood();
     bool isStackWattageGood();
     bool isStackWattageGood(float );
