@@ -265,27 +265,12 @@ namespace CogApp
                                        double goal_temperature,
                                        double value_PID)
   {
-    unsigned long time_now = millis();
-    if((value_PID >=1.0) || (value_PID<=0.0))//pid at limits
-    {
-        if (DEBUG_LEVEL > 1) CogCore::Debug<const char *>("TESTING ENVELOPE\n");
-        time_last_temp_changed_ms = time_now;
-        if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
-          if (DEBUG_LEVEL > 1) CogCore::Debug<const char *>("TIME_BOUND EXCEEDED\n");
-                   
-          if (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION) {
-            if (DEBUG_LEVEL > 1) {
-              CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
-              CogCore::Debug<float>(abs(goal_temperature - current_input_temperature));
-              CogCore::Debug<const char *>("\n");
-            }
-            return false; 
-          }
-        }
-    }
 
-    return true;
+    return !(((value_PID >=1.0) || (value_PID<=0.0))
+&&
+             (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION));
   }
+
 
 
   float CogTask::computeNernstVoltage(float T_K) {
@@ -589,23 +574,32 @@ namespace CogApp
 
     // We only want to test this condition when we are in an on state,
     // because only then does the SETPOINT have meaning.
-    if (!MachineConfig::IsAShutdownState(getConfig()->ms)) {
-      if (!evaluateHeaterEnvelope(getTemperatureReadingA_C(),
-                                  getConfig()->SETPOINT_TEMP_C,
-                                  getConfig()->report->heater_duty_cycle)){
-        CogCore::DebugLn<const char *>("Heater Fault Present");
-        if (!getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
-          getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = true;
-          getConfig()->errors[HEATER_OUT_OF_BOUNDS].begin_condition_ms = millis();
-          retval = false;
+    if (!(MachineConfig::IsAShutdownState(getConfig()->ms) || (Off == getConfig()->ms))) {
+      unsigned long time_now = millis();
+      if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
+        time_last_temp_changed_ms = time_now;
+        if (!evaluateHeaterEnvelope(getTemperatureReadingA_C(),
+                                    getConfig()->SETPOINT_TEMP_C,
+                                    getConfig()->report->heater_duty_cycle)){
+          if (DEBUG_LEVEL > 1) CogCore::Debug<const char *>("TESTING ENVELOPE\n");
+          if (DEBUG_LEVEL > 1) {
+            CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
+            CogCore::Debug<float>(abs(getConfig()->SETPOINT_TEMP_C - getTemperatureReadingA_C()));
+            CogCore::Debug<const char *>("\n");
+          }
+          CogCore::DebugLn<const char *>("Heater Fault Present");
+          if (!getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
+            getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = true;
+            getConfig()->errors[HEATER_OUT_OF_BOUNDS].begin_condition_ms = millis();
+            retval = false;
+          }
+        } else {
+          if (getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
+            getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
+          }
         }
       }
-      else {
-        if (getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
-          getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
-        }
-      }//evaluateHeaterEnvelope
-    }
+    }//evaluateHeaterEnvelope
 
     if (!getHAL()->_stacks[0]->evaluatePS()){
       CogCore::DebugLn<const char *>("PSU Fault Present");
@@ -614,8 +608,7 @@ namespace CogApp
         getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
         retval = false;
       }
-    }
-    else {
+    } else {
       if (getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
         getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
         getHAL()->_stacks[0]->reInit();
@@ -627,11 +620,9 @@ namespace CogApp
 
   bool CogTask::_run() {
 
-
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
-    // TODO: This is a good candidate to move to a "system-check task"
     getConfig()->report->fan_rpm = calculated_fan_speed_rpms;
 
     evaluateErrorConditions();

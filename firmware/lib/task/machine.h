@@ -342,7 +342,12 @@ void _reportFanSpeed();
   const float BOUND_MAX_AMPERAGE_SETTING = 60.0;
   // This is the maximum ramp in degrees C per minute.
   const float BOUND_MAX_RAMP_C_PER_MIN = 3.0;
+
+ #ifndef REDUCE_BOUND_MAX_TEMP_FOR_TESTING
   const float BOUND_MAX_TEMP_TRANSITION = 20.0;
+#else
+  const float BOUND_MAX_TEMP_TRANSITION = REDUCE_BOUND_MAX_TEMP_FOR_TESTING;
+#endif
   const unsigned long BOUND_MAX_TEMP_TRANSITION_TIME_MS = 10000;
 
   // The Number of Wafers (used in computing Pumping Voltage)
