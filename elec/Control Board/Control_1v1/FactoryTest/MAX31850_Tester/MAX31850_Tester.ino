@@ -9,7 +9,7 @@
 */
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "MAX31850_Tester"
-#define VERSION ";_Rev_0.3"
+#define VERSION ";_Rev_0.4"
 #define DEVICE_UNDER_TEST "Hardware: Mockup Of Maryville"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -68,8 +68,15 @@ float printTemperature(DeviceAddress deviceAddress)
 void setup(void)
 {
   // start serial port
+  
   Serial.begin(115200);
+  Serial.flush();
   delay(500);
+  Serial.flush();
+  delay(500);
+  Serial.flush();
+  delay(500);
+  Serial.flush();
 
   // Start up the library
   sensors.begin();
@@ -95,6 +102,7 @@ void setup(void)
     // Search the wire for address
 
     //    if (sensors.getAddress(tempDeviceAddress, i))
+    sensors.setResolution(tempDeviceAddress, TEMPERATURE_PRECISION);
 
     if (false)
     {
@@ -108,7 +116,7 @@ void setup(void)
       Serial.println(TEMPERATURE_PRECISION, DEC);
 
       // set the resolution to TEMPERATURE_PRECISION bit (Each Dallas/Maxim device is capable of several different resolutions)
-      sensors.setResolution(tempDeviceAddress, TEMPERATURE_PRECISION);
+    //  sensors.setResolution(tempDeviceAddress, TEMPERATURE_PRECISION);
 
       Serial.print("Resolution actually set to: ");
       Serial.print(sensors.getResolution(tempDeviceAddress), DEC);
@@ -123,20 +131,27 @@ void setup(void)
   //  analogWrite(nFAN1_PWM, 127);  // Set for 50%
   analogWrite(nFAN1_PWM, 200);  // Set for low RPM
 
+
+  sensors.requestTemperatures(); // Send the command to get temperatures
+  delay(500);
+  sensors.requestTemperatures(); // Send the command to get temperatures
+  delay(500);
+  sensors.requestTemperatures(); // Send the command to get temperatures
+  delay(500);
+
   //Initilize the EMA
-  for (int k = 0; k < 2; k++)
-  {
+  for (int k = 0; k < 2; k++) {
     sensors.requestTemperatures(); // Send the command to get temperatures
     delay(500);
-    for (int i = 0; i < numberOfDevices; i++)
-    {
+    for (int i = 0; i < numberOfDevices; i++) {
       if (sensors.getAddress(tempDeviceAddress, i)) {
 
         ema_Temp[i] = printTemperature(tempDeviceAddress); // Use a simple function to print out the data
         //ema_Temp[i] = 23.5;
       }
     }
-  }
+  }//end of k loop
+
   digitalWrite(LED_BUILTIN, LOW);   //Signal end of setup.
 }// end setup()
 
