@@ -65,7 +65,9 @@ namespace CogApp
     for(int i = 0; i < _numRecords; i++) {
       int j = (firstRecord + i) % getConfig()->MAX_RECORDS;
       MachineStatusReport msr_lre = getConfig()->_log_entry[j];
-      getConfig()->outputReport(&msr_lre);
+	//  if (DEBUG_LOG_RECORDER) {
+        getConfig()->outputReport(&msr_lre);
+	//  }
       oedcsNetworkTask->logReport(&msr_lre);
       core->ResetAllWatchdogs();
     }
