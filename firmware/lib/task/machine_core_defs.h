@@ -111,7 +111,7 @@ struct MachineStatusReport {
   float heater_duty_cycle;
 
   unsigned long timestamp;
-  CriticalError errors[NUM_CRITICAL_ERROR_DEFINITIONS];
+  bool errors[NUM_CRITICAL_ERROR_DEFINITIONS];
 };
 
 #endif

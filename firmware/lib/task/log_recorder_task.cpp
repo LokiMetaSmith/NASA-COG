@@ -50,7 +50,7 @@ namespace CogApp
         CogCore::DebugLn<int>(i);
       }
       getConfig()->_log_entry[_nextRecord].errors[i]
-        = getConfig()->errors[i];
+        = getConfig()->errors[i].fault_present;
     }
     getConfig()->_log_entry[_nextRecord].timestamp = millis();
     _nextRecord = (_nextRecord + 1) % m;
@@ -74,7 +74,7 @@ namespace CogApp
            CogCore::Debug<const char *>("BBB: ");
            CogCore::Debug<int>(k);
            CogCore::Debug<const char *>(" ");
-           CogCore::DebugLn<bool>(msr_lre.errors[k].fault_present);
+           CogCore::DebugLn<bool>(msr_lre.errors[k]);
          }
        }
 	//  if (DEBUG_LOG_RECORDER) {

@@ -88,7 +88,7 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         //add a state for error: no error
         for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++)
           {
-	  if (msr->errors[i].fault_present)//critical error detected
+	  if (msr->errors[i])//critical error detected
             {
               CogCore::Debug<const char *>("CriticalError: ");
               CogCore::Debug<const char *>(CriticalErrorNames[i]);
@@ -143,7 +143,7 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
   bool is_fault_present = false;
   for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++)
   {
-	if (msr->errors[i].fault_present)//critical error detected
+	if (msr->errors[i])//critical error detected
 	{
 	  if(is_fault_present)strcat(buffer, ",");
 	  is_fault_present = true;
