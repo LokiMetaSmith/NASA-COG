@@ -74,7 +74,7 @@ namespace CogApp
            CogCore::Debug<const char *>("BBB: ");
            CogCore::Debug<int>(k);
            CogCore::Debug<const char *>(" ");
-           CogCore::DebugLn<int>(msr_le.errors[k]);
+           CogCore::DebugLn<bool>(msr_lre.errors[k].fault_present);
          }
        }
 	//  if (DEBUG_LOG_RECORDER) {
