@@ -63,6 +63,28 @@ public:
   MachineState response_state;
 };
 
+#define NUM_CRITICAL_ERROR_DEFINITIONS 15
+// WARNING! Do not reorder these!!
+// The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
+enum CriticalErrorCondition {
+  POST_HEATER_TC_BAD,
+  POST_GETTER_TC_BAD,
+  POST_STACK_TC_BAD,
+  COULD_NOT_INIT_3_THERMOCOUPLES,
+  FAN_LOSS_PWR,
+  PWR_12V_BAD,
+  PWR_24V_BAD,
+  FAN_UNRESPONSIVE,
+  HEATER_UNRESPONSIVE,
+  HEATER_OUT_OF_BOUNDS,
+  STACK_LOSS_CTL,
+  PSU_UNRESPONSIVE,
+  MAINS_LOSS_PWR,
+  SYSTEM_OVER_TEMPERATURE,
+  UNABLE_TO_RAISE_TEMPERATURE_SECURELY
+};
+
+
 
 struct MachineStatusReport {
   MachineState ms;
