@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.3.37"  // OffUserAck doesn't leave state unless user actually acknowledges
+#define OEDCS_VERSION "; Rev: 0.3.38"  // Major changes to criticalFault handling
 #define DEVICE_UNDER_TEST "Hardware: Due"  // A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
