@@ -45,6 +45,10 @@ namespace CogApp
     getConfig()->_log_entry[_nextRecord] = *getConfig()->report;
     // Copy errors here...
     for (int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++) {
+      if (DEBUG_LOG_RECORDER > 0) {
+        CogCore::Debug<const char *>("AAA: ");
+        CogCore::DebugLn<int>(i);
+      }
       getConfig()->_log_entry[_nextRecord].errors[i]
         = getConfig()->errors[i];
     }
