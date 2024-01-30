@@ -28,7 +28,7 @@ bool SerialReportTask::_run()
   }
   // we need to copy the errors from the Config here...
   for (int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++) {
-    getConfig()->report = getConfig()->errors[i];
+    getConfig()->report.errors[i] = getConfig()->errors[i];
     }
   getConfig()->outputReport(getConfig()->report);
 }
