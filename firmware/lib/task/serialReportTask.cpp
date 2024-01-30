@@ -26,6 +26,10 @@ bool SerialReportTask::_run()
   if (DEBUG_SERIAL_REPORT > 0) {
     CogCore::Debug<const char *>("Running SerialReport\n");
   }
+  // we need to copy the errors from the Config here...
+  for (int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++) {
+    getConfig()->report = getConfig()->errors[i];
+    }
   getConfig()->outputReport(getConfig()->report);
 }
 

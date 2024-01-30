@@ -68,7 +68,7 @@ namespace CogApp
 
   void CogTask::printGenericInstructions() {
     CogCore::Debug<const char *>("Enter s:0 to Turn Off, s:1 to Enter Troubleshooting Mode (NOT SUPPORTED FOR PRODUCTION),\n");
-    CogCore::Debug<const char *>("Enter s:2 to Turn Enter Automatic Control.\n");
+    CogCore::Debug<const char *>("Enter s:3 to Turn Enter Automatic Control (at 750C) or s:2 (set temp with h).\n");
     CogCore::Debug<const char *>("Enter a:XX.X to set (a)mperage limit, (w)attage limit, (h)eater set p.\n");
   }
 
@@ -1004,7 +1004,7 @@ namespace CogApp
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsOffUserAck() {
-    MachineState new_ms = CriticalFault;
+    MachineState new_ms = OffUserAck;
     //    _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
     //    _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
 

@@ -139,34 +139,34 @@ bool DutyCycleTask::_run()
         CogCore::Debug<const char *>("Difference (current temp - Temp at last check): ");
         CogCore::DebugLn<float>(difference);
       }
-#ifdef REDUCE_HEATER_UNRESPONSIVE_MIN_TEMP
-      float tl =  35.0;
-#else
-      float tl = 60.0;
-#endif
-      if ((!getConfig()->errors[HEATER_UNRESPONSIVE].fault_present)) {
-        if (current_temp < tl) {
-          if (difference <= TEMPERATURE_LOW_LIMIT) {
-            //            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
-            //            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
-            // CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
-            CogCore::Debug<const char *>("HEATER TEMPERATURE WENT DOWN. THIS MAY BE A PROBLEM.\n");
-          }
-        } else {
-          if (difference <= TEMPERATURE_HIGH_LIMIT) {
-            //            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
-            //            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
-            // CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
-            CogCore::Debug<const char *>("HEATER TEMPERATURE WENT DOWN. THIS MAY BE A PROBLEM.\n");
-          }
-        }
-        if ((getConfig()->errors[HEATER_UNRESPONSIVE].fault_present) &&
-            difference >= TEMPERATURE_UPSWING_THRESHOLD) {
-          getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = false;
-          CogCore::Debug<const char *>("HEATER_UNRESPONSIVE WITHDRAWN\n");
-        }
-      }
-    }
+// #ifdef REDUCE_HEATER_UNRESPONSIVE_MIN_TEMP
+//       float tl =  35.0;
+// #else
+//       float tl = 60.0;
+// #endif
+//       if ((!getConfig()->errors[HEATER_UNRESPONSIVE].fault_present)) {
+//         if (current_temp < tl) {
+//           if (difference <= TEMPERATURE_LOW_LIMIT) {
+//             //            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
+//             //            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
+//             // CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
+//             CogCore::Debug<const char *>("HEATER TEMPERATURE WENT DOWN. THIS MAY BE A PROBLEM.\n");
+//           }
+//         } else {
+//           if (difference <= TEMPERATURE_HIGH_LIMIT) {
+//             //            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
+//             //            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
+//             // CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
+//             CogCore::Debug<const char *>("HEATER TEMPERATURE WENT DOWN. THIS MAY BE A PROBLEM.\n");
+//           }
+//         }
+//         if ((getConfig()->errors[HEATER_UNRESPONSIVE].fault_present) &&
+//             difference >= TEMPERATURE_UPSWING_THRESHOLD) {
+//           getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = false;
+//           CogCore::Debug<const char *>("HEATER_UNRESPONSIVE WITHDRAWN\n");
+//         }
+//       }
+//     }
     // now we decided to turn on or off (until called before)!
     isOn = ((dutyCycle > 0.0) && (recorded_duty_cycle <= dutyCycle));
 

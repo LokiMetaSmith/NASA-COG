@@ -118,7 +118,7 @@ constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINI
     "Post Heater TC-A Bad",
     "Post Getter TC-B Bad",
     "Post Stack  TC-C Bad",
-    "Can not init three TC's",
+    "Can not init three TCs",
     "Fan Power Loss",
     "Lost 12v Power",
     "Lost 24v Power",
@@ -192,8 +192,6 @@ void change_ramp(float ramp);
   // or cooling cycle.
    float COOL_DOWN_BEGIN_TEMP;
    float WARM_UP_BEGIN_TEMP;
-
-
 
 
   // TODO: This would better be attached to the statemanager
@@ -424,9 +422,10 @@ void _reportFanSpeed();
   const unsigned long FAN_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long FAN_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long HEATER_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  //  const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long PSU_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long MAINS_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long SYSTEM_OVER_TEMPERATURE_TOLERATION_TIME_MS = 0;
   const unsigned long UNABLE_TO_RAISE_TEMPERATURE_SECURELY_TOLERATION_TIME_MS = 2 * 60 * 1000;
 
 
