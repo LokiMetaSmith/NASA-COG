@@ -69,6 +69,14 @@ namespace CogApp
     for(int i = 0; i < _numRecords; i++) {
       int j = (firstRecord + i) % getConfig()->MAX_RECORDS;
       MachineStatusReport msr_lre = getConfig()->_log_entry[j];
+       if (DEBUG_LOG_RECORDER > 0) {
+         for (int k = 0; k < NUM_CRITICAL_ERROR_DEFINITIONS; k++) {
+           CogCore::Debug<const char *>("BBB: ");
+           CogCore::Debug<int>(k);
+           CogCore::Debug<const char *>(" ");
+           CogCore::DebugLn<int>(msr_le.errors[k]);
+         }
+       }
 	//  if (DEBUG_LOG_RECORDER) {
         getConfig()->outputReport(&msr_lre);
 	//  }
