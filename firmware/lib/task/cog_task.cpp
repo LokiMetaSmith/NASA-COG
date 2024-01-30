@@ -1004,7 +1004,7 @@ namespace CogApp
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsOffUserAck() {
-    MachineState new_ms = CriticalFault;
+    MachineState new_ms = OffUserAck;
     //    _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
     //    _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
 
