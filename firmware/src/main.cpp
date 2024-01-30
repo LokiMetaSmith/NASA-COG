@@ -340,7 +340,7 @@ void setup()
   // NOTHING HERE YET...
 
   // now set up debugging levels...
-  logRecorderTask.DEBUG_LOG_RECORDER = 0;
+  logRecorderTask.DEBUG_LOG_RECORDER = 1;
   core.DEBUG_CORE = 0;
   core._scheduler.DEBUG_SCHEDULER = 0;
   core._scheduler._idleTask.DEBUG_IDLETASK = 0;
