@@ -55,6 +55,13 @@ enum Stage2Heater {
   Ext2
 };
 
+class CriticalError {
+public:
+  bool fault_present;
+  unsigned long begin_condition_ms;
+  unsigned long toleration_ms;
+  MachineState response_state;
+};
 
 
 struct MachineStatusReport {

@@ -132,13 +132,6 @@ constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINI
     "Unable to Raise Temperature Securely"
   };
 
-class CriticalError {
-public:
-  bool fault_present;
-  unsigned long begin_condition_ms;
-  unsigned long toleration_ms;
-  MachineState response_state;
-};
 
 
 // These are the controllable pre-set parameters to the algorithm
