@@ -45,10 +45,6 @@ namespace CogApp
     getConfig()->_log_entry[_nextRecord] = *getConfig()->report;
     // Copy errors here...
     for (int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++) {
-      if (DEBUG_LOG_RECORDER > 0) {
-        CogCore::Debug<const char *>("AAA: ");
-        CogCore::DebugLn<int>(i);
-      }
       getConfig()->_log_entry[_nextRecord].errors[i]
         = getConfig()->errors[i].fault_present;
     }
@@ -69,14 +65,6 @@ namespace CogApp
     for(int i = 0; i < _numRecords; i++) {
       int j = (firstRecord + i) % getConfig()->MAX_RECORDS;
       MachineStatusReport msr_lre = getConfig()->_log_entry[j];
-       if (DEBUG_LOG_RECORDER > 0) {
-         for (int k = 0; k < NUM_CRITICAL_ERROR_DEFINITIONS; k++) {
-           CogCore::Debug<const char *>("BBB: ");
-           CogCore::Debug<int>(k);
-           CogCore::Debug<const char *>(" ");
-           CogCore::DebugLn<bool>(msr_lre.errors[k]);
-         }
-       }
 	//  if (DEBUG_LOG_RECORDER) {
         getConfig()->outputReport(&msr_lre);
 	//  }

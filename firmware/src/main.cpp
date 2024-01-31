@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.3.38"  // Major changes to criticalFault handling
+#define OEDCS_VERSION "; Rev: 0.3.39"  // removing debugging statements
 #define DEVICE_UNDER_TEST "Hardware: Due"  // A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -340,7 +340,7 @@ void setup()
   // NOTHING HERE YET...
 
   // now set up debugging levels...
-  logRecorderTask.DEBUG_LOG_RECORDER = 1;
+  logRecorderTask.DEBUG_LOG_RECORDER = 0;
   core.DEBUG_CORE = 0;
   core._scheduler.DEBUG_SCHEDULER = 0;
   core._scheduler._idleTask.DEBUG_IDLETASK = 0;
