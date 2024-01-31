@@ -96,10 +96,52 @@ namespace CogApp
     return logReport(getConfig()->report);
   }
 
+  bool OEDCSNetworkTask::logReportList(MachineStatusReport* report, uint8_t size)  {
+	 if (DEBUG_UDP > 1) {
+      CogCore::Debug<const char *>("outputReportList\n");
+      //delay(50);
+    }
+    char buffer[4096];
+	char payload[65536]; //65536
+    // we need to make sure we start with a null string...
+	buffer[0] = 0;
+	payload[0] = 0;
+	for(int i =0; i++; i<size)
+	{
+		getConfig()->createJSONReport(&report[i],buffer);
+		if (DEBUG_UDP > 0) {
+			CogCore::Debug<const char *>("Sending buffer:\n");
+			CogCore::Debug<const char *>(buffer);
+			CogCore::Debug<const char *>("\n");
+			//delay(50);
+		}
+		if( strlen(strncat (payload, buffer, strlen(buffer))) < ( strlen(buffer)+strlen(payload )) ){
+			CogCore::Debug<const char *>("Buffer overflow error in UDP:\n");
+			return false;
+		}
+			
+	}
+    // Conjecture: This should use the report time stamp
+    //
+    unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
+    if (DEBUG_UDP > 1) {
+      CogCore::Debug<const char *>("About to Send Data at: ");
+	  CogCore::DebugLn<unsigned long>(millis());
+     // delay(50);
+    }
+    net_udp.sendData(payload,current_epoch_time, 2000);
+    if (DEBUG_UDP > 1) {
+      CogCore::Debug<const char *>("Data Sent at: ");
+	  CogCore::DebugLn<unsigned long>(millis());
+     // delay(50);
+    }
+    return true;
+  }	
+	  
   bool OEDCSNetworkTask::logReport(MachineStatusReport* report)  {
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("outputReport\n");
-      delay(50);
+     // delay(50);
     }
     char buffer[4096];
     // we need to make sure we start with a null string...
@@ -109,19 +151,19 @@ namespace CogApp
       CogCore::Debug<const char *>("Sending buffer:\n");
       CogCore::Debug<const char *>(buffer);
       CogCore::Debug<const char *>("\n");
-      delay(50);
+    //  delay(50);
     }
     // Conjecture: This should use the report timestamp
     //
     unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("About to Send Data!\n");
-      delay(50);
+     // delay(50);
     }
     net_udp.sendData(buffer,current_epoch_time, 2000);
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("Data Sent!\n");
-      delay(50);
+    //  delay(50);
     }
     return true;
   }

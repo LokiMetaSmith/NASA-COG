@@ -54,27 +54,30 @@ namespace CogApp
     return true;
   }
   void Log_Recorder_Task::dumpRecords() {
-
+    unsigned long debug_timer = millis() / 1000;
+  
     CogCore::Debug<const char *>("STARTING DUMPING LOG RECORDS: ");
     CogCore::Debug<int>(_numRecords);
     CogCore::Debug<const char *>("\n");
 
     int firstRecord = _nextRecord - _numRecords;
     // now make sure positive!
-    firstRecord = firstRecord % getConfig()->MAX_RECORDS;
+     firstRecord = firstRecord % getConfig()->MAX_RECORDS;
     for(int i = 0; i < _numRecords; i++) {
       int j = (firstRecord + i) % getConfig()->MAX_RECORDS;
       MachineStatusReport msr_lre = getConfig()->_log_entry[j];
-	//  if (DEBUG_LOG_RECORDER) {
-        getConfig()->outputReport(&msr_lre);
+	 // if (DEBUG_LOG_RECORDER) {
+      //  getConfig()->outputReport(&msr_lre);
 	//  }
       oedcsNetworkTask->logReport(&msr_lre);
       core->ResetAllWatchdogs();
-    }
+    } 
+	//oedcsNetworkTask->logReportList((getConfig()->_log_entry), _numRecords);
     _nextRecord = 0;
     _numRecords = 0;
 
-    CogCore::Debug<const char *>("FINISHED DUMPING LOG RECORDS.\n");
+    CogCore::Debug<const char *>("FINISHED DUMPING LOG RECORDS in (seconds): ");
+	CogCore::DebugLn<unsigned long>((millis() / 1000) - debug_timer);
   }
 
 }

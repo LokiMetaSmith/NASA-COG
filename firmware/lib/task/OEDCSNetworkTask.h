@@ -29,6 +29,8 @@ namespace CogApp
 {
   class OEDCSNetworkTask : public NetworkTask {
   public:
+    bool logReportList(MachineStatusReport* report, uint8_t size);
+
     bool logReport(MachineStatusReport* report);
     bool _run() override;
   };
