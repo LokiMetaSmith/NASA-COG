@@ -46,7 +46,7 @@ namespace CogApp
     // Copy errors here...
     for (int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++) {
       getConfig()->_log_entry[_nextRecord].errors[i]
-        = getConfig()->errors[i];
+        = getConfig()->errors[i].fault_present;
     }
     getConfig()->_log_entry[_nextRecord].timestamp = millis();
     _nextRecord = (_nextRecord + 1) % m;

@@ -93,26 +93,6 @@ public:
   virtual bool init() = 0;
 };
 
-#define NUM_CRITICAL_ERROR_DEFINITIONS 15
-// WARNING! Do not reorder these!!
-// The code currently depends on the 0,1, and 2 being the the thermocouple errors.enum CriticalErrorCondition {
-enum CriticalErrorCondition {
-  POST_HEATER_TC_BAD,
-  POST_GETTER_TC_BAD,
-  POST_STACK_TC_BAD,
-  COULD_NOT_INIT_3_THERMOCOUPLES,
-  FAN_LOSS_PWR,
-  PWR_12V_BAD,
-  PWR_24V_BAD,
-  FAN_UNRESPONSIVE,
-  HEATER_UNRESPONSIVE,
-  HEATER_OUT_OF_BOUNDS,
-  STACK_LOSS_CTL,
-  PSU_UNRESPONSIVE,
-  MAINS_LOSS_PWR,
-  SYSTEM_OVER_TEMPERATURE,
-  UNABLE_TO_RAISE_TEMPERATURE_SECURELY
-};
 
 constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINITIONS] = {
     "Post Heater TC-A Bad",
@@ -132,13 +112,6 @@ constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINI
     "Unable to Raise Temperature Securely"
   };
 
-class CriticalError {
-public:
-  bool fault_present;
-  unsigned long begin_condition_ms;
-  unsigned long toleration_ms;
-  MachineState response_state;
-};
 
 
 // These are the controllable pre-set parameters to the algorithm
@@ -422,7 +395,7 @@ void _reportFanSpeed();
   const unsigned long FAN_LOSS_PWR_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long FAN_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long HEATER_UNRESPONSIVE_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
-  //  const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
+  const unsigned long STACK_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long PSU_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long MAINS_FAULT_TOLERATION_TIME_MS = 2 * 60 * 1000;
   const unsigned long SYSTEM_OVER_TEMPERATURE_TOLERATION_TIME_MS = 0;

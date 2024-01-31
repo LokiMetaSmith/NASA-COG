@@ -88,7 +88,7 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         //add a state for error: no error
         for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++)
           {
-	  if (msr->errors[i].fault_present)//critical error detected
+	  if (msr->errors[i])//critical error detected
             {
               CogCore::Debug<const char *>("CriticalError: ");
               CogCore::Debug<const char *>(CriticalErrorNames[i]);
@@ -143,7 +143,7 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
   bool is_fault_present = false;
   for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++)
   {
-	if (msr->errors[i].fault_present)//critical error detected
+	if (msr->errors[i])//critical error detected
 	{
 	  if(is_fault_present)strcat(buffer, ",");
 	  is_fault_present = true;
@@ -206,7 +206,7 @@ void MachineConfig::initErrors() {
  errors[PSU_UNRESPONSIVE].toleration_ms = PSU_FAULT_TOLERATION_TIME_MS;
  errors[MAINS_LOSS_PWR].toleration_ms = MAINS_FAULT_TOLERATION_TIME_MS;
  errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].toleration_ms = UNABLE_TO_RAISE_TEMPERATURE_SECURELY_TOLERATION_TIME_MS;
- errors[SYSTEM_OVER_TEMPERATURE].toleration_ms =  SYSTEM_OVER_TEMPERATURE_MS;
+ errors[SYSTEM_OVER_TEMPERATURE].toleration_ms =  SYSTEM_OVER_TEMPERATURE_TOLERATION_TIME_MS;
  errors[HEATER_OUT_OF_BOUNDS].toleration_ms =  ENVELOPE_FAULT_TOLERATION_TIME_MS;
 
  errors[POST_HEATER_TC_BAD].response_state = EmergencyShutdown;
