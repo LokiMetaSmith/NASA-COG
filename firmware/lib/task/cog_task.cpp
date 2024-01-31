@@ -601,19 +601,51 @@ namespace CogApp
       }
     }//evaluateHeaterEnvelope
 
-    if (!getHAL()->_stacks[0]->evaluatePS()){
+    PSU_STATE psu_state = getHAL()->_stacks[0]->evaluatePS();
+    switch (psu_state) {
+    case PSU_Bad:
       CogCore::DebugLn<const char *>("PSU Fault Present");
       if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
         getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
         getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
         retval = false;
       }
-    } else {
+      break;
+    case PSU_Good:
       if (getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
         getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
-        getHAL()->_stacks[0]->reInit();
       }
-    }//evaluatePSU
+      break;
+    case PSU_NeedsReinit:
+      int retval = getHAL()->_stacks[0]->reInit();
+      if (retval < 0) {
+        // Report failure to reinit...
+        CogCore::DebugLn<const char *>("FAILED TO REINIT PSU!");
+      } else {
+        PSU_STATE psu_state = getHAL()->_stacks[0]->evaluatePS();
+        switch (psu_state) {
+        case PSU_Bad:
+          CogCore::DebugLn<const char *>("PSU Fault Present");
+          if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+            getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
+            getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+            retval = false;
+          }
+          break;
+        case PSU_Good:
+          if (getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+            getConfig()->errors[PSU_UNRESPONSIVE].fault_present = false;
+          }
+          break;
+        case PSU_NeedsReinit:
+          // We've run out of options, we will report an error
+          // and wait until cog_task runs again...
+          CogCore::DebugLn<const char *>("We reinitalized the PSU, but it still failed in some way!");
+        };
+      }
+
+      break;
+    };
 
     return retval;
   }
@@ -689,9 +721,6 @@ namespace CogApp
     getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
     //    _updateStackVoltage(getConfig()->MIN_OPERATING_STACK_VOLTAGE);
     _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
-    // Although debatable, we want to clear all the erorrs when
-    // turning off to avoid overreporting.
-    getConfig()->clearErrors();
     // Although after a minute this should turn off, we want
     // to do it immediately
     StateMachineManager::turnOff();
@@ -995,6 +1024,9 @@ namespace CogApp
     //    _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
     turnOff();
     logRecorderTask->dumpRecords();
+    // Although debatable, we want to clear all the erorrs when
+    // turning off to avoid overreporting.
+    getConfig()->clearErrors();
     return new_ms;
   }
   MachineState CogTask::_updatePowerComponentsEmergencyShutdown() {
@@ -1043,7 +1075,16 @@ namespace CogApp
     }
 
     for (int i = 0; i < getHAL()->NUM_STACKS; i++) {
-      getHAL()->_stacks[i]->updateVoltage(voltage,getConfig());
+      int r = getHAL()->_stacks[i]->updateVoltage(voltage,getConfig());
+      if (!r) {
+        if (DEBUG_LEVEL > 0) {
+          CogCore::Debug<const char *>("DETECTED VOLTAGE FAULT\n");
+        }
+        if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+          getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
+          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+        }
+      }
     }
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("Done (BBB): ");
@@ -1064,7 +1105,16 @@ namespace CogApp
     }
 
     for (int i = 0; i < getHAL()->NUM_STACKS; i++) {
-      getHAL()->_stacks[i]->updateAmperage(amperage,getConfig());
+      int r = getHAL()->_stacks[i]->updateAmperage(amperage,getConfig());
+      if (!r) {
+        if (DEBUG_LEVEL > 0) {
+          CogCore::Debug<const char *>("DETECTED AMPERAGE FAULT\n");
+        }
+        if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+          getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
+          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+        }
+      }
     }
   }
 
