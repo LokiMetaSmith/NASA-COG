@@ -896,9 +896,6 @@ namespace CogApp
 
       // This is setting the target...
       wattagePIDObject->temperatureSetPoint_C = getConfig()->SETPOINT_TEMP_C;
-      CogCore::Debug<const char *>("SetPoint: ");
-      CogCore::Debug<float>(getConfig()->SETPOINT_TEMP_C);
-      CogCore::Debug<const char *>("\n");
 
       getConfig()->report->total_wattage_W = totalWattage_w;
 
