@@ -185,7 +185,7 @@ int SL_PS::init() {
   pinMode( PS1_AUX_SENSE, INPUT);
 #ifdef   TEST_OVER_CURRENT_EVENT
   pinMode(6, INPUT_PULLUP);    //TEST OVER CURRENT EVENT, sets reported amperage to 60
-#endif  
+#endif
   return retval;
 }
 
@@ -209,6 +209,7 @@ int SL_PS::reInit() {
 	return reInit(0,0);
 }
 
+// A negative return value means failure here...
 int SL_PS::reInit(uint16_t volts, uint16_t amps) {
 
 
@@ -264,9 +265,9 @@ int SL_PS::reInit(uint16_t volts, uint16_t amps) {
     CogCore::Debug<const char *>("failed to turn PS on\n");
     retval = -1;
   }
-  
-  
-  if(retval >=0) 
+
+
+  if(retval >=0)
   {
 	//PS1  is attached to Serial1, check if AUX is high, if so, disable the PSU
 	if(digitalRead( PS1_AUX_SENSE) == LOW) {
@@ -275,18 +276,21 @@ int SL_PS::reInit(uint16_t volts, uint16_t amps) {
         CogCore::Debug<const char *>("failed to enable PSU");
       }
 	}
-  }//if successfully set current and voltage, turn on EN 
-  
+  }//if successfully set current and voltage, turn on EN
+
   return retval;
 }
 
 // Return True if Okay, false if bad.
 bool SL_PS::evaluatePS(){
-  getPS_Control(ADDRESS);
+  int c = getPS_Control(ADDRESS);
+  if (!c) return false;
   watchdogReset();
-  getPS_Status0(ADDRESS);//doesn't trigger any bits
+  int s0 = getPS_Status0(ADDRESS);//doesn't trigger any bits
+  if (!s0) return false;
   watchdogReset();
-  getPS_Status1(ADDRESS);//doesn't trigger any bits for control or other flags
+  int s1 = getPS_Status1(ADDRESS);//doesn't trigger any bits for control or other flags
+  if (!s1) return false;
   watchdogReset();
   if (DEBUG_SL_PS > 0) {
     CogCore::Debug<const char *>( "status0: ");
@@ -315,7 +319,7 @@ bool SL_PS::evaluatePS(){
     if(control){CogCore::DebugLn<const char *>( "REMOTE");}else{CogCore::Debug<const char *>( "LOCAL");};
   };
 
-  
+
     if(status0 & 0x40)CogCore::DebugLn<const char *>( "BROWN OUT DETECTED");
 
   // I'm commenting this out as it considers my PSU (Austin unit, OEDCS #SN1) to be in error.
@@ -344,17 +348,19 @@ bool SL_PS::evaluatePS(){
     CogCore::DebugLn< uint8_t>(status0);
     CogCore::Debug<const char *>( "status1: ");
     CogCore::DebugLn< uint8_t>(status1);
-    CogCore::DebugLn<const char *>( "RUNNING reInit!");
 
     // WARNING: LAWRENCE --- this return masks the code below it!
     // I am not sure what the correct solution is. - rlr
-    return reInit();
-    if( !(status0 & 0xFF)){
+    //    return reInit();
+    if((status0 & 0xFF)){
       CogCore::DebugLn<const char *>( "LOST CONTROL OF PSU, CHECK STACK VOLTAGE");
+      return false;
+    } else {
+      if (DEBUG_SL_PS > 0) {
+        CogCore::DebugLn<const char *>( "PSU CONSIDERED GOOD");
+      }
       return true;
     }
-    //return false;
-
   }
 
   // //If everything is working, we will mask with a known good state status0 & 0xFF and status1 0x92 0b1001 0010
@@ -381,12 +387,14 @@ int SL_PS::setPS_Addr(uint8_t addr) {
 //= > CR LF -> Command executed successfully.
 //? > CR LF -> Command error, not accepted.
 //! > CR LF -> Command correct but execution error (e.g. parameters out of range).
+// Returns 0 on error.
 int SL_PS::setPS_Val(uint8_t addr, const char *loc, const char *val) {
-  if (!setPS_Addr(addr)) {
+  int retval = setPS_Addr(addr);
+  if (!retval) {
     CogCore::Debug<const char *>("setPS_Val didn't set address\n");
-	reInit();
-    return setPS_Addr(addr);
+    return 0;
   }
+
 
   Serial1.print(loc);
   Serial1.print(' ');
@@ -467,11 +475,11 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
         }
         if(b[0] == '?' && b[1] == '>') {
           Serial.println("Command error, not accepted.");
-          return rval;
+          return 0;
         }
         if(b[0] == '!' && b[1] == '>') {
           Serial.println("Command correct but execution error (e.g. parameters out of range).");
-          return rval;
+          return 0;
         }
         strncat(rval,b, sizeof b);
       }else{
@@ -492,43 +500,66 @@ char *SL_PS::getPS_Val(uint8_t addr, const char *val) {
   return rval;
 }
 
-void SL_PS::getPS_Manuf(int addr) {
+int SL_PS::getPS_Manuf(int addr) {
   char *r = getPS_Val(addr, "INFO 0");
+  if (r == 0)
+    return 0;
   strncpy(manuf, r, sizeof manuf);
+  return 1;
 }
 
-void SL_PS::getPS_Model(int addr) {
+int SL_PS::getPS_Model(int addr) {
   char *r = getPS_Val(addr, "INFO 1");
+  if (r == 0)
+    return 0;
   strncpy(model, r, sizeof model);
+  return 1;
 }
 
-void SL_PS::getPS_VoltageString(int addr) {
+int SL_PS::getPS_VoltageString(int addr) {
   char *r = getPS_Val(addr, "INFO 2");
+  if (r == 0)
+    return 0;
   strncpy(voltage_string, r, sizeof voltage_string);
+  return 1;
 }
 
-void SL_PS::getPS_Revision(int addr) {
+int SL_PS::getPS_Revision(int addr) {
   char *r = getPS_Val(addr, "INFO 3");
+  if (r == 0)
+    return 0;
   strncpy(revision, r, sizeof revision);
+  return 1;
 }
 
-void SL_PS::getPS_ManufDate(int addr) {
+int SL_PS::getPS_ManufDate(int addr) {
   char *r = getPS_Val(addr, "INFO 4");
+  if (r == 0)
+    return 0;
   strncpy(manuf_date, r, sizeof manuf_date);
+  return 1;
 }
 
-void SL_PS::getPS_Serial(int addr) {
+int SL_PS::getPS_Serial(int addr) {
   char *r = getPS_Val(addr, "INFO 5");
+  if (r == 0)
+    return 0;
   strncpy(serial, r, sizeof serial);
+  return 1;
 }
 
-void SL_PS::getPS_Country(int addr) {
+int SL_PS::getPS_Country(int addr) {
   char *r = getPS_Val(addr, "INFO 6");
+  if (r == 0)
+    return 0;
   strncpy(country, r, sizeof country);
+  return 1;
 }
 
-void SL_PS::getPS_RateVoltage(int addr) {
+int SL_PS::getPS_RateVoltage(int addr) {
   char *r = getPS_Val(addr, "RATE?");
+  if (r == 0)
+    return 0;
   char b[20];
   strncpy(b, r, sizeof b);
   char *ptr = NULL;
@@ -538,10 +569,13 @@ void SL_PS::getPS_RateVoltage(int addr) {
     *ptr = '\0';
     rate_voltage = int(atof(b) * 100);
   }
+  return 1;
 }
 
-void SL_PS::getPS_RateCurrent(int addr) {
+int SL_PS::getPS_RateCurrent(int addr) {
   char *r = getPS_Val(addr, "RATE?");
+  if (r == 0)
+    return 0;
   char b[20];
   strncpy(b, r, sizeof b);
   char *ptr = NULL;
@@ -552,16 +586,20 @@ void SL_PS::getPS_RateCurrent(int addr) {
     *ptr_2 = '\0';
     rate_current = int(atof(ptr + 1) * 100);
   }
+  return 1;
 }
 
-void SL_PS::getPS_OnOff(int addr) {
+int SL_PS::getPS_OnOff(int addr) {
   char *r = getPS_Val(addr, "POWER 2");
+  if (r == 0)
+    return 0;
   switch (r[0]) {
   case '0': on_off = 0; break;
   case '1': on_off = 1; break;
   case '2': on_off = 0; break;
   case '3': on_off = 1; break;
   }
+  return 1;
 }
 
 void SL_PS::getPS_MaxVoltage(int addr) {
@@ -572,60 +610,83 @@ void SL_PS::getPS_MaxCurrent(int addr) {
   max_current = -1;
 }
 
-void SL_PS::getPS_OutVoltage(int addr) {
+int SL_PS::getPS_OutVoltage(int addr) {
   char *r = getPS_Val(addr, "RV?");
+  if (r == 0)
+    return 0;
   out_voltage = int(atof(r) * 100);
+  return 1;
 }
 
 // CORRUP THIS WITH A TEST
-void SL_PS::getPS_OutCurrent(int addr) {
+int SL_PS::getPS_OutCurrent(int addr) {
   char *r = getPS_Val(addr, "RI?");
-#ifdef TEST_OVER_CURRENT_EVENT  
+  if (r == 0)
+    return 0;
+#ifdef TEST_OVER_CURRENT_EVENT
   if (digitalRead(6)) {
     out_current = int(atof(r) * 100);
   }else{
 	CogCore::Debug<const char *>("getPS_OutCurrent Current: 60");
 	out_current = 6000;
   }
-#else  
+#else
   out_current = int(atof(r) * 100);
 #endif
-  
+  return 1;
 }
 
-void SL_PS::getPS_Status0(int addr) {
+int SL_PS::getPS_Status0(int addr) {
   char *r = getPS_Val(addr, "STUS 0");
+  if (r == 0)
+    return 0;
   status0 = (r[0] - '0') << 4;
   status0 += (r[1] - '0') & 0x0F;
+  return 1;
 }
 
-void SL_PS::getPS_Status1(int addr) {
+int SL_PS::getPS_Status1(int addr) {
   char *r = getPS_Val(addr, "STUS 1");
+  if (r == 0)
+    return 0;
   status1 = (r[0] - '0') << 4;
   status1 += (r[1] - '0') & 0x0F;
+  return 1;
 }
 
-void SL_PS::getPS_Temp(int addr) {
+int SL_PS::getPS_Temp(int addr) {
   char *r = getPS_Val(addr, "RT?");
+  if (r == 0)
+    return 0;
   temp = atoi(r);
+  return 1;
 }
 
-void SL_PS::getPS_SetVoltage(int addr) {
+int SL_PS::getPS_SetVoltage(int addr) {
   char *r = getPS_Val(addr, "SV?");
+  if (r == 0)
+    return 0;
   set_voltage = int(atof(r) * 100);
+  return 1;
 }
 
-void SL_PS::getPS_SetCurrent(int addr) {
+int SL_PS::getPS_SetCurrent(int addr) {
   char *r = getPS_Val(addr, "SI?");
+  if (r == 0)
+    return 0;
   set_current = int(atof(r) * 100);
+  return 1;
 }
 
-void SL_PS::getPS_Control(int addr) {
+int SL_PS::getPS_Control(int addr) {
   char *r = getPS_Val(addr, "REMS 2");
+  if (r == 0)
+    return 0;
   switch (r[0]) {
   case '0': control = 0; break;
   case '1': control = 1; break;
   }
+  return 1;
 }
 
 void SL_PS::printFullStatus(int addr) {
@@ -639,9 +700,9 @@ void SL_PS::printFullStatus(int addr) {
 
 
 }
-// TODO: We are not handling the a bad return value well here!
-// A problem setting this value could be an critical error...
-void SL_PS::updateAmperage(float amperage, MachineConfig *config) {
+
+// true means success, false means failure
+int SL_PS::updateAmperage(float amperage, MachineConfig *config) {
   MachineStatusReport *msr = config->report;
   uint16_t amps = (uint16_t) (amperage * 100.0);
 
@@ -653,7 +714,8 @@ void SL_PS::updateAmperage(float amperage, MachineConfig *config) {
   int ret_val = setPS_Current(this->address, amps);
   if (!ret_val) {
     CogCore::Debug<const char *>("FAILED TO SET AMPERAGE!\n");
-    msr->ms = CriticalFault;
+    //    msr->ms = CriticalFault;
+    return 0;
   }
   // I don't like to use delay but I think some time is needed here...
   delay(10);
@@ -667,10 +729,11 @@ void SL_PS::updateAmperage(float amperage, MachineConfig *config) {
   if (DEBUG_SL_PS > 0) {
     printFullStatus(this->address);
   }
+  return 1;
 }
 
-void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
-
+// true means success, false means failure
+int SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   MachineStatusReport *msr = config->report;
   uint16_t volts = (uint16_t) (voltage * 100.0);
 
@@ -682,7 +745,8 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   int ret_val = setPS_Voltage(this->address, volts);
   if (!ret_val) {
     CogCore::Debug<const char *>("FAILED TO SET VOLTAGE!\n");
-    msr->ms = CriticalFault;
+    //    msr->ms = CriticalFault;
+    return 0;
   }
 
 
@@ -728,7 +792,7 @@ void SL_PS::updateVoltage(float voltage, MachineConfig *config) {
   if (DEBUG_SL_PS_UV > 0) {
     CogCore::DebugLn<const char *>("SL_PS Voltage Updated 4");
   }
-
+  return 1;
 }
 
 #endif

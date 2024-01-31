@@ -51,7 +51,7 @@
 // an abstract "power supply"
 class SL_PS : public AbstractPS  {
 private:
-  int DEBUG_SL_PS = 0;
+  int DEBUG_SL_PS = 1;
   int DEBUG_SL_PS_UV = 0;
   int init(); // return -1 if it failes!
   uint8_t address = ADDRESS;
@@ -92,33 +92,33 @@ public:
   int setPS_Voltage(uint8_t addr, uint16_t volts);
   int setPS_Current(uint8_t addr, uint16_t amps);
   char *getPS_Val(uint8_t addr, const char *val);
-  void getPS_Manuf(int addr);
-  void getPS_Model(int addr);
-  void getPS_VoltageString(int addr);
-  void getPS_Revision(int addr);
-  void getPS_ManufDate(int addr);
-  void getPS_Serial(int addr);
-  void getPS_Country(int addr);
-  void getPS_RateVoltage(int addr);
-  void getPS_RateCurrent(int addr);
-  void getPS_OnOff(int addr);
+  int getPS_Manuf(int addr);
+  int getPS_Model(int addr);
+  int getPS_VoltageString(int addr);
+  int getPS_Revision(int addr);
+  int getPS_ManufDate(int addr);
+  int getPS_Serial(int addr);
+  int getPS_Country(int addr);
+  int getPS_RateVoltage(int addr);
+  int getPS_RateCurrent(int addr);
+  int getPS_OnOff(int addr);
   void getPS_MaxVoltage(int addr);
   void getPS_MaxCurrent(int addr);
-  void getPS_OutVoltage(int addr);
-  void getPS_OutCurrent(int addr);
-  void getPS_Status0(int addr);
-  void getPS_Status1(int addr);
-  void getPS_Temp(int addr);
-  void getPS_SetVoltage(int addr);
-  void getPS_SetCurrent(int addr);
-  void getPS_Control(int addr);
+  int getPS_OutVoltage(int addr);
+  int getPS_OutCurrent(int addr);
+  int getPS_Status0(int addr);
+  int getPS_Status1(int addr);
+  int getPS_Temp(int addr);
+  int getPS_SetVoltage(int addr);
+  int getPS_SetCurrent(int addr);
+  int getPS_Control(int addr);
 
 
   void printFullStatus(int addr);
   //  void updateAmperage(float amperage);
-  void updateAmperage(float amperage, MachineConfig *config);
+  int updateAmperage(float amperage, MachineConfig *config);
   //  void updateVoltage(float voltage);
-  void updateVoltage(float voltage, MachineConfig *config);
+  int updateVoltage(float voltage, MachineConfig *config);
 };
 
 #endif

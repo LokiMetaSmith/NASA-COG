@@ -1043,7 +1043,16 @@ namespace CogApp
     }
 
     for (int i = 0; i < getHAL()->NUM_STACKS; i++) {
-      getHAL()->_stacks[i]->updateVoltage(voltage,getConfig());
+      int r = getHAL()->_stacks[i]->updateVoltage(voltage,getConfig());
+      if (!r) {
+        if (DEBUG_LEVEL > 0) {
+          CogCore::Debug<const char *>("DETECTED VOLTAGE FAULT\n");
+        }
+        if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+          getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
+          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+        }
+      }
     }
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("Done (BBB): ");
@@ -1064,7 +1073,16 @@ namespace CogApp
     }
 
     for (int i = 0; i < getHAL()->NUM_STACKS; i++) {
-      getHAL()->_stacks[i]->updateAmperage(amperage,getConfig());
+      int r = getHAL()->_stacks[i]->updateAmperage(amperage,getConfig());
+      if (!r) {
+        if (DEBUG_LEVEL > 0) {
+          CogCore::Debug<const char *>("DETECTED AMPERAGE FAULT\n");
+        }
+        if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
+          getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
+          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+        }
+      }
     }
   }
 

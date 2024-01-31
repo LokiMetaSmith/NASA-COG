@@ -37,8 +37,8 @@ public:
   };
   virtual int init() { return -1; };
   virtual ~AbstractPS(){};
-  virtual void updateVoltage(float voltage, MachineConfig *config);
-  virtual void updateAmperage(float amperage, MachineConfig *config);
+  virtual int updateVoltage(float voltage, MachineConfig *config);
+  virtual int updateAmperage(float amperage, MachineConfig *config);
   virtual int reInit();
   virtual bool evaluatePS();
 };
