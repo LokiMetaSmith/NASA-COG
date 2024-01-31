@@ -247,15 +247,19 @@ int SL_PS::reInit(uint16_t volts, uint16_t amps) {
 
 
   watchdogReset();
-  if (setPS_Voltage(ADDRESS, volts)) CogCore::Debug<const char *>("Set volts to 0.0 volts\n");
-  else {
+  if (setPS_Voltage(ADDRESS, volts)) {
+    CogCore::Debug<const char *>("Set volts to volts:\n");
+    CogCore::DebugLn<float>(volts);
+  } else {
     CogCore::Debug<const char *>("failed to set volts\n");
     retval = -1;
   }
 
   watchdogReset();
-  if (setPS_Current(ADDRESS, amps)) CogCore::Debug<const char *>("Set current to 0.0 amps\n");
-  else {
+  if (setPS_Current(ADDRESS, amps)) {
+    CogCore::Debug<const char *>("Set volts to amps:\n");
+    CogCore::DebugLn<float>(amps);
+  } else {
     CogCore::Debug<const char *>("failed to set current\n");
     retval = -1;
   }
@@ -282,15 +286,15 @@ int SL_PS::reInit(uint16_t volts, uint16_t amps) {
 }
 
 // Return True if Okay, false if bad.
-bool SL_PS::evaluatePS(){
+PSU_STATE SL_PS::evaluatePS(){
   int c = getPS_Control(ADDRESS);
-  if (!c) return false;
+  if (!c) return PSU_Bad;
   watchdogReset();
   int s0 = getPS_Status0(ADDRESS);//doesn't trigger any bits
-  if (!s0) return false;
+  if (!s0) return PSU_Bad;
   watchdogReset();
   int s1 = getPS_Status1(ADDRESS);//doesn't trigger any bits for control or other flags
-  if (!s1) return false;
+  if (!s1) return PSU_Bad;
   watchdogReset();
   if (DEBUG_SL_PS > 0) {
     CogCore::Debug<const char *>( "status0: ");
@@ -342,7 +346,7 @@ bool SL_PS::evaluatePS(){
     if (DEBUG_SL_PS > 0) {
       CogCore::DebugLn<const char *>( "PSU GOOD!");
     }
-    return true;
+    return PSU_Good;
   } else{
     CogCore::Debug<const char *>( "status0: ");
     CogCore::DebugLn< uint8_t>(status0);
@@ -354,20 +358,14 @@ bool SL_PS::evaluatePS(){
     //    return reInit();
     if((status0 & 0xFF)){
       CogCore::DebugLn<const char *>( "LOST CONTROL OF PSU, CHECK STACK VOLTAGE");
-      return false;
+      return PSU_Bad;
     } else {
       if (DEBUG_SL_PS > 0) {
         CogCore::DebugLn<const char *>( "PSU CONSIDERED GOOD");
       }
-      return true;
+      return PSU_NeedsReinit;
     }
   }
-
-  // //If everything is working, we will mask with a known good state status0 & 0xFF and status1 0x92 0b1001 0010
-  // return false;
-
-  // This line written by rlr to make it work until we ahve an explanation of what is supposed to be done above...
-  //return (!(status0 & 0xFF));
 
 }
 
@@ -378,7 +376,7 @@ int SL_PS::setPS_Addr(uint8_t addr) {
   char buff[5];
   uint8_t c = Serial1.readBytesUntil('\n', buff, sizeof buff);
   if (DEBUG_SL_PS > 0) {
-	CogCore::Debug<const char *>( "setPS_Addr reads: ");
+    CogCore::Debug<const char *>( "setPS_Addr reads: ");
     CogCore::DebugLn< char *>(buff);
   }
   if (c != 3 || buff[0] != '=' || buff[1] != '>') return 0;

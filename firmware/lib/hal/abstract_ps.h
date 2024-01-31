@@ -23,6 +23,12 @@
 #include <math.h>
 #endif
 
+enum PSU_STATE {
+  PSU_Bad,
+  PSU_Good,
+  PSU_NeedsReinit,
+};
+
 
 class AbstractPS {
 public:
@@ -40,7 +46,7 @@ public:
   virtual int updateVoltage(float voltage, MachineConfig *config);
   virtual int updateAmperage(float amperage, MachineConfig *config);
   virtual int reInit();
-  virtual bool evaluatePS();
+  virtual PSU_STATE evaluatePS();
 };
 
 

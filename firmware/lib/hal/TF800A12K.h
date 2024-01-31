@@ -45,13 +45,11 @@
 #define PS2_AUX_SENSE A4 //A6
 
 
-
-
 // TODO: This could potentially become part of
 // an abstract "power supply"
 class SL_PS : public AbstractPS  {
 private:
-  int DEBUG_SL_PS = 1;
+  int DEBUG_SL_PS = 0;
   int DEBUG_SL_PS_UV = 0;
   int init(); // return -1 if it failes!
   uint8_t address = ADDRESS;
@@ -81,7 +79,7 @@ public:
   int reInit();
   int reInit( uint16_t volts, uint16_t amps);
   bool disable();
-  bool evaluatePS();
+  PSU_STATE evaluatePS();
 
   int setPS_Addr(uint8_t addr);
 
