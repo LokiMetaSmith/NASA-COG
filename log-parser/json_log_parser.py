@@ -22,7 +22,8 @@ json_data_file_list =[
 #'Y:/Public Invention/data/FE%3AED%3A1B%3A70%3A08%3A77-OEDCS',
 #'Y:/Public Invention/data/FE%3AED%3A1B%3A70%3A0A%3A77-OEDCS'
 #'Y:/Public Invention/data/FE%3AED%3A14%3A71%3A02%3A77-Stage2'
-'./sample_data/critical_fault_sample_FE%3AED%3A1A%3A71%3A09%3A7F-OEDCS'
+#'./sample_data/critical_fault_sample_FE%3AED%3A1A%3A71%3A09%3A7F-OEDCS'
+'./sample_data/FE_ED_16_6B_72_67-OEDCS 1706742000 to 1706752015.txt'
 ]
 #'FE%3AED%3A14%3A71%3A02%3A77-OEDCS'
 #'FE%3AED%3A10%3A69%3A73%3A70-OEDCS'
@@ -62,6 +63,9 @@ target_c_values = []
 setpoint_c_values = []
 ramp_c_values = []
 heater_c_values = []
+rawmillis_values = []
+machine_state_values = []
+
 transition_times = []
 state_transitions = []
 
@@ -96,7 +100,7 @@ for match in matches:
     try:
        # Now 'data' is a dictionary representing a JSON object
         data = json.loads(match)
-       # print(data)
+        #print(data)
 
        # Access values directly from the data dictionary
         temperature_value = data.get("StackC")
@@ -110,6 +114,8 @@ for match in matches:
         setpoint_c = data.get("SetpointC")
         ramp_c = data.get("RampC")
         heater_c = data.get("HeaterC")
+        rawmillis = data.get("RawMillis")
+        machine_state =  data.get("MachineState")
 
 
 
@@ -127,6 +133,9 @@ for match in matches:
                 setpoint_c_values.append(setpoint_c)
                 ramp_c_values.append(ramp_c)
                 heater_c_values.append(heater_c)
+                rawmillis_values.append(rawmillis)
+                machine_state_values.append(machine_state)
+                
         else:
             malformed_entries_count += 1
             if malformed_entries_count < 10:
@@ -192,6 +201,29 @@ voltage_diffs = [transition["Next_Voltage"] - transition["Voltage"] for transiti
 current_diffs = [transition["Next_Current"] - transition["Current"] for transition in state_transitions]
 time_diffs = [transition["Next_TimeStamp"] - transition["TimeStamp"] for transition in state_transitions]
 
+
+np_rawmillis_values = np.array(rawmillis_values)
+sorted_np_rawmillis_values = np.sort(np_rawmillis_values)
+
+sorted_np_rawmillis_values_diffs = [ (sorted_np_rawmillis_values[i] - sorted_np_rawmillis_values[i-1]) for i in range(1 , len(sorted_np_rawmillis_values))]
+
+
+##dtype = [ ("Time",int),
+##            ("Temperature",float),
+##            ("Voltage",float),
+##            ("Current",float),
+##            ( "TimeStamp",int),
+##            ("Next_Temperature",float),
+##            ("Next_Voltage",float),
+##            ("Next_Current",float),
+##            ("Next_TimeStamp",int),
+##            ("Next_Time",int)]
+#np_state = np.array(state_transitions, dtype)
+
+#sorted_np_state_transition = np.sort(np_state, order=[time])
+
+time_millis_diffs = [transition["Next_Time"] - transition["Time"] for transition in state_transitions]
+
 # Calculate resistance differences
 resistance_diffs = []
 average_temperatures = []
@@ -200,14 +232,14 @@ average_temperatures = []
 for transition in state_transitions:
     try:
         if (transition["Next_Current"] == 0) and (transition["Current"] == 0):
-            resistance_diffs.append((transition["Next_Voltage"] / 0.0001) - (transition["Voltage"] /  0.0001))
-            #resistance_diffs.append(np.nan)  # Represent division by zero as NaN
+          #  resistance_diffs.append((transition["Next_Voltage"] / 0.0001) - (transition["Voltage"] /  0.0001))
+            resistance_diffs.append(np.nan)  # Represent division by zero as NaN
         elif transition["Next_Current"] == 0:
-            resistance_diffs.append((transition["Next_Voltage"] / 0.0001) - (transition["Voltage"] / transition["Current"]))
-            #resistance_diffs.append(np.nan)  # Represent division by zero as NaN
+            #resistance_diffs.append((transition["Next_Voltage"] / 0.0001) - (transition["Voltage"] / transition["Current"]))
+            resistance_diffs.append(np.nan)  # Represent division by zero as NaN
         elif transition["Current"] == 0:
-            resistance_diffs.append((transition["Next_Voltage"] / transition["Next_Current"]) - (transition["Voltage"] / 0.0001))
-            #resistance_diffs.append(np.nan)  # Represent division by zero as NaN
+            #resistance_diffs.append((transition["Next_Voltage"] / transition["Next_Current"]) - (transition["Voltage"] / 0.0001))
+            resistance_diffs.append(np.nan)  # Represent division by zero as NaN
         else:
             resistance_diffs.append((transition["Next_Voltage"] / transition["Next_Current"]) - (transition["Voltage"] / transition["Current"]))
         # Calculate average temperature
@@ -216,7 +248,7 @@ for transition in state_transitions:
 
     except ZeroDivisionError:
         resistance_diffs.append(np.nan)  # Represent division by zero as NaN
-kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
+##kmeans = KMeans(n_clusters=3, random_state=42, n_init=10)
 
 
 ##
@@ -268,6 +300,12 @@ transition_times_median = np.median(transition_times)
 setpoint_vs_temperature_diffs_median = np.median(setpoint_vs_temperature_diffs)
 setpoint_vs_temperature_diffs_average = np.average(setpoint_vs_temperature_diffs)
 
+time_millis_diffs_median = np.median(time_millis_diffs)
+time_millis_diffs_average = np.average(time_millis_diffs)
+time_millis_diffs_std = np.nanstd(time_millis_diffs)
+
+
+
 transition_times_std = np.std(transition_times)
 temperature_std = np.std(temperature_diffs)
 setpoint_vs_temperature_diffs_std = np.std(setpoint_vs_temperature_diffs)
@@ -280,6 +318,9 @@ print(f"Average setpoint vs Temperature Differences: {setpoint_vs_temperature_di
 print(f"Median of Temperature Transition time: {transition_times_median}")
 print(f"Median of setpoint vs Temperature Differences: {setpoint_vs_temperature_diffs_median}")
 
+print(f"Median of millis differences: {time_millis_diffs_median}")
+print(f"Average of millis Differences: {time_millis_diffs_average}")
+
 # Print the results
 print(f"Standard Deviation of Temperature transition time Differences: {transition_times_std}")
 print(f"Standard Deviation of Temperature Differences: {temperature_std}")
@@ -288,25 +329,26 @@ print(f"Standard Deviation of Voltage Differences: {voltage_std}")
 print(f"Standard Deviation of Current Differences: {current_std}")
 print(f"Standard Deviation of Resistance Differences: {resistance_std}")
 print(f"Standard Deviation of TimeStamp Differences: {transition_times_std}")
+print(f"Standard Deviation of raw_millis Differences: {time_millis_diffs_std}")
 # Print resistance vs average temperature
 #for avg_temp, resistance in zip(average_temperatures, resistance_diffs):
 #    print(f"Average Temperature: {avg_temp}, Resistance: {resistance}")
-
-# Prepare the data for clustering
-data = np.array(list(zip(average_temperatures, resistance_diffs)))
-#data = data[~np.isnan(data).any(axis=1)]  # Remove rows with NaN values
-
-# Standardize the data
-scaler = StandardScaler()
-data_scaled = scaler.fit_transform(data)
-
-# Perform K-Means clustering
-kmeans = KMeans(n_clusters=3, random_state=42)
-kmeans.fit(data_scaled)
-
-# Get cluster labels and centers
-labels = kmeans.labels_
-centers = kmeans.cluster_centers_
+##
+### Prepare the data for clustering
+##data = np.array(list(zip(average_temperatures, resistance_diffs)))
+###data = data[~np.isnan(data).any(axis=1)]  # Remove rows with NaN values
+##
+### Standardize the data
+##scaler = StandardScaler()
+##data_scaled = scaler.fit_transform(data)
+##
+### Perform K-Means clustering
+##kmeans = KMeans(n_clusters=3, random_state=42)
+##kmeans.fit(data_scaled)
+##
+### Get cluster labels and centers
+##labels = kmeans.labels_
+##centers = kmeans.cluster_centers_
 
 # Plotting subplots
 fig, axs = plt.subplots(3, 2, figsize=(15, 12))
@@ -344,7 +386,7 @@ axs[1, 0].legend()
 ##axs[1, 1].set_xlabel('Change in Temperature')
 ##axs[1, 1].set_ylabel('Change in Resistance')
 ##axs[1, 1].legend()
-axs[1, 1].plot(range(len(time_diffs)),time_diffs,  c='orange', label='rate of data logging', marker='o')
+axs[1, 1].plot(time_millis_diffs,   c='orange', label='rate of data logging', marker='o')
 axs[1, 1].set_title('rate of event messages over time')
 axs[1, 1].set_xlabel('timestamp')
 axs[1, 1].set_ylabel('rate of events')
@@ -359,7 +401,7 @@ axs[1, 1].legend()
 ##axs[2, 0].scatter(centers[:, 0], centers[:, 1], marker='X', s=200, c='red', label='Cluster Centers')
 
 # Label the axes
-axs[2, 0].plot(temperatures_Getter_Stack, fit_y, 'r-', label='Fitted Curve')
+axs[2, 0].plot(temperatures_Getter_Stack, ohms, 'r-', label='Fitted Curve')
 axs[2, 0].scatter(temperatures_Getter_Stack, ohms, c='orange', label='Resistance Change', s=0.01, marker='o')
 axs[2, 0].set_title('Resistance vs Temperature(Getter_Stack)')
 axs[2, 0].set_xlabel('Average Temperature')
@@ -367,9 +409,11 @@ axs[2, 0].set_ylabel('Resistance')
 axs[2, 0].legend()
 
 # Label the axesresistance_diffs
-axs[2, 1].scatter(average_temperatures, resistance_diffs, color='orange', s=0.01, label='Resistance Change')
-axs[2, 1].set_xlabel('Average Temperature')
-axs[2, 1].set_ylabel('Resistance difference')
+#axs[2, 1].scatter(average_temperatures, resistance_diffs, color='orange', s=0.01, label='Resistance Change')
+axs[2, 1].plot(sorted_np_rawmillis_values_diffs,   c='orange', label='rate of data logging', marker='o')
+axs[2, 1].set_title('rate of event messages over time')
+axs[2, 1].set_xlabel('timestamp')
+axs[2, 1].set_ylabel('rate of events')
 axs[2, 1].legend()
 # Adjust layout
 plt.tight_layout()
