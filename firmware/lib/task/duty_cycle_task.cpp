@@ -75,7 +75,7 @@ bool DutyCycleTask::_init()
 // drive the dynamic from DutyCycle of the heater.
 bool DutyCycleTask::_run()
 {
-  if (DEBUG_DUTY_CYCLE > 0) {
+  if (DEBUG_DUTY_CYCLE > 1) {
     CogCore::Debug<const char *>("DUTY CYCLE RUN!\n");
   }
   // WARNING: This will fail when 2^32 ms are reached, about 28 days I think.
@@ -139,66 +139,41 @@ bool DutyCycleTask::_run()
         CogCore::Debug<const char *>("Difference (current temp - Temp at last check): ");
         CogCore::DebugLn<float>(difference);
       }
-      // #ifdef REDUCE_HEATER_UNRESPONSIVE_MIN_TEMP
-      //       float tl =  35.0;
-      // #else
-      //       float tl = 60.0;
-      // #endif
-      //       if ((!getConfig()->errors[HEATER_UNRESPONSIVE].fault_present)) {
-      //         if (current_temp < tl) {
-      //           if (difference <= TEMPERATURE_LOW_LIMIT) {
-      //             //            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
-      //             //            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
-      //             // CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
-      //             CogCore::Debug<const char *>("HEATER TEMPERATURE WENT DOWN. THIS MAY BE A PROBLEM.\n");
-      //           }
-      //         } else {
-      //           if (difference <= TEMPERATURE_HIGH_LIMIT) {
-      //             //            getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = true;
-      //             //            getConfig()->errors[HEATER_UNRESPONSIVE].begin_condition_ms = millis();
-      //             // CogCore::Debug<const char *>("HEATER_UNRESPONSIVE THROWN\n");
-      //             CogCore::Debug<const char *>("HEATER TEMPERATURE WENT DOWN. THIS MAY BE A PROBLEM.\n");
-      //           }
-      //         }
-      //         if ((getConfig()->errors[HEATER_UNRESPONSIVE].fault_present) &&
-      //             difference >= TEMPERATURE_UPSWING_THRESHOLD) {
-      //           getConfig()->errors[HEATER_UNRESPONSIVE].fault_present = false;
-      //           CogCore::Debug<const char *>("HEATER_UNRESPONSIVE WITHDRAWN\n");
-      //         }
-      //       }
-      //     }
-      // now we decided to turn on or off (until called before)!
-      isOn = ((dutyCycle > 0.0) && (recorded_duty_cycle <= dutyCycle));
-
-      // now we actually turn the heater on or off!
-      if (DEBUG_DUTY_CYCLE > 1) {
-        CogCore::Debug<const char *>("DUTY Heater On: ");
-        CogCore::Debug<int>(isOn);
-        CogCore::Debug<const char *>("\n");
-      }
-
-      if (DEBUG_DUTY_CYCLE > 1) {
-        CogCore::Debug<const char *>("Window Length: ");
-        CogCore::Debug<long>(window_length_ms);
-        CogCore::Debug<const char *>("\n");
-        CogCore::Debug<const char *>("Recorded Duty Cycle: ");
-        CogCore::Debug<float>(recorded_duty_cycle);
-        CogCore::Debug<const char *>("\n");
-        CogCore::Debug<const char *>("Duty Cycle: ");
-        CogCore::Debug<float>(dutyCycle);
-        CogCore::Debug<const char *>("\n");
-      }
-
-      time_of_last_check = ms;
-      temperature_at_time_of_last_check = getConfig()->report->post_heater_C;
-
-      one_pin_heater->setHeater(0,isOn);
-
-      if (DEBUG_DUTY_CYCLE > 1) {
-        CogCore::Debug<const char *>("DUTY HEATERS SET!\n");
-      }
-
-      return true;
     }
+    // now we decided to turn on or off (until called before)!
+    isOn = ((dutyCycle > 0.0) && (recorded_duty_cycle <= dutyCycle));
+
+    // now we actually turn the heater on or off!
+    if (DEBUG_DUTY_CYCLE > 1) {
+      CogCore::Debug<const char *>("DUTY Heater On: ");
+      CogCore::Debug<int>(isOn);
+      CogCore::Debug<const char *>("\n");
+    }
+
+    if (DEBUG_DUTY_CYCLE > 1) {
+      CogCore::Debug<const char *>("Window Length: ");
+      CogCore::Debug<long>(window_length_ms);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("Recorded Duty Cycle: ");
+      CogCore::Debug<float>(recorded_duty_cycle);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("Duty Cycle: ");
+      CogCore::Debug<float>(dutyCycle);
+      CogCore::Debug<const char *>("\n");
+    }
+
+    time_of_last_check = ms;
+    temperature_at_time_of_last_check = getConfig()->report->post_heater_C;
+
+    if (DEBUG_DUTY_CYCLE > 0) {
+      CogCore::Debug<const char *>("====================== Setting: ");
+      CogCore::DebugLn<bool>(isOn);
+    }
+    one_pin_heater->setHeater(0,isOn);
+
+    if (DEBUG_DUTY_CYCLE > 0) {
+      CogCore::Debug<const char *>("DUTY HEATERS SET!\n");
+    }
+    return true;
   }
 }
