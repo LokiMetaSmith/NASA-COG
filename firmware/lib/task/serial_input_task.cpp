@@ -106,7 +106,16 @@ namespace CogApp
       ric.value_c = ic.value_c;
       ric.value_f = ic.value_f;
       newData = false;
+
+      if (DEBUG_SERIAL > 0) {
+        CogCore::Debug<const char *>("Showing parsed data\n");
+        showParsedData(ic);
+      }
       return true;
+    } else {
+      if (DEBUG_SERIAL > 0) {
+        CogCore::Debug<const char *>("new Data = false\n");
+      }
     }
     return false;
   }
@@ -150,6 +159,7 @@ namespace CogApp
       smm->changeTargetTemp(mc->OPERATING_TEMPERATURE_C);
       mc->USE_ONE_BUTTON = true;
     } else {
+       CogCore::Debug<const char *>("Character not recognized!\n");
     }
   }
 
