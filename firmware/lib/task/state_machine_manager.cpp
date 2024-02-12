@@ -163,6 +163,7 @@ namespace CogApp
 
   void StateMachineManager::turnOff() {
     //    heaterPIDTask->shutHeaterDown();
+    Serial.println("StateMachineManager::turnOff() called which does nothing.");
   }
 
   void StateMachineManager::turnOn() {
