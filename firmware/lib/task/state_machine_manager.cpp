@@ -81,8 +81,9 @@ namespace CogApp
           CogCore::Debug<const char *>("ENTERING CRITICAL FAULT : ");
           CogCore::DebugLn<const char *>(CriticalErrorNames[i]);
           turnOff();
-          logRecorderTask->dumpRecords();
+          //logRecorderTask->dumpRecords();  // FLE 20240213
           rms = CriticalFault;
+          logRecorderTask->dumpRecords();    // FLE 20240213
         }
       }
     }
