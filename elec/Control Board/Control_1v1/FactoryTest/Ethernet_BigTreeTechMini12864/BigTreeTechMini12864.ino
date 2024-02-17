@@ -39,7 +39,7 @@ U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DIS
 //Rotary Encoder on BigTreeTech MINI 12864
 #define PIN_IN1 40
 #define PIN_IN2 41
-#define ENC_SW 42   //A switch
+//#define ENC_SW 42   //A switch
 
 
 void Mini12864Setup(void) {
