@@ -22,16 +22,13 @@
 
 #define BAUD_RATE 115200
 
-
-#include <Ethernet.h>
-#include <EthernetUdp.h>
-
-
 //Name the pins to the Display
 #define DISPLAY_RESET 46            // Reset button on display front panel
 #define DISPLAY_DC 47               // Data on display
 #define DISPLAY_CS 48               // Chip select for display
 
+#include <Ethernet.h>
+#include <EthernetUdp.h>
 
 
 // Enter a MAC address and IP address for your controller below.
@@ -78,13 +75,13 @@ void setup() {
 
   pinMode(LAN_CS0, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
   digitalWrite(LAN_CS0, HIGH);       // deselect LAN mode
-//  pinMode(LAN_SD_CS1, PINPUT_PULLUP);      // On the Ethernet Shield, CS is pin 4
+  //  pinMode(LAN_SD_CS1, PINPUT_PULLUP);      // On the Ethernet Shield, CS is pin 4
   pinMode(LAN_SD_CS1, OUTPUT);      // On the Ethernet Shield, CS is pin 4
   digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
 
 
   // You can use Ethernet.init(pin) to configure the CS pin
-  Ethernet.init(10);  // Most Arduino shields
+  Ethernet.init(LAN_CS0);  // Most Arduino shields
   //Ethernet.init(5);   // MKR ETH shield
   //Ethernet.init(0);   // Teensy 2.0
   //Ethernet.init(20);  // Teensy++ 2.0
@@ -95,21 +92,21 @@ void setup() {
   Ethernet.begin(mac, ip);
 
   // Check for Ethernet hardware present
-  if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+  //if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+  while (Ethernet.hardwareStatus() == EthernetNoHardware) {
     Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
     //    while (true) {
     //      delay(1); // do nothing, no point running without Ethernet hardware
+    delay(100);
   }
-  else {
-    Serial.println("Found LAN hardware");
-  }
-  //  }
-
-
+  Serial.println("Found LAN hardware");
+  
+ digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode
   while (Ethernet.linkStatus() == LinkOFF) {
     Serial.println("LinkOFF Ethernet cable is not connected.");
     delay(100);
   }
+   digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
   Serial.println("Ethernet Found");
 
   // start UDP
@@ -118,11 +115,11 @@ void setup() {
 
 void loop() {
   // if there's data available, read a packet
-  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
-//  digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
-  pinMode(LAN_SD_CS1, INPUT_PULLUP);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+  //  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+  //  digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+  //  pinMode(LAN_SD_CS1, INPUT_PULLUP);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
   int packetSize = Udp.parsePacket();
-  digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+  //  digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
 
   if (packetSize) {
     Serial.print("Received packet of size ");
@@ -143,13 +140,13 @@ void loop() {
     Serial.print(", Contents: ");
     Serial.println(packetBuffer);
 
-//    digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+    //    digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
 
     // send a reply to the IP address and port that sent us the packet we received
     Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
     Udp.write(ReplyBuffer);
     Udp.endPacket();
-//    digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+    //    digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
 
   }
   delay(10);
