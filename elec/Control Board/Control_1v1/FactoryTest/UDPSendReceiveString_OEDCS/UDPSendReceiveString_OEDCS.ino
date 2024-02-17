@@ -29,6 +29,7 @@
 
 #include <Ethernet.h>
 #include <EthernetUdp.h>
+#define UDP_TX_PACKET_MAX_SIZE 255 //increase UDP size
 
 
 // Enter a MAC address and IP address for your controller below.
@@ -81,7 +82,9 @@ void setup() {
 
 
   // You can use Ethernet.init(pin) to configure the CS pin
+  //Ethernet.init(LAN_SD_CS1);  // Makes no sense but try
   Ethernet.init(LAN_CS0);  // Most Arduino shields
+  // Ethernet.init(10);  // Most Arduino shields
   //Ethernet.init(5);   // MKR ETH shield
   //Ethernet.init(0);   // Teensy 2.0
   //Ethernet.init(20);  // Teensy++ 2.0
@@ -90,36 +93,43 @@ void setup() {
 
   // start the Ethernet
   Ethernet.begin(mac, ip);
-
   // Check for Ethernet hardware present
-  //if (Ethernet.hardwareStatus() == EthernetNoHardware) {
+  digitalWrite(LAN_CS0, HIGH);       // select ethernet mode
+  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
   while (Ethernet.hardwareStatus() == EthernetNoHardware) {
     Serial.println("Ethernet shield was not found.  Sorry, can't run without hardware. :(");
     //    while (true) {
     //      delay(1); // do nothing, no point running without Ethernet hardware
     delay(100);
   }
+  digitalWrite(LAN_CS0, HIGH);       // deselect ethernet mode
+  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
   Serial.println("Found LAN hardware");
-  
- digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode
+
+  digitalWrite(LAN_CS0, HIGH);       // select ethernet mode
+  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
   while (Ethernet.linkStatus() == LinkOFF) {
     Serial.println("LinkOFF Ethernet cable is not connected.");
     delay(100);
   }
-   digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-  Serial.println("Ethernet Found");
+  digitalWrite(LAN_CS0, HIGH);       // deselect ethernet mode
+  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
 
+  Serial.println("Ethernet Found");
   // start UDP
   Udp.begin(localPort);
 }
 
 void loop() {
   // if there's data available, read a packet
-  //  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
-  //  digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
-  //  pinMode(LAN_SD_CS1, INPUT_PULLUP);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+  digitalWrite(LAN_CS0, HIGH);       // select ethernet mode
+  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
   int packetSize = Udp.parsePacket();
-  //  digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+  digitalWrite(LAN_CS0, HIGH);       // deselect ethernet mode
+  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
 
   if (packetSize) {
     Serial.print("Received packet of size ");
@@ -140,13 +150,12 @@ void loop() {
     Serial.print(", Contents: ");
     Serial.println(packetBuffer);
 
-    //    digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
-
-    // send a reply to the IP address and port that sent us the packet we received
-    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-    Udp.write(ReplyBuffer);
-    Udp.endPacket();
-    //    digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+//    // send a reply to the IP address and port that sent us the packet we received
+//    //    digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+//    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+//    Udp.write(ReplyBuffer);
+//    Udp.endPacket();
+//    //    digitalWrite(LAN_SD_CS1, HIGH);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
 
   }
   delay(10);
