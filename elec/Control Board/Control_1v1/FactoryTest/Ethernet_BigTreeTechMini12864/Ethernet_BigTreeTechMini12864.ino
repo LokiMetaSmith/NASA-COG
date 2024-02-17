@@ -53,7 +53,9 @@ void setup() {
   // LAN setup
   // You can use Ethernet.init(pin) to configure the CS pin
   pinMode(LAN_CS0, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
+  digitalWrite(LAN_CS0, HIGH);       // deselect LAN mode
   pinMode(LAN_SD_CS1, OUTPUT);      // On the Ethernet Shield, CS is pin 4
+  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
   Ethernet.init(LAN_CS0);  // Most Arduino shields
   //Ethernet.init(5);   // MKR ETH Shield
   //Ethernet.init(0);   // Teensy 2.0
@@ -68,26 +70,24 @@ void setup() {
   //Display setup
   setupBacklights();  //Setup the neopixels
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-  digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
+  digitalWrite(LAN_CS0, HIGH);       // deselect LAN mode
   setupDisplay();     //The Graphic display
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-  digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
+  digitalWrite(LAN_CS0, HIGH);       // deselect LAN mode
   splashScreen();     //A message
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
   digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-  digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
+  digitalWrite(LAN_CS0, HIGH);       // deselect LAN mode
 
 }//end setup()
 
 void loop() {
   digitalWrite(LAN_CS0, HIGH);       // select ethernet mode
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(LAN_SD_CS1, LOW);       // deselect SD mode
+  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
   auto link = Ethernet.linkStatus();
   digitalWrite(LAN_CS0, HIGH);       // deselect ethernet mode
-  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode  
+  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
   Serial.print("Link status: ");
 
 #define DISPLAY_LINK  //
@@ -96,34 +96,22 @@ void loop() {
     case Unknown:
       Serial.println("Unknown?");
 #ifdef DISPLAY_LINK
-//      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-//      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
       reportLAN_DisplayUnknown();
-//      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-//      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
 #endif
       break;
     case LinkON:
       Serial.println("ON");
 #ifdef DISPLAY_LINK
-//      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-//      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
       reportLAN_DisplayOn();
-//      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-//      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
 #endif
       break;
     case LinkOFF:
       Serial.println("OFF");
 #ifdef DISPLAY_LINK
-//      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-//      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
       reportLAN_DisplayOff();
-//      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-//      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
 #endif
       break;
   }//end case
-  
+
   delay(1000);
 }
