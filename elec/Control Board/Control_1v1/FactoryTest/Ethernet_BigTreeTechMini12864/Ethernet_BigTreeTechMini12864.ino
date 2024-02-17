@@ -15,11 +15,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "Ethernet_BigTreeTechMini12864"
-<<<<<<< HEAD
-#define VERSION ";_Rev_0.6"
-=======
 #define VERSION ";_Rev_0.7"
->>>>>>> Ethernet_BigTreeTechMini12864
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -125,33 +121,6 @@ void setup() {
 }//end setup()
 
 void loop() {
-<<<<<<< HEAD
-  digitalWrite(LAN_CS0, HIGH);       // select ethernet mode
-  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
-  auto link = Ethernet.linkStatus();
-  digitalWrite(LAN_CS0, HIGH);       // deselect ethernet mode
-  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
-  Serial.print("Link status: ");
-
-  switch (link) {
-    case Unknown:
-      Serial.println("Unknown?");
-      reportLAN_DisplayUnknown();
-      break;
-    case LinkON:
-      Serial.println("ON");
-      reportLAN_DisplayOn();
-      break;
-    case LinkOFF:
-      Serial.println("OFF");
-      reportLAN_DisplayOff();
-      break;
-  }//end case
-
-  delay(1000);
-}
-=======
   unsigned long currentMillis = millis(); // for LED
 
   //Time to Update the LED?
@@ -176,4 +145,3 @@ void loop() {
   }//end LAN update.
 
 }// end loop()
->>>>>>> Ethernet_BigTreeTechMini12864

@@ -70,13 +70,14 @@ void splashScreen(void) {
 //  u8g2.setContrast(128);
   u8g2.setFont(u8g2_font_helvB12_tr); //Large
   u8g2.setFontMode(1);
-  u8g2.setCursor(0, 16);
-  u8g2.setCursor(0, 16);
+  u8g2.setCursor(0, 12);
   u8g2.print(COMPANY_NAME);
-  u8g2.setCursor(0, 32);
+  u8g2.setCursor(0, 24);
   u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
   u8g2.setFontMode(0);
   u8g2.print(PROG_NAME);
+  u8g2.setCursor(-12, 36);  //Negative offset to suppress ";_"
+  u8g2.print(VERSION);
   u8g2.setCursor(0, 48);
   u8g2.print(F(__DATE__ " " __TIME__));
   u8g2.sendBuffer();
