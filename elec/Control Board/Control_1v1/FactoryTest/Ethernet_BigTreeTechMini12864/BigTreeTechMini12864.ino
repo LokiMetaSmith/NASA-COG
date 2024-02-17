@@ -71,6 +71,7 @@ void splashScreen(void) {
   u8g2.setFont(u8g2_font_helvB12_tr); //Large
   u8g2.setFontMode(1);
   u8g2.setCursor(0, 16);
+  u8g2.setCursor(0, 16);
   u8g2.print(COMPANY_NAME);
   u8g2.setCursor(0, 32);
   u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
