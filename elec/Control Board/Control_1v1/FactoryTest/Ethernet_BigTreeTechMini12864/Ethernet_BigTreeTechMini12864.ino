@@ -15,7 +15,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "Ethernet_BigTreeTechMini12864"
-#define VERSION ";_Rev_0.7"
+#define VERSION ";_Rev_0.8"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -42,6 +42,18 @@ const long interval_LED = 500;           // interval_LED at which to blink (mill
 //Name the pins to the Rotary Encoder Switch
 #define ENC_SW 42   //A switch low when pressed.
 
+
+// Enter a MAC address and IP address for your controller below.
+// The IP address will be dependent on your local network:
+byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+//IPAddress ip(192, 168, 1, 177);  //From the reference code
+IPAddress ip(192, 168, 1, 137);   //OEDCS SN11 on Lee's LAN
+unsigned int localPort = 8888;      // local port to listen on
+// buffers for receiving and sending data
+char packetBuffer[UDP_TX_PACKET_MAX_SIZE];  // buffer to hold incoming packet,
+char ReplyBuffer[] = "acknowledged";        // a string to send back
+EthernetUDP Udp;   // An EthernetUDP instance to let us send and receive packets over UDP
+
 // Check the LAN, update display
 unsigned long previousMillisLAN = 0;        // will store last time LAN was updated
 const long interval_LAN = 1000;           // interval at which to check LAN and update display (milliseconds)
@@ -49,7 +61,7 @@ const long interval_LAN = 1000;           // interval at which to check LAN and 
 void updateLAN_Display(void) {
   digitalWrite(LAN_CS0, HIGH);       // select ethernet mode
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+//  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
   auto link = Ethernet.linkStatus();
   digitalWrite(LAN_CS0, HIGH);       // deselect ethernet mode
   digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
@@ -137,7 +149,7 @@ void loop() {
     digitalWrite(ledPin, ledState);
   }//end LED update.
 
-//Time to Update the LINK Status?
+  //Time to Update the LINK Status?
   if (currentMillis - previousMillisLAN >= interval_LAN) {
     // save the last time you checked the LAN
     previousMillisLAN = currentMillis;
