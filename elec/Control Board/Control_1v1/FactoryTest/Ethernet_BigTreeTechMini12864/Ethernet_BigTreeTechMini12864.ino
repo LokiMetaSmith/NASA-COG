@@ -15,7 +15,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "Ethernet_BigTreeTechMini12864"
-#define VERSION ";_Rev_0.4"
+#define VERSION ";_Rev_0.5"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -68,26 +68,26 @@ void setup() {
   //Display setup
   setupBacklights();  //Setup the neopixels
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(4, HIGH);       // deselect SD mode
-  digitalWrite(10, HIGH);       // deselect SD mode
+  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+  digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
   setupDisplay();     //The Graphic display
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(4, HIGH);       // deselect SD mode
-  digitalWrite(10, HIGH);       // deselect SD mode
+  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+  digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
   splashScreen();     //A message
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(4, HIGH);       // deselect SD mode
-  digitalWrite(10, HIGH);       // deselect SD mode
+  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+  digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
 
 }//end setup()
 
 void loop() {
-  digitalWrite(10, HIGH);       // select ethernet mode
+  digitalWrite(LAN_CS0, HIGH);       // select ethernet mode
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(4, LOW);       // deselect SD mode
+  digitalWrite(LAN_SD_CS1, LOW);       // deselect SD mode
   auto link = Ethernet.linkStatus();
-  digitalWrite(10, LOW);       // deselect ethernet mode
-  digitalWrite(4, LOW);       // deselect SD mode
+  digitalWrite(LAN_CS0, LOW);       // deselect ethernet mode
+  digitalWrite(LAN_SD_CS1, LOW);       // deselect SD mode
   Serial.print("Link status: ");
 
 #define DISPLAY_LINK  //
@@ -96,31 +96,31 @@ void loop() {
     case Unknown:
       Serial.println("Unknown?");
 #ifdef DISPLAY_LINK
-      digitalWrite(4, HIGH);       // deselect SD mode
-      digitalWrite(10, HIGH);       // deselect SD mode
+      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
       reportLAN_DisplayUnknown();
-      digitalWrite(4, HIGH);       // deselect SD mode
-      digitalWrite(10, HIGH);       // deselect SD mode
+      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
 #endif
       break;
     case LinkON:
       Serial.println("ON");
 #ifdef DISPLAY_LINK
-      digitalWrite(4, HIGH);       // deselect SD mode
-      digitalWrite(10, HIGH);       // deselect SD mode
+      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
       reportLAN_DisplayOn();
-      digitalWrite(4, HIGH);       // deselect SD mode
-      digitalWrite(10, HIGH);       // deselect SD mode
+      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
 #endif
       break;
     case LinkOFF:
       Serial.println("OFF");
 #ifdef DISPLAY_LINK
-      digitalWrite(4, HIGH);       // deselect SD mode
-      digitalWrite(10, HIGH);       // deselect SD mode
+      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
       reportLAN_DisplayOff();
-      digitalWrite(4, HIGH);       // deselect SD mode
-      digitalWrite(10, HIGH);       // deselect SD mode
+      digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+      digitalWrite(LAN_CS0, HIGH);       // deselect SD mode
 #endif
       break;
   }
