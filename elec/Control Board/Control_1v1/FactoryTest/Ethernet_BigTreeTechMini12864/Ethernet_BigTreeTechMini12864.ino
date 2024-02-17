@@ -90,26 +90,18 @@ void loop() {
   digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
   Serial.print("Link status: ");
 
-#define DISPLAY_LINK  //
-
   switch (link) {
     case Unknown:
       Serial.println("Unknown?");
-#ifdef DISPLAY_LINK
       reportLAN_DisplayUnknown();
-#endif
       break;
     case LinkON:
       Serial.println("ON");
-#ifdef DISPLAY_LINK
       reportLAN_DisplayOn();
-#endif
       break;
     case LinkOFF:
       Serial.println("OFF");
-#ifdef DISPLAY_LINK
       reportLAN_DisplayOff();
-#endif
       break;
   }//end case
 
