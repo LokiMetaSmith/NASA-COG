@@ -15,7 +15,11 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "Ethernet_BigTreeTechMini12864"
+<<<<<<< HEAD
 #define VERSION ";_Rev_0.6"
+=======
+#define VERSION ";_Rev_0.7"
+>>>>>>> Ethernet_BigTreeTechMini12864
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -24,12 +28,56 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
-//Name the display pins on the Due GPIO
+// Blink the built in LED
+const int ledPin =  LED_BUILTIN;// the number of the LED pin
+int ledState = LOW;             // ledState used to set the LED
+unsigned long previousMillisLED = 0;        // will store last time LED was updated
+const long interval_LED = 500;           // interval_LED at which to blink (milliseconds)
+
+//Name the pins to the Display
 #define DISPLAY_RESET 46            // Reset button on display front panel
 #define DISPLAY_DC 47               // Data on display
 #define DISPLAY_CS 48               // Chip select for display
 
+//Name the pins to the Ethernet Shield
+#define LAN_CS0 10     // Chip select for LAN 
+#define LAN_SD_CS1 4   // Chip select for SD card on LAN sheild
+
+//Name the pins to the Rotary Encoder Switch
+#define ENC_SW 42   //A switch low when pressed.
+
+// Check the LAN, update display
+unsigned long previousMillisLAN = 0;        // will store last time LAN was updated
+const long interval_LAN = 1000;           // interval at which to check LAN and update display (milliseconds)
+
+void updateLAN_Display(void) {
+  digitalWrite(LAN_CS0, HIGH);       // select ethernet mode
+  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
+  auto link = Ethernet.linkStatus();
+  digitalWrite(LAN_CS0, HIGH);       // deselect ethernet mode
+  digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
+  Serial.print("Link status: ");
+
+  switch (link) {
+    case Unknown:
+      Serial.println("Unknown?");
+      reportLAN_DisplayUnknown();
+      break;
+    case LinkON:
+      Serial.println("ON");
+      reportLAN_DisplayOn();
+      break;
+    case LinkOFF:
+      Serial.println("OFF");
+      reportLAN_DisplayOff();
+      break;
+  }//end case
+}// end updateLAN_Display()
+
 void setup() {
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, HIGH);
   Serial.begin(BAUD_RATE);
   Serial.println();
   Serial.print(PROG_NAME);
@@ -37,18 +85,6 @@ void setup() {
   Serial.print("Compiled at: ");
   Serial.println(F(__DATE__ " " __TIME__) ); //compile date that is used for a unique identifier
 
-  //Mini12864 setup
-
-  pinMode(DISPLAY_CS, OUTPUT);
-  pinMode(DISPLAY_DC, OUTPUT);
-  pinMode(DISPLAY_RESET, INPUT_PULLUP);
-  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-  digitalWrite(DISPLAY_DC, HIGH);
-  //digitalWrite(DISPLAY_RESET, HIGH);
-
-  //Name the pins from the Ethernet Shield
-#define LAN_CS0 10     // Chip select for LAN 
-#define LAN_SD_CS1 4   // Chip select for SD card on LAN sheild
 
   // LAN setup
   // You can use Ethernet.init(pin) to configure the CS pin
@@ -64,10 +100,16 @@ void setup() {
   //Ethernet.init(33);  // ESP32 with Adafruit FeatherWing Ethernet
 
   // Setup for switch on Mini13864
-#define ENC_SW 42   //A switch
-  pinMode(ENC_SW, INPUT_PULLUP);
+  pinMode(ENC_SW, INPUT_PULLUP);  //A switch low when pressed.
 
-  //Display setup
+  //Mini12864 GPIO setup
+  pinMode(DISPLAY_CS, OUTPUT);
+  pinMode(DISPLAY_DC, OUTPUT);
+  pinMode(DISPLAY_RESET, INPUT_PULLUP);
+  digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+  digitalWrite(DISPLAY_DC, HIGH);
+
+  //Setup Back light to display and rotary encoder. Splash Message
   setupBacklights();  //Setup the neopixels
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
   digitalWrite(LAN_CS0, HIGH);       // deselect LAN mode
@@ -79,9 +121,11 @@ void setup() {
   digitalWrite(LAN_SD_CS1, HIGH);       // deselect SD mode
   digitalWrite(LAN_CS0, HIGH);       // deselect LAN mode
 
+  digitalWrite(ledPin, LOW);
 }//end setup()
 
 void loop() {
+<<<<<<< HEAD
   digitalWrite(LAN_CS0, HIGH);       // select ethernet mode
   digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
   digitalWrite(LAN_SD_CS1, LOW);       // Select SD mode  THIS IS REQUIRED FOR THE LAN TO WORK. Missnamed?
@@ -107,3 +151,29 @@ void loop() {
 
   delay(1000);
 }
+=======
+  unsigned long currentMillis = millis(); // for LED
+
+  //Time to Update the LED?
+  if (currentMillis - previousMillisLED >= interval_LED) {
+    // save the last time you blinked the LED
+    previousMillisLED = currentMillis;
+    // if the LED is off turn it on and vice-versa:
+    if (ledState == LOW) {
+      ledState = HIGH;
+    } else {
+      ledState = LOW;
+    }
+    // set the LED with the ledState of the variable:
+    digitalWrite(ledPin, ledState);
+  }//end LED update.
+
+//Time to Update the LINK Status?
+  if (currentMillis - previousMillisLAN >= interval_LAN) {
+    // save the last time you checked the LAN
+    previousMillisLAN = currentMillis;
+    updateLAN_Display();
+  }//end LAN update.
+
+}// end loop()
+>>>>>>> Ethernet_BigTreeTechMini12864
