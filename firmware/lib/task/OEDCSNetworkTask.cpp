@@ -106,6 +106,7 @@ namespace CogApp
     // we need to make sure we start with a null string...
 	buffer[0] = 0;
 	payload[0] = 0;
+
 	for(int i =0; i++; i<size)
 	{
 		getConfig()->createJSONReport(&report[i],buffer);
@@ -117,24 +118,26 @@ namespace CogApp
 		}
 		if( strlen(strncat (payload, buffer, strlen(buffer))) < ( strlen(buffer)+strlen(payload )) ){
 			CogCore::Debug<const char *>("Buffer overflow error in UDP:\n");
-			return false;
+			unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
+			if (DEBUG_UDP > 1) {
+			  CogCore::Debug<const char *>("About to Send Data at: ");
+			  CogCore::DebugLn<unsigned long>(millis());
+			 // delay(50);
+			}
+			net_udp.sendData(payload,current_epoch_time, 2000);
+			if (DEBUG_UDP > 1) {
+			  CogCore::Debug<const char *>("Data Sent at: ");
+			  CogCore::DebugLn<unsigned long>(millis());
+			 // delay(50);
+			}
+			payload[0]=0;
+			strncat (payload, buffer, strlen(buffer));
 		}
 			
 	}
     // Conjecture: This should use the report time stamp
     //
-    unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
-    if (DEBUG_UDP > 1) {
-      CogCore::Debug<const char *>("About to Send Data at: ");
-	  CogCore::DebugLn<unsigned long>(millis());
-     // delay(50);
-    }
-    net_udp.sendData(payload,current_epoch_time, 2000);
-    if (DEBUG_UDP > 1) {
-      CogCore::Debug<const char *>("Data Sent at: ");
-	  CogCore::DebugLn<unsigned long>(millis());
-     // delay(50);
-    }
+    
     return true;
   }	
 	  

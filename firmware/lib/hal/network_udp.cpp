@@ -205,7 +205,7 @@ NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
   unsigned long startMs = millis();
   int packetSize = 0;
   while (! packetSize && (millis() - startMs) < timeout) {
-    delay(10);
+    //delay(10);
     packetSize = Udp.parsePacket();
     watchdogReset();
   }
