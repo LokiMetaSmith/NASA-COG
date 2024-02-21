@@ -6,12 +6,15 @@ Oxygen Engine Digital Control System, enclosure for.
 LAN TYPE: SEEEDS STUDIO W5200
 MAC Address: FE:ED:1B:70:08:77  
 See images in folder at: https://github.com/PubInv/NASA-COG/tree/develop/docs/OEDCS_June_2023_Version_0.1/Photos
-
+This is the Control V1.0 board. Taken out of service at Austin on about ?20240215?  
+Control V1.1 SN 09 installed on 20240220. See its MAC below.
 
 * Serial number 2  
 ![image](https://github.com/PubInv/NASA-COG/assets/5836181/655e3bbb-fb48-4e31-902a-e10b74c27fa8)  
 LAN TYPE: ????
-MAC Address: FE:ED:10:69:73:70
+MAC Address: FE:ED:10:69:73:70  
+This is the Control V1.0 board. Taken out of service at AmOx on about 20240220  
+Control V1.1 SN 12 installed on 20240220. See its MAC below
 
 * Stage II controler  
 ![image](https://github.com/PubInv/NASA-COG/assets/5836181/a146b12b-d7b1-4ecf-a571-1e2d6c8f414f)  
@@ -20,13 +23,15 @@ MAC Address: FE:ED:14:71:02:77
 ID = 1361064480,1313945940,842021169,959459378
 
 
-* Serial Number 9
+* Serial Number 9  
 LAN TYPE: ARDUINO  
 MAC Address: FE:ED:1D:70:05:6D
+Control V1.1 SN 09 installed on OEDCS SN1 about ?20240215? 
 
-* Serial Number 10
+* Serial Number 10  
 LAN TYPE: ARDUINO  
 MAC Address: FE:ED:12:71:06:65
+Control V1.1 in Austin as of about Feb 2024.
 
 * Serial Number 11 Formerly the Mockup Of Maryville
 LAN TYPE: SEEEDS STUDIO W5200
@@ -36,10 +41,12 @@ MAC Address: FE:ED:16:6B:72:67
 * Serial Number 12
 LAN TYPE: ARDUINO  
 MAC Address: FE:ED:17:73:0E:69
+Located at AmOx as of about 20240220 in OEDCS SN2.
 
-* Serial Number 13
+* Serial Number 13  
 LAN TYPE: ARDUINO 
-MAC Address: FE:ED:1A:71:09:7F 
+MAC Address: FE:ED:1A:71:09:7F
+Control V1.1 in Oklahoa City as of about ?January 2024.?
 
 ## Mechanical Files
 
@@ -49,9 +56,8 @@ MAC Address: FE:ED:1A:71:09:7F
 ## Front Panel and Enclosure Folders  Unit 2
 Place holder for July-August 2023 Begin Construction of Unit 2. 
 
-* Goal: Mimimal design changes from Unit 1. Possible retrofit to Unit 1 of any changes.
-* Fabrication of Version 2 unit Frontpanel, Bottompanel and Rearpanel not by hand in house. 
-* The Frontpanel Version 2 has enlarged AC receiptical opehnings and will require reciptical cover plates.
+* Fabrication of Version 2 unit Frontpanel, Bottompanel and Rearpanel not by hand in house. ** DONE!**  
+* The Frontpanel Version 2 has enlarged AC receiptical opehnings and will require reciptical cover plates.  **DONE!**  
 
 
 ## Front Panel and Enclosure Folders  Unit 1
