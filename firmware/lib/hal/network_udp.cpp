@@ -24,8 +24,13 @@
 
 // TODO: all of this should be moved to a more accessible configuration file.
 char timeServer[] = "time.nist.gov";
-//char mcogs[] = "mcogs.coslabs.com";
+
+// #define UDP_SERVER_LOCAL 
+#ifdef UDP_SERVER_LOCAL
 char mcogs[] = "192.168.1.118";  // Lee's Processing server on desk top, Maryville.
+#else
+char mcogs[] = "mcogs.coslabs.com"; // Used the internet.
+#endif
 
 byte packetBuffer[buffMax]; //buffer to hold incoming packet,
 
