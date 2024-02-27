@@ -24,7 +24,8 @@
 
 // TODO: all of this should be moved to a more accessible configuration file.
 char timeServer[] = "time.nist.gov";
-char mcogs[] = "mcogs.coslabs.com";
+//char mcogs[] = "mcogs.coslabs.com";
+char mcogs[] = "192.168.1.118";  // Lee's Processing server on desk top, Maryville.
 
 byte packetBuffer[buffMax]; //buffer to hold incoming packet,
 
@@ -174,6 +175,7 @@ NetworkUDP::getTime(uint16_t timeout) {
   return secsSince1900 - seventyYears;
 }
 
+// send by UDP a data record to the mCOGs server or reports failure
 bool
 NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
   if (! Udp.beginPacket(mcogs, serverPort)) {

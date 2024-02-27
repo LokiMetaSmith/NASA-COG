@@ -54,7 +54,7 @@ namespace CogApp
     return true;
   }
   void Log_Recorder_Task::dumpRecords() {
-    int recordCount = getConfig()->MAX_RECORDS
+    int recordCount = getConfig()->MAX_RECORDS;
     unsigned long myStartTime = millis();
     CogCore::Debug<unsigned long>(myStartTime);
     CogCore::Debug<const char *>(" STARTING DUMPING LOG RECORDS: ");
