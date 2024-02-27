@@ -54,27 +54,36 @@ namespace CogApp
     return true;
   }
   void Log_Recorder_Task::dumpRecords() {
-
-    CogCore::Debug<const char *>("STARTING DUMPING LOG RECORDS: ");
+    int recordCount = getConfig()->MAX_RECORDS
+    unsigned long myStartTime = millis();
+    CogCore::Debug<unsigned long>(myStartTime);
+    CogCore::Debug<const char *>(" STARTING DUMPING LOG RECORDS: ");
     CogCore::Debug<int>(_numRecords);
     CogCore::Debug<const char *>("\n");
 
     int firstRecord = _nextRecord - _numRecords;
     // now make sure positive!
-    firstRecord = firstRecord % getConfig()->MAX_RECORDS;
+    firstRecord = firstRecord % recordCount;
     for(int i = 0; i < _numRecords; i++) {
-      int j = (firstRecord + i) % getConfig()->MAX_RECORDS;
+      int j = (firstRecord + i) % recordCount;
       MachineStatusReport msr_lre = getConfig()->_log_entry[j];
-	//  if (DEBUG_LOG_RECORDER) {
+	  if (0) {
+//	  if (DEBUG_LOG_RECORDER) {
         getConfig()->outputReport(&msr_lre);
-	//  }
+	  }
       oedcsNetworkTask->logReport(&msr_lre);
       core->ResetAllWatchdogs();
     }
     _nextRecord = 0;
     _numRecords = 0;
+    unsigned long myFinishTime = millis();
 
-    CogCore::Debug<const char *>("FINISHED DUMPING LOG RECORDS.\n");
+    CogCore::Debug<unsigned long>(myFinishTime);
+    CogCore::Debug<const char *>(" FINISHED DUMPING LOG RECORDS.\n");
+    CogCore::Debug<const char *>("Time to dump: ");
+    CogCore::Debug<unsigned long>(myFinishTime - myStartTime);
+    CogCore::Debug<const char *>(" mSeconds.\n ");
+    
   }
 
 }

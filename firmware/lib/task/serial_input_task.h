@@ -52,7 +52,7 @@ namespace CogApp
     void recvWithEndMarker();
     InputCommand parseCommandLine();
   public:
-    int DEBUG_SERIAL = 2;
+    int DEBUG_SERIAL = 0;
     bool _init() override;
     bool _run() override;
     int DEBUG_LEVEL = 0;

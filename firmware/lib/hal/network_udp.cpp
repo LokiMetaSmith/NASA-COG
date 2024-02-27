@@ -202,26 +202,27 @@ NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
     return false;
   }
 
-  unsigned long startMs = millis();
-  int packetSize = 0;
-  while (! packetSize && (millis() - startMs) < timeout) {
-    delay(10);
-    packetSize = Udp.parsePacket();
-    watchdogReset();
-  }
+  // unsigned long startMs = millis();
+  // int packetSize = 0;
+  // while (! packetSize && (millis() - startMs) < timeout) {
+  //   delay(10);
+  //   packetSize = Udp.parsePacket();
+  //   watchdogReset();
+  // }
 
-  if (!packetSize) {
-    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("no response\n");
-    return false;
-  }
+  // if (!packetSize) {
+  //   if (DEBUG_UDP > 2) CogCore::Debug<const char *>("no response\n");
+  //   return false;
+  // }
 
-  Udp.read(packetBuffer, packetSize);
-  packetBuffer[packetSize] = '\0';
-  if (strncmp((char *)packetBuffer, "posted", 6)) return false;
-  if (DEBUG_UDP > 2) {
-    CogCore::Debug<const char *>((char *)packetBuffer);
-    CogCore::Debug<const char *>("\n");
-  }
+  // Udp.read(packetBuffer, packetSize);
+  // packetBuffer[packetSize] = '\0';
+  // if (strncmp((char *)packetBuffer, "posted", 6)) return false;
+  // if (DEBUG_UDP > 2) {
+  //   CogCore::Debug<const char *>((char *)packetBuffer);
+  //   CogCore::Debug<const char *>("\n");
+  // }
+
   return true;
 }
 

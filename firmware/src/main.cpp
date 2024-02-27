@@ -354,8 +354,8 @@ void setup()
   OEDCSNetworkTask.DEBUG_UDP = 0;
   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
   readTempsTask.DEBUG_READ_TEMPS = 0;
-  //oedcsSerialInputTask.DEBUG_SERIAL = 0;
-  oedcsSerialInputTask.DEBUG_SERIAL = 2;
+  oedcsSerialInputTask.DEBUG_SERIAL = 0;
+  //oedcsSerialInputTask.DEBUG_SERIAL = 2; // FLE
   heartbeatTask.DEBUG_HEARTBEAT = 0;
   heartbeatTask.debug_number_of_heartbeats = millis() / 500;
   getConfig()->script->DEBUG_MS = 0;
