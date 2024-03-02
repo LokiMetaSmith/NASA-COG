@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.4.1"  // more debugging in serial
+#define OEDCS_VERSION "; Rev: 0.4.3"  // Working on logging speed
 #define DEVICE_UNDER_TEST "Hardware: Due"  // A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -355,6 +355,7 @@ void setup()
   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
   readTempsTask.DEBUG_READ_TEMPS = 0;
   oedcsSerialInputTask.DEBUG_SERIAL = 0;
+  //oedcsSerialInputTask.DEBUG_SERIAL = 2; // FLE
   heartbeatTask.DEBUG_HEARTBEAT = 0;
   heartbeatTask.debug_number_of_heartbeats = millis() / 500;
   getConfig()->script->DEBUG_MS = 0;

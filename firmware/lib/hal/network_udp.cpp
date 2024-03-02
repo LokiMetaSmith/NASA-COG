@@ -24,7 +24,13 @@
 
 // TODO: all of this should be moved to a more accessible configuration file.
 char timeServer[] = "time.nist.gov";
-char mcogs[] = "mcogs.coslabs.com";
+
+// #define UDP_SERVER_LOCAL
+#ifdef UDP_SERVER_LOCAL
+char mcogs[] = "192.168.1.118";  // Lee's Processing server on desk top, Maryville.
+#else
+char mcogs[] = "mcogs.coslabs.com"; // Used the internet.
+#endif
 
 byte packetBuffer[buffMax]; //buffer to hold incoming packet,
 
@@ -57,17 +63,17 @@ NetworkUDP::networkCheck() {
   return 100;
 }
 
-void 
-NetworkUDP::enableEthernet() {	
+void
+NetworkUDP::enableEthernet() {
         digitalWrite(W5200_CS, LOW);       // select Network mode
 }
 
-void 
+void
 NetworkUDP::disableEthernet() {
-        digitalWrite(W5200_CS, HIGH);       // deselect Network mode        
+        digitalWrite(W5200_CS, HIGH);       // deselect Network mode
 }
 
-void 
+void
 NetworkUDP::printPacketInfo(int packetsize) {
   IPAddress remoteIp = Udp.remoteIP();
   if (DEBUG_UDP > 1) {
@@ -174,6 +180,7 @@ NetworkUDP::getTime(uint16_t timeout) {
   return secsSince1900 - seventyYears;
 }
 
+// send by UDP a data record to the mCOGs server or reports failure
 bool
 NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
   if (! Udp.beginPacket(mcogs, serverPort)) {
@@ -202,26 +209,30 @@ NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
     return false;
   }
 
-  unsigned long startMs = millis();
-  int packetSize = 0;
-  while (! packetSize && (millis() - startMs) < timeout) {
-    delay(10);
-    packetSize = Udp.parsePacket();
-    watchdogReset();
-  }
+  // This significantly slowed this function down, which needs
+  // to log 600 records when a log is dumped.
+  // It is unclear that the MCOG_SERVER even sends a response!
+  // unsigned long startMs = millis();
+  // int packetSize = 0;
+  // while (! packetSize && (millis() - startMs) < timeout) {
+  //   delay(10);
+  //   packetSize = Udp.parsePacket();
+  //   watchdogReset();
+  // }
 
-  if (!packetSize) {
-    if (DEBUG_UDP > 2) CogCore::Debug<const char *>("no response\n");
-    return false;
-  }
+  // if (!packetSize) {
+  //   if (DEBUG_UDP > 2) CogCore::Debug<const char *>("no response\n");
+  //   return false;
+  // }
 
-  Udp.read(packetBuffer, packetSize);
-  packetBuffer[packetSize] = '\0';
-  if (strncmp((char *)packetBuffer, "posted", 6)) return false;
-  if (DEBUG_UDP > 2) {
-    CogCore::Debug<const char *>((char *)packetBuffer);
-    CogCore::Debug<const char *>("\n");
-  }
+  // Udp.read(packetBuffer, packetSize);
+  // packetBuffer[packetSize] = '\0';
+  // if (strncmp((char *)packetBuffer, "posted", 6)) return false;
+  // if (DEBUG_UDP > 2) {
+  //   CogCore::Debug<const char *>((char *)packetBuffer);
+  //   CogCore::Debug<const char *>("\n");
+  // }
+
   return true;
 }
 
@@ -239,7 +250,7 @@ NetworkUDP::getParams(uint16_t timeout) {
   Udp.write("OEDCS/", 6);
 #else
   Udp.write("STAGE2/", 7);
-#endif  
+#endif
   Udp.write("Params\n", 7);
   if (! Udp.endPacket()) {
     if (DEBUG_UDP > 2) CogCore::Debug<const char *>("can't send request\n");
@@ -362,20 +373,20 @@ NetworkUDP::networkStart() {
   uint32_t add = 0;
   W5100.setIPAddress((uint8_t *) &add);
   SPI.endTransaction();
-  
+
   uint32_t startMs = millis();
   // this seems to take about 3 seconds!!!  don't change
   while (W5100.getLinkStatus() != LINK_ON && (millis() - startMs) < 3000) {
     delay(10);
     watchdogReset();
   }
-  
+
   if (W5100.getLinkStatus() != LINK_ON) return 3;
-  
+
   if (Ethernet.begin(mac, WATCH_DOG_TIME - 500, 3000) == 0) return 4;
-  
+
   printNet();
-  
+
   Udp.stop();
   if (!Udp.begin(localPort)) return 5;
 

@@ -51,30 +51,68 @@ namespace CogApp
     getConfig()->_log_entry[_nextRecord].timestamp = millis();
     _nextRecord = (_nextRecord + 1) % m;
 
+    if (currently_dumping) {
+      dumpRecords();
+    }
+
     return true;
   }
   void Log_Recorder_Task::dumpRecords() {
-
-    CogCore::Debug<const char *>("STARTING DUMPING LOG RECORDS: ");
-    CogCore::Debug<int>(_numRecords);
-    CogCore::Debug<const char *>("\n");
-
+    currently_dumping = true;
+    int recordCount = getConfig()->MAX_RECORDS;
+    unsigned long myStartTime = millis();
+    int minr = min(_numRecords,MAX_RECORDS_TO_DUMP_AT_ONCE);
+    if (DEBUG_LOG_RECORDER) {
+      CogCore::Debug<unsigned long>(myStartTime);
+      CogCore::Debug<const char *>(" STARTING DUMPING LOG RECORDS: ");
+      CogCore::Debug<int>(minr);
+      CogCore::Debug<const char *>("\n");
+    }
     int firstRecord = _nextRecord - _numRecords;
     // now make sure positive!
-    firstRecord = firstRecord % getConfig()->MAX_RECORDS;
-    for(int i = 0; i < _numRecords; i++) {
-      int j = (firstRecord + i) % getConfig()->MAX_RECORDS;
-      MachineStatusReport msr_lre = getConfig()->_log_entry[j];
-	//  if (DEBUG_LOG_RECORDER) {
-        getConfig()->outputReport(&msr_lre);
-	//  }
-      oedcsNetworkTask->logReport(&msr_lre);
-      core->ResetAllWatchdogs();
-    }
-    _nextRecord = 0;
-    _numRecords = 0;
+    firstRecord = firstRecord % recordCount;
 
-    CogCore::Debug<const char *>("FINISHED DUMPING LOG RECORDS.\n");
+    // in order to limit the time of dumping to only 20 seconds,
+    // I am limiting the amount that we do within a single task.
+    // We have measured each record as taking about 93 ms.
+    for(int i = 0; i < minr; i++) {
+      int j = (firstRecord + i) % recordCount;
+      MachineStatusReport msr_lre = getConfig()->_log_entry[j];
+      unsigned long spot_time0 = millis();
+      getConfig()->outputReport(&msr_lre);
+      unsigned long spot_time1 = millis();
+      oedcsNetworkTask->logReport(&msr_lre);
+      unsigned long spot_time2 = millis();
+      core->ResetAllWatchdogs();
+      unsigned long spot_time3 = millis();
+      if (DEBUG_LOG_RECORDER) {
+        CogCore::Debug<const char *>("PER RECORD TIMES");
+        CogCore::Debug<const char *>("outputReport: ");
+        CogCore::DebugLn<long>(spot_time1 - spot_time0);
+        CogCore::Debug<const char *>("logReport: ");
+        CogCore::DebugLn<long>(spot_time2 - spot_time1);
+        CogCore::Debug<const char *>("watchDogs: ");
+        CogCore::DebugLn<long>(spot_time3 - spot_time2);
+      }
+    }
+    _numRecords -= minr;
+    if (0 == _numRecords) {
+      currently_dumping = false;
+    }
+
+    unsigned long myFinishTime = millis();
+
+    if (DEBUG_LOG_RECORDER) {
+      CogCore::Debug<unsigned long>(myFinishTime);
+      CogCore::Debug<const char *>(" FINISHED DUMPING LOG RECORDS.\n");
+      CogCore::Debug<const char *>("Time to dump: ");
+      CogCore::Debug<unsigned long>(myFinishTime - myStartTime);
+      CogCore::DebugLn<const char *>(" mSeconds.\n ");
+      CogCore::Debug<const char *>(" Records: ");
+      CogCore::DebugLn<int>(minr);
+      CogCore::Debug<const char *>(" Remaining: ");
+      CogCore::DebugLn<int>(_numRecords);
+    }
   }
 
 }
