@@ -25,7 +25,7 @@
 // TODO: all of this should be moved to a more accessible configuration file.
 char timeServer[] = "time.nist.gov";
 
-// #define UDP_SERVER_LOCAL 
+// #define UDP_SERVER_LOCAL
 #ifdef UDP_SERVER_LOCAL
 char mcogs[] = "192.168.1.118";  // Lee's Processing server on desk top, Maryville.
 #else
@@ -63,17 +63,17 @@ NetworkUDP::networkCheck() {
   return 100;
 }
 
-void 
-NetworkUDP::enableEthernet() {	
+void
+NetworkUDP::enableEthernet() {
         digitalWrite(W5200_CS, LOW);       // select Network mode
 }
 
-void 
+void
 NetworkUDP::disableEthernet() {
-        digitalWrite(W5200_CS, HIGH);       // deselect Network mode        
+        digitalWrite(W5200_CS, HIGH);       // deselect Network mode
 }
 
-void 
+void
 NetworkUDP::printPacketInfo(int packetsize) {
   IPAddress remoteIp = Udp.remoteIP();
   if (DEBUG_UDP > 1) {
@@ -209,6 +209,9 @@ NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
     return false;
   }
 
+  // This significantly slowed this function down, which needs
+  // to log 600 records when a log is dumped.
+  // It is unclear that the MCOG_SERVER even sends a response!
   // unsigned long startMs = millis();
   // int packetSize = 0;
   // while (! packetSize && (millis() - startMs) < timeout) {
@@ -247,7 +250,7 @@ NetworkUDP::getParams(uint16_t timeout) {
   Udp.write("OEDCS/", 6);
 #else
   Udp.write("STAGE2/", 7);
-#endif  
+#endif
   Udp.write("Params\n", 7);
   if (! Udp.endPacket()) {
     if (DEBUG_UDP > 2) CogCore::Debug<const char *>("can't send request\n");
@@ -370,20 +373,20 @@ NetworkUDP::networkStart() {
   uint32_t add = 0;
   W5100.setIPAddress((uint8_t *) &add);
   SPI.endTransaction();
-  
+
   uint32_t startMs = millis();
   // this seems to take about 3 seconds!!!  don't change
   while (W5100.getLinkStatus() != LINK_ON && (millis() - startMs) < 3000) {
     delay(10);
     watchdogReset();
   }
-  
+
   if (W5100.getLinkStatus() != LINK_ON) return 3;
-  
+
   if (Ethernet.begin(mac, WATCH_DOG_TIME - 500, 3000) == 0) return 4;
-  
+
   printNet();
-  
+
   Udp.stop();
   if (!Udp.begin(localPort)) return 5;
 
