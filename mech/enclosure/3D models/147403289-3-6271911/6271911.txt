@@ -1,0 +1,12 @@
+﻿"Symbol";"Value";"Unit";
+"TraceParts.PartNumber";"90-21122023-058522";"";
+"REFERENCE";"3205116";"";
+"rs_stock_number";"6271911";"";
+"TraceParts.InstanceId";"90-21122023-0585222N3XX9WWY2MK673V115V3T3RA";"";
+"url";"https://uk.rs-online.com/web/p/products/6271911//?cm_mmc=aff-_-uk-_-traceparts-_-6271911'";"";
+"TraceParts.PartTitle";"1,5mm Through Terminal QTTCB1,5 Grey";"";
+"SUPPLIER";"Phoenix Contact";"";
+"DESIGN";"1,5mm Through Terminal QTTCB1,5 Grey";"";
+"TRACEPARTS";"TRACEPARTS";"";
+"TraceParts.PartLanguage";"en";"";
+"TraceParts.PartVersion";"1.0.1";"";
