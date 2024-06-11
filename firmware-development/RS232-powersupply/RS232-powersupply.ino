@@ -729,6 +729,9 @@ void loop() {
   Serial.print(" S0: ");
   Serial.print(status0, BIN);
   delay(MYDELAY);
+  
+  //testing brownout status bit after status0 update 
+  if(status0 & 0x40)Serial.print( "BROWN OUT DETECTED");
 
   getPS_Status1(ADDRESS);
   Serial.print(" S1: ");
