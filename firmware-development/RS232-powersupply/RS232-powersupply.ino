@@ -5,7 +5,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "RS232-powersupply"
-#define VERSION ":V0.3"
+#define VERSION ":V0.4"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1_Firmware:_"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -94,14 +94,14 @@ int setPS_Addr(uint8_t addr) {
   char buff[5];
 
   // Get from the TX raw
-//  uint8_t foo = Serial2.readBytesUntil('\n', buff, sizeof buff);
-//  Serial.print("PowerSupply TX: ");
-//  Serial.print(buff);
+  //  uint8_t foo = Serial2.readBytesUntil('\n', buff, sizeof buff);
+  //  Serial.print("PowerSupply TX: ");
+  //  Serial.print(buff);
 
 
   uint8_t c = Serial1.readBytesUntil('\n', buff, sizeof buff);
-//  Serial.print("PowerSupply buff: ");
-//  Serial.print(buff);
+  //  Serial.print("PowerSupply buff: ");
+  //  Serial.print(buff);
   if (c != 3 || buff[0] != '=' || buff[1] != '>') return 0;
   return 1;
 }
@@ -471,8 +471,8 @@ void setup() {
   Serial1.begin(BAUD_RATE_PS1);
   while (!Serial1);
 
-//  Serial2.begin(BAUD_RATE_PS2);
-//  while (!Serial2);
+  //  Serial2.begin(BAUD_RATE_PS2);
+  //  while (!Serial2);
 
 
   // Setup LAN
@@ -675,6 +675,7 @@ void loopOld() {
 }//end oldloop()
 
 void loop() {
+  Serial.println(millis());
   // uint8_t v = 200; // I'm not sure what this means
   uint8_t c = 125; // I don't know what this means mean terms of amperage
   //  if (setPS_Voltage(ADDRESS, v)) {
@@ -685,21 +686,21 @@ void loop() {
   //  }
 
 
-  if (setPS_Current(ADDRESS, c)) {
-    Serial.print("Set amps to ");
-    Serial.println(c);
-  } else {
-    Serial.println("failed to set volts");
-  }
+  //  if (setPS_Current(ADDRESS, c)) {
+  //    Serial.print("Set amps to ");
+  //    Serial.println(c);
+  //  } else {
+  //    Serial.println("failed to set current");
+  //  }
 
-  if (setPS_GCurrent(ADDRESS, c)) {
-    Serial.print("Set amps to ");
-    Serial.println(c);
-  } else {
-    Serial.println("failed to set volts");
-  }
+  //  if (setPS_GCurrent(ADDRESS, c)) {
+  //    Serial.print("Set G current amps to ");
+  //    Serial.println(c);
+  //  } else {
+  //    Serial.println("failed to set GCurrent");
+  //  }
 
-  Serial.println("");
+  //  Serial.println("");
 
   getPS_OutVoltage(ADDRESS);
   Serial.print("V: ");
@@ -729,9 +730,48 @@ void loop() {
   Serial.print(" S0: ");
   Serial.print(status0, BIN);
   delay(MYDELAY);
-  
-  //testing brownout status bit after status0 update 
-  if(status0 & 0x40)Serial.print( "BROWN OUT DETECTED");
+
+
+  //foo
+  if (status0 & 0x01)Serial.println( "Bit-0 -> OVP Shutdown");
+  if (status0 & 0x02)Serial.println( "Bit-1 -> OLP Shutdown");
+  if (status0 & 0x04)Serial.println( "Bit-2 -> OTP Shutdown");
+  if (status0 & 0x08)Serial.println( "Bit-3 -> FAN Failure");
+  if (status0 & 0x10)Serial.println( "Bit-4 -> AUX or SMPS Fail");
+  if (status0 & 0x20)Serial.println( "Bit-5 -> HI-TEMP Alarm");
+  if (status0 & 0x40)Serial.println( "Bit-6 -> AC Input Power Down");
+  if (status0 & 0x80)Serial.println( "Bit-7 -> AC Input Failure");
+  if (!(status0 & 0xFF))Serial.println( "status0: OK");
+  if (status1 & 0x01)Serial.println( "Bit-0 -> Inhibit by VCI / ACI or ENB");
+  if (status1 & 0x02)Serial.println( "Bit-1 -> Inhibit by Software Command");
+  if (status1 & 0x04)Serial.println( "Bit-2 -> (Not used)");
+  if (status1 & 0x08)Serial.println( "Bit-3 -> (Not used)");
+  if (status1 & 0x10)Serial.println( "Bit-4 -> (POWER)");
+  if (status1 & 0x20)Serial.println( "Bit-5 -> (Not used)");
+  if (status1 & 0x40)Serial.println( "Bit-6 -> (Not used)");
+  if (status1 & 0x80)Serial.println( "Bit-7 -> (REMOTE)");
+  if (!(status0 & 0xFF))Serial.println( "status0: OK");
+  if (!(status1 & 0x6D))Serial.println( "status1: OK");
+  //bar
+
+
+//  //testing Fan Fail status bit after status0 update
+//  if (status0 & 0x04)Serial.println( "Fan Fail DETECTED");
+//
+//  //testing Unit Fail status bit after status0 update
+//  if (status0 & 0x10)Serial.println( "Unit Fail DETECTED");
+//
+//  //testing Unit Fail status bit after status0 update
+//  if (status0 & 0x10)Serial.println( "Unit Fail DETECTED");
+//
+//  //testing high Temperature status bit after status0 update
+//  if (status0 & 0x20)Serial.println( "HIGH TEMPERATURE DETECTED");
+//
+//  //testing AC Power Down status bit after status0 update
+//  if (status0 & 0x40)Serial.println( "AC Power Down DETECTED");
+//
+//  //testing AC Input Fail status bit after status0 update
+//  if (status0 & 0x80)Serial.println( "AC INPUT FAILURE");
 
   getPS_Status1(ADDRESS);
   Serial.print(" S1: ");
@@ -742,6 +782,6 @@ void loop() {
   Serial.print(" C: ");
   Serial.println(control, BIN);
   delay(MYDELAY);
-  delay(15 * 1000);
+  //  delay(15 * 1000);
 
 }//end loop()
