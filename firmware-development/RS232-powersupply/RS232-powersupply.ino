@@ -5,7 +5,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "RS232-powersupply"
-#define VERSION ":V0.5"
+#define VERSION ":V0.7"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1_Firmware:_"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -608,23 +608,6 @@ void setup() {
   if (setPS_OnOff(ADDRESS, "ON")) Serial.println("Turned it on");
   else Serial.println("failed to turn it on");
 
-  uint16_t v = 500; // Setting in 1/100 of a volt. So 500 is 5.0 volts.
-  uint16_t c = 1000; // Setting in 1/100 of an amp. So 1000 is 10.0 Amps
-
-  if (setPS_Voltage(ADDRESS, v)) {
-    Serial.print("Set volts to ");
-    Serial.println(v);
-  } else {
-    Serial.println("failed to set volts");
-  }
-
-  if (setPS_Current(ADDRESS, c)) {
-    Serial.print("Set amps to ");
-    Serial.println(c);
-  } else {
-    Serial.println("failed to set current");
-  }
-
   Serial.println("End of setup");
 }//end setup()
 
@@ -716,7 +699,26 @@ void loopOld() {
 void loop() {
   Serial.print("\n Test time: ");
   Serial.println(millis());
+  
+  uint16_t v = 500; // Setting in 1/100 of a volt. So 500 is 5.0 volts.
+  uint16_t c = 1000; // Setting in 1/100 of an amp. So 1000 is 10.0 Amps
 
+  if (setPS_OnOff(ADDRESS, "ON")) Serial.println("Turned it on");
+  else Serial.println("failed to turn it on");
+
+  if (setPS_Voltage(ADDRESS, v)) {
+    Serial.print("Set volts to ");
+    Serial.println(v);
+  } else {
+    Serial.println("failed to set volts");
+  }
+
+  if (setPS_Current(ADDRESS, c)) {
+    Serial.print("Set amps to ");
+    Serial.println(c);
+  } else {
+    Serial.println("failed to set current");
+  }
 
   //  if (setPS_GCurrent(ADDRESS, c)) {
   //    Serial.print("Set G current amps to ");
