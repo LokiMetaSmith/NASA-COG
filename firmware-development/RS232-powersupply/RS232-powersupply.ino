@@ -1,11 +1,11 @@
 /* For testing programable power supplies which are controled on the Due UART 1
-
+    Test with OEDCS Control V1.1 PWA including managing the power supply enable line.
 
 */
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "RS232-powersupply"
-#define VERSION ":V0.4"
+#define VERSION ":V0.5"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.1_Firmware:_"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -67,6 +67,11 @@ byte mac[][NUMBER_OF_MAC] =
 
 
 // For Power supply
+// Programable Power Supply Enable from Due Controler.
+#define PS1_EN 23
+#define PS2_EN 8
+
+
 char manuf[17]; // INFO 0
 char model[17];  // INFO 1
 char voltage_string[5]; // INFO 2
@@ -133,23 +138,28 @@ int setPS_OnOff(uint8_t addr, const char *val) {
 }
 
 int setPS_Voltage(uint8_t addr, uint16_t volts) {
+  //  Serial.print("setPS_Volts= ");
+  //  Serial.print(volts);
+  //  Serial.print(", ");
   char b[7];
-  snprintf(b, sizeof b, "%4.1f", volts / 100.0);
+  snprintf(b, sizeof b, "%4.1f", volts / 100.0); //Resolution may be 1/100 of a volt
+  //  Serial.print("\nb= ");
+  //  Serial.println(b);
   return setPS_Val(addr, "SV", b);
 }
 
 int setPS_Current(uint8_t addr, uint16_t amps) {
   char b[7];
-  snprintf(b, sizeof b, "%4.1f", amps / 100.0);
+  snprintf(b, sizeof b, "%4.1f", amps / 100.0);  //Resolution may be 1/100 of a amp
   return setPS_Val(addr, "SI", b);
 }
 
-// TODO: This is untested
-int setPS_GCurrent(uint8_t addr, uint16_t amps) {
-  char b[7];
-  snprintf(b, sizeof b, "%4.1f", amps / 100.0);
-  return setPS_Val(addr, "GSI", b);
-}
+// This is a global set command. TODO: This is untested
+//int setPS_GCurrent(uint8_t addr, uint16_t amps) {
+//  char b[7];
+//  snprintf(b, sizeof b, "%4.1f", amps / 100.0);
+//  return setPS_Val(addr, "GSI", b);
+//}
 
 char *getPS_Val(uint8_t addr, const char *val) {
   static char rval[50];
@@ -212,7 +222,7 @@ void getPS_RateVoltage(int addr) {
   rate_voltage = -1;
   if ((ptr = strchr(b, ' '))) {
     *ptr = '\0';
-    rate_voltage = int(atof(b) * 100);
+    rate_voltage = int(atof(b) * 1000);
   }
 }
 
@@ -223,7 +233,7 @@ void getPS_RateCurrent(int addr) {
   char *ptr = NULL;
   rate_current = -1;
   if ((ptr = strchr(b, ' '))) {
-    rate_current = int(atof(ptr + 1) * 100);
+    rate_current = int(atof(ptr + 1) * 1000);
   }
 }
 
@@ -247,12 +257,16 @@ void getPS_MaxCurrent(int addr) {
 
 void getPS_OutVoltage(int addr) {
   char *r = getPS_Val(addr, "RV?");
-  out_voltage = int(atof(r) * 100);
+  //  out_voltage = int(atof(r) * 100);
+  //  out_voltage = int(atof(r) * 1);       //Report in Volts
+  out_voltage = int(atof(r) * 1000);       //Report in milliVolts
 }
 
 void getPS_OutCurrent(int addr) {
   char *r = getPS_Val(addr, "RI?");
-  out_current = int(atof(r) * 100);
+  //  out_current = int(atof(r) * 100);
+  //  out_current = int(atof(r) * 1);       // Report in Amps.
+  out_current = int(atof(r) * 1000);       // Report in milliAmps.
 }
 
 void getPS_Status0(int addr) {
@@ -274,12 +288,12 @@ void getPS_Temp(int addr) {
 
 void getPS_SetVoltage(int addr) {
   char *r = getPS_Val(addr, "SV?");
-  set_voltage = int(atof(r) * 100);
+  set_voltage = int(atof(r) * 1000);
 }
 
 void getPS_SetCurrent(int addr) {
   char *r = getPS_Val(addr, "SI?");
-  set_current = int(atof(r) * 100);
+  set_current = int(atof(r) * 1000);
 }
 
 void getPS_Control(int addr) {
@@ -460,6 +474,12 @@ int readResp() {
 }
 
 void setup() {
+  //Power supply enable pins
+  pinMode(PS1_EN, OUTPUT);
+  pinMode(PS2_EN, OUTPUT);
+  digitalWrite(PS1_EN, LOW); //Turn off PS1 at power up
+  digitalWrite(PS2_EN, LOW); //Turn off PS2 at power up
+
   Serial.begin(BAUD_RATE);
   while (!Serial);
   Serial.print(DEVICE_UNDER_TEST);
@@ -470,10 +490,12 @@ void setup() {
 
   Serial1.begin(BAUD_RATE_PS1);
   while (!Serial1);
+  setPS_Voltage(ADDRESS, 0);
+  setPS_Current(ADDRESS, 0);
+
 
   //  Serial2.begin(BAUD_RATE_PS2);
   //  while (!Serial2);
-
 
   // Setup LAN
   randomSeed(analogRead(0));
@@ -578,15 +600,32 @@ void setup() {
   //  snprintf(packetBuffer, sizeof packetBuffer, "{ \"Manufacturer\": \"%s\", \"Model\": \"%s\", \"VoltString\": \"%s\", \"Revision\": \"%s\", \"Serial\": \"%s\", \"VoltageRating\": %d, \"CurrentRating\": %d, \"MaxVoltage\": %d, \"MaxCurrent\": %d}", manuf, model, voltage_string, revision, serial, rate_voltage, rate_current, max_voltage, max_current);
   //  sendMsg(packetBuffer);
 
+  //Manage Power supply enable pins
+  digitalWrite(PS1_EN, HIGH); //Set high to enable PS1
+  digitalWrite(PS2_EN, HIGH); //Set high to enable PS2
+
+
   if (setPS_OnOff(ADDRESS, "ON")) Serial.println("Turned it on");
   else Serial.println("failed to turn it on");
 
-  if (setPS_Voltage(ADDRESS, 1000)) Serial.println("Set volts to 5.0");
-  else Serial.println("failed to set volts");
+  uint16_t v = 500; // Setting in 1/100 of a volt. So 500 is 5.0 volts.
+  uint16_t c = 1000; // Setting in 1/100 of an amp. So 1000 is 10.0 Amps
 
-  if (setPS_Current(ADDRESS, 0)) Serial.println("Set current to 5");
-  else Serial.println("failed to set current");
+  if (setPS_Voltage(ADDRESS, v)) {
+    Serial.print("Set volts to ");
+    Serial.println(v);
+  } else {
+    Serial.println("failed to set volts");
+  }
 
+  if (setPS_Current(ADDRESS, c)) {
+    Serial.print("Set amps to ");
+    Serial.println(c);
+  } else {
+    Serial.println("failed to set current");
+  }
+
+  Serial.println("End of setup");
 }//end setup()
 
 uint16_t count = 1;
@@ -675,23 +714,9 @@ void loopOld() {
 }//end oldloop()
 
 void loop() {
+  Serial.print("\n Test time: ");
   Serial.println(millis());
-  // uint8_t v = 200; // I'm not sure what this means
-  uint8_t c = 125; // I don't know what this means mean terms of amperage
-  //  if (setPS_Voltage(ADDRESS, v)) {
-  //    Serial.print("Set volts to ");
-  //    Serial.println(v);
-  //  } else {
-  //    Serial.println("failed to set volts");
-  //  }
 
-
-  //  if (setPS_Current(ADDRESS, c)) {
-  //    Serial.print("Set amps to ");
-  //    Serial.println(c);
-  //  } else {
-  //    Serial.println("failed to set current");
-  //  }
 
   //  if (setPS_GCurrent(ADDRESS, c)) {
   //    Serial.print("Set G current amps to ");
@@ -703,83 +728,65 @@ void loop() {
   //  Serial.println("");
 
   getPS_OutVoltage(ADDRESS);
-  Serial.print("V: ");
-  Serial.print(out_voltage);
+  Serial.print("Volts(set/measured): ");
+  //  Serial.print(out_voltage / 1000.0); //Report in volts.
+  Serial.print(set_voltage / 1000.0);
   delay(MYDELAY);
   getPS_SetVoltage(ADDRESS);
   Serial.print("/");
-  Serial.print(set_voltage);
+  //  Serial.print(set_voltage / 1000.0);
+  Serial.print(out_voltage / 1000.0); //Report in volts.
   delay(MYDELAY);
 
   getPS_OutCurrent(ADDRESS);
-  Serial.print(" A: ");
-  Serial.print(out_current);
+  Serial.print(", Amps(set/measured): ");      //Lee added comma on 20240612
+  //Serial.print(out_current/1000.0);
+  Serial.print(set_current / 1000.0);
   delay(MYDELAY);
   getPS_SetCurrent(ADDRESS);
   Serial.print("/");
-  Serial.print(set_current);
+  Serial.print(out_current / 1000.0);
+  //  Serial.print(set_current/1000.0);
   delay(MYDELAY);
-  Serial.println("\n");
+  Serial.println();
 
   getPS_Temp(ADDRESS);
-  Serial.print(" T: ");
-  Serial.print(temp);
+  Serial.print("Temp(C): ");
+  Serial.println(temp);
   delay(MYDELAY);
 
   getPS_Status0(ADDRESS);
-  Serial.print(" S0: ");
+  Serial.print("S0: ");
   Serial.print(status0, BIN);
   delay(MYDELAY);
 
-
-  //foo
-  if (status0 & 0x01)Serial.println( "Bit-0 -> OVP Shutdown");
-  if (status0 & 0x02)Serial.println( "Bit-1 -> OLP Shutdown");
-  if (status0 & 0x04)Serial.println( "Bit-2 -> OTP Shutdown");
-  if (status0 & 0x08)Serial.println( "Bit-3 -> FAN Failure");
-  if (status0 & 0x10)Serial.println( "Bit-4 -> AUX or SMPS Fail");
-  if (status0 & 0x20)Serial.println( "Bit-5 -> HI-TEMP Alarm");
-  if (status0 & 0x40)Serial.println( "Bit-6 -> AC Input Power Down");
-  if (status0 & 0x80)Serial.println( "Bit-7 -> AC Input Failure");
+  if (status0 & 0x01)Serial.println( " Bit-0 -> OVP Shutdown");
+  if (status0 & 0x02)Serial.println( " Bit-1 -> OLP Shutdown");
+  if (status0 & 0x04)Serial.println( " Bit-2 -> OTP Shutdown");
+  if (status0 & 0x08)Serial.println( " Bit-3 -> FAN Failure");
+  if (status0 & 0x10)Serial.println( " Bit-4 -> AUX or SMPS Fail");
+  if (status0 & 0x20)Serial.println( " Bit-5 -> HI-TEMP Alarm");
+  if (status0 & 0x40)Serial.println( " Bit-6 -> AC Input Power Down");
+  if (status0 & 0x80)Serial.println( " Bit-7 -> AC Input Failure");
   if (!(status0 & 0xFF))Serial.println( "status0: OK");
-  if (status1 & 0x01)Serial.println( "Bit-0 -> Inhibit by VCI / ACI or ENB");
-  if (status1 & 0x02)Serial.println( "Bit-1 -> Inhibit by Software Command");
-  if (status1 & 0x04)Serial.println( "Bit-2 -> (Not used)");
-  if (status1 & 0x08)Serial.println( "Bit-3 -> (Not used)");
-  if (status1 & 0x10)Serial.println( "Bit-4 -> (POWER)");
-  if (status1 & 0x20)Serial.println( "Bit-5 -> (Not used)");
-  if (status1 & 0x40)Serial.println( "Bit-6 -> (Not used)");
-  if (status1 & 0x80)Serial.println( "Bit-7 -> (REMOTE)");
+  if (status1 & 0x01)Serial.println( " Bit-0 -> Inhibit by VCI / ACI or ENB");
+  if (status1 & 0x02)Serial.println( " Bit-1 -> Inhibit by Software Command");
+  if (status1 & 0x04)Serial.println( " Bit-2 -> (Not used)");
+  if (status1 & 0x08)Serial.println( " Bit-3 -> (Not used)");
+  if (status1 & 0x10)Serial.println( " Bit-4 -> (POWER)");
+  if (status1 & 0x20)Serial.println( " Bit-5 -> (Not used)");
+  if (status1 & 0x40)Serial.println( " Bit-6 -> (Not used)");
+  if (status1 & 0x80)Serial.println( " Bit-7 -> (REMOTE)");
   if (!(status0 & 0xFF))Serial.println( "status0: OK");
   if (!(status1 & 0x6D))Serial.println( "status1: OK");
-  //bar
-
-
-//  //testing Fan Fail status bit after status0 update
-//  if (status0 & 0x04)Serial.println( "Fan Fail DETECTED");
-//
-//  //testing Unit Fail status bit after status0 update
-//  if (status0 & 0x10)Serial.println( "Unit Fail DETECTED");
-//
-//  //testing Unit Fail status bit after status0 update
-//  if (status0 & 0x10)Serial.println( "Unit Fail DETECTED");
-//
-//  //testing high Temperature status bit after status0 update
-//  if (status0 & 0x20)Serial.println( "HIGH TEMPERATURE DETECTED");
-//
-//  //testing AC Power Down status bit after status0 update
-//  if (status0 & 0x40)Serial.println( "AC Power Down DETECTED");
-//
-//  //testing AC Input Fail status bit after status0 update
-//  if (status0 & 0x80)Serial.println( "AC INPUT FAILURE");
 
   getPS_Status1(ADDRESS);
-  Serial.print(" S1: ");
-  Serial.print(status1, BIN);
+  Serial.print("S1: ");
+  Serial.println(status1, BIN);
   delay(MYDELAY);
 
   getPS_Control(ADDRESS);
-  Serial.print(" C: ");
+  Serial.print("Control: ");
   Serial.println(control, BIN);
   delay(MYDELAY);
   //  delay(15 * 1000);
