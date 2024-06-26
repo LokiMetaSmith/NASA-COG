@@ -34,6 +34,10 @@ FreeCAD view of Assembly (including one power supply)
 | 1                	| 3/4-in Die Cast Zinc Clamp-on Type Service Entrance Connector Conduit Fittings    	|                 	|                 	| Lowes       	| https://www.lowes.com/pd/Sigma-Electric-ProConnex-3-4-in-Clamp-on-Type-Service-Entrance-Connector-Conduit-Fitting/1087283                	|                                                                                                           	| 1.50      	|
 | 1                	| 1/2" NM Clamp Type Cable Connectors                                               	|                 	|                 	| Amazon      	| https://www.amazon.com/Connectors-Metallic-Conduit-Protect-Silver-Zinc/dp/B09M3MKL74/ref=sr_1_1_sspa                                     	|                                                                                                           	| 0.91      	|
 | 3                	| DIN Rail Slotted Aluminum RoHS 12" Inches Long 35mm Wide 7.5mm High               	|                 	|                 	| Amazon      	| https://www.amazon.com/Pieces-Slotted-Aluminum-Inches-7-5mm/dp/B079TX7WDQ/ref=sr_1_1_sspa                                                	| Cut to fit.                                                                                               	| 5.00      	|
+| 4                	| Rubber Landing Mat Feet, 10PCS T-Nuts, M5 Screws              	|                 	|                 	| Amazon      	| https://www.amazon.com/gp/product/B08FRBL2ZC/ref=ppx_yo_dt_b_search_asin_image?ie=UTF8&psc=1                                                	|                                                                    	| 1.00      	|
+
+
+
 
 Other:
 This does not include the internal wiring description.
