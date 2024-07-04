@@ -13,7 +13,5 @@ https://grabcad.com/library/mpj-j-f-thermocouple-connector-omega-1
 
 
 Fan DC Fan Model v5.step
-https://grabcad.com/library/12v-dc-fan-model-1
 
-And:
 https://grabcad.com/library/80mm-fan--1
