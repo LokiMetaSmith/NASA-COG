@@ -6,10 +6,12 @@
    This program forked from Dallas_Tester.ino on 20230921
    Set D9 PWM for about 50% to test PWM on MOM (Mock up of Maryville hardware)
    Add an EMA filtered output.
+   Rev 0.5 Correct numberOfDevices in the legend of plot.
+   Rev 0.5 REM out the filtered output on 202040711 
 */
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "MAX31850_Tester"
-#define VERSION ";_Rev_0.4"
+#define VERSION ";_Rev_0.5"
 #define DEVICE_UNDER_TEST "Hardware: Mockup Of Maryville"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -82,9 +84,13 @@ void setup(void)
   sensors.begin();
   // Grab a count of devices on the wire
   numberOfDevices = sensors.getDeviceCount();
+  //Report the Number of devices found
+//  Serial.print("Number of devices found = ");
+//  Serial.print(numberOfDevices);
+//  Serial.print(", ");
   //Serial.print("TC0, TC1, ");
   //for (int i = 0; i <= 255; i++)
-  for (int i = 0; i <= numberOfDevices; i++) {
+  for (int i = 0; i < numberOfDevices; i++) {
     Serial.print("TC");
     Serial.print(i);
     Serial.print(", ");
@@ -182,15 +188,16 @@ void loop(void)
       now_Temp[i] = printTemperature(tempDeviceAddress); // Use a simple function to print out the data
       Serial.print(now_Temp[i]);
       Serial.print(", ");
-
-      if (digitalRead(SHUT_DOWN) == LOW) {  //Press button for ten times longer filtering
-        ema_Temp[i] = ((1 - (ALPHA / 10.0)) * ema_Temp[i]) + ((ALPHA / 10.0) * now_Temp[i]) ; // EMA See: https://en.wikipedia.org/wiki/Exponential_smoothing
-      } else {
-        ema_Temp[i] = ((1 - ALPHA) * ema_Temp[i]) + (ALPHA * now_Temp[i]) ; // EMA See: https://en.wikipedia.org/wiki/Exponential_smoothing
-      }
-      Serial.print(ema_Temp[i]);
-      //Serial.print(tempC);
-      Serial.print(", ");
+      
+      // Print a filtered measurement
+//      if (digitalRead(SHUT_DOWN) == LOW) {  //Press button for ten times longer filtering
+//        ema_Temp[i] = ((1 - (ALPHA / 10.0)) * ema_Temp[i]) + ((ALPHA / 10.0) * now_Temp[i]) ; // EMA See: https://en.wikipedia.org/wiki/Exponential_smoothing
+//      } else {
+//        ema_Temp[i] = ((1 - ALPHA) * ema_Temp[i]) + (ALPHA * now_Temp[i]) ; // EMA See: https://en.wikipedia.org/wiki/Exponential_smoothing
+//      }
+//      Serial.print(ema_Temp[i]);
+//      //Serial.print(tempC);
+//      Serial.print(", ");
 
     }
     //else ghost device! Check your power requirements and cabling
