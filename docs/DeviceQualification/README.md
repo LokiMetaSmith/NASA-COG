@@ -10,18 +10,21 @@ A test specification and procedure for interupted AC input, aka drop out.
 Device under test. The device under test must NOT be receiving power from the USB connection.  Modify (cut up) a USB cable to interupt the +5V to the DUT.  
 
 In addition to a device under test, 
-Both typical and corner case loads for the stack supply (Shunt, Nominal load, Open)  
+Both typical and corner case loads for the stack supply 
+* Shunt
+* Nominal load
+* Open  
 AC line auto transformer make:       Model number:       Serial number: 
-Device for interupting the AC power. (A switched outlet is a start. However an AC relay uncer computer control for set drop out duration and phase is even better.  
+Device for interupting the AC power. (A switched outlet is a start. However an AC relay uncer computer control for set drop out duration and phase is even better.)  
 Multimeter for monitoring RAW AC Line Input.  
 Multimeter for monitoring AC output of Autotransformer, the input to the OEDCS.  
 Multimeter for monitoring +24 power supply at Controler TP20.   
 Multimeter for monitoring +12 power supply at Controler TP2.  
 Multimeter for monitoring +5 power supply at Controler J3 pin 4.  
-Multimeter for monitoring Back Up (Sealed Lead Acid batter) at Controler TP???    
+Multimeter for monitoring voltage Back Up (Sealed Lead Acid batter) at Controler TP???    
 Possible oscilliscope for capuring sequence of events and the unexpected.  
 Possible logic analizer for capuring sequence of events and the unexpected.  
-Lab thermomiter to capture ambiant temprature
+Lab thermomiter to capture ambiant temprature.  
 
 
 ### Setup For Test
@@ -51,6 +54,7 @@ Test conditions and proceures and expected results or information to be captured
 ### Test Capture Normal Opperation Conditions with Stack Supply: Open Load
 During this test, journal how the system fails, the sequence and at what voltates supplies gor out of regulation. At what AC input voltage does the controller stop if any?
 
+Capture lab ambiant temprature.  
 All external power to the device is off.
 Connect the USB cable to the DUT and a PC.
 Use Serial Monitor the USB to Serial connection to the DUT.  Capture to a TIME STAMPED file with an name reflecting the test a log during the test. Example OEDCS_SN1_NOMINAL_AC_STACK_OPEN.txt   
@@ -67,6 +71,7 @@ Capture these paramgters at this nominal input.
 6. Current drain on the sealed lead acid battery
 
 ### Test For Condition Brown Out with Stack Supply: Open Load
+Capture lab ambiant temprature.  
 Lower AC input voltage, 5V steps may be a good step size. Allow to stabalize for 15 seconds (Verify that this seams to be a good time.) 
 At each AC voltage input capture the following:
 1. AC into ODECS
@@ -77,7 +82,7 @@ At each AC voltage input capture the following:
 6. Current drain on the sealed lead acid battery
 
 ### Test For Condition Brown Out Recovery with Stack Supply: Open Load
-
+Capture lab ambiant temprature.  
 Raise from zero AC input voltage, 5V steps may be a good step size. Allow to stabalize for 15 seconds (Verify that this seams to be a good time.) 
 Journal how the system restarts, what is the sequence of each supply. 
 At each AC voltage input capture the following:
@@ -104,15 +109,14 @@ Change out stack suupply for a shunt. Retest same as above
 ### Test For Condition Brown Out Recovery with Stack Supply: Nominal load
 Retest same as above 
 
-
-foo
 ## Test Procedure AC Drop Out
 Test conditions and proceures and expected results or information to be captured  
 It is assumed the system still has normal conditions as per the test above "Test Capture Normal Opperation Conditions with Stack Supply"
 If not journal again the nominal conditions
 
-### Test Capture Normal Opperation Conditions with Stack Supply: Open Load
-During this test, journal how the system fails, the sequence and at what voltates supplies gor out of regulation. At what AC input voltage does the controller stop if any?
+### Test Capture Normal Opperation Conditions with Stack Supply: Nominal load
+During this test, journal how the system fails, the sequence and at what voltates supplies go out of regulation or recover in pathological ways. 
+Power will be interupted for short but increasingly long times to root out pathological behavior. 
 
 All external power to the device is off.
 Connect the USB cable to the DUT and a PC.
@@ -129,14 +133,46 @@ Capture these paramgters at this nominal input.
 5. +5V at Back Up battery
 6. Current drain on the sealed lead acid battery
 
-### Test For Condition AC Drop Out with Stack Supply: Open Load
+### Test For Condition Manual AC Drop Out with Stack Supply: Nominal load
+#### Minimum Interuption
+Assuming using a toggle switch, Interupt (off then on) the AC as fast as possible at least five times in hopes of sampeling several phases of the AC line at the  time of interuption.
+Observe the system for pathological behaviors.
+Did the system opprate normaly throught the interuption?  Describe system opperation: 
+______________________________________________________________________________________  
+______________________________________________________________________________________  
+______________________________________________________________________________________  
 
-Lower AC input voltage, 5V steps may be a good step size. Allow to stabalize for 15 seconds (Verify that this seams to be a good time.) 
-At each AC voltage input capture the following:
-1. AC into ODECS
-2. +24 at TP20
-3. +12 at TP2
-4. V sealed battery
-5. +5V at Back Up battery
-6. Current drain on the sealed lead acid battery
+#### Longer Interuption
+Gradualy Increase the off time repeating with the same off time for about five times
 
+Observe the system for pathological behaviors.
+Did the system opprate normaly throught the interuption?  Describe system opperation: 
+______________________________________________________________________________________  
+______________________________________________________________________________________  
+______________________________________________________________________________________  
+
+
+### Test For Condition Automated AC Drop Out with Stack Supply: Nominal load
+An AC Drop Out test system based on OEDCS.
+Use an OEDCS with custom firmware for this test fucntion as a AC interupt fixture with which to test the OEDCS under actual test.
+Connect from the AC output of the the drop out text fuxture in to the the OEDCS under actual test.
+Develope firm ware which can turn off (Open) the solid state realay SSR1 for increasing durations. Extra credit if the firmware can be phase triggered from the AC line. 
+
+#### Interuption profile
+Set for minimum phase delay
+Set for minimum interuption time
+Set for number if interuptions
+
+With zero phase delay, increase interuption time till the system behavior changes and journal that change. Continue to look for pathological behaviors.
+Observe the system for pathological behaviors.
+Did the system opprate normaly throught the interuption?  Describe system opperation: 
+______________________________________________________________________________________  
+______________________________________________________________________________________  
+______________________________________________________________________________________  
+
+With insight from the intertuption time increase phase delay from zero through at least 32mS (two AC cycles),
+Observe the system for pathological behaviors.
+Did the system opprate normaly throught the interuption?  Describe system opperation: 
+______________________________________________________________________________________  
+______________________________________________________________________________________  
+______________________________________________________________________________________  
