@@ -51,7 +51,6 @@ namespace CogApp
       CogCore::Debug<const char *>("ms\n");
       CogCore::Debug<uint8_t>(getConfig()->report->ms);
       CogCore::Debug<const char *>("\n");
-      delay(50);
     }
 
     // We are currently not using this, due to changes in the
@@ -62,34 +61,29 @@ namespace CogApp
     bool new_packet = false;
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("Done with Params!\n");
-      delay(50);
     }
     if (new_packet) {
       if (DEBUG_UDP > 1) {
-	CogCore::Debug<const char *>("Got a Param Packet!\n");
-        delay(50);
+        CogCore::Debug<const char *>("Got a Param Packet!\n");
       }
       if (DEBUG_UDP > 1) {
-	CogCore::Debug<const char *>("ms\n");
-	CogCore::Debug<uint32_t>(getConfig()->report->ms);
-	CogCore::Debug<const char *>("\n");
-        delay(50);
+        CogCore::Debug<const char *>("ms\n");
+        CogCore::Debug<uint32_t>(getConfig()->report->ms);
+        CogCore::Debug<const char *>("\n");
       }
       // This would be better done with a static member
       MachineScript *old = getConfig()->script;
       MachineScript *ms = old->parse_buffer_into_new_script((char *) packetBuffer,old->DEBUG_MS);
       if (DEBUG_UDP > 1) {
-	CogCore::Debug<const char *>("Done with parse_buffer_into_new_script\n");
-	CogCore::Debug<const char *>("ms\n");
-	CogCore::Debug<uint32_t>(getConfig()->report->ms);
-	CogCore::Debug<const char *>("\n");
-        delay(50);
+        CogCore::Debug<const char *>("Done with parse_buffer_into_new_script\n");
+        CogCore::Debug<const char *>("ms\n");
+        CogCore::Debug<uint32_t>(getConfig()->report->ms);
+        CogCore::Debug<const char *>("\n");
       }
       getConfig()->script = ms;
       delete old;
       if (DEBUG_UDP > 1) {
-	CogCore::Debug<const char *>("old Script deleted.\n");
-        delay(50);
+        CogCore::Debug<const char *>("old Script deleted.\n");
       }
     }
 #endif
@@ -99,29 +93,32 @@ namespace CogApp
   bool OEDCSNetworkTask::logReport(MachineStatusReport* report)  {
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("outputReport\n");
-      delay(50);
     }
     char buffer[4096];
     // we need to make sure we start with a null string...
     buffer[0] = 0;
     getConfig()->createJSONReport(report,buffer);
+
     if (DEBUG_UDP > 0) {
       CogCore::Debug<const char *>("Sending buffer:\n");
-      CogCore::Debug<const char *>(buffer);
+     CogCore::Debug<const char *>(buffer);
       CogCore::Debug<const char *>("\n");
-      delay(50);
     }
     // Conjecture: This should use the report timestamp
     //
     unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("About to Send Data!\n");
-      delay(50);
     }
+    unsigned long spot_time0 = millis();
     net_udp.sendData(buffer,current_epoch_time, 2000);
+    unsigned long spot_time1 = millis();
+    if (DEBUG_UDP > 1) {
+      CogCore::Debug<const char *>("sendData ms");
+      CogCore::DebugLn<long>(spot_time1 - spot_time0);
+    }
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("Data Sent!\n");
-      delay(50);
     }
     return true;
   }

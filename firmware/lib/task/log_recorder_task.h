@@ -39,6 +39,8 @@ namespace CogApp
   {
   public:
     int DEBUG_LOG_RECORDER = 0;
+    int MAX_RECORDS_TO_DUMP_AT_ONCE = 10;
+    bool currently_dumping = false;
     void dumpRecords();
     OEDCSNetworkTask* oedcsNetworkTask;
     Core *core;

@@ -81,8 +81,9 @@ namespace CogApp
           CogCore::Debug<const char *>("ENTERING CRITICAL FAULT : ");
           CogCore::DebugLn<const char *>(CriticalErrorNames[i]);
           turnOff();
-          logRecorderTask->dumpRecords();
+          //logRecorderTask->dumpRecords();  // FLE 20240213
           rms = CriticalFault;
+          logRecorderTask->dumpRecords();    // FLE 20240213
         }
       }
     }
@@ -163,6 +164,7 @@ namespace CogApp
 
   void StateMachineManager::turnOff() {
     //    heaterPIDTask->shutHeaterDown();
+    Serial.println("StateMachineManager::turnOff() called which does nothing.");
   }
 
   void StateMachineManager::turnOn() {
