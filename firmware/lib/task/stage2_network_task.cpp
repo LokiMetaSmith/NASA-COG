@@ -16,7 +16,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include <Arduino.h>
-
+#include <util.h>
 #include <debug.h>
 #include <network_task.h>
 #include <stdio.h>
@@ -60,7 +60,7 @@ namespace CogApp
         Debug<const char *>(buffer);
         Debug<const char *>("\n");
       }
-      unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
+      unsigned long current_epoch_time = net_udp.epoch + t_millis() / 1000;
       // have to add a timeout here!
       net_udp.sendData(buffer, current_epoch_time, 2000);
     }

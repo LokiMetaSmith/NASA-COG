@@ -46,13 +46,13 @@ void TempRefreshTask::computeRefreshedTargetTemp(float tmeasured,MachineState ms
 
   // if (getConfig()->ms == Warmup) {
   //   if (abs(t_up - getConfig()->GLOBAL_RECENT_TEMP) > getConfig()->TEMP_REFRESH_LIMIT) {
-  //     getConfig()->BEGIN_UP_TIME_MS = millis();
+  //     getConfig()->BEGIN_UP_TIME_MS = t_millis();
   //     getConfig()->GLOBAL_RECENT_TEMP = t_up;
   //     getConfig()->TARGET_TEMP = t_up;
   //   }
   // } else if (getConfig()->ms == Cooldown) {
   //   if (abs(t_dn - getConfig()->GLOBAL_RECENT_TEMP) > getConfig()->TEMP_REFRESH_LIMIT) {
-  //     getConfig()->BEGIN_DN_TIME_MS = millis();
+  //     getConfig()->BEGIN_DN_TIME_MS = t_millis();
   //     getConfig()->GLOBAL_RECENT_TEMP = t_dn;
   //     getConfig()->TARGET_TEMP = t_dn;
   //   }

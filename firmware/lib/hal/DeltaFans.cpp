@@ -20,6 +20,7 @@
 #include "DeltaFans.h"
 #include <math.h>
 #include <debug.h>
+#include <util.h>
 
 
 #define PERIOD 1000
@@ -48,7 +49,7 @@
     tachISR(3); };
 
   void refresh_tach_data(uint8_t i) {
-    unsigned long m = millis();
+    unsigned long m = t_millis();
     if (tach_data_ts[i] + PERIOD < m) {
       tach_data_ocnt[i] = tach_data_cnt[i];
       tach_data_duration[i] = m - tach_data_ts[i];

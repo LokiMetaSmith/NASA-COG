@@ -49,7 +49,7 @@ bool WithinArrayBounds(int index, int length);
   // a new value given by the argument. This function
   // can be used to test the rollover of code which
   // uses the the t_millis() wrapper.
-// Note: m is the "now" time presumables set by calling millis();
+// Note: m is the "now" time presumables set by calling t_millis();
 // It is provided to allow "dependency injection" (informally), to
 // allos the value to be set very close to the Rollover.
 
@@ -59,7 +59,7 @@ unsigned long set_t_millis(unsigned long new_millis_value_ms,
 
   // A testable version of millis, which can be used to
   // test the rollover problem.
-  unsigned long t_millis();
+unsigned long t_millis();
 
 #endif
 

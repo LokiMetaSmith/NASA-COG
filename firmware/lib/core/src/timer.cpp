@@ -29,6 +29,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <chrono>
 #endif
 #include "timer.h"
+#include <util.h>
 
 
 namespace CogCore {
@@ -37,7 +38,7 @@ namespace CogCore {
 uint64_t Timer::TimeSinceEpochMs() {
 #ifdef ARDUINO
     // Time since device powered on
-    return millis();
+    return t_millis();
 #else
     // Time since Linux epoch
     return std::chrono::duration_cast<std::chrono::milliseconds>
@@ -57,7 +58,7 @@ void Timer::Init() {
 
 uint32_t Timer::Update() {
 #ifdef ARDUINO
-    _msElapsed = (uint32_t)millis() - _msStart;
+    _msElapsed = (uint32_t)t_millis() - _msStart;
 #else
     _msElapsed = static_cast<uint32_t>(TimeSinceEpochMs()) - _msStart;
 #endif

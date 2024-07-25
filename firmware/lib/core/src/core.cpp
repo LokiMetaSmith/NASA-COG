@@ -16,6 +16,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include "core.h"
+#include <util.h>
 #include "debug.h"
 #ifdef ARDUINO
 #include <Arduino.h>
@@ -114,7 +115,7 @@ bool Core::Run() {
         _elapsed = _primaryTimer.Update();
 #endif
 
-        unsigned long m = millis();
+        unsigned long m = t_millis();
         if (DEBUG_CORE > 1) {
           if (m > (time_since_last_report + TIME_TO_REPORT_SCHEDULER_MS)) {
 	    CogCore::Debug<const char *>("Scheduler Still Alive, Number of Ticks:");

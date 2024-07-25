@@ -18,6 +18,7 @@
 */
 
 #include <state_machine_manager.h>
+#include <util.h>
 
 using namespace std;
 
@@ -64,13 +65,13 @@ namespace CogApp
   }
 
   MachineState StateMachineManager::checkCriticalFaults(MachineState ms) {
-    unsigned long now = millis();
+    unsigned long now = t_millis();
     MachineState rms = ms;
     for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++) {
       if (getConfig()->errors[i].fault_present) {
         if (!MachineConfig::IsAShutdownState(getConfig()->ms)) {
           CogCore::Debug<const char *>("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
-          unsigned long now = millis();
+          unsigned long now = t_millis();
           CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) -
                                  ((float) now - (float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
           CogCore::Debug<const char *>(" SECONDS DUE TO : ");
@@ -146,7 +147,7 @@ namespace CogApp
 
 
   float StateMachineManager::computeRampUpSetpointTemp(float t,float recent_t,unsigned long begin_up_time_ms) {
-    unsigned long ms = millis();
+    unsigned long ms = t_millis();
     const unsigned long MINUTES_RAMPING_UP = (ms - begin_up_time_ms) / (60 * 1000);
     float tt = recent_t + MINUTES_RAMPING_UP * getConfig()->RAMP_UP_TARGET_D_MIN;
     tt = min(tt,getConfig()->TARGET_TEMP_C);
@@ -154,7 +155,7 @@ namespace CogApp
     return tt;
   }
   float StateMachineManager::computeRampDnSetpointTemp(float t,float recent_t,unsigned long begin_dn_time_ms) {
-    unsigned long ms = millis();
+    unsigned long ms = t_millis();
     const unsigned long MINUTES_RAMPING_DN = (ms - begin_dn_time_ms) / (60 * 1000);
     float tt = recent_t + MINUTES_RAMPING_DN * getConfig()->RAMP_DN_TARGET_D_MIN;
     tt = max(tt,getConfig()->TARGET_TEMP_C);
@@ -177,7 +178,7 @@ namespace CogApp
     getConfig()->ms = Warmup;
     getConfig()->WARM_UP_BEGIN_TEMP = recent;
     getConfig()->SETPOINT_TEMP_C = recent;
-    getConfig()->BEGIN_UP_TIME_MS = millis();
+    getConfig()->BEGIN_UP_TIME_MS = t_millis();
   }
 
   void StateMachineManager::transitionToCooldown(float recent) {
@@ -185,7 +186,7 @@ namespace CogApp
     getConfig()->ms = Cooldown;
     getConfig()->COOL_DOWN_BEGIN_TEMP = recent;
     getConfig()->SETPOINT_TEMP_C = recent;
-    getConfig()->BEGIN_DN_TIME_MS = millis();
+    getConfig()->BEGIN_DN_TIME_MS = t_millis();
   }
 
   void StateMachineManager::changeTargetTemp(float t) {

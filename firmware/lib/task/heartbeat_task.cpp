@@ -14,6 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include "heartbeat_task.h"
+#include <util.h>
 
 using namespace std;
 
@@ -49,7 +50,7 @@ namespace CogApp
         CogCore::Debug<const char *>("Setting HEARTBEAT: ");
         CogCore::DebugLn<bool>(beat_high);
         CogCore::Debug<const char *>("beats / runtime, should trend to 2.0: ");
-        CogCore::DebugLn<float>((float) debug_number_of_heartbeats * 1000.0 / (float) millis());
+        CogCore::DebugLn<float>((float) debug_number_of_heartbeats * 1000.0 / (float) t_millis());
             }
         return true;
     }

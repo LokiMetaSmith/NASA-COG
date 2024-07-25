@@ -43,7 +43,7 @@ unsigned long ROLLOVER_FOR_TESTING = 0;
 unsigned long fake_addition_to_millis = 0;
 // make this 0 to test.
 
-// Note: m is the "now" time presumables set by calling millis();
+// Note: m is the "now" time presumables set by calling t_millis();
 // It is provided to allow "dependency injection" (informally), to
 // allos the value to be set very close to the Rollover.
 unsigned long set_t_millis(unsigned long new_millis_value_ms, unsigned long m) {

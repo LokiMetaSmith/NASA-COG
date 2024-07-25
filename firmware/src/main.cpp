@@ -41,7 +41,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <OEDCSNetworkTask.h>
 #include <heartbeat_task.h>
 #include <log_recorder_task.h>
-#include <display_task.h>
+// #include <display_task.h>
 #include <shutdown_button_task.h>
 
 #ifdef TEST_FANS_ONLY
@@ -170,20 +170,6 @@ void setup()
   getConfig()->ms = Off;
 
   /***** Configure and add your tasks here *****/
-
-
-  // CogCore::TaskProperties DisplayProperties;
-  // DisplayProperties.name = "Display";
-  // DisplayProperties.id = 50;
-  // DisplayProperties.period = MachineConfig::DISPLAY_UPDATE_MS;
-  // DisplayProperties.priority = CogCore::TaskPriority::Low;
-  // DisplayProperties.state_and_config = (void *) &machineConfig;
-  // bool displayAdd = core.AddTask(&displayTask, &DisplayProperties);
-
-  // if (!displayAdd) {
-  //   CogCore::Debug<const char *>("displayAdd Failed\n");
-  //   abort();
-  // }
 
   CogCore::TaskProperties readTempsProperties;
   readTempsProperties.name = "readTemps";

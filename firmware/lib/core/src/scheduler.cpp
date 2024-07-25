@@ -45,7 +45,7 @@ Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
     // Record how long the previous task took to run
   if (DEBUG_SCHEDULER > 1) {
     CogCore::Debug<const char *>("getNextTask: ");
-    CogCore::DebugLn<uint32_t>(millis());
+    CogCore::DebugLn<uint32_t>(t_millis());
   }
 
     if (_lastTaskRan != nullptr) {
@@ -154,7 +154,7 @@ TaskState Scheduler::RunNextTask(uint32_t msNow) {
     CogCore::Debug<const char *>("About to Run task!\n");
     CogCore::Debug<const char *>(nextTask->_properties.name);
     CogCore::Debug<const char *>(" : ");
-    ms = millis();
+    ms = t_millis();
     CogCore::DebugLn<uint32_t>(ms);
     CogCore::Debug<const char *>("\n");
   }
@@ -162,7 +162,7 @@ TaskState Scheduler::RunNextTask(uint32_t msNow) {
   if (DEBUG_SCHEDULER > 1) {
     CogCore::Debug<const char *>("Finished Run! ");
     CogCore::Debug<const char *>(" : ");
-    CogCore::DebugLn<uint32_t>(millis() - ms);
+    CogCore::DebugLn<uint32_t>(t_millis() - ms);
     CogCore::Debug<const char *>("\n");
   }
     _lastTaskRan = nextTask;
