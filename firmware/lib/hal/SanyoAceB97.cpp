@@ -179,12 +179,12 @@ bool SanyoAceB97::init() {
   PWM_PIN[0] = 9;
   TACH_PIN[0] = A0;
   // Add a symbolic constant here
-  //o  fan_Enable = BLOWER_ENABLE;
+  //  fan_Enable = BLOWER_ENABLE;
 
-//#ifdef FAN_LOCKOUT
+#ifdef BLOWER_ENABLE
   pinMode(BLOWER_ENABLE, OUTPUT);
   digitalWrite(BLOWER_ENABLE, HIGH);
-//#endif
+#endif
 
 
   for(int i = 0; i < NUMBER_OF_FANS; i++) {
@@ -235,7 +235,10 @@ void SanyoAceB97::updatePWM(float pwm_ratio) {
     CogCore::Debug<float>(pwm_ratio);
     CogCore::Debug<const char *>("\n");
   }
+
+#ifdef BLOWER_ENABLE
   digitalWrite(BLOWER_ENABLE, (0.0 == pwm_ratio) ? LOW : HIGH);
+#endif
 
   fanSpeedPerCentage((unsigned int)( pwm_ratio * 100));
   _pwm_ratio[0] = pwm_ratio;

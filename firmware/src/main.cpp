@@ -52,7 +52,7 @@ using namespace CogCore;
 static Core core;
 
 /***** Declare your tasks here *****/
-DisplayTask displayTask;
+// DisplayTask displayTask;
 CogApp::OEDCSNetworkTask OEDCSNetworkTask;
 CogApp::CogTask cogTask;
 CogApp::OEDCSSerialInputTask oedcsSerialInputTask;
@@ -172,18 +172,18 @@ void setup()
   /***** Configure and add your tasks here *****/
 
 
-  CogCore::TaskProperties DisplayProperties;
-  DisplayProperties.name = "Display";
-  DisplayProperties.id = 50;
-  DisplayProperties.period = MachineConfig::DISPLAY_UPDATE_MS;
-  DisplayProperties.priority = CogCore::TaskPriority::Low;
-  DisplayProperties.state_and_config = (void *) &machineConfig;
-  bool displayAdd = core.AddTask(&displayTask, &DisplayProperties);
+  // CogCore::TaskProperties DisplayProperties;
+  // DisplayProperties.name = "Display";
+  // DisplayProperties.id = 50;
+  // DisplayProperties.period = MachineConfig::DISPLAY_UPDATE_MS;
+  // DisplayProperties.priority = CogCore::TaskPriority::Low;
+  // DisplayProperties.state_and_config = (void *) &machineConfig;
+  // bool displayAdd = core.AddTask(&displayTask, &DisplayProperties);
 
-  if (!displayAdd) {
-    CogCore::Debug<const char *>("displayAdd Failed\n");
-    abort();
-  }
+  // if (!displayAdd) {
+  //   CogCore::Debug<const char *>("displayAdd Failed\n");
+  //   abort();
+  // }
 
   CogCore::TaskProperties readTempsProperties;
   readTempsProperties.name = "readTemps";

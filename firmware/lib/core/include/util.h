@@ -25,10 +25,42 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifndef UTIL_H
 #define UTIL_H
 
+
+
+
 namespace CogCore {
+
+
+
 
 bool WithinArrayBounds(int index, int length);
 
 }
+
+
+#ifdef ARDUINO
+#include <Arduino.h>
+
+
+
+
+  // Cause millis to act as if you have set the
+  // the system millisecond function (t_millis) to
+  // a new value given by the argument. This function
+  // can be used to test the rollover of code which
+  // uses the the t_millis() wrapper.
+// Note: m is the "now" time presumables set by calling millis();
+// It is provided to allow "dependency injection" (informally), to
+// allos the value to be set very close to the Rollover.
+
+
+unsigned long set_t_millis(unsigned long new_millis_value_ms,
+                           unsigned long m);
+
+  // A testable version of millis, which can be used to
+  // test the rollover problem.
+  unsigned long t_millis();
+
+#endif
 
 #endif

@@ -24,12 +24,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #ifdef ARDUINO
 #include <Arduino.h>
+// #include <util/atomic.h>
 #else
 #include <chrono>
 #endif
 #include "timer.h"
 
+
 namespace CogCore {
+
 
 uint64_t Timer::TimeSinceEpochMs() {
 #ifdef ARDUINO
