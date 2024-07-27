@@ -39,18 +39,22 @@ class Task {
 
         // Only the scheduler should call these:
         TaskState Init(TaskProperties *properties);
-        void Run(TimeMs now);
+        void Run();
         TaskState Wait(TimeMs now);
     protected:
         TaskState _state;
-        TimeMs _lastRun;
-        TimeMs _lastRunDuration;
-        TimeMs _timeUntilDeadline;
+  // This is a VirtualTimeStamp that is meaningful only relative
+  // to the virtualTime_ms in the scheduler.
+  TimeMs _ms_since_last_run;
+  // This is a duration.
+  TimeMs _lastRunDuration;
+  // This should probably be removed....
+  TimeMs _timeUntilDeadline; // this is a duration
         TaskProperties _properties;
     public:
         Task(): _initialized(false),
                 _state(TaskState::Undefined),
-                _lastRun(0),
+                //                _lastRun(0),
                 _properties({"noname", -1,TaskPriority::Undefined,0})
                 {};
         int DEBUG_TASK = 0;
@@ -70,8 +74,8 @@ class Task {
         TaskState GetState() const;
         TimeMs GetPeriod() const;
 		void SetPeriod( TimeMs );
-        TimeMs GetLastRunTime() const;
-        bool IsHardTiming() const;
+        TimeMs TimeSinceLastRunMs() const;
+    bool IsHardTiming() const;
 
         // The scheduler has privileged access to tasks
         friend class Scheduler;

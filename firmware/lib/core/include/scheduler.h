@@ -71,14 +71,22 @@ struct SchedulerProperties {
 
 class Scheduler {
     private:
-        Task* _lastTaskRan = 0;
+  //        Task* _lastTaskRan = 0;
+  TimeMs wallClockTimer_ms = 0;
+
+  // virtualTime is relative to the tasks and the scheduler as a whole;
+  // it is kept self-consistent (and low) by subtracing values whenever
+  // possible. This whole system could probably be termed into an O(1)
+  // scheduler by keeping the tasks sorted, but there is little payoff
+  // in doing that for NASA.
+  TimeMs  virtualTime_ms = 0;
         static const int32_t MAX_TASKS = 40; // TODO: make this better
         CogCollections::Map<TaskId, Task*, MAX_TASKS> map;
         TaskId _currentRunningTaskId = 0;
         int32_t _numberOfTasks = 0;
         SchedulerProperties _properties;
         void setupIdleTask();
-        Task* getNextTaskToRun(TimeMs currentTime);
+        Task* getNextTaskToRun();
     public:
 	    Scheduler() ;
         ~Scheduler() = default;
@@ -86,8 +94,12 @@ class Scheduler {
         int DEBUG_SCHEDULER = 0;
         bool Init();
         bool AddTask(Task *task, TaskProperties *properties);
-        TaskState RunNextTask(uint32_t msNow);
-        TaskState RunTaskById(uint32_t msNow, TaskId id);
+
+  //  void decrementVirtualTimesToBaseline(TimeMs ms);
+  void incrementVirtualTimes(TimeMs ms);
+  void advanceVirtualTimeByIncrementAndBaseline(TimeMs ms);
+        TaskState RunNextTask();
+        TaskState RunTaskById(TaskId id);
         TaskId GetRunningTaskId() const;
         Task *GetTaskById(TaskId id);
         void SetProperties(SchedulerProperties properties);

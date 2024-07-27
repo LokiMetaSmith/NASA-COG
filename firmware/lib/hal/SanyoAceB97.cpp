@@ -51,7 +51,12 @@
     unsigned long m = t_millis();
     if (tach_data_ts[i] + PERIOD < m) {
       tach_data_ocnt[i] = tach_data_cnt[i];
-      tach_data_duration[i] = m - tach_data_ts[i];
+      // handle the possible ms rollover
+      if (m > tach_data_ts[i]) {
+        tach_data_duration[i] = m - tach_data_ts[i];
+      } else {
+        tach_data_duration[i] = 0;
+      }
       tach_data_ts[i] = m;
       tach_data_cnt[i] = 0;
     }
