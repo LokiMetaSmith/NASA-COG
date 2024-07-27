@@ -82,4 +82,17 @@ unsigned long t_millis() {
     }
   }
 }
+
+unsigned long t_millis_assert_no_rollover(unsigned long previous,
+                                          bool& error) {
+  unsigned long m = millis();
+  if (m < previous) {
+    error = true;
+  } else {
+    error = false;
+  }
+  // Do this in order to allow testing, rather than returning m
+  return t_millis();
+}
+
 #endif

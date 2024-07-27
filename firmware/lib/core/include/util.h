@@ -60,7 +60,8 @@ unsigned long set_t_millis(unsigned long new_millis_value_ms,
   // A testable version of millis, which can be used to
   // test the rollover problem.
 unsigned long t_millis();
-
+unsigned long t_millis_assert_no_rollover(unsigned long previous,
+                                          bool& error);
 // x_millis() is just a marker to show what code has been considered.
 // It should be replaced with t_millis whereever the code has been
 // properly reviewed.
