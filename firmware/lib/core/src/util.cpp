@@ -63,6 +63,9 @@ unsigned long set_t_millis(unsigned long new_millis_value_ms, unsigned long m) {
 }
 // A testable version of millis, which can be used to
 // test the rollover problem.
+unsigned long x_millis() {
+  return t_millis();
+}
 unsigned long t_millis() {
   unsigned long m = millis();
   if (fake_addition_to_millis) {

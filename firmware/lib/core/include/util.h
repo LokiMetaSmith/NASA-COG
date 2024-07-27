@@ -61,6 +61,11 @@ unsigned long set_t_millis(unsigned long new_millis_value_ms,
   // test the rollover problem.
 unsigned long t_millis();
 
+// x_millis() is just a marker to show what code has been considered.
+// It should be replaced with t_millis whereever the code has been
+// properly reviewed.
+unsigned long x_millis();
+
 #endif
 
 #endif

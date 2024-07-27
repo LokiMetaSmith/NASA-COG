@@ -132,7 +132,7 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
       // if one is already present, we leave it.
       if (!getConfig()->errors[ec].fault_present) {
         getConfig()->errors[ec].fault_present = true;
-        getConfig()->errors[ec].begin_condition_ms = t_millis();
+        getConfig()->errors[ec].begin_condition_ms = x_millis();
       }
   } else if (temp == DEVICE_FAULT_OPEN_C) {
     CogCore::Debug<const char *>("THERMOCOUPLE OPEN FAULT FOR : ");
@@ -142,7 +142,7 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
       // if one is allready present, we leave it.
       if (!getConfig()->errors[ec].fault_present) {
         getConfig()->errors[ec].fault_present = true;
-        getConfig()->errors[ec].begin_condition_ms = t_millis();
+        getConfig()->errors[ec].begin_condition_ms = x_millis();
       }
   } else if (temp == DEVICE_FAULT_SHORTGND_C) {
     CogCore::Debug<const char *>("THERMOCOUPLE GROUND SHORT FAULT FOR : ");
@@ -152,7 +152,7 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
       // if one is allready present, we leave it.
       if (!getConfig()->errors[ec].fault_present) {
         getConfig()->errors[ec].fault_present = true;
-        getConfig()->errors[ec].begin_condition_ms = t_millis();
+        getConfig()->errors[ec].begin_condition_ms = x_millis();
       }
   } else if (temp == DEVICE_FAULT_SHORTVDD_C) {
     CogCore::Debug<const char *>("THERMOCOUPLE VDD SHORT FAULT FOR : ");
@@ -162,7 +162,7 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
       // if one is allready present, we leave it.
       if (!getConfig()->errors[ec].fault_present) {
         getConfig()->errors[ec].fault_present = true;
-        getConfig()->errors[ec].begin_condition_ms = t_millis();
+        getConfig()->errors[ec].begin_condition_ms = x_millis();
       }
   } else if (temp == -0.19) {
     CogCore::Debug<const char *>("THERMOCOUPLE PROBABLE ANALOG DISCONNECT FOR :");
@@ -170,7 +170,7 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
     CogCore::Debug<const char *>("\n");
       if (!getConfig()->errors[ec].fault_present) {
         getConfig()->errors[ec].fault_present = true;
-        getConfig()->errors[ec].begin_condition_ms = t_millis();
+        getConfig()->errors[ec].begin_condition_ms = x_millis();
       }
   } else if (temp < 0.0) {
     CogCore::Debug<const char *>("THERMOCOUPLE PROBABLE  FOR :");
@@ -178,7 +178,7 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
     CogCore::Debug<const char *>("\n");
       if (!getConfig()->errors[ec].fault_present) {
         getConfig()->errors[ec].fault_present = true;
-        getConfig()->errors[ec].begin_condition_ms = t_millis();
+        getConfig()->errors[ec].begin_condition_ms = x_millis();
       }
   } else {
     if (getConfig()->errors[ec].fault_present) {
@@ -218,7 +218,7 @@ void ReadTempsTask::updateTemperatures() {
           CogCore::Debug<const char *>("\n");
           if (!MachineConfig::IsAShutdownState(getConfig()->ms)) {
             CogCore::Debug<const char *>("WILL AUTOMATICALLY SHUTDOWN IF NOT RESTORED IN ");
-            unsigned long now = t_millis();
+            unsigned long now = x_millis();
             CogCore::Debug<float>((((float) getConfig()->errors[i].toleration_ms) - ((float) now - (float) getConfig()->errors[i].begin_condition_ms)) / (float) 1000);
             CogCore::Debug<const char *>(" SECONDS.!\n");
           }
@@ -296,7 +296,7 @@ void ReadTempsTask::updateTemperatures() {
         }
 
         getConfig()->errors[SYSTEM_OVER_TEMPERATURE].fault_present = true;
-        getConfig()->errors[SYSTEM_OVER_TEMPERATURE].begin_condition_ms = t_millis();
+        getConfig()->errors[SYSTEM_OVER_TEMPERATURE].begin_condition_ms = x_millis();
       }
   }
 

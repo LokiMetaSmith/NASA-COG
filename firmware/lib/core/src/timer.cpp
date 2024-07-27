@@ -40,7 +40,7 @@ namespace CogCore {
 uint64_t Timer::TimeSinceEpochMs() {
 #ifdef ARDUINO
     // Time since device powered on
-    return t_millis();
+    return x_millis();
 #else
     // Time since Linux epoch
     return std::chrono::duration_cast<std::chrono::milliseconds>
@@ -61,12 +61,12 @@ void Timer::Init() {
 uint32_t Timer::Update() {
 #ifdef ARDUINO
   // The Arudino ms timer can "rollover" after 49.7 days.
-  // We use t_millis() to test this. When this happens,
+  // We use x_millis() to test this. When this happens,
   // we definitely cannot perform a simple subtraction from
   // _msStart. The simplest thing to do is to set _msStart to
   // m in this case. This will create an incorrect time
   // (which lasts a little too long) once every 49.7 days.
-  uint32_t m = t_millis();
+  uint32_t m = x_millis();
 
   // Note, when this happens, we in fact need to update all the
   // schedule times

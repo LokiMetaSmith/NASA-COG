@@ -754,20 +754,20 @@ int SL_PS::updateVoltage(float voltage, MachineConfig *config) {
 
   if (DEBUG_SL_PS_UV > 0) {
     CogCore::Debug<const char *>("SL_PS Voltage Updated 1: ");
-    CogCore::DebugLn<int>(t_millis());
+    CogCore::DebugLn<int>(x_millis());
   }
 
   getPS_OutVoltage(this->address);
   if (DEBUG_SL_PS_UV > 0) {
     CogCore::DebugLn<const char *>("SL_PS Voltage Updated 1.5");
-    CogCore::DebugLn<int>(t_millis());
+    CogCore::DebugLn<int>(x_millis());
   }
 
   getPS_OutCurrent(this->address);
 
   if (DEBUG_SL_PS_UV > 0) {
     CogCore::DebugLn<const char *>("SL_PS Voltage Updated 2");
-    CogCore::DebugLn<int>(t_millis());
+    CogCore::DebugLn<int>(x_millis());
   }
 
   msr->stack_voltage = out_voltage / 100.0;
@@ -781,7 +781,7 @@ int SL_PS::updateVoltage(float voltage, MachineConfig *config) {
 
   if (DEBUG_SL_PS_UV > 0) {
     CogCore::DebugLn<const char *>("SL_PS Voltage Updated 3");
-    CogCore::DebugLn<int>(t_millis());
+    CogCore::DebugLn<int>(x_millis());
   }
 
   if (DEBUG_SL_PS_UV > 0) {

@@ -49,7 +49,7 @@
     tachISR(3); };
 
   void refresh_tach_data(uint8_t i) {
-    unsigned long m = t_millis();
+    unsigned long m = x_millis();
     if (tach_data_ts[i] + PERIOD < m) {
       tach_data_ocnt[i] = tach_data_cnt[i];
       tach_data_duration[i] = m - tach_data_ts[i];

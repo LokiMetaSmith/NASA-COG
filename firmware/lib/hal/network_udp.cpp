@@ -151,9 +151,9 @@ NetworkUDP::getTime(uint16_t timeout) {
   }
 
   // Note: This is a hard loop --- UDP_TIMEOUT blocks the machine for that time
-  unsigned long startMs = t_millis();
+  unsigned long startMs = x_millis();
   int packetSize = 0;
-  while (! packetSize && (t_millis() - startMs) < timeout) {
+  while (! packetSize && (x_millis() - startMs) < timeout) {
     delay(10);
     packetSize = Udp.parsePacket();
     watchdogReset();
@@ -215,9 +215,9 @@ NetworkUDP::sendData(char *data, unsigned long current_time, uint16_t timeout) {
   // This significantly slowed this function down, which needs
   // to log 600 records when a log is dumped.
   // It is unclear that the MCOG_SERVER even sends a response!
-  // unsigned long startMs = t_millis();
+  // unsigned long startMs = x_millis();
   // int packetSize = 0;
-  // while (! packetSize && (t_millis() - startMs) < timeout) {
+  // while (! packetSize && (x_millis() - startMs) < timeout) {
   //   delay(10);
   //   packetSize = Udp.parsePacket();
   //   watchdogReset();
@@ -260,13 +260,13 @@ NetworkUDP::getParams(uint16_t timeout) {
     return false;
   }
 
-  unsigned long startMs = t_millis();
+  unsigned long startMs = x_millis();
   int packetSize = 0;
-  while (!packetSize && (t_millis() - startMs) < timeout) {
+  while (!packetSize && (x_millis() - startMs) < timeout) {
     delay(10);
     if (DEBUG_UDP > 2) {
       CogCore::Debug<const char *>("Calling parse packet (should loop)\n");
-      CogCore::Debug<uint32_t>((t_millis() - startMs));
+      CogCore::Debug<uint32_t>((x_millis() - startMs));
       CogCore::Debug<const char *>("\n");
     }
     packetSize = Udp.parsePacket();
@@ -377,9 +377,9 @@ NetworkUDP::networkStart() {
   W5100.setIPAddress((uint8_t *) &add);
   SPI.endTransaction();
 
-  uint32_t startMs = t_millis();
+  uint32_t startMs = x_millis();
   // this seems to take about 3 seconds!!!  don't change
-  while (W5100.getLinkStatus() != LINK_ON && (t_millis() - startMs) < 3000) {
+  while (W5100.getLinkStatus() != LINK_ON && (x_millis() - startMs) < 3000) {
     delay(10);
     watchdogReset();
   }

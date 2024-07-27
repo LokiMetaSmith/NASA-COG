@@ -38,7 +38,7 @@ namespace CogApp
       CogCore::Debug<int>(_nextRecord);
       CogCore::Debug<const char *>("\n");
     }
-    getConfig()->report->timestamp = t_millis();
+    getConfig()->report->timestamp = x_millis();
 
     const int m = getConfig()->MAX_RECORDS;
     if (_numRecords < m) _numRecords++;
@@ -49,7 +49,7 @@ namespace CogApp
       getConfig()->_log_entry[_nextRecord].errors[i]
         = getConfig()->errors[i].fault_present;
     }
-    getConfig()->_log_entry[_nextRecord].timestamp = t_millis();
+    getConfig()->_log_entry[_nextRecord].timestamp = x_millis();
     _nextRecord = (_nextRecord + 1) % m;
 
     if (currently_dumping) {
@@ -61,7 +61,7 @@ namespace CogApp
   void Log_Recorder_Task::dumpRecords() {
     currently_dumping = true;
     int recordCount = getConfig()->MAX_RECORDS;
-    unsigned long myStartTime = t_millis();
+    unsigned long myStartTime = x_millis();
     int minr = min(_numRecords,MAX_RECORDS_TO_DUMP_AT_ONCE);
     if (DEBUG_LOG_RECORDER) {
       CogCore::Debug<unsigned long>(myStartTime);
@@ -79,13 +79,13 @@ namespace CogApp
     for(int i = 0; i < minr; i++) {
       int j = (firstRecord + i) % recordCount;
       MachineStatusReport msr_lre = getConfig()->_log_entry[j];
-      unsigned long spot_time0 = t_millis();
+      unsigned long spot_time0 = x_millis();
       getConfig()->outputReport(&msr_lre);
-      unsigned long spot_time1 = t_millis();
+      unsigned long spot_time1 = x_millis();
       oedcsNetworkTask->logReport(&msr_lre);
-      unsigned long spot_time2 = t_millis();
+      unsigned long spot_time2 = x_millis();
       core->ResetAllWatchdogs();
-      unsigned long spot_time3 = t_millis();
+      unsigned long spot_time3 = x_millis();
       if (DEBUG_LOG_RECORDER) {
         CogCore::Debug<const char *>("PER RECORD TIMES");
         CogCore::Debug<const char *>("outputReport: ");
@@ -101,7 +101,7 @@ namespace CogApp
       currently_dumping = false;
     }
 
-    unsigned long myFinishTime = t_millis();
+    unsigned long myFinishTime = x_millis();
 
     if (DEBUG_LOG_RECORDER) {
       CogCore::Debug<unsigned long>(myFinishTime);

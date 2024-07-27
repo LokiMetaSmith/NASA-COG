@@ -68,7 +68,7 @@ bool DutyCycleTask::_init()
 /* void DutyCycleTask::reset_duty_cycle() {
    recorded_duty_cycle = 0;
    recorded_dc_ms = 0;
-   time_of_last_check = t_millis();
+   time_of_last_check = x_millis();
    }
 */
 
@@ -85,7 +85,7 @@ bool DutyCycleTask::_run()
     CogCore::Debug<const char *>("DUTY CYCLE MID!\n");
   }
 
-  unsigned long ms = t_millis();
+  unsigned long ms = x_millis();
   unsigned long delta_t = ms - time_of_last_check;
   // now we update the recorded duty_cycle weight
   float old_dc = recorded_duty_cycle;

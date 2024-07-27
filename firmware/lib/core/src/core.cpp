@@ -120,7 +120,7 @@ bool Core::Run() {
 #endif
 
         if (DEBUG_CORE > 1) {
-          unsigned long m = t_millis();
+          unsigned long m = x_millis();
           if (m < time_since_last_report) {
             time_since_last_report = m;
           }

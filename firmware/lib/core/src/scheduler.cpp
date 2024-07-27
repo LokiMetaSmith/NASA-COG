@@ -45,7 +45,7 @@ void Scheduler::setupIdleTask() {
   // not the currenTime, but how much to advance time by.
   // By creating a "virtual tine" in this way, we become impervious to
   // clock rollover, and in fact become completely abstract, and never
-  // actually call millis() or t_millis() with this code.
+  // actually call millis() or x_millis() with this code.
 
   // void Scheduler::decrementVirtualTimesToBaseline(TimeMs ms) {
   //   for (int i = 0; i < map.getCount(); i++) {
@@ -98,7 +98,7 @@ void Scheduler::setupIdleTask() {
     // Record how long the previous task took to run
   if (DEBUG_SCHEDULER > 1) {
     //    CogCore::Debug<const char *>("getNextTask: ");
-    //    CogCore::DebugLn<uint32_t>(t_millis());
+    //    CogCore::DebugLn<uint32_t>(x_millis());
     CogCore::Debug<const char *>("virtualTime_ms: ");
     CogCore::DebugLn<uint32_t>(virtualTime_ms);
   }
@@ -223,7 +223,7 @@ TaskState Scheduler::RunNextTask() {
     CogCore::Debug<const char *>("About to Run task!\n");
     CogCore::Debug<const char *>(nextTask->_properties.name);
     CogCore::Debug<const char *>(" : ");
-    ms = t_millis();
+    ms = x_millis();
     CogCore::DebugLn<uint32_t>(ms);
     CogCore::Debug<const char *>("\n");
   }
@@ -231,7 +231,7 @@ TaskState Scheduler::RunNextTask() {
   if (DEBUG_SCHEDULER > 1) {
     CogCore::Debug<const char *>("Finished Run! ");
     CogCore::Debug<const char *>(" : ");
-    CogCore::DebugLn<uint32_t>(t_millis() - ms);
+    CogCore::DebugLn<uint32_t>(x_millis() - ms);
     CogCore::Debug<const char *>("\n");
   }
   //    _lastTaskRan = nextTask;
