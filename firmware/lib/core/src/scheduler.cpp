@@ -30,7 +30,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <error_handler.h>
 
 namespace CogCore {
-Scheduler::Scheduler() 
+Scheduler::Scheduler()
 {
 	_properties.mode = SchedulerMode::RealTime;
 }
@@ -41,36 +41,61 @@ void Scheduler::setupIdleTask() {
     _idleTask._properties.id = 0;
 }
 
-Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
-    // Record how long the previous task took to run
-  if (DEBUG_SCHEDULER > 1) {
-    CogCore::Debug<const char *>("getNextTask: ");
-    CogCore::DebugLn<uint32_t>(millis());
+
+  void Scheduler::incrementVirtualTimes(TimeMs ms) {
+    for (int i = 0; i < map.getCount(); i++) {
+        Task *task = map.getValueByIndex(i);
+        task->_ms_since_last_run += ms;
+    }
+    virtualTime_ms += ms;
   }
 
-    if (_lastTaskRan != nullptr) {
-        _lastTaskRan->_lastRunDuration = currentTime - _lastTaskRan->_lastRun;
+  void Scheduler::advanceVirtualTimeByIncrementAndBaseline(TimeMs increment) {
+    // In order to atomically change the VirtualTime, must we must add the
+    // same amount to all of the _lastRunAgo_ms fields.
+    // This is a very large sentinel value;
+
+    if (DEBUG_SCHEDULER > 4) {
+	   CogCore::Debug<const char *>("increment: ");
+	   CogCore::DebugLn<uint32_t>(increment);
     }
+
+    incrementVirtualTimes(increment);
+  }
+  Task* Scheduler::getNextTaskToRun() {
+    // Record how long the previous task took to run
+  if (DEBUG_SCHEDULER > 1) {
+    CogCore::Debug<const char *>("virtualTime_ms: ");
+    CogCore::DebugLn<uint32_t>(virtualTime_ms);
+  }
 
     Task* nextTask = nullptr;
     TimeMs maxTimeUntilDeadline = -99999;
     for (int i = 0; i < map.getCount(); i++) {
         Task *task = map.getValueByIndex(i);
 
-        TimeMs lastRunTime = task->GetLastRunTime();
+        TimeMs ms_since_last_run = task->TimeSinceLastRunMs();
         TimeMs period = task->GetPeriod();
 
         // The next task to run is the most positive one
-        // < 0 time remaining
+        // < 0 time remaining to run
         // = 0 due now
-        // > 0 time overrun
-        task->_timeUntilDeadline = currentTime - (lastRunTime + period);
+        // > 0 time-to-runoverrun
+       task->_timeUntilDeadline = ms_since_last_run - period;
 
         if (DEBUG_SCHEDULER > 1) {
+        double x = ms_since_last_run;
+        double y = period;
+        double z = virtualTime_ms;
+        double q = z - (x+y);
+	      CogCore::Debug<const char *>("Q Deadline: ");
+          CogCore::DebugLn<double>(q);
+	      CogCore::Debug<const char *>("LastRunTimeAgo: ");
+          CogCore::DebugLn<uint32_t>(ms_since_last_run);
 	      CogCore::Debug<const char *>("timeUntilDeadline: ");
 	      CogCore::Debug<const char *>(task->_properties.name);
 	      CogCore::Debug<const char *>(" ");
-              Serial.print((int32_t) task->_timeUntilDeadline);
+          CogCore::DebugLn<int32_t>( task->_timeUntilDeadline);
               //	      CogCore::Debug<int32_t>(task->_timeUntilDeadline);
 	      CogCore::Debug<const char *>("\n");
         }
@@ -80,9 +105,10 @@ Task* Scheduler::getNextTaskToRun(TimeMs currentTime) {
             nextTask = task;
         }
 
-        if ((-1 * nextTask->_timeUntilDeadline) > nextTask->_lastRunDuration) {
-            nextTask = nullptr;
-        }
+        // // this is a rather confusing way to do this math.
+        // if ((-1 * nextTask->_timeUntilDeadline) > nextTask->_lastRunDuration) {
+        //     nextTask = nullptr;
+        // }
     }
   if (DEBUG_SCHEDULER > 0) {
     if (nextTask == nullptr) {
@@ -134,48 +160,57 @@ bool Scheduler::Init() {
     }
 }
 
-TaskState Scheduler::RunNextTask(uint32_t msNow) {
-    Task* nextTask = nullptr;
+  // Note our naming here is inconsistent...
+  // This makes this look like it is a timestamp,
+  // but when it is called it looks like a duration.
+  // I think this is actoung the time elapsed since the timer started,
+  // Though that is not Init'ed only once in the current code.
+
+TaskState Scheduler::RunNextTask() {
+
+  Task* nextTask = nullptr;
 
     switch (_properties.mode) {
         case SchedulerMode::RoundRobin:
             ErrorHandler::Log(ErrorLevel::Critical, ErrorCode::NotImplemented);
         break;
         case SchedulerMode::RealTime:
-            nextTask = getNextTaskToRun(msNow);
+            nextTask = getNextTaskToRun();
         break;
         default:
             ErrorHandler::Log(ErrorLevel::Critical, ErrorCode::NotImplemented);
         break;
     }
 
+    // Calling the clock is dangerous, but this is short-duration
+    // and inside debugging code.
     unsigned long ms ;
   if (DEBUG_SCHEDULER > 1) {
     CogCore::Debug<const char *>("About to Run task!\n");
     CogCore::Debug<const char *>(nextTask->_properties.name);
     CogCore::Debug<const char *>(" : ");
-    ms = millis();
+    ms = t_millis();
     CogCore::DebugLn<uint32_t>(ms);
     CogCore::Debug<const char *>("\n");
   }
-    nextTask->Run(msNow);
+    nextTask->Run();
   if (DEBUG_SCHEDULER > 1) {
     CogCore::Debug<const char *>("Finished Run! ");
     CogCore::Debug<const char *>(" : ");
-    CogCore::DebugLn<uint32_t>(millis() - ms);
+    CogCore::DebugLn<uint32_t>(t_millis() - ms);
     CogCore::Debug<const char *>("\n");
   }
-    _lastTaskRan = nextTask;
+  //    _lastTaskRan = nextTask;
     return nextTask->GetState();
 }
 
-TaskState Scheduler::RunTaskById(uint32_t msNow, TaskId id) {
+TaskState Scheduler::RunTaskById(TaskId id) {
     Task* tp = map.getValue(id);
     if (tp == nullptr) {
         return TaskState::Error;
     } else {
         _currentRunningTaskId = id;
-        tp->Run(msNow);
+        tp->Run();
         return TaskState::Running;
     }
 }

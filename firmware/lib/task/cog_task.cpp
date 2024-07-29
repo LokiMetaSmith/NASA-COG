@@ -21,6 +21,7 @@
 #include <cmath>
 #include <abstract_temperature.h>
 #include <TF800A12K.h>
+#include <util.h>
 
 // from: https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
 // This should be made into a separte task,
@@ -62,7 +63,7 @@ namespace CogApp
     getConfig()->fanDutyCycle = 0.0;
     const float MAXIMUM_TOTAL_WATTAGE = MachineConfig::HEATER_MAXIMUM_WATTAGE + getConfig()->MAX_STACK_WATTAGE;
     wattagePIDObject = new WattagePIDObject(MAXIMUM_TOTAL_WATTAGE);
-	time_last_temp_changed_ms = millis(); //initialize time_last_temp_changed_ms when the task starts
+	time_last_temp_changed_ms = t_millis(); //initialize time_last_temp_changed_ms when the task starts
     return true;
   }
 
@@ -226,7 +227,7 @@ namespace CogApp
       CogCore::DebugLn<const char *>("WARNING: AT PRESENT NO ACTION WILL BE TAKEN!!\n");
       if (!getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present) {
         getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present = true;
-        getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].begin_condition_ms = millis();
+        getConfig()->errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].begin_condition_ms = t_millis();
       }
       return getConfig()->FAN_SPEED_MAX_p;
       break;
@@ -305,7 +306,7 @@ namespace CogApp
     const float T_c = (B+C) / 2.0;
     const float T_k = T_c + 273.15;
 
-    unsigned long time = millis();
+    unsigned long time = t_millis();
     if (USE_PAUSING) {
         const float DT_K = abs(B - C);
         if (DEBUG_LEVEL_OBA > 2) {
@@ -319,6 +320,9 @@ namespace CogApp
                 CogCore::Debug<const char *>("PAUSING! X and temp:");
                 CogCore::Debug<float>(A);
             } else {
+              if (time < c.current_pause_began) { // ROLLOVER EVENT
+                c.current_pause_began = 0;
+              }
                 if (time > (c.current_pause_began + c.PAUSE_TIME_S * 1000)) {
                     c.pause_substate++;
                     c.current_pause_began = time;
@@ -486,7 +490,7 @@ namespace CogApp
       CogCore::Debug<const char *>("Probable AC Power (+24V) FAIL.\n");
       if (!getConfig()->errors[PWR_24V_BAD].fault_present) {
         getConfig()->errors[PWR_24V_BAD].fault_present = true;
-        getConfig()->errors[PWR_24V_BAD].begin_condition_ms = millis();
+        getConfig()->errors[PWR_24V_BAD].begin_condition_ms = t_millis();
         retval = false;
       }
     }
@@ -501,7 +505,7 @@ namespace CogApp
       CogCore::Debug<const char *>("+12V out of tolerance.\n");
       if (!getConfig()->errors[PWR_12V_BAD].fault_present) {
         getConfig()->errors[PWR_12V_BAD].fault_present = true;
-        getConfig()->errors[PWR_12V_BAD].begin_condition_ms = millis();
+        getConfig()->errors[PWR_12V_BAD].begin_condition_ms = t_millis();
         retval = false;
       }
     }
@@ -517,7 +521,7 @@ namespace CogApp
       CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
       if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
         getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
-        getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = millis();
+        getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = t_millis();
         retval = false;
       }
     }
@@ -561,7 +565,7 @@ namespace CogApp
       CogCore::DebugLn<const char *>("Fan Fault Present");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
         getConfig()->errors[FAN_UNRESPONSIVE].fault_present = true;
-        getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = millis();
+        getConfig()->errors[FAN_UNRESPONSIVE].begin_condition_ms = t_millis();
         retval = false;
       }
     }
@@ -575,7 +579,10 @@ namespace CogApp
     // We only want to test this condition when we are in an on state,
     // because only then does the SETPOINT have meaning.
     if (!(MachineConfig::IsAShutdownState(getConfig()->ms) || (Off == getConfig()->ms))) {
-      unsigned long time_now = millis();
+      unsigned long time_now = t_millis();
+      if (time_now < time_last_temp_changed_ms) { // ROLLOVER EVENT
+        time_last_temp_changed_ms = 0;
+      }
       if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
         time_last_temp_changed_ms = time_now;
         if (!evaluateHeaterEnvelope(getTemperatureReadingA_C(),
@@ -590,7 +597,7 @@ namespace CogApp
           CogCore::DebugLn<const char *>("Heater Fault Present");
           if (!getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present) {
             getConfig()->errors[HEATER_OUT_OF_BOUNDS].fault_present = true;
-            getConfig()->errors[HEATER_OUT_OF_BOUNDS].begin_condition_ms = millis();
+            getConfig()->errors[HEATER_OUT_OF_BOUNDS].begin_condition_ms = t_millis();
             retval = false;
           }
         } else {
@@ -607,7 +614,7 @@ namespace CogApp
       CogCore::DebugLn<const char *>("PSU Fault Present");
       if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
         getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
-        getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+        getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = t_millis();
         retval = false;
       }
       break;
@@ -628,7 +635,7 @@ namespace CogApp
           CogCore::DebugLn<const char *>("PSU Fault Present");
           if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
             getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
-            getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+            getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = t_millis();
             retval = false;
           }
           break;
@@ -856,7 +863,10 @@ namespace CogApp
         CogCore::Debug<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
       }
 
-      unsigned long now_ms = millis();
+      unsigned long now_ms = t_millis();
+      if (now_ms < last_time_ramp_changed_ms) { // ROLLOVER_EVENT
+        last_time_ramp_changed_ms = 0;
+      }
       unsigned long delta_ms = now_ms - last_time_ramp_changed_ms;
       changeRamps(delta_ms);
       getConfig()->report->target_fan_pc = c.tS_p;
@@ -907,7 +917,7 @@ namespace CogApp
       //   	   CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
       //   if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
       //     getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
-      //     getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = millis();
+      //     getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = t_millis();
       //   }
       // }
       //     else {
@@ -947,7 +957,7 @@ namespace CogApp
       //   	   CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
       //   if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
       //     getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
-      //     getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = millis();
+      //     getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = t_millis);
       //   }
       // }else {
       //   if (getConfig()->errors[STACK_LOSS_CTL].fault_present) {
@@ -1068,7 +1078,7 @@ namespace CogApp
     if (DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Updating Stack Voltage (BBB): ");
       CogCore::DebugLn<float>(voltage);
-      CogCore::DebugLn<unsigned long>(millis());
+      CogCore::DebugLn<unsigned long>(t_millis());
     }
 
     for (int i = 0; i < getHAL()->NUM_STACKS; i++) {
@@ -1079,13 +1089,13 @@ namespace CogApp
         }
         if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
           getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
-          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = t_millis();
         }
       }
     }
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("Done (BBB): ");
-      CogCore::DebugLn<unsigned long>(millis());
+      CogCore::DebugLn<unsigned long>(t_millis());
     }
 
   }
@@ -1109,7 +1119,7 @@ namespace CogApp
         }
         if (!getConfig()->errors[PSU_UNRESPONSIVE].fault_present) {
           getConfig()->errors[PSU_UNRESPONSIVE].fault_present = true;
-          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = millis();
+          getConfig()->errors[PSU_UNRESPONSIVE].begin_condition_ms = t_millis();
         }
       }
     }

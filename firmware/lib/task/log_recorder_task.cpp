@@ -14,6 +14,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include "log_recorder_task.h"
+#include <util.h>
 
 
 using namespace std;
@@ -37,7 +38,7 @@ namespace CogApp
       CogCore::Debug<int>(_nextRecord);
       CogCore::Debug<const char *>("\n");
     }
-    getConfig()->report->timestamp = millis();
+    getConfig()->report->timestamp = t_millis();
 
     const int m = getConfig()->MAX_RECORDS;
     if (_numRecords < m) _numRecords++;
@@ -48,7 +49,7 @@ namespace CogApp
       getConfig()->_log_entry[_nextRecord].errors[i]
         = getConfig()->errors[i].fault_present;
     }
-    getConfig()->_log_entry[_nextRecord].timestamp = millis();
+    getConfig()->_log_entry[_nextRecord].timestamp = t_millis();
     _nextRecord = (_nextRecord + 1) % m;
 
     if (currently_dumping) {
@@ -60,7 +61,9 @@ namespace CogApp
   void Log_Recorder_Task::dumpRecords() {
     currently_dumping = true;
     int recordCount = getConfig()->MAX_RECORDS;
-    unsigned long myStartTime = millis();
+    // Since this is needed only for debugging,
+    // we need not worry about Rollover
+    unsigned long myStartTime = t_millis();
     int minr = min(_numRecords,MAX_RECORDS_TO_DUMP_AT_ONCE);
     if (DEBUG_LOG_RECORDER) {
       CogCore::Debug<unsigned long>(myStartTime);
@@ -78,13 +81,13 @@ namespace CogApp
     for(int i = 0; i < minr; i++) {
       int j = (firstRecord + i) % recordCount;
       MachineStatusReport msr_lre = getConfig()->_log_entry[j];
-      unsigned long spot_time0 = millis();
+      unsigned long spot_time0 = t_millis();
       getConfig()->outputReport(&msr_lre);
-      unsigned long spot_time1 = millis();
+      unsigned long spot_time1 = t_millis();
       oedcsNetworkTask->logReport(&msr_lre);
-      unsigned long spot_time2 = millis();
+      unsigned long spot_time2 = t_millis();
       core->ResetAllWatchdogs();
-      unsigned long spot_time3 = millis();
+      unsigned long spot_time3 = t_millis();
       if (DEBUG_LOG_RECORDER) {
         CogCore::Debug<const char *>("PER RECORD TIMES");
         CogCore::Debug<const char *>("outputReport: ");
@@ -100,7 +103,7 @@ namespace CogApp
       currently_dumping = false;
     }
 
-    unsigned long myFinishTime = millis();
+    unsigned long myFinishTime = t_millis();
 
     if (DEBUG_LOG_RECORDER) {
       CogCore::Debug<unsigned long>(myFinishTime);

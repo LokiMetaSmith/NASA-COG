@@ -31,10 +31,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <chrono>
 #endif
 
+void setMillis_GLOBAL_TEST_ONLY(unsigned long ms);
+
+
 namespace CogCore {
 
 // TODO: This should be for Linux only
 //using namespace std::chrono;
+
+
 
 class Timer {
     private:
