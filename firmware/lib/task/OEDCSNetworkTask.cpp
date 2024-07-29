@@ -106,13 +106,13 @@ namespace CogApp
     }
     // Conjecture: This should use the report timestamp
     //
-    unsigned long current_epoch_time = net_udp.epoch + x_millis() / 1000;
+    unsigned long current_epoch_time = net_udp.epoch + t_millis() / 1000;
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("About to Send Data!\n");
     }
-    unsigned long spot_time0 = x_millis();
+    unsigned long spot_time0 = t_millis();
     net_udp.sendData(buffer,current_epoch_time, 2000);
-    unsigned long spot_time1 = x_millis();
+    unsigned long spot_time1 = t_millis();
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("sendData ms");
       CogCore::DebugLn<long>(spot_time1 - spot_time0);

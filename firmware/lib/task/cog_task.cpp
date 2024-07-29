@@ -917,7 +917,7 @@ namespace CogApp
       //   	   CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
       //   if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
       //     getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
-      //     getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = x_millis();
+      //     getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = t_millis();
       //   }
       // }
       //     else {
@@ -957,7 +957,7 @@ namespace CogApp
       //   	   CogCore::Debug<const char *>("Stack Wattage out of tolerance.\n");
       //   if (!getConfig()->errors[STACK_LOSS_CTL].fault_present) {
       //     getConfig()->errors[STACK_LOSS_CTL].fault_present = true;
-      //     getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = x_millis);
+      //     getConfig()->errors[STACK_LOSS_CTL].begin_condition_ms = t_millis);
       //   }
       // }else {
       //   if (getConfig()->errors[STACK_LOSS_CTL].fault_present) {

@@ -70,7 +70,8 @@ namespace CogApp
       CogCore::Debug<const char *>("Network started\n\n");
     }
 
-    unsigned long current_epoch_time = net_udp.epoch + x_millis() / 1000;
+    // Because this is called frequently, we need not worry about rollover...
+    unsigned long current_epoch_time = net_udp.epoch + t_millis() / 1000;
     char buffer[1024];
     strcpy(buffer, "\"MachineStart\": ");
     switch(getResetCause()) {
