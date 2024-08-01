@@ -49,14 +49,16 @@
 
   void refresh_tach_data(uint8_t i) {
     unsigned long m = t_millis();
+    if (m < tach_data_ts[i]) { // ROLLOVER EVENT
+      tach_data_ts[i] = m;
+      tach_data_duration[i] = 0;
+      tach_data_ocnt[i] = 0;
+      tach_data_cnt[i] = 0;
+    }
+
     if (tach_data_ts[i] + PERIOD < m) {
       tach_data_ocnt[i] = tach_data_cnt[i];
-      // handle the possible ms rollover
-      if (m > tach_data_ts[i]) {
-        tach_data_duration[i] = m - tach_data_ts[i];
-      } else {
-        tach_data_duration[i] = 0;
-      }
+      tach_data_duration[i] = m - tach_data_ts[i];
       tach_data_ts[i] = m;
       tach_data_cnt[i] = 0;
     }

@@ -37,7 +37,8 @@ bool WithinArrayBounds(int index, int length) {
 
 // If you want to test the millisecond rollover mechanism,
 // set this is a non-zero value with an extern declaration
-unsigned long ROLLOVER_FOR_TESTING = 120*1000;
+// unsigned long ROLLOVER_FOR_TESTING = 120*1000;
+unsigned long ROLLOVER_FOR_TESTING = 0;
 
 
 unsigned long fake_addition_to_millis = 0;
