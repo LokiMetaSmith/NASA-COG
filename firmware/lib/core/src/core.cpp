@@ -16,12 +16,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include "core.h"
+#include <util.h>
 #include "debug.h"
 #ifdef ARDUINO
 #include <Arduino.h>
+#include <limits.h>
+#define MAX_TIME (ULONG_MAX)
 #else
 #include <iostream>
 // #include "HAL/posix/hal.h"
+#define MAX_TIME = (1 << 32)
 #endif
 
 #define HARDWARE_WATCHDOG_TIMOUT_MS 16000
@@ -111,11 +115,15 @@ bool Core::Run() {
           delay(100);
             return false;
         }
-        _elapsed = _primaryTimer.Update();
+        // I'm moving this action to inside the Tick, which checks for rollover.
+        //        _elapsed = _primaryTimer.Update();
 #endif
 
-        unsigned long m = millis();
         if (DEBUG_CORE > 1) {
+          unsigned long m = x_millis();
+          if (m < time_since_last_report) {
+            time_since_last_report = m;
+          }
           if (m > (time_since_last_report + TIME_TO_REPORT_SCHEDULER_MS)) {
 	    CogCore::Debug<const char *>("Scheduler Still Alive, Number of Ticks:");
 	    CogCore::Debug<uint32_t>(num_of_report++);
@@ -133,9 +141,15 @@ bool Core::Run() {
         }
 #ifdef SW_TICK
         // Wait to simulate tick interrupt
+        // Note: This looks dangerous relative rollovers!
+        // TODO: See if we get stuck here on Rollovers and rewrite.
         bool wait_timer = true;
         while (wait_timer) {
-            uint32_t elapsed_wait = _primaryTimer.Update() - _elapsed;
+          TimeMs ms = _primaryTimer.Update();
+          if (ms < _elapsed) { // ROLLOVER EVENT!
+            _elapsed = 0;
+          }
+            uint32_t elapsed_wait = ms - _elapsed;
             if (elapsed_wait >= _scheduler.GetTickPeriod()) {
                 wait_timer = false;
             }
@@ -149,8 +163,35 @@ bool Core::Run() {
 
 void Core::Tick() {
     // Debug<const char*>("-----------------------------------------\n");
-    uint32_t elapsed = _primaryTimer.Update();
-    TaskState state = _scheduler.RunNextTask(elapsed);
+    TimeMs previous = _elapsed;
+    TimeMs current = _primaryTimer.Update();
+    TimeMs increment;
+    if (current > previous) {
+      increment = (current - previous);
+    } else if (current == previous) {
+      increment = 0;
+    } else { // ROLLOVER!
+      increment = (MAX_TIME - previous) + current;
+    }
+    if (DEBUG_CORE > 4) {
+	   CogCore::Debug<const char *>("_elapsed: ");
+	   CogCore::DebugLn<uint32_t>(_elapsed);
+    }
+    _elapsed = current;
+
+
+    if (DEBUG_CORE > 4) {
+	   CogCore::Debug<const char *>("current: ");
+	   CogCore::DebugLn<uint32_t>(current);
+	   CogCore::Debug<const char *>("increment: ");
+	   CogCore::DebugLn<uint32_t>(increment);
+    }
+
+    // This is the point where we want to detect a clock rollover.
+    // We must advance the virtual Time before we call this!!
+    _scheduler.advanceVirtualTimeByIncrementAndBaseline(increment);
+
+    TaskState state = _scheduler.RunNextTask();
 #ifndef ARDUINO
     //    std::cout << "State: " << static_cast<int>(state) << std::endl;
 #endif

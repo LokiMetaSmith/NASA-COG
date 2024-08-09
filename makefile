@@ -99,6 +99,10 @@ test_heater_ramp:
 	cd firmware \
 	&& pio test -v -e due_ribbonfish -f "test_heater_ramp"
 
+test_milli_rollover_mechanism:
+	cd firmware \
+	&& pio test -v -e due_ribbonfish -f "test_milli_rollover_mechanism"
+
 stage2_heater:
 	cd firmware \
 #	&& pio test -v -e due_stage2_heater -vvv -f "test_stage2_heater"

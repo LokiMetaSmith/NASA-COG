@@ -23,7 +23,6 @@
 #include <machine.h>
 #include <abstract_ps.h>
 #include <abstract_fan.h>
-#include <BigTreeTechMini12864.h>
 //#define RF_FAN 2
 //#define _HEATER 3
 //#define _STACK DAC0
@@ -71,6 +70,9 @@
 //#define SD_CS     49  //sd card card detect
 //GPIO Defines
 //Rotary Encoder on BigTreeTech MINI 12864
+
+// Note: I believe all of these should be removed now
+// that the Rotary Encoder is removed
 #define PIN_IN1 40
 #define PIN_IN2 41
 #define ENC_SW 42   //A switch
@@ -93,8 +95,10 @@
 #define SHUT_DOWN_BUTTON 49
 
 
+
 #ifdef CTL_V_1_1
 
+// NOTE: I don't know the BLOWER_ENABLE is use
 #define BLOWER_ENABLE 22
 
 /*
@@ -133,7 +137,7 @@ public:
   AbstractFAN* _fans[NUM_FANS];
   const static int NUM_STACKS = 1;
   AbstractPS* _stacks[NUM_STACKS];
-  Mini12864* _displays[1];
+  //  Mini12864* _displays[1];
 
     const static int NUM_HEATERS = 1;
 	   int HEATER_PINS[NUM_HEATERS];

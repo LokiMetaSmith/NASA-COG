@@ -20,6 +20,7 @@
 #include <cog_hal.h>
 #include <math.h>
 #include <debug.h>
+#include <util.h>
 
 #define PERIOD 1000
 
@@ -47,7 +48,14 @@
   };
 
   void refresh_tach_data(uint8_t i) {
-    unsigned long m = millis();
+    unsigned long m = t_millis();
+    if (m < tach_data_ts[i]) { // ROLLOVER EVENT
+      tach_data_ts[i] = m;
+      tach_data_duration[i] = 0;
+      tach_data_ocnt[i] = 0;
+      tach_data_cnt[i] = 0;
+    }
+
     if (tach_data_ts[i] + PERIOD < m) {
       tach_data_ocnt[i] = tach_data_cnt[i];
       tach_data_duration[i] = m - tach_data_ts[i];
@@ -179,12 +187,12 @@ bool SanyoAceB97::init() {
   PWM_PIN[0] = 9;
   TACH_PIN[0] = A0;
   // Add a symbolic constant here
-  //o  fan_Enable = BLOWER_ENABLE;
+  //  fan_Enable = BLOWER_ENABLE;
 
-//#ifdef FAN_LOCKOUT
+#ifdef BLOWER_ENABLE
   pinMode(BLOWER_ENABLE, OUTPUT);
   digitalWrite(BLOWER_ENABLE, HIGH);
-//#endif
+#endif
 
 
   for(int i = 0; i < NUMBER_OF_FANS; i++) {
@@ -235,7 +243,10 @@ void SanyoAceB97::updatePWM(float pwm_ratio) {
     CogCore::Debug<float>(pwm_ratio);
     CogCore::Debug<const char *>("\n");
   }
+
+#ifdef BLOWER_ENABLE
   digitalWrite(BLOWER_ENABLE, (0.0 == pwm_ratio) ? LOW : HIGH);
+#endif
 
   fanSpeedPerCentage((unsigned int)( pwm_ratio * 100));
   _pwm_ratio[0] = pwm_ratio;

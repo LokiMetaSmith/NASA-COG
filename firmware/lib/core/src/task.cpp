@@ -44,11 +44,13 @@ namespace CogCore
         return _state;
     }
 
-    void Task::Run(TimeMs now)
+  // Argument is the "virtual time" in the scheduler
+    void Task::Run()
     {
         if (_state == TaskState::Ready) {
             _state = TaskState::Running;
-            _lastRun = now;
+            // We are initating the run 0 ms from the current virtual time
+            _ms_since_last_run= 0;
             if (DEBUG_TASK > 0) {
 	      CogCore::Debug<const char *>("about to _run\n");
             }
@@ -92,17 +94,22 @@ namespace CogCore
         return _state;
     }
 
-    TimeMs Task::GetLastRunTime() const
+  // This is going to change to how long ago the task was run
+  // against the virtual time (not the actual time.)
+  // That means that each time we call get NextTaskToRun,
+  // we have to advance virtual time. The Scheduler is a
+  // Friend class and can set this directly.
+    TimeMs Task::TimeSinceLastRunMs() const
     {
-        return _lastRun;
+        return _ms_since_last_run;
     }
 
     TimeMs Task::GetPeriod() const
     {
         return _properties.period;
     }
-	
-	
+
+
     void Task::SetPeriod( TimeMs newPeriod)
     {
 		if(newPeriod != _properties.period)
@@ -110,7 +117,7 @@ namespace CogCore
          _properties.period = newPeriod;
 		}
     }
-	
+
   MachineConfig *Task::getConfig() {
     return  (MachineConfig *) _properties.state_and_config;
   }

@@ -16,7 +16,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #include <Arduino.h>
-
+#include <util.h>
 #include <debug.h>
 #include <network_task.h>
 #include <stdio.h>
@@ -70,7 +70,8 @@ namespace CogApp
       CogCore::Debug<const char *>("Network started\n\n");
     }
 
-    unsigned long current_epoch_time = net_udp.epoch + millis() / 1000;
+    // Because this is called frequently, we need not worry about rollover...
+    unsigned long current_epoch_time = net_udp.epoch + t_millis() / 1000;
     char buffer[1024];
     strcpy(buffer, "\"MachineStart\": ");
     switch(getResetCause()) {
