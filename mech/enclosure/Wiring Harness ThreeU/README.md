@@ -9,40 +9,87 @@ This can be used to construct a new O:
 ### Sub-Assemblies
 #### Front Panel Assembly
 ##### Order of Assembly:
-* 
+* Press fit ON-OFF pump/standby switch
+* Press fit ON-OFF Power rocker switch
+* Install the four Thermocouple connectors
+    * Cut TC hookup wire, Yellow + and Red -
+        1. 6"
+        2. 8" 
+        3. 9.5"
+        4. 11.5"
+* Install connector labeled "Pressure"
+* Install connector labeled "Fan"
+    * 
+* Install connector labeled "Stack"
+* Install connector labeled "Heater"
+* Install connector labeled "Fault" LED
+* Install On/Flashing/Off LED
+* Install connector labeled "LAN"
+* Install connector labeled "USB"
+* Install ground lugs
 
 #### Rear Panel Assembly
 ##### Order of Assembly:
-* 
+* Install C20 using two ''#6-32 x '¾ IN' flat philips screws.
+* C20 should be in line with the PSU attached to the Base-Plate
+* Add WH1 to panel mounted C20
+* Install fan assembly the order is Fan shroud -> Rear Panel -> Fan
+* Use plastic screws for the fan assmebly
+* Fan pushes air into the case, the arrow goes towards the inside of the case
+* Orient the fan such that the wire exits towards the Base-Plate
+* Install Ground Lug, such that the ground lug is below C20
 
 #### Base-Plate and Rails Assembly
 ##### Order of Assembly:
-* Install C20 using two ''#6-32 x '¾ IN' flat philips screws.
-* Add WH1 to panel mounted C20
-* Install fan assembly
+* Install PSU, using three screws
+* Install brass lugsfor OEDCS control board
+* Install DIN rail
+* Install SSR and DIN mounted heatsink
+* Install battery holder
+* Install 12v and 24v PSU on DIN rail
+* Prewire Din rail segments
+* Install OEDCS control board
+* Install DIN rail segments
+* Install 12v SLA batttery
+* Hook up wires
+* Install side panels
+* Install rack mount rail system
+
 
 #### Top-Plate Assembly
 ##### Order of Assembly:
-* 
+* On O2 handling systems, feed through 12v power cable 
 
-## Order of Assembly
-### Rails and side panel
+#### Order of Assembly
+* Base-Plate and Rails Assembly
+* Rear Panel Assembly
+* Front Panel Assembly
+* Top-Plate Assembly
+
 
 ```mermaid
 flowchart TD
-    rpcb---|TCP|srva
-    rpcb---|TCP|srvb
-    rpcb-.-|TCP|srvn
-    subgraph hostn[Host N]
-    srvn[rpc-server]-.-backend3["Backend (CUDA,Metal,etc.)"]
+    oedcs---|Heater|srva
+    oedcs---|Fan|blower
+    oedcs-.-|USB|usboedcs
+    oedcs-.-|Ethernet|ethoedcs
+    omega-.-|USBtoSerial|usbtoserial
+    rack-.-|USB|usbdaq
+    
+    subgraph sbc[Single Board Computer]
+    usbdaq[DATAQ PN]-.-pyscript["python script to log"]
+    sbc[data logging-server]---backend["Backend data logger"]
     end
-    subgraph hostb[Host B]
-    srvb[rpc-server]---backend2["Backend (CUDA,Metal,etc.)"]
+    
+    subgraph omega[Omega Paramagnetic Analyzer]
+    sbc[data log-server]---pyscript["python script to log"]
     end
-    subgraph hosta[Host A]
-    srva[rpc-server]---backend["Backend (CUDA,Metal,etc.)"]
+    
+    subgraph oedcs[OEDCS]
+    [data logging-server]---backend["Backend data logger"]
     end
-    subgraph host[Main Host]
+    
+    subgraph rack[6U Rack]
     ggml[llama.cpp]---rpcb[RPC backend]
     end
     style hostn stroke:#66,stroke-width:2px,stroke-dasharray: 5 5
