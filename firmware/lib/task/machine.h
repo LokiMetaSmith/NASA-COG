@@ -177,10 +177,11 @@ void change_ramp(float ramp);
 
 void _reportFanSpeed();
 
-  static const int NUM_MACHINE_STATES = 8;
+  static const int NUM_MACHINE_STATES = 9;
 
-  constexpr inline static char const *MachineStateNames[8] = {
+  constexpr inline static char const *MachineStateNames[9] = {
     "Off",
+    "AwaitingPower",
     "Warmup",
     "NormalOperation",
     "Cooldown",
