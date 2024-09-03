@@ -141,10 +141,6 @@ stage2:
 	&& pio test -v -e due_stage2_heater -f "test_stage2_heater" # 2>&1 | tee -a stage2.logfile.txt
 
 
-oedcs1_1:
-	cd firmware \
-	&& pio run -e due_ctl_1_1 -t upload  \
-	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
 
 
 oedcs1_1_MOOK:
@@ -156,4 +152,10 @@ oedcs1_1_MOOK:
 oedcsMOM:
 	cd firmware \
 	&& pio run -e due_OEDCS2_MOM -t upload  \
+	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
+
+## This is the working target for our standard hardware
+oedcs1_1:
+	cd firmware \
+	&& pio run -e due_ctl_1_1 -t upload  \
 	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
