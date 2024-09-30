@@ -59,7 +59,7 @@ namespace Temperature {
     CogCore::Debug<const char *>("OFF\n");
   }
 
-  // assign address manually.  the addresses below will beed to be changed
+  // assign address manually.  the addresses below will need to be changed
   // to valid device addresses on your bus.  device address can be retrieved
   // by using either oneWire.search(deviceAddress) or individually via
   // sensors.getAddress(deviceAddress, index)

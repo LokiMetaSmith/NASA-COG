@@ -355,10 +355,15 @@ void setup()
 
   heaterPIDTask.SetTunings(hal->INIT_Kp, hal->INIT_Ki, hal->INIT_Kd);
 
+  CogCore::Debug<const char *>("PID Tuning Set\n");
 
+  core.ResetAllWatchdogs();
   // We want to make sure we have run the temps before we start up.
+  CogCore::Debug<const char *>("Reading First Temp\n");
   readTempsTask._run();
+  CogCore::Debug<const char *>("Reading Second Temp\n");
   readTempsTask._run();
+  CogCore::Debug<const char *>("Reading Third Temp\n");
   readTempsTask._run();
   //Debug<const char *>("BBBBBB!\n"); compiler fails when readTempTask runs, suspect issue inside how TC's are inited ;;platform_packages = toolchain-gccarmnoneeabi @ ~1.90301.0
 
