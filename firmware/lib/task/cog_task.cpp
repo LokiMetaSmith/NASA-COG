@@ -731,11 +731,19 @@ namespace CogApp
 
     // These might have to move from cog_task to state_machine_manager
     // Possibly these should be treated
-    bool inBlackout = !(is12VPowerGood() && is24VPowerGood());
+    bool inBlackout = isInBlackout();
     if (inBlackout) {
       // we remain in blackout state. We want to make sure
       // all of the power compoenents are fully off.
       turnOffPowerButDoNotChangeState();
+
+      // If we are in the blackout condition, we clear certain errors,
+      // because we don't want to shutdown because these conditions are
+      // recoverable.
+      // You could argue it would be stylistically superior not to
+      // produce the errors in the first place, but doing that would
+      // be fragile and likely lead to bugs. - rlr
+      getConfig()->clearErrorsInducedByBlackouts();
     } else { // we will try to recover to normal operation...
       new_ms = Warmup;
     }
@@ -750,7 +758,6 @@ namespace CogApp
     getConfig()->report->fan_pwm = fs;
     dutyCycleTask->dutyCycle = 0;
     getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
-    //    _updateStackVoltage(getConfig()->MIN_OPERATING_STACK_VOLTAGE);
     _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
   }
 

@@ -54,6 +54,8 @@ namespace CogApp
     bool run_generic();
 
     // I'm not sure if this should be here or in the cog_task
+    // Return true if we are likely in a blackout condition.
+    bool isInBlackout();
     bool is12VPowerGood();
     bool is24VPowerGood();
 

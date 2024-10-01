@@ -129,7 +129,7 @@ public:
   PreSetParameters p;
 
   CriticalError errors[NUM_CRITICAL_ERROR_DEFINITIONS];
-void change_ramp(float ramp);
+  void change_ramp(float ramp);
 
 
   // TEST CONFIGURATION PARAMETERS
@@ -175,7 +175,7 @@ void change_ramp(float ramp);
   float GLOBAL_RECENT_TEMP = 30.0;
 
 
-void _reportFanSpeed();
+  void _reportFanSpeed();
 
   static const int NUM_MACHINE_STATES = 9;
 
@@ -259,6 +259,7 @@ void _reportFanSpeed();
   void runComplexAlgolAssertions();
   void initErrors();
   void clearErrors();
+  void clearErrorsInducedByBlackouts();
   void clearThermocoupleErrors();
   void clearFanErrors();
   void clearMainsPowerErrors();

@@ -97,12 +97,16 @@ namespace CogApp
     }
     return rms;
   }
+
+  bool StateMachineManager::isInBlackout() {
+    return !(is12VPowerGood() && is24VPowerGood());
+  }
   // There is significant COG dependent logic here.
   // At the expense of extra lines of code, I'm
   // going to keep this mostly simple by making it look
   // "table-driven"
   MachineState StateMachineManager::_executeBasedOnState(MachineState ms) {
-    MachineState new_ms;
+    MachineState new_ms = ms;
 
     if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("\nMachine State: ");
@@ -112,15 +116,27 @@ namespace CogApp
       CogCore::Debug<const char *>("\n");
     }
 
-    new_ms = checkCriticalFaults(ms);
 
     // WARNING: REVISIT -- This might not be the best place to do this:
-    bool inBlackout = !(is12VPowerGood() && is24VPowerGood());
+    bool inBlackout = isInBlackout();
     if (inBlackout &&
         ((new_ms == Warmup) ||
          (new_ms == Cooldown) ||
-         (new_ms == NormalOperation)))
+         (new_ms == NormalOperation))) {
       new_ms = AwaitingPower;
+    }
+
+     if (inBlackout) {
+      // If we are in the blackout condition, we clear certain errors,
+      // because we don't want to shutdown because these conditions are
+      // recoverable.
+      // You could argue it would be stylistically superior not to
+      // produce the errors in the first place, but doing that would
+      // be fragile and likely lead to bugs. - rlr
+      getConfig()->clearErrorsInducedByBlackouts();
+    }
+
+    new_ms = checkCriticalFaults(new_ms);
 
     switch(new_ms) {
     case Off:
