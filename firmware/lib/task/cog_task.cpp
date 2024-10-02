@@ -715,10 +715,42 @@ namespace CogApp
     last_time_ramp_changed_ms = 0;
   }
 
-  void CogTask::turnOff() {
-    if (DEBUG_LEVEL > 1) {
-      CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
+  MachineState CogTask::_updateAwaitingPower() {
+    MachineState new_ms = AwaitingPower;
+    if (SM_DEBUG_LEVEL > 0) {
+      CogCore::Debug<const char *>("Awating Power!\n");
     }
+    // If we are still in a blackout, we remain Awaiting Power.
+    // If power has come back, we can try to move back to
+    // an operational state.
+
+    // As of right now, I think the best way to detect a blackout is
+    // to define as blackout by losing either 24V power or 12V power.
+    // It might be better to sense AC power directly. However, if
+    // we lose 24V, we need to treat it like a blackout.
+
+    // These might have to move from cog_task to state_machine_manager
+    // Possibly these should be treated
+    bool inBlackout = isInBlackout();
+    if (inBlackout) {
+      // we remain in blackout state. We want to make sure
+      // all of the power compoenents are fully off.
+      turnOffPowerButDoNotChangeState();
+
+      // If we are in the blackout condition, we clear certain errors,
+      // because we don't want to shutdown because these conditions are
+      // recoverable.
+      // You could argue it would be stylistically superior not to
+      // produce the errors in the first place, but doing that would
+      // be fragile and likely lead to bugs. - rlr
+      getConfig()->clearErrorsInducedByBlackouts();
+    } else { // we will try to recover to normal operation...
+      new_ms = Warmup;
+    }
+    return new_ms;
+  }
+
+  void CogTask::turnOffPowerButDoNotChangeState() {
     float fs = 0.0;
     getConfig()->fanDutyCycle = fs;
     getConfig()->FAN_SPEED = 0.0;
@@ -726,8 +758,14 @@ namespace CogApp
     getConfig()->report->fan_pwm = fs;
     dutyCycleTask->dutyCycle = 0;
     getConfig()->report->heater_duty_cycle = dutyCycleTask->dutyCycle;
-    //    _updateStackVoltage(getConfig()->MIN_OPERATING_STACK_VOLTAGE);
     _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
+  }
+
+  void CogTask::turnOff() {
+    if (DEBUG_LEVEL > 1) {
+      CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
+    }
+    turnOffPowerButDoNotChangeState();
     // Although after a minute this should turn off, we want
     // to do it immediately
     StateMachineManager::turnOff();
@@ -744,113 +782,110 @@ namespace CogApp
     return Off;
   }
 
-  bool CogTask::is12VPowerGood()
-  {
-    if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
+//   bool CogTask::is12VPowerGood()
+//   {
+//     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
 
-    //Analog read of the +12V expected about 3.25V at ADC input.
-    // SENSE_24V on A1.
-    // Full scale is 1023, ten bits for 3.3V.
-    //40K into 10000
-    const long FullScale = 1023;
-    const float percentOK = 0.25;
-    const float R1=40000;
-    const float R2=10000;
-    const float Vcc = 3.3;
-#ifdef DISABLE_12V_EVAL
-    const int highThreshold12V = 1024;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
-#else
-    const int highThreshold12V = 930;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
-#endif
-/*
-#ifdef
-    const int highThreshold12V = 1024;
-    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
-#endif */
+//     //Analog read of the +12V expected about 3.25V at ADC input.
+//     // SENSE_24V on A1.
+//     // Full scale is 1023, ten bits for 3.3V.
+//     //40K into 10000
+//     const long FullScale = 1023;
+//     const float percentOK = 0.25;
+//     const float R1=40000;
+//     const float R2=10000;
+//     const float Vcc = 3.3;
+// #ifdef DISABLE_12V_EVAL
+//     const int highThreshold12V = 1024;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+// 	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
+// #else
+//     const int highThreshold12V = 930;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+// 	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
+// #endif
+// /*
+// #ifdef
+//     const int highThreshold12V = 1024;
+//     const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
+// #endif */
 
+//     int _v12read = analogRead(SENSE_12V);
 
+//     if (DEBUG_LEVEL >0 ) {
+//       CogCore::Debug<const char *>("analogRead(SENSE_12V)= ");
+//       CogCore::DebugLn<uint32_t>(_v12read);
+//       CogCore::Debug<float>((float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2)));
+//       CogCore::Debug<const char *>("\n");
+//     }
 
+//     if (( _v12read > lowThreshold12V) && ( _v12read < highThreshold12V) ) {
+//       if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+12V power monitor reports good.\n");
+//       return true;
+//     } else{
+//       if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+12V power monitor reports bad.\n");
+//       CogCore::Debug<const char *>("lowThreshold12V: ");
+//       CogCore::Debug<int32_t>(lowThreshold12V);
+//       CogCore::Debug<const char *>("\n");
+//       CogCore::Debug<const char *>("highThreshold12V: ");
+//       CogCore::Debug<int32_t>(highThreshold12V);
+//       CogCore::Debug<const char *>("\n");
+//       CogCore::Debug<const char *>("_v12read: ");
+//       CogCore::Debug<int32_t>(_v12read);
+//       CogCore::Debug<const char *>("\n");
+//       return false;
+//     }
+//   }
 
+//   bool CogTask::is24VPowerGood()
+//   {
+//     if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
 
-    int _v12read = analogRead(SENSE_12V);
+//     //Analog read of the +24V expected about 3.25V at ADC input.
+//     // SENSE_24V on A1.
+//     // Full scale is 1023, ten bits for 3.3V.
+//     //30K into 4K7
+//     const long FullScale = 1023;
+//     const float percentOK = 0.25;
+//     const float R1=40000;
+//     const float R2=4700;
+//     const float Vcc = 3.3;
+//     const int lowThreshold24V = 587; //(24*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 782.28
+//     // Note: Rob proposes that this should simply by 1024, if only because this makes it easier to test.
+//     // I can't see any value in having a highThreshold---are we genuninely attempting to test that
+//     // our 24V value is too high? -- rlr
+//     // Switch this on control V1.1 C-pre processor flag
+// #ifdef CTL_V_1_1
+//     const int highThreshold24V = 978; //(24*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+// #else
+//     const int highThreshold24V = 1024;
+// #endif
 
-    if (DEBUG_LEVEL >0 ) {
-      CogCore::Debug<const char *>("analogRead(SENSE_12V)= ");
-      CogCore::DebugLn<uint32_t>(_v12read);
-      CogCore::Debug<float>((float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2)));
-      CogCore::Debug<const char *>("\n");
-    }
+//     int _v24read = analogRead(SENSE_24V);
 
-    if (( _v12read > lowThreshold12V) && ( _v12read < highThreshold12V) ) {
-      if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+12V power monitor reports good.\n");
-      return true;
-    } else{
-      if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+12V power monitor reports bad.\n");
-      CogCore::Debug<const char *>("lowThreshold12V: ");
-      CogCore::Debug<int32_t>(lowThreshold12V);
-      CogCore::Debug<const char *>("\n");
-      CogCore::Debug<const char *>("highThreshold12V: ");
-      CogCore::Debug<int32_t>(highThreshold12V);
-      CogCore::Debug<const char *>("\n");
-      CogCore::Debug<const char *>("_v12read: ");
-      CogCore::Debug<int32_t>(_v12read);
-      CogCore::Debug<const char *>("\n");
-      return false;
-    }
-  }
+//     if (DEBUG_LEVEL >0 ) {
+//       CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
+//       CogCore::DebugLn<uint32_t>(_v24read);
+//       CogCore::Debug<float>((float) _v24read * ((Vcc * (R1+R2))/(1023.0 * R2)));
+//       CogCore::Debug<const char *>("\n");
+//     }
 
-  bool CogTask::is24VPowerGood()
-  {
-    if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
+//     if (( _v24read > lowThreshold24V) && ( _v24read < highThreshold24V) ) {
+//       if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
+//       return true;
+//     } else{
+//       if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
+//       CogCore::Debug<const char *>("lowThreshold24V: ");
+//       CogCore::Debug<int32_t>(lowThreshold24V);
+//       CogCore::Debug<const char *>("\n");
+//       CogCore::Debug<const char *>("highThreshold24V: ");
+//       CogCore::Debug<int32_t>(highThreshold24V);
+//       CogCore::Debug<const char *>("\n");
+//       CogCore::Debug<const char *>("_v24read: ");
+//       CogCore::Debug<int32_t>(_v24read);
+//       CogCore::Debug<const char *>("\n");
+//       return false;
+//     }
+//   }
 
-    //Analog read of the +24V expected about 3.25V at ADC input.
-    // SENSE_24V on A1.
-    // Full scale is 1023, ten bits for 3.3V.
-    //30K into 4K7
-    const long FullScale = 1023;
-    const float percentOK = 0.25;
-    const float R1=40000;
-    const float R2=4700;
-    const float Vcc = 3.3;
-    const int lowThreshold24V = 587; //(24*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 782.28
-    // Note: Rob proposes that this should simply by 1024, if only because this makes it easier to test.
-    // I can't see any value in having a highThreshold---are we genuninely attempting to test that
-    // our 24V value is too high? -- rlr
-    // Switch this on control V1.1 C-pre processor flag
-#ifdef CTL_V_1_1
-    const int highThreshold24V = 978; //(24*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
-#else
-    const int highThreshold24V = 1024;
-#endif
-
-    int _v24read = analogRead(SENSE_24V);
-
-    if (DEBUG_LEVEL >0 ) {
-      CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
-      CogCore::DebugLn<uint32_t>(_v24read);
-      CogCore::Debug<float>((float) _v24read * ((Vcc * (R1+R2))/(1023.0 * R2)));
-      CogCore::Debug<const char *>("\n");
-    }
-
-    if (( _v24read > lowThreshold24V) && ( _v24read < highThreshold24V) ) {
-      if (DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
-      return true;
-    } else{
-      if (DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
-      CogCore::Debug<const char *>("lowThreshold24V: ");
-      CogCore::Debug<int32_t>(lowThreshold24V);
-      CogCore::Debug<const char *>("\n");
-      CogCore::Debug<const char *>("highThreshold24V: ");
-      CogCore::Debug<int32_t>(highThreshold24V);
-      CogCore::Debug<const char *>("\n");
-      CogCore::Debug<const char *>("_v24read: ");
-      CogCore::Debug<int32_t>(_v24read);
-      CogCore::Debug<const char *>("\n");
-      return false;
-    }
-  }
 
   float CogTask::computeHeaterDutyCycleFromWattage(float heaterWattage_w) {
     return (heaterWattage_w < 0.0) ?
