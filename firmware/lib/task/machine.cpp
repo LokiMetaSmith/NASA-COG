@@ -224,6 +224,7 @@ void MachineConfig::initErrors() {
  errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].response_state = EmergencyShutdown;
 }
 
+
 void MachineConfig::clearThermocoupleErrors() {
  // here we init the errors...
  // If we lose a thermocouple for more than 10 seconds
@@ -239,6 +240,20 @@ void MachineConfig::clearThermocoupleErrors() {
 void MachineConfig::clearFanErrors()  {
  errors[FAN_LOSS_PWR].fault_present = false;
  errors[FAN_UNRESPONSIVE].fault_present = false;
+}
+
+
+// Note: possibly these two should be unified!
+// This routine is specifically to clear errors that are expected to be
+void MachineConfig::clearErrorsInducedByBlackouts() {
+ CogCore::Debug<const char *>("clearErrorsInducedByBlackouts\n");
+ errors[PWR_24V_BAD].fault_present = false;
+ errors[PWR_12V_BAD].fault_present = false;
+
+ errors[MAINS_LOSS_PWR].fault_present = false;
+ errors[PSU_UNRESPONSIVE].fault_present = false;
+ errors[HEATER_OUT_OF_BOUNDS].fault_present = false;
+ errors[UNABLE_TO_RAISE_TEMPERATURE_SECURELY].fault_present = false;
 }
 
 void MachineConfig::clearMainsPowerErrors()  {
