@@ -29,6 +29,10 @@
 using namespace CogCore;
 
 
+// This pin definition is used only for this test.
+#define RF_HEATER 3
+
+
 #include <PID_v1.h>
 
 #include <core_defines.h>

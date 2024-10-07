@@ -114,6 +114,7 @@ namespace CogApp
     float getTemperatureReadingB_C() override;
     float getTemperatureReadingC_C() override;
 
+    bool doesAnyErrorExist();
     bool evaluateErrorConditions();
     bool isStackWattageGood();
     bool isStackWattageGood(float );
