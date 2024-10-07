@@ -41,9 +41,20 @@ D17	RX2	Input		Digital 	Power Supply TF800 Pin 24	This is Serial2 RX for (power 
 
 D22	BLOWER_ENABLE	Output		Blower Enable
 D32	GPAD_nCS		Output		External SPI inverted select (for the GPAD)
-D43     FIXED_HIGH_43           Output          Artifically high just as a convenience.
+
+
+
+// These two are not currently defined.
 D44	LPBK0			Output		Varying loopback signal
 D45	LPBK1			Input		Read of digital loopback signal
+
+D43 for Status LED (GPIO HIGH, light is on)
+D43     FIXED_HIGH_43           Output          Artifically high just as a convenience.
+D44 for Fault LED (GPIO HIGH, light is on)
+D45 for Keep Alive (GPIO HIGH, Battery engaged, GPIO LOW, battery disengaged; when GPIO LOW unit will shut off when front
+power switch is toggled)
+D42 for Front panel switch detection
+
 // D49     SHUT_DOWN               Input           Enter Emergency Shutdown if pulled low
 D51	HEAT1			Output		Positive SSR signal
 D52 Heat2			Output		Positive SSR signal for heaterPIDTask
@@ -66,6 +77,10 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 
 #define SANYO_ACE_FAN_PWM_PIN 9
 #define SANYO_ACE_TACH_PIN A0
+
+#define PANEL_LED_FAULT 44
+#define PANEL_LED_KEEP_ALIVE 45
+#define PANEL_SWITCH_DETECTION 42
 
 // Note, this has often been defined in Platform.ini
 #define HEATER_PIN 51

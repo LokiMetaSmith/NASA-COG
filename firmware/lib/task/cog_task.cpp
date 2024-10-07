@@ -482,7 +482,31 @@ namespace CogApp
     c.W_w = max(c.W_w,0);
   }
 
+  bool CogTask::doesAnyErrorExist() {
+    bool returnValueErrorExists = false;
+    for(int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++)
+      {
+        if (getConfig()->errors[i].fault_present)//critical error detected
+          {
+            returnValueErrorExists = true;
+          }
+      }
+    return returnValueErrorExists;
+  }
+
   bool CogTask::evaluateErrorConditions() {
+
+    // This could perhaps be moved to a very simple class
+    // in the Hardware Abstraction Layer so that this
+    // class does not have to know about the LED. I don't
+    // deem this worth doing now. - rlr
+
+    digitalWrite(PANEL_LED_FAULT,doesAnyErrorExist());
+    if (doesAnyErrorExist()) {
+      CogCore::Debug<const char *>("An Error Condition Exists.\n");
+    }
+
+    // If there is ANY error, we want to turn on the LED on the front panel.
     bool retval = true;
     //Check for AC power, ie for +24V
     bool powerIsOK = is24VPowerGood();

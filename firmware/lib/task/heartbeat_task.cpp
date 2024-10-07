@@ -33,6 +33,13 @@ namespace CogApp
 
   bool HeartbeatTask::_run()
   {
+    // TODO: THIS IS FOR TESTING THE KEEP ALIVE LED.
+    // This code should be replaced when we have coded the
+    // battery keepalive.
+    {
+      bool panel_led_high = digitalRead(PANEL_LED_KEEP_ALIVE);
+      digitalWrite(PANEL_LED_KEEP_ALIVE, !panel_led_high);
+    }
 
     debug_number_of_heartbeats++;
     // Note:adding a heartbeat task
@@ -47,12 +54,11 @@ namespace CogApp
 
     beat_high = digitalRead(LED_BUILTIN);
     if (DEBUG_HEARTBEAT > 0) {
-        CogCore::Debug<const char *>("Setting HEARTBEAT: ");
-        CogCore::DebugLn<bool>(beat_high);
-        CogCore::Debug<const char *>("beats / runtime, should trend to 2.0: ");
-        CogCore::DebugLn<float>((float) debug_number_of_heartbeats * 1000.0 / (float) t_millis());
-            }
-        return true;
+      CogCore::Debug<const char *>("Setting HEARTBEAT: ");
+      CogCore::DebugLn<bool>(beat_high);
+      CogCore::Debug<const char *>("beats / runtime, should trend to 2.0: ");
+      CogCore::DebugLn<float>((float) debug_number_of_heartbeats * 1000.0 / (float) t_millis());
     }
-
+    return true;
+  }
 }
