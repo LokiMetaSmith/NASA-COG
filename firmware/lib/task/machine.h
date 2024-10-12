@@ -18,16 +18,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifndef MACHINE_H
 #define MACHINE_H
 
-// Hardware Abstraction Layer
-// #include "SensirionSFM3X00.h"
-//#include <SanyoAceB97.h>
-//#include <abstract_fan.h>
-
 #include <OnePinHeater.h>
-
 #include <machine_script.h>
 #include "../collections/circular_array.h"
-
+#include <gpio_pin_defs.h>
 
 
 #define HAND_TEST 1
@@ -35,45 +29,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifdef ARDUINO
 #include <Arduino.h>
 #endif
-
-#ifdef RIBBONFISH
-// #define RF_FAN 2
-#define RF_HEATER 3
-#define RF_STACK DAC0
-#define SENSE_12V A2
-#define SENSE_24V A1
-#define MAX31850_DATA_PIN 5
-// #define RF_FAN_TACH 5
-// This is obsolete
-#define THERMOCOUPLE_PIN MAX31850_DATA_PIN //DIFFERENT FOR STAGE2_HEATER
-
-#define RF_MOSTPLUS_FLOW_PIN A0
-#define RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE 1.75
-// This is the order in which the thermocouples are wired;
-// in a perfect world we might use device address
-#define POST_STACK_0_IDX 0
-#define POST_HEATER_0_IDX 1
-
-#elif STAGE2_HEATER
-
-// WARNING! These values are obsolete.
-// There is probably no real dependence on these.
-// They should be hunted down and removed.
-#define MAX31850_DATA_PIN 5
-// This is obsolete
-#define THERMOCOUPLE_PIN MAX31850_DATA_PIN //DIFFERENT FOR STAGE2_HEATER
-// #define RF_FAN DAC1 //DIFFERENT FOR STAGE2_HEATER
-#define RF_STACK DAC0
-#define RF_MOSTPLUS_FLOW_PIN A0
-#define RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE 1.75
-
-#endif
-//Name the pins from the Due
-#define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
-#define DISPLAY_DC 47 //display data / command line, keep high for display cs control
-#define DISPLAY_RESET 46 // display reset, keep high or don't care
-
-
 
 #include <machine_core_defs.h>
 
@@ -129,7 +84,7 @@ public:
   PreSetParameters p;
 
   CriticalError errors[NUM_CRITICAL_ERROR_DEFINITIONS];
-void change_ramp(float ramp);
+  void change_ramp(float ramp);
 
 
   // TEST CONFIGURATION PARAMETERS
@@ -175,12 +130,13 @@ void change_ramp(float ramp);
   float GLOBAL_RECENT_TEMP = 30.0;
 
 
-void _reportFanSpeed();
+  void _reportFanSpeed();
 
-  static const int NUM_MACHINE_STATES = 8;
+  static const int NUM_MACHINE_STATES = 9;
 
-  constexpr inline static char const *MachineStateNames[8] = {
+  constexpr inline static char const *MachineStateNames[9] = {
     "Off",
+    "AwaitingPower",
     "Warmup",
     "NormalOperation",
     "Cooldown",
@@ -258,6 +214,7 @@ void _reportFanSpeed();
   void runComplexAlgolAssertions();
   void initErrors();
   void clearErrors();
+  void clearErrorsInducedByBlackouts();
   void clearThermocoupleErrors();
   void clearFanErrors();
   void clearMainsPowerErrors();

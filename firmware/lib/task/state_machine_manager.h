@@ -39,6 +39,7 @@ namespace CogApp
 
     MachineState _executeBasedOnState(MachineState ms);
     virtual MachineState _updatePowerComponentsOperation(IdleOrOperateSubState i_or_o);
+    virtual MachineState _updateAwaitingPower() = 0;
     virtual MachineState _updatePowerComponentsOff() = 0 ;
     virtual MachineState _updatePowerComponentsWarmup() = 0;
     virtual MachineState _updatePowerComponentsIdle() = 0;
@@ -52,12 +53,19 @@ namespace CogApp
     virtual void runOneButtonAlgorithm() = 0;
     bool run_generic();
 
+    // I'm not sure if this should be here or in the cog_task
+    // Return true if we are likely in a blackout condition.
+    bool isInBlackout();
+    bool is12VPowerGood();
+    bool is24VPowerGood();
+
     MachineState checkCriticalFaults(MachineState ms);
     void transitionToWarmup(float tt);
     void transitionToCooldown(float tt);
     void changeTargetTemp(float t);
     virtual void turnOff();
     virtual void turnOn();
+    virtual void turnOffPowerButDoNotChangeState();
     virtual void printGenericInstructions();
     virtual void printOffWarnings(MachineState ms);
 

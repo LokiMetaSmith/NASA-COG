@@ -114,9 +114,8 @@ namespace CogApp
     float getTemperatureReadingB_C() override;
     float getTemperatureReadingC_C() override;
 
+    bool doesAnyErrorExist();
     bool evaluateErrorConditions();
-    bool is12VPowerGood();
-    bool is24VPowerGood();
     bool isStackWattageGood();
     bool isStackWattageGood(float );
     bool isShutDownButtonPushed();
@@ -155,6 +154,7 @@ namespace CogApp
 
     void turnOff() override;
     void turnOn() override;
+    void turnOffPowerButDoNotChangeState() override;
     void printGenericInstructions() override;
 
     float getFanSpeed(float t);
@@ -170,6 +170,7 @@ namespace CogApp
     void _updateStackWattage(float wattage);
 
     MachineState _updatePowerComponentsOperation(IdleOrOperateSubState i_or_o) override;
+    MachineState _updateAwaitingPower() override;
     MachineState _updatePowerComponentsOff() override;
     MachineState _updatePowerComponentsWarmup() override;
     MachineState _updatePowerComponentsIdle() override;

@@ -97,12 +97,16 @@ namespace CogApp
     }
     return rms;
   }
+
+  bool StateMachineManager::isInBlackout() {
+    return !(is12VPowerGood() && is24VPowerGood());
+  }
   // There is significant COG dependent logic here.
   // At the expense of extra lines of code, I'm
   // going to keep this mostly simple by making it look
   // "table-driven"
   MachineState StateMachineManager::_executeBasedOnState(MachineState ms) {
-    MachineState new_ms;
+    MachineState new_ms = ms;
 
     if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("\nMachine State: ");
@@ -112,11 +116,34 @@ namespace CogApp
       CogCore::Debug<const char *>("\n");
     }
 
-    new_ms = checkCriticalFaults(ms);
+
+    // WARNING: REVISIT -- This might not be the best place to do this:
+    bool inBlackout = isInBlackout();
+    if (inBlackout &&
+        ((new_ms == Warmup) ||
+         (new_ms == Cooldown) ||
+         (new_ms == NormalOperation))) {
+      new_ms = AwaitingPower;
+    }
+
+     if (inBlackout) {
+      // If we are in the blackout condition, we clear certain errors,
+      // because we don't want to shutdown because these conditions are
+      // recoverable.
+      // You could argue it would be stylistically superior not to
+      // produce the errors in the first place, but doing that would
+      // be fragile and likely lead to bugs. - rlr
+      getConfig()->clearErrorsInducedByBlackouts();
+    }
+
+    new_ms = checkCriticalFaults(new_ms);
 
     switch(new_ms) {
     case Off:
       new_ms = _updatePowerComponentsOff();
+      break;
+    case AwaitingPower:
+      new_ms = _updateAwaitingPower();
       break;
     case Warmup:
       new_ms = _updatePowerComponentsWarmup();
@@ -190,7 +217,9 @@ namespace CogApp
 
   void StateMachineManager::turnOff() {
     //    heaterPIDTask->shutHeaterDown();
-    Serial.println("StateMachineManager::turnOff() called which does nothing.");
+  }
+
+  void StateMachineManager::turnOffPowerButDoNotChangeState() {
   }
 
   void StateMachineManager::turnOn() {
@@ -231,7 +260,6 @@ namespace CogApp
       // no change needed
     }
   }
-
 
 
   MachineState StateMachineManager::_updatePowerComponentsWarmup() {
@@ -350,4 +378,107 @@ namespace CogApp
     return new_ms;
   }
 
+  bool StateMachineManager::is12VPowerGood()
+  {
+    if (SM_DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
+
+    //Analog read of the +12V expected about 3.25V at ADC input.
+    // SENSE_24V on A1.
+    // Full scale is 1023, ten bits for 3.3V.
+    //40K into 10000
+    const long FullScale = 1023;
+    const float percentOK = 0.25;
+    const float R1=40000;
+    const float R2=10000;
+    const float Vcc = 3.3;
+#ifdef DISABLE_12V_EVAL
+    const int highThreshold12V = 1024;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
+#else
+    const int highThreshold12V = 930;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+	const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
+#endif
+/*
+#ifdef
+    const int highThreshold12V = 1024;
+    const int lowThreshold12V = 558; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);
+#endif */
+
+    int _v12read = analogRead(SENSE_12V);
+
+    if (SM_DEBUG_LEVEL >0 ) {
+      CogCore::Debug<const char *>("analogRead(SENSE_12V)= ");
+      CogCore::DebugLn<uint32_t>(_v12read);
+      CogCore::Debug<float>((float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2)));
+      CogCore::Debug<const char *>("\n");
+    }
+
+    if (( _v12read > lowThreshold12V) && ( _v12read < highThreshold12V) ) {
+      if (SM_DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+12V power monitor reports good.\n");
+      return true;
+    } else{
+      if (SM_DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+12V power monitor reports bad.\n");
+      CogCore::Debug<const char *>("lowThreshold12V: ");
+      CogCore::Debug<int32_t>(lowThreshold12V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("highThreshold12V: ");
+      CogCore::Debug<int32_t>(highThreshold12V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("_v12read: ");
+      CogCore::Debug<int32_t>(_v12read);
+      CogCore::Debug<const char *>("\n");
+      return false;
+    }
+  }
+
+  bool StateMachineManager::is24VPowerGood()
+  {
+    if (SM_DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
+
+    //Analog read of the +24V expected about 3.25V at ADC input.
+    // SENSE_24V on A1.
+    // Full scale is 1023, ten bits for 3.3V.
+    //30K into 4K7
+    const long FullScale = 1023;
+    const float percentOK = 0.25;
+    const float R1=40000;
+    const float R2=4700;
+    const float Vcc = 3.3;
+    const int lowThreshold24V = 587; //(24*(R2/(R1+R2))/)*FullScale *(1 - percentOK); 782.28
+    // Note: Rob proposes that this should simply by 1024, if only because this makes it easier to test.
+    // I can't see any value in having a highThreshold---are we genuninely attempting to test that
+    // our 24V value is too high? -- rlr
+    // Switch this on control V1.1 C-pre processor flag
+#ifdef CTL_V_1_1
+    const int highThreshold24V = 978; //(24*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
+#else
+    const int highThreshold24V = 1024;
+#endif
+
+    int _v24read = analogRead(SENSE_24V);
+
+    if (SM_DEBUG_LEVEL >0 ) {
+      CogCore::Debug<const char *>("analogRead(SENSE_24V)= ");
+      CogCore::DebugLn<uint32_t>(_v24read);
+      CogCore::Debug<float>((float) _v24read * ((Vcc * (R1+R2))/(1023.0 * R2)));
+      CogCore::Debug<const char *>("\n");
+    }
+
+    if (( _v24read > lowThreshold24V) && ( _v24read < highThreshold24V) ) {
+      if (SM_DEBUG_LEVEL >0 )  CogCore::Debug<const char *>("+24V power monitor reports good.\n");
+      return true;
+    } else{
+      if (SM_DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("+24V power monitor reports bad.\n");
+      CogCore::Debug<const char *>("lowThreshold24V: ");
+      CogCore::Debug<int32_t>(lowThreshold24V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("highThreshold24V: ");
+      CogCore::Debug<int32_t>(highThreshold24V);
+      CogCore::Debug<const char *>("\n");
+      CogCore::Debug<const char *>("_v24read: ");
+      CogCore::Debug<int32_t>(_v24read);
+      CogCore::Debug<const char *>("\n");
+      return false;
+    }
+  }
 }

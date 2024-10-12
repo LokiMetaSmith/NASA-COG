@@ -44,6 +44,7 @@
     //    }
   }
   void tachISR0() {
+    //    CogCore::DebugLn<const char *>("X");
     tachISR(0);
   };
 
@@ -86,6 +87,7 @@ unsigned long SanyoAceB97::_calcRPM(uint8_t i){
     CogCore::Debug<uint8_t>(i);
     CogCore::Debug<const char *>("\n" );
     CogCore::Debug<uint32_t>(tach_data_ocnt[i]);
+        CogCore::Debug<const char *>(" " );
     CogCore::Debug<uint32_t>(tach_data_duration[i]);
     CogCore::Debug<const char *>("\n" );
   }
@@ -184,8 +186,8 @@ void SanyoAceB97::fanSpeedPerCentage(unsigned int s)
 // This would be clearer in the the .h!! or in the machine hal for the specific device
 bool SanyoAceB97::init() {
 
-  PWM_PIN[0] = 9;
-  TACH_PIN[0] = A0;
+  PWM_PIN[0] = SANYO_ACE_FAN_PWM_PIN;
+  TACH_PIN[0] = SANYO_ACE_TACH_PIN;
   // Add a symbolic constant here
   //  fan_Enable = BLOWER_ENABLE;
 

@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.4.3"  // Working on logging speed
+#define OEDCS_VERSION "; Rev: 0.4.5"  // Panel LEDs activated
 #define DEVICE_UNDER_TEST "Hardware: Due"  // A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -326,7 +326,7 @@ void setup()
   // NOTHING HERE YET...
 
   // now set up debugging levels...
-  logRecorderTask.DEBUG_LOG_RECORDER = 0;
+  logRecorderTask.DEBUG_LOG_RECORDER = 2;
   core.DEBUG_CORE = 0;
   core._scheduler.DEBUG_SCHEDULER = 0;
   core._scheduler._idleTask.DEBUG_IDLETASK = 0;
@@ -355,10 +355,15 @@ void setup()
 
   heaterPIDTask.SetTunings(hal->INIT_Kp, hal->INIT_Ki, hal->INIT_Kd);
 
+  CogCore::Debug<const char *>("PID Tuning Set\n");
 
+  core.ResetAllWatchdogs();
   // We want to make sure we have run the temps before we start up.
+  CogCore::Debug<const char *>("Reading First Temp\n");
   readTempsTask._run();
+  CogCore::Debug<const char *>("Reading Second Temp\n");
   readTempsTask._run();
+  CogCore::Debug<const char *>("Reading Third Temp\n");
   readTempsTask._run();
   //Debug<const char *>("BBBBBB!\n"); compiler fails when readTempTask runs, suspect issue inside how TC's are inited ;;platform_packages = toolchain-gccarmnoneeabi @ ~1.90301.0
 

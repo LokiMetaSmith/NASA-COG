@@ -336,6 +336,9 @@ void ReadTempsTask::updateTemperatures() {
     CogCore::Debug<unsigned long>(bad_temp_reads_stack);
     CogCore::Debug<const char *>("\n");
   }
+  if (DEBUG_READ_TEMPS > 2) {
+    CogCore::Debug<const char *>("Done with ReadTaskUpdateTemperatures\n");
+  }
 }
 
 void stage2_ReadTempsTask::updateTemperatures() {
@@ -371,6 +374,7 @@ void ReadTempsTask::_configTemperatureSensors() {
 #endif
 
   _temperatureSensors[0]._config = config[0];
+  watchdogReset();
   if (DEBUG_READ_TEMPS > 0) {
     CogCore::Debug<const char *>("Read Temp Configuration done!\n");
     delay(50);
@@ -406,6 +410,8 @@ bool ReadTempsTask::_init()
   for (int i = 0; i < NUM_TEMP_INDICES; i++) {
     temps[i] = 0.0;
   }
+  CogCore::Debug<const char *>("ReadTempTask::_init() done!");
+  watchdogReset();
   return true;
 }
 
@@ -415,6 +421,10 @@ bool ReadTempsTask::_run()
     CogCore::Debug<const char *>("Running ReadTemps\n");
   }
   updateTemperatures();
+  if (DEBUG_READ_TEMPS > 1) {
+    CogCore::Debug<const char *>("Done with ReadTempsTask:_run()\n");
+  }
+  watchdogReset();
 }
 
 

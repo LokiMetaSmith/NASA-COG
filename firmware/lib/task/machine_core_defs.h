@@ -23,6 +23,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 enum MachineState {
   // Off is the initial state. It is a zero-power state.
   Off,
+  // AwaitingPower - in a blackout where we do not have enough power to continue
+  AwaitingPower,
   // Attempting to reach operational temperatures.
   Warmup,
   // Operating
