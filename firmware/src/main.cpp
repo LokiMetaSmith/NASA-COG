@@ -72,8 +72,8 @@ ShutdownButtonTask shutdownButtonTask;
 MachineConfig machineConfig;
 /***********************************/
 
-#define ETHERNET_REQUIRED 1
-// #define ETHERNET_REQUIRED 0 //No ethernet.
+// #define ETHERNET_REQUIRED 1
+#define ETHERNET_REQUIRED 0 //No ethernet.
 
 
 // This is to allow a code idiom compatible with the way
@@ -89,12 +89,24 @@ MachineConfig *getConfig() {
 
 void setup()
 {
+
+  // TODO: This should be moved to a relay position.
+
+
   CogCore::serialBegin(115200UL);
   delay(500);
 
    // WARNING! need 5 second delay for pio compiler it seems
   // DO NOT REMOVE THIS STATEMENT!
   delay(5000);
+
+
+  pinMode(MachineConfig::RELAY_PIN, OUTPUT);
+
+  digitalWrite(MachineConfig::RELAY_PIN,HIGH);
+
+  Debug<const char *>("Relay PIN Set HIGH ");
+  DebugLn<int>(MachineConfig::RELAY_PIN);
 
 
   // We're doing this here because the Core may not be initialized

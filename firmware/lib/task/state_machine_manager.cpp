@@ -378,6 +378,28 @@ namespace CogApp
     return new_ms;
   }
 
+  float StateMachineManager::read12V_busVoltage() {
+    int _v12read = analogRead(SENSE_12V);
+
+    // Note: Presente in the V1.1 Control board, the resistors
+    // for this are R104 (ground side) and R103, R107, and R108
+    // (+12V) side. These are all marked at 10K, but there is a note to:
+    // REWORK: Change R108 from 10K to 20K
+    // If this rework is done, that would give us 40K high
+    // side and 10K low side.
+    // This should give us a voltage of:
+    // Vout = Vs * 10000 / (40000)
+    // Vout = Vs / 4.
+
+    float v12BusVoltage = (float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2));
+    if (SM_DEBUG_LEVEL > -1) {
+      CogCore::Debug<const char *>("analogRead(SENSE_12V)= ");
+      CogCore::DebugLn<uint32_t>(_v12read);
+      CogCore::Debug<float>((float) v12BusVoltage);
+      CogCore::Debug<const char *>("\n");
+    }
+    return v12BusVoltage ;
+  }
   bool StateMachineManager::is12VPowerGood()
   {
     if (SM_DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
@@ -386,11 +408,11 @@ namespace CogApp
     // SENSE_24V on A1.
     // Full scale is 1023, ten bits for 3.3V.
     //40K into 10000
-    const long FullScale = 1023;
-    const float percentOK = 0.25;
-    const float R1=40000;
-    const float R2=10000;
-    const float Vcc = 3.3;
+    // const long FullScale = 1023;
+    // const float percentOK = 0.25;
+    // const float R1=40000;
+    // const float R2=10000;
+    // const float Vcc = 3.3;
 #ifdef DISABLE_12V_EVAL
     const int highThreshold12V = 1024;//930 ; //(12*(R2/(R1+R2))/Vcc)*FullScale *(1 + percentOK);
 	const int lowThreshold12V = 434; //(12*(R2/(R1+R2))/)*FullScale *(1 - percentOK);

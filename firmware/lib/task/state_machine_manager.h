@@ -55,9 +55,23 @@ namespace CogApp
 
     // I'm not sure if this should be here or in the cog_task
     // Return true if we are likely in a blackout condition.
+    float read12V_busVoltage();
     bool isInBlackout();
     bool is12VPowerGood();
     bool is24VPowerGood();
+
+    // These are constants used for measuring the 12V bus.
+    // Thsese shoudl probably be moved to machine.h
+    const long FullScale = 1023;
+    const float percentOK = 0.25;
+    const float R1=40000;
+    const float R2=10000;
+    const float Vcc = 3.3;
+    const float LOW_BATTERY_BUS_VOLTAGE = 12.5;
+    // Note: This is mostly unused, it exists primarily for
+    // documentation and to make sure the 12V power supply is
+    // properly trimmed.
+    const float BATTERY_BUS_TRICKLE_CHARGE = 13.6;
 
     MachineState checkCriticalFaults(MachineState ms);
     void transitionToWarmup(float tt);
