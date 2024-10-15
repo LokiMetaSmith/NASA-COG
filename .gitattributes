@@ -11,5 +11,6 @@
 *.png binary
 *.jpg binary
 *.pdf binary
-*.FCStd binay
+*.FCStd binary
+*.svg binary
 
