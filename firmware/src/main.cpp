@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.4.5"  // Panel LEDs activated
+#define OEDCS_VERSION "; Rev: 0.4.6"  // Battery Keepalive Relay
 #define DEVICE_UNDER_TEST "Hardware: Due"  // A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -99,15 +99,6 @@ void setup()
    // WARNING! need 5 second delay for pio compiler it seems
   // DO NOT REMOVE THIS STATEMENT!
   delay(5000);
-
-
-  pinMode(MachineConfig::RELAY_PIN, OUTPUT);
-
-  digitalWrite(MachineConfig::RELAY_PIN,HIGH);
-
-  Debug<const char *>("Relay PIN Set HIGH ");
-  DebugLn<int>(MachineConfig::RELAY_PIN);
-
 
   // We're doing this here because the Core may not be initialized
   watchdogReset();

@@ -804,13 +804,7 @@ namespace CogApp
         CogCore::Debug<const char *>("This is low enough to begin to damage the backup battery. The 12 power bus will now be shut off in 3 seconds.");
         // Now we
         delay(3000);
-        // Now we shutoff the power relay power pin.
-        const int RELAY_CONTROL_PIN = 35;
-        digitalWrite(RELAY_CONTROL_PIN, LOW);
-        delay(100);
-        CogCore::Debug<const char *>("Aborting Now!");
-        delay(100);
-        abort();
+        getHAL()->batteryKeepAlive->turnOff();
       }
     } else { // we will try to recover to normal operation...
       new_ms = Warmup;

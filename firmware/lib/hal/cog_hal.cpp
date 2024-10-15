@@ -20,9 +20,10 @@
 #include <cog_hal.h>
 #include <TF800A12K.h>
 #include <SanyoAceB97.h>
+#include <BatteryKeepAliveRelay.h>
 
 COG_HAL::COG_HAL() {
-	   
+
 
 }
 
@@ -32,7 +33,7 @@ bool COG_HAL::init() {
     CogCore::Debug<const char *>("HAL: About to init Fan!\n");
   }
    HEATER_PINS[0] = HEATER_PIN;
-   
+
   // This exist purely for the convenience of having another 3.3V signal for testing!
   pinMode(FIXED_HIGH_43, OUTPUT);
   digitalWrite(FIXED_HIGH_43,HIGH);
@@ -68,6 +69,11 @@ bool COG_HAL::init() {
 
   _stacks[0] = new SL_PS("FIRST_STACK",0);
   _stacks[0]->init();
+
+
+  // Init BatteryKeepAliveRelay
+  batteryKeepAlive = new BatteryKeepAliveRelay();
+  batteryKeepAlive->init();
 
   if (DEBUG_HAL > 0) {
     CogCore::Debug<const char *>("HAL:About to return!\n");

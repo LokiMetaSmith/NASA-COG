@@ -24,6 +24,7 @@
 #include <abstract_ps.h>
 #include <abstract_fan.h>
 #include <gpio_pin_defs.h>
+#include <BatteryKeepAliveRelay.h>
 
 class COG_HAL : public MachineHAL {
 public:
@@ -41,6 +42,8 @@ public:
   bool isShutDownButtonPushed();
   COG_HAL();
   ~COG_HAL()=default;
+
+  BatteryKeepAliveRelay* batteryKeepAlive;
 
   const double INIT_Kp = 0.005;
   const double INIT_Ki = 0.0005;
