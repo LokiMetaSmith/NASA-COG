@@ -244,7 +244,7 @@ public:
    Begin compile-time parameters
    ********************************************/
 
-  static const int RELAY_PIN = 35;
+  static const int RELAY_PIN = 45;
 
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
 // V = 115, W = 918.402

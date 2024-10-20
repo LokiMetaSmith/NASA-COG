@@ -78,8 +78,9 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define SANYO_ACE_FAN_PWM_PIN 9
 #define SANYO_ACE_TACH_PIN A0
 
+#define KEEP_ALIVE 45
 #define PANEL_LED_FAULT 44
-#define PANEL_LED_KEEP_ALIVE 45
+#define PANEL_LED_STATUS 43 // on -- at temperature -- flashing = warmup/cooldown, off/standby -- Machine Off
 #define PANEL_SWITCH_DETECTION 42
 
 // Note, this has often been defined in Platform.ini

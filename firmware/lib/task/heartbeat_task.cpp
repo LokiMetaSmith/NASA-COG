@@ -33,14 +33,6 @@ namespace CogApp
 
   bool HeartbeatTask::_run()
   {
-    // TODO: THIS IS FOR TESTING THE KEEP ALIVE LED.
-    // This code should be replaced when we have coded the
-    // battery keepalive.
-    {
-      bool panel_led_high = digitalRead(PANEL_LED_KEEP_ALIVE);
-      digitalWrite(PANEL_LED_KEEP_ALIVE, !panel_led_high);
-    }
-
     debug_number_of_heartbeats++;
     // Note:adding a heartbeat task
     // CogCore::Debug<const char *>("HeartbeatTask run\n");
