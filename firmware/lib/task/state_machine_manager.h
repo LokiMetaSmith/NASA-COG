@@ -62,12 +62,13 @@ namespace CogApp
 
     // These are constants used for measuring the 12V bus.
     // Thsese shoudl probably be moved to machine.h
+    // TODO: These constants could be moved to machine.h!
     const long FullScale = 1023;
     const float percentOK = 0.25;
     const float R1=40000;
     const float R2=10000;
     const float Vcc = 3.3;
-    const float LOW_BATTERY_BUS_VOLTAGE = 12.5;
+    const float LOW_BATTERY_BUS_VOLTAGE = 13.1;
     // Note: This is mostly unused, it exists primarily for
     // documentation and to make sure the 12V power supply is
     // properly trimmed.
