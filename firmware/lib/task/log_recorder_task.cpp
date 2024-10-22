@@ -33,7 +33,7 @@ namespace CogApp
   bool Log_Recorder_Task::_run()
   {
     // Removing this guard
-    if (DEBUG_LOG_RECORDER) {
+    if (DEBUG_LOG_RECORDER > 2) {
       CogCore::Debug<const char *>("LogRecorderTask run: ");
       CogCore::Debug<int>(_nextRecord);
       CogCore::Debug<const char *>("\n");
@@ -65,7 +65,7 @@ namespace CogApp
     // we need not worry about Rollover
     unsigned long myStartTime = t_millis();
     int minr = min(_numRecords,MAX_RECORDS_TO_DUMP_AT_ONCE);
-    if (DEBUG_LOG_RECORDER) {
+    if (DEBUG_LOG_RECORDER > 1) {
       CogCore::Debug<unsigned long>(myStartTime);
       CogCore::Debug<const char *>(" STARTING DUMPING LOG RECORDS: ");
       CogCore::Debug<int>(minr);
@@ -73,22 +73,26 @@ namespace CogApp
     }
     int firstRecord = _nextRecord - _numRecords;
     // now make sure positive!
-    firstRecord = firstRecord % recordCount;
+    if (firstRecord < 0) {
+      firstRecord = recordCount + firstRecord;
+    }
 
     // in order to limit the time of dumping to only 20 seconds,
     // I am limiting the amount that we do within a single task.
     // We have measured each record as taking about 93 ms.
     for(int i = 0; i < minr; i++) {
       int j = (firstRecord + i) % recordCount;
-      MachineStatusReport msr_lre = getConfig()->_log_entry[j];
+
+      MachineStatusReport* msr_lre = &(getConfig()->_log_entry[j]);
+
       unsigned long spot_time0 = t_millis();
-      getConfig()->outputReport(&msr_lre);
+      getConfig()->outputReport(msr_lre);
       unsigned long spot_time1 = t_millis();
-      oedcsNetworkTask->logReport(&msr_lre);
+      oedcsNetworkTask->logReport(msr_lre);
       unsigned long spot_time2 = t_millis();
       core->ResetAllWatchdogs();
       unsigned long spot_time3 = t_millis();
-      if (DEBUG_LOG_RECORDER) {
+      if (DEBUG_LOG_RECORDER > 1) {
         CogCore::Debug<const char *>("PER RECORD TIMES");
         CogCore::Debug<const char *>("outputReport: ");
         CogCore::DebugLn<long>(spot_time1 - spot_time0);
@@ -97,15 +101,34 @@ namespace CogApp
         CogCore::Debug<const char *>("watchDogs: ");
         CogCore::DebugLn<long>(spot_time3 - spot_time2);
       }
+
+      if (DEBUG_LOG_RECORDER > 0) {
+        CogCore::Debug<const char *>("j : ");
+        CogCore::Debug<int>(j);
+        CogCore::Debug<const char *>("\n");
+        if (((msr_lre)->timestamp != getConfig()->_log_entry[j].timestamp)
+            || ( (msr_lre)->fan_pwm != getConfig()->_log_entry[j].fan_pwm)) {
+          CogCore::Debug<const char *>(" INTERNAL COMPILER BUG ");
+          CogCore::Debug<const char *>(" MachineStatuReport copy corrupted! ");
+        }
+      }
     }
+     if (DEBUG_LOG_RECORDER > 1) {
+        CogCore::Debug<const char *>("pre _numReords: ");
+       CogCore::DebugLn<int>(_numRecords);
+     }
     _numRecords -= minr;
+     if (DEBUG_LOG_RECORDER > 1) {
+        CogCore::Debug<const char *>("post _numReords: ");
+       CogCore::DebugLn<int>(_numRecords);
+     }
     if (0 == _numRecords) {
       currently_dumping = false;
     }
 
     unsigned long myFinishTime = t_millis();
 
-    if (DEBUG_LOG_RECORDER) {
+    if (DEBUG_LOG_RECORDER > 0 ) {
       CogCore::Debug<unsigned long>(myFinishTime);
       CogCore::Debug<const char *>(" FINISHED DUMPING LOG RECORDS.\n");
       CogCore::Debug<const char *>("Time to dump: ");

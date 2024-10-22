@@ -186,8 +186,8 @@ void SanyoAceB97::fanSpeedPerCentage(unsigned int s)
 // This would be clearer in the the .h!! or in the machine hal for the specific device
 bool SanyoAceB97::init() {
 
-  PWM_PIN[0] = 9;
-  TACH_PIN[0] = A0;
+  PWM_PIN[0] = SANYO_ACE_FAN_PWM_PIN;
+  TACH_PIN[0] = SANYO_ACE_TACH_PIN;
   // Add a symbolic constant here
   //  fan_Enable = BLOWER_ENABLE;
 

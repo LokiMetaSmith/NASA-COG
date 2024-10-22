@@ -41,6 +41,10 @@
 
 #include <model.h>
 
+
+#define RF_MOSTPLUS_FLOW_PIN A0
+#define RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE 1.75
+
 class MostPlusFlow {
 public:
   MostPlusFlow();
