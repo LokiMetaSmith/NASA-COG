@@ -26,22 +26,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 using namespace CogCore;
 
-/*
-  We have already done live testing of our DC power supply
-  at high resistances. But we want a way to "smoke test"
-  our power supply and wiring at high amperage. We have
-  made a custom resistor of low ohmage (maybe about 0.3 or 0.4 ohms)
-  which can survive high temperature because it is made or
-  nichrome wire. Our goal here is remarkably simple, though
-  it doesn't really corresponde to a typical "unit" test.
-  Our basic goal is to read from the serial port a simple
-  number and apply that many volts. Then we can walk the
-  voltage up by hand, reporting the amperage, and checking
-  that we can acheive high amperage without anything going
-  wrong in our wiring (like getting too hot.)
- */
 
 #include "core_defines.h"
+
 #include <machine.h>
 #include <SanyoAceB97.h>
 
@@ -62,9 +49,8 @@ void test_fan_speed(){
   Serial.println("Enter numbers between 0 and 100!");
   delay(100);
 
-  SanyoAceB97 *fan = new SanyoAceB97("FIRST_FAN",0,RF_FAN,1.0);
-  fan->_init();
-  fan->DEBUG_FAN = 0;
+  SanyoAceB97 *fan = new SanyoAceB97("FIRST_FAN",0);
+  fan->DEBUG_FAN = 3;
 
   pinMode(fan->PWM_PIN[0], OUTPUT);
   // It is safer to be completely off until we are ready to start!
@@ -122,7 +108,7 @@ void setup() {
   delay(1000); // delay to make sure it's ready
 
   machineConfig = new MachineConfig();
-  machineConfig->hal = new MachineHAL();
+  //  machineConfig->hal = new MachineHAL();
 
   // bool initSuccess  = machineConfig->hal->init();
   bool initSuccess = true;

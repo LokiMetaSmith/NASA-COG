@@ -105,7 +105,7 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define DISPLAY_DC 47 //display data / command line, keep high for display cs control
 #define DISPLAY_RESET 46 // display reset, keep high or don't care
 
-#elif
+#else
 
 /* At present we only support CTL_V_1_1.
 

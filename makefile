@@ -93,7 +93,7 @@ test_parse_script:
 # that makes sense
 test_SanyoAceB97:
 	cd firmware \
-	&& pio test -v -e due_ribbonfish -f "test_Sanyo*"
+	&& pio test -v -e due_ctl_1_1 -f "test_Sanyo*"
 
 test_heater_ramp:
 	cd firmware \
