@@ -22,15 +22,23 @@ Note that the heater has no ground; the ground connection in a 3-prong connector
 
 The fan connector wires can be soldered dirctly to the solder cups. This is an error-prone operation,
 it is important to get it correct.
+
+Lawrence made the following chart of the connectors:
+
+![FanPinChart](https://github.com/user-attachments/assets/6709078e-c568-4597-92e3-489950ea0795)
+
+This chart must be absolutely respected, because the cable takes these same wires to the OEDCS. Note the plastic connectors have wire numbers (1,2,3,4) embossed on them, but they are VERY hard to read and quite small.
+
 ![IMG_0013](https://github.com/user-attachments/assets/9b90c112-751b-4f23-9230-1cdf23279b1f)
 
-We use the following chart for the wiring:
-
-
-
-
+I connect the wires to a terminal block to connect them to fan/blower. However, if making more than a few units, these connections should be soldered.
 
 ![IMG_0015](https://github.com/user-attachments/assets/33c3fc4b-b78c-4208-b995-ff18c4afaca3)
+
+## The High-Amperage Connector
+
+I created 18" wires and crimped on the Anderson lugs. These are 6 AWG wires.
+
 ![IMG_0014](https://github.com/user-attachments/assets/f7f89733-4f3b-43e7-bd2b-e3a3e23e1496)
 
 
