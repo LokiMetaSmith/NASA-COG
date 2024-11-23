@@ -35,10 +35,21 @@ I connect the wires to a terminal block to connect them to fan/blower. However, 
 
 ![IMG_0015](https://github.com/user-attachments/assets/33c3fc4b-b78c-4208-b995-ff18c4afaca3)
 
+## The Thermocouples
+
+The thermocouples are directly wired to the connectors. This is quite challenging because the wires in the thermocouples are quite stiff.
+
+![IMG_0014](https://github.com/user-attachments/assets/f7f89733-4f3b-43e7-bd2b-e3a3e23e1496)
+
 ## The High-Amperage Connector
 
 I created 18" wires and crimped on the Anderson lugs. These are 6 AWG wires.
 
-![IMG_0014](https://github.com/user-attachments/assets/f7f89733-4f3b-43e7-bd2b-e3a3e23e1496)
+We coneect these directly to the two-stranded silver wires for the heaters using ceramic blocks. These ceramics blocks have 
+an orifice which is too small to accept the 6AWG wires. We therefore have to carefully trim or bend away many of the 
+copper strandes to get them to fit, as shown in the photo below:
+![IMG_0016](https://github.com/user-attachments/assets/7f6bbbb9-cdcc-4ec1-8ea0-deb8d0f59c18)
+As shown here:
+![IMG_0017](https://github.com/user-attachments/assets/262bfbd3-0e50-49a0-b1d0-9ba099d7dfb6)
 
 
