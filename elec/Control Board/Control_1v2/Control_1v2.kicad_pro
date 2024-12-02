@@ -655,10 +655,6 @@
       "SSR Interface"
     ],
     [
-      "1f0b18fc-1fda-489e-a08b-a0ece1be6922",
-      "SPI_ControllerLevel_Shifter"
-    ],
-    [
       "905a527a-e45b-4998-adf0-069f9c917f28",
       "I2C_LevelShift"
     ],

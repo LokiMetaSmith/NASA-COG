@@ -3322,9 +3322,6 @@
         )
       )
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "C16") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
           (reference "C24") (unit 1)
         )
@@ -3416,9 +3413,6 @@
         )
       )
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "#PWR063") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
           (reference "#PWR0102") (unit 1)
         )
@@ -3449,9 +3443,6 @@
         )
       )
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "#PWR063") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
           (reference "#PWR0103") (unit 1)
         )
@@ -3549,9 +3540,6 @@
         )
       )
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "#PWR063") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
           (reference "#PWR0104") (unit 1)
         )

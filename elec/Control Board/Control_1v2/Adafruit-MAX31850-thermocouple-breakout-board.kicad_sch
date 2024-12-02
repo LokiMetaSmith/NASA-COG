@@ -8134,9 +8134,6 @@
     (pin "3" (uuid ca3865d7-e24b-4f8e-a152-9f0072662820))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP13") (unit 1)
         )
@@ -8271,9 +8268,6 @@
     (pin "3" (uuid b704173d-77aa-4815-8632-ce008a80657b))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP4") (unit 1)
         )
@@ -8474,9 +8468,6 @@
     (pin "3" (uuid d959eda2-ad75-4687-ac19-495732289802))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP2") (unit 1)
         )
@@ -8583,9 +8574,6 @@
     (pin "3" (uuid 05d21616-f33e-4fb2-89b3-56a65af0dd56))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP5") (unit 1)
         )
@@ -8634,9 +8622,6 @@
     (pin "3" (uuid fc800bb0-7a9b-42e0-9572-9d9f05b31079))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP12") (unit 1)
         )
@@ -8685,9 +8670,6 @@
     (pin "3" (uuid e43fe870-cd48-4f64-9a60-510be6187dae))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP1") (unit 1)
         )
@@ -9216,9 +9198,6 @@
     (pin "3" (uuid 80706f72-00d8-41bb-a393-5af3568ff582))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP11") (unit 1)
         )
@@ -9383,9 +9362,6 @@
     (pin "3" (uuid 423b712a-c108-4973-8bea-010527f648e1))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP3") (unit 1)
         )
@@ -9753,9 +9729,6 @@
     (pin "3" (uuid d84d78a7-f53b-4fc9-ab2a-9f636a3b6164))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP7") (unit 1)
         )
@@ -9804,9 +9777,6 @@
     (pin "3" (uuid 6db61ba2-1e80-4d52-b7be-2fa3b8b4e8fc))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP14") (unit 1)
         )
@@ -9855,9 +9825,6 @@
     (pin "3" (uuid 5a4cc4e2-c59b-4dc4-be24-9d525d116500))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP6") (unit 1)
         )
@@ -10078,9 +10045,6 @@
     (pin "3" (uuid f54108be-add3-4480-8d2a-874768a1dcc1))
     (instances
       (project "Control_1v2"
-        (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/1f0b18fc-1fda-489e-a08b-a0ece1be6922"
-          (reference "JP6") (unit 1)
-        )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
           (reference "JP8") (unit 1)
         )
