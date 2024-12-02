@@ -8348,7 +8348,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 9ce5f6c3-5601-40ce-bbf2-450cf2fd7350)
   )
-  (text "G V F Pwm" (at 219.71 73.66 90)
+  (text "G V P F" (at 219.71 76.2 90)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid c9a54ae0-05c2-4538-a55f-76f29bf38994)
   )
@@ -8748,10 +8748,10 @@
     (property "Manufacturer" "Molex" (at 222.25 81.28 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "1" (uuid 88a36a49-c2c6-41ed-a58a-480fac5c8dff))
-    (pin "2" (uuid 126f3b31-2e98-4c37-821f-dbba6f8e668f))
-    (pin "3" (uuid 088e70e9-92d9-47c4-bba0-8068e96ab92a))
-    (pin "4" (uuid 3e16b0bb-769b-4944-afaf-825cdf2fb334))
+    (pin "1" (uuid 29e73d25-5dc4-4003-907c-73393f6a7caa))
+    (pin "2" (uuid ccd9dd3d-e25a-4e12-b8f3-807bbc01acf3))
+    (pin "3" (uuid dfde291d-417f-45fe-b0e3-d1612c5bfebd))
+    (pin "4" (uuid 313fa755-5f02-4b95-845f-e6ac89788932))
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/0cb2f0dc-fe38-451d-b752-5d12a98f8d03"
