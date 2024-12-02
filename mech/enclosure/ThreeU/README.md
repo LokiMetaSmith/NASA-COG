@@ -9,11 +9,21 @@ _Isometric view of the assembly as of 20240617_
 ![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/face8289-87c1-4680-8007-cd10773da285)
 
 <a
-href="https://github.com/PubInv/NASA-MCOG/blob/develop/mech/enclosure/ThreeU/3U_OEDCS_Oblique.JPG">
-<img src="https://github.com/PubInv/NASA-MCOG/blob/develop/mech/enclosure/ThreeU/3U_OEDCS_Oblique.JPG"
-alt="ThreeU/3U_OEDCS_Oblique.JPG"
+href="3U_OEDCS_Oblique.JPG">
+<img src="3U_OEDCS_Oblique.JPG"
+alt="3U_OEDCS_Oblique.JPG"
 width="400">  
-As assemblied. Click to enlarge </a>
+Oblique view as assemblied. Click to enlarge </a>
+
+
+<a
+href="3U_OEDCS_FrontView.jpg">
+<img src="3U_OEDCS_FrontView.jpg"
+alt="3U_OEDCS_FrontView.jpg"
+width="400">  
+Front view as assemblied. Click to enlarge </a>
+
+
 
 ## Parts List
 The parts list of the 3U OEDCS as per our goal to build about 5 units.
