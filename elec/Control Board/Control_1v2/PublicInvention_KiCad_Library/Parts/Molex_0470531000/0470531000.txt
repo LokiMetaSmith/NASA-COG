@@ -1,0 +1,10 @@
+﻿"Symbol";"Value";"Unit";
+"TraceParts.PartNumber";"90-08042024-057646";"";
+"REFERENCE";"470531000";"";
+"TraceParts.PartTitle";"KK 254";"";
+"TraceParts.InstanceId";"90-08042024-0576462N3XX9WWY2MK673V115V3T3RA";"";
+"SUPPLIER";"Molex";"";
+"DESIGN";"KK 254 Vertical Header, with Friction Lock, 4 Circuits, PC Tail Length 3.50mm, Bag";"";
+"TRACEPARTS";"TRACEPARTS";"";
+"TraceParts.PartLanguage";"en";"";
+"TraceParts.PartVersion";"1.0.3";"";
