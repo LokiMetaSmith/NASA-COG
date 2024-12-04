@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.4.7"  // Low Bus Voltage set 13.1 volts
+#define OEDCS_VERSION "; Rev: 0.4.8"  // Improving FAN RPM safety feature
 #define DEVICE_UNDER_TEST "Hardware: Due"  // A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -335,8 +335,8 @@ void setup()
   core._scheduler._idleTask.DEBUG_IDLETASK = 0;
   dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
   heaterPIDTask.DEBUG_PID = 0;
-  cogTask.DEBUG_FAN = 1;
-  cogTask.DEBUG_LEVEL = 3;
+  cogTask.DEBUG_FAN = 0;
+  cogTask.DEBUG_LEVEL = 0;
   cogTask.SM_DEBUG_LEVEL = 0;
   cogTask.DEBUG_LEVEL_OBA = 0;
   cogTask.wattagePIDObject->DEBUG_PID = 0;

@@ -274,6 +274,10 @@ public:
   const float BOUND_MAX_RAMP_C_PER_MIN = 3.0;
 
  #ifndef REDUCE_BOUND_MAX_TEMP_FOR_TESTING
+  // This created false "stops" at 20 C.
+  // At present, this throws a critical error. After thinking about it,
+  // it probably should enter a CoolDown transition instead.
+  // This has not been coded yet.
   const float BOUND_MAX_TEMP_TRANSITION = 20.0;
 #else
   const float BOUND_MAX_TEMP_TRANSITION = REDUCE_BOUND_MAX_TEMP_FOR_TESTING;
@@ -361,6 +365,15 @@ public:
   const unsigned long UNABLE_TO_RAISE_TEMPERATURE_SECURELY_TOLERATION_TIME_MS = 2 * 60 * 1000;
 
 
+  /* These are the constants in a quadratic curve to make sure the RPMS of the
+     fan are what we expect. P is the PWM duty factor (0.0 to 1.0):
+     Predicted RPMS = A*P^2 + B*P + C.
+     These values were measured against the Austin CFC.
+   */
+
+  static constexpr float FAN_MODEL_QUAD_FACTOR_A = -8180.0;
+  static constexpr float FAN_MODEL_LINE_FACTOR_B = 17620.0;
+  static constexpr float FAN_MODEL_CONST_FACTOR_C = 7.6;
   /********************************************
    FUTURE PARAMETERS, THESE HAVE NO MEANING AT PRESENT
    ********************************************/

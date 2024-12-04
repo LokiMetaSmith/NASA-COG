@@ -108,9 +108,9 @@ float SanyoAceB97::getRPM(){
 }
 
 
-bool SanyoAceB97::evaluateFan(float pwm_ratio,float rpms) {
+bool SanyoAceB97::evaluateFan(float pwm_ratio,float rpms,const float A, const float B, const float C) {
   if(pwm_ratio >=0.2){
-    float expected = BLOWER_RESTRICTION * (306.709 + (12306.7*pwm_ratio) + (-6070*pwm_ratio*pwm_ratio));
+    float expected = BLOWER_RESTRICTION * ((A*pwm_ratio*pwm_ratio) + (B*pwm_ratio) + C);
     float difference = rpms - expected;
     if (DEBUG_FAN > 0) {
       CogCore::Debug<const char *>("pwm_ratio: ");
@@ -121,11 +121,10 @@ bool SanyoAceB97::evaluateFan(float pwm_ratio,float rpms) {
       CogCore::DebugLn<float>(expected);
       // Note this difference computed with this formula is closer to what we get using "rpm_tested"
       // value below; I suggest we switch to using it and retain a high tolerance. - rlr
-      CogCore::Debug<const char *>("rpm_difference: ");
-      CogCore::DebugLn<float>(difference);// 346.749 + 11888.545x + -5944.272x^2
-      CogCore::Debug<const char *>("rpm_tested: ");
-      CogCore::DebugLn<float>(abs((pwm_ratio*SanyoAceB97::APPROXIMATE_PWM_TO_RPMS) - rpms));
+      CogCore::Debug<const char *>("rpm_difference (rpms - expected): ");
+      CogCore::DebugLn<float>(difference);
     }
+    //    if(abs(difference) > SanyoAceB97::ABSOLUTE_RPM_TOLERANCE) {
     if(abs(difference) > SanyoAceB97::ABSOLUTE_RPM_TOLERANCE) {
       return false;
     }

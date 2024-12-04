@@ -575,17 +575,14 @@ namespace CogApp
         CogCore::DebugLn<float>(fan_pwm_ratio);
         CogCore::Debug<const char *>("rpms: ");
         CogCore::DebugLn<float>(fan_rpm);
-        CogCore::Debug<const char *>("rpm_actual: ");
-        CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio)));
-        CogCore::Debug<const char *>("rpm_difference: ");
-        CogCore::DebugLn<float>((306.709 + (12306.7*fan_pwm_ratio) + (-6070*fan_pwm_ratio*fan_pwm_ratio))-fan_rpm);// 346.749 + 11888.545x + -5944.272x^2
-        CogCore::Debug<const char *>("rpm_tested: ");
-        CogCore::DebugLn<float>(abs((fan_pwm_ratio*7300.0) - fan_rpm));
       }
     }//end debug block
 #ifndef DISABLE_FAN_EVAL//ADDED SO FAN CAN BE DISABLED !!! DO NOT LET THIS BE COMMENTED OUT IN production
 
-    if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm)) {
+    if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm,
+                                         MachineConfig::FAN_MODEL_QUAD_FACTOR_A,
+                                         MachineConfig::FAN_MODEL_LINE_FACTOR_B,
+                                         MachineConfig::FAN_MODEL_CONST_FACTOR_C)) {
       CogCore::DebugLn<const char *>("Fan Fault Present");
       if (!getConfig()->errors[FAN_UNRESPONSIVE].fault_present) {
         getConfig()->errors[FAN_UNRESPONSIVE].fault_present = true;
@@ -609,6 +606,9 @@ namespace CogApp
       }
       if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
         time_last_temp_changed_ms = time_now;
+
+        // I now suspect that the proper action here is actually to do a controlled
+        // cooldown.
         if (!evaluateHeaterEnvelope(getTemperatureReadingA_C(),
                                     getConfig()->SETPOINT_TEMP_C,
                                     getConfig()->report->heater_duty_cycle)){
