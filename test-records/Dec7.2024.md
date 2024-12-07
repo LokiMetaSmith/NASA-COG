@@ -36,4 +36,6 @@ I am also truouble by the fact that the stack volts are only 1.89. We should at 
 It is possible that as the general system warms up, it may be able to get "unstuck", but since the setpoint is 100 degrees higher than the stack temperature,
 I believe it has been stuck for 200 minutes = 3 hours and 20 minutes.
 
+I decide to increase the stack edge limit to 40C with the absolute limit set to 60C.
+
 
