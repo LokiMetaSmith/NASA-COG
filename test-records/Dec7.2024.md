@@ -38,4 +38,11 @@ I believe it has been stuck for 200 minutes = 3 hours and 20 minutes.
 
 I decide to increase the stack edge limit to 40C with the absolute limit set to 60C.
 
+At 7:30 I realized I had the Post Stack and the Post Getter thermocouples mistaken for each other. I swapped them.
+
+at 7:31, the system Stad "STARTING DUMPING LOG RECORDS: 10" but abarted in the middle of that -- this is unexplained buggy behavior.
+
+After rearranging the thermocouples, I let the system run. I am concerned that the stack is not receiving 12Volts, even though at this point in the algorithm I think it should.
+
+
 
