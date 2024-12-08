@@ -44,5 +44,29 @@ at 7:31, the system Stad "STARTING DUMPING LOG RECORDS: 10" but abarted in the m
 
 After rearranging the thermocouples, I let the system run. I am concerned that the stack is not receiving 12Volts, even though at this point in the algorithm I think it should.
 
+at 10:00 pm I enterred cooldown mode. I was unable to get above these temperatures:
+
+```
+Timestamp: 50970480
+Machine State: Cooldown
+Target     C: 50.00
+Setpoint   C: 582.17
+Target Ramp C: 0.50
+Max Stack   A: 30.00
+Max Stack   W: 250.00
+Fan PWM   0-1: 0.63
+Fan Target % : 40.00
+Post Heater C: 576.50
+Post Getter C: 549.50
+Post Stack  C: 510.75
+Heater DC 0-1: 1.00000
+Stack amps  A: 1.24
+Stack watts W: 6.08
+Stack volts V: 4.90
+Stack ohms  O: 3.95
+Fan RPM      : 8391.00
+analogRead(SENSE_12V)= 845
+```
+
 
 
