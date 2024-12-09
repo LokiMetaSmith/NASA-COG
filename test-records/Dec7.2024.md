@@ -68,5 +68,38 @@ Fan RPM      : 8391.00
 analogRead(SENSE_12V)= 845
 ```
 
+Monday morning, I tried to excute this command:
+
+```
+pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
+```
+
+After unplugging and replugging the cable and performing "make" it connected.  They ssytem was down to 50C:
+
+```
+Timestamp: 884342
+Machine State: Off
+Target     C: 30.00
+Setpoint   C: 30.00
+Target Ramp C: 0.50
+Max Stack   A: 0.00
+Max Stack   W: 0.00
+Fan PWM   0-1: 0.00
+Fan Target % : 0.00
+Post Heater C: 51.25
+Post Getter C: 50.50
+Post Stack  C: 44.25
+Heater DC 0-1: 0.00000
+Stack amps  A: 0.00
+Stack watts W: 0.00
+Stack volts V: 0.00
+Stack ohms  O:  N/A
+Fan RPM      : 0.00
+analogRead(SENSE_12V)= 846
+13.65
+12V bus voltage = 13.65
+```
+
+
 
 
