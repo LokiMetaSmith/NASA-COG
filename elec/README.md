@@ -1,23 +1,20 @@
-# Electrical Information on ODECOS Controler(s) and Plant(s)
+# Electrical Information on OEDCS Controler(s) and Plant(s)
 PCB Connector Pin signal names, Due Signal Names, Chassis wiring and related information
 Inverse cronological order
 
-## Unit 3-???
-A place holder for future work
-See: TBD
+## Notes for creation of a Control 1.2 PCB  
+tbd
 
-
-## Unit 2
-### Notes for creation of a new PCB  
+## Notes for creation of a Control 1.1 PCB  
 This table pulls from information in the references 1 and 2.   
 References:
 1. Due Pin-Out Map for OEDCS1 : https://docs.google.com/spreadsheets/d/18wP1Cyg5-j3FP92x7no_JsCCFNvo9y2avyn5nvmAj6I/edit#gid=0
-2. Fan Controller and Fan Wiring for OEDCS1: https://docs.google.com/document/d/1n3v-AxqNKEzcKqmHicGKnFmG8sKbNEL_pGaUlU9CZ8U/edit
+2. Fan Controller and Fan Wiring for OEDCOS1: https://docs.google.com/document/d/1n3v-AxqNKEzcKqmHicGKnFmG8sKbNEL_pGaUlU9CZ8U/edit
 
    WARNING! At present pin D4 works without an external pull up resistor for the termocouples, but D5 does not; it requires an external pull up resistor
    Until we have time to rework our perf board, I am going to continue to use D4 for the MAX31850 OneWire interface.
 
-#### Due Pin Wiring
+#### Due Pin Wiring Control 1.1
 | **Due Pin Number** 	| **Breakout** 	| **Signal Name** 	| **Set as I/O**   	| **Connection**                      	| **Notes**                             	|
 |--------------------	|--------------	|-----------------	|------------------	|-------------------------------------	|---------------------------------------	|
 | D0                 	| J6-2         	| NA              	| Input pullup.    	| None                                	| Not used                              	|
@@ -115,13 +112,14 @@ Pins usage on Arduino
 * D12: SPI MISO
 * D13: SPI SCK
 
-### Chassis Wiring of ODECOS Unit 2.
+### Chassis Wiring of OEDCS Unit 2.
 Diagram(s) here...
 
 
 ## Unit 1
-Wiring of ODECOS Unit 1 Notes
-1. Due Pin-Out Mape for OEDCS1 : https://docs.google.com/spreadsheets/d/18wP1Cyg5-j3FP92x7no_JsCCFNvo9y2avyn5nvmAj6I/edit#gid=0
+**Wiring of OEDCOS Unit 1 before the swap out with Control 1.1 assembly**
+Notes
+1. Due Pin-Out Map for OEDCS SN1 : https://docs.google.com/spreadsheets/d/18wP1Cyg5-j3FP92x7no_JsCCFNvo9y2avyn5nvmAj6I/edit#gid=0
 2. Fan Controller and Fan Wiring for OEDCS1: https://docs.google.com/document/d/1n3v-AxqNKEzcKqmHicGKnFmG8sKbNEL_pGaUlU9CZ8U/edit
 
 Wiring of thermocouple amplifires
