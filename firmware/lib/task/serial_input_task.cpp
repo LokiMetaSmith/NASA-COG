@@ -191,7 +191,7 @@ namespace CogApp
     case 'R':
       {
         float r = min(mc->BOUND_MAX_RAMP_C_PER_MIN,ic.value_f);
-        r = max(0.0,r);
+        r = max(0.0,(double) r);
         mc->change_ramp(r);
         mc->report->target_ramp_C = r;
 	CogCore::Debug<const char *>("Ramp changed to: ");

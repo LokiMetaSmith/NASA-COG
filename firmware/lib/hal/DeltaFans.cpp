@@ -17,6 +17,7 @@
 // WARNING -- This code is now stale and exists only in case we
 // have to ressurect or test the DeltaFans.
 
+#ifdef BOARD_DUE
 #include "DeltaFans.h"
 #include <math.h>
 #include <debug.h>
@@ -196,3 +197,4 @@ void DeltaFans::update(float pwm_ratio) {
     printRPMS();
   }
 }
+#endif

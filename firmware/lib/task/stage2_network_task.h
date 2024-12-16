@@ -15,6 +15,8 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
+#ifdef BOARD_DUE
+
 #ifndef STAGE2_NETWORK_TASK_H
 #define STAGE2_NETWORK_TASK_H
 
@@ -36,4 +38,5 @@ namespace CogApp
   };
 }
 
+#endif
 #endif

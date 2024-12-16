@@ -42,7 +42,9 @@ namespace CogApp
     int MAX_RECORDS_TO_DUMP_AT_ONCE = 10;
     bool currently_dumping = false;
     void dumpRecords();
+#ifdef BOARD_DUE
     OEDCSNetworkTask* oedcsNetworkTask;
+#endif
     Core *core;
   private:
     bool _init() override;
