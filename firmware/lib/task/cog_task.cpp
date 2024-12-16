@@ -269,6 +269,8 @@ namespace CogApp
 
     return !(((value_PID >=1.0) || (value_PID<=0.0))
 &&
+             current_input_temperature < getConfig()->SAFETY_COOL_TEMPERATURE_C
+             &&
              (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION));
   }
 
