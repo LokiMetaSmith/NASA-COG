@@ -8,19 +8,19 @@ The final report delivered to NASA for this project can be [read here](https://d
 
 
 This is a repo for a control system made for NASA to drive a Ceramic Oxygen Generation
-technology they have developed. It was forked from ["The Ox"]() project of Public Invention run by Mr. Ben Coombs, which was in turn a fork of the VentOS project of Helpful Engineering let my Ben Coombs, Dr. Erich Schulz, and Robert L. Read.
+technology they have developed. It was forked from ["The Ox"]() project of Public Invention run by Mr. Ben Coombs, which was in turn a fork of the VentOS project of Helpful Engineering led by Ben Coombs, Dr. Erich Schulz, and Robert L. Read.
 
 However, the main reason we are starting with this fork is not that the Pressure Swing
 Adsorption system of the Ox is a particularly relevant, but rather that the code
-represents a nice platform of simple microcontroller control of related machines.
+represents a nice platform of simple (microcontroller) control of related machines.
 
 To wit, includes PlatformIO configuration, a state machine (finite automata),
-a superloop architecutre, and a hardware abstraction layer.
+a superloop architecture, and a hardware abstraction layer.
 
 This particular project of NASA will improve life support technology in space,
 but may eventually greatly improve global health.
 
-An unlisted [YouTube video](https://youtu.be/1nq-Mw7jZ5A) has been uploaded that shows this work in progress as of September, 2022.
+An unlisted [YouTube video](https://youtu.be/1nq-Mw7jZ5A) has been uploaded that shows this work in-progress as of September 2022.
 
 ## How to run
 
@@ -42,8 +42,8 @@ Type: pio run -e due_ribbonfish
 
 
 With Visual Studio Code.  
-Install the Plateform IO extention  
-To open he project in Visual Studio Code.  
+Install the Plateform IO extension  
+To open the project in Visual Studio Code.  
 Open Project. Navigate to the firmware folder.   
 Select the file platformio.ini  
 Press the build check mark on the bottom of the window.
@@ -56,13 +56,13 @@ To disable the automatic load and serial monitor comment out the lines with "tar
 
 AFAIK, PlatformIO forces a directory tree depth of 5 levels.
 
-This is not enough to organize the Hardware Abstraction Level they way I would prefer, forcing us to make some messy directories that are less than clear.
+This is not enough to organize the Hardware Abstraction Level the way I would prefer, forcing us to make some messy directories that are less than clear.
 
 For example, to implement a Temperature Sensor, we would ideally have an
 abstract (or virtual) implementation, a folder for real hardware,
 and a folder for mock sensors.  I have no choice now but to jam
 the mock sensors into the same directory with the real hardware and
-use a naming convnention.
+use a naming convention to differentiate them.
 
 ## The Command System
 
@@ -98,7 +98,7 @@ We have evidence that too rapid a voltage change (such as that caused by pulse-w
 a stack.
 2. The maximum rate of temperature change for a stack. Nominally we may say this as 2 degree K per minute,
 which would allow the machine to reach operating temperature in 6 hours.
-3. The maximum temperature difference across a stack in any dimenstion. We may not be able to control
+3. The maximum temperature difference across a stack in any dimension. We may not be able to control
 this directly, but we can use it as a target.
 4. The maximum voltage applied to a stack.
 5. The maximum amperage applied to a stack.
