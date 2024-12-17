@@ -21,6 +21,7 @@
 #run the following
 #sudo apt install git
 #git clone https://github.com/PubInv/NASA-COG.git
+#git clone https://github.com/PubInv/NASA-MCOG.git
 #chmod +x 'SBC setup instructions'
 #run ./NASA-COG/'SBC setup instructions'
 
@@ -46,3 +47,8 @@ sudo ln -s ~/.platformio/penv/bin/platformio /usr/local/bin/platformio
 sudo ln -s ~/.platformio/penv/bin/pio /usr/local/bin/pio
 sudo ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 
+#install the local mcogserver
+#git clone https://github.com/PubInv/mcogserver.git
+#make iotserver
+#sudo systemctl start mcogs.service
+#sudo systemctl enable mcogs.service
