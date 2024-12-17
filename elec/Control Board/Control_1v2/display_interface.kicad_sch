@@ -4291,7 +4291,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x02") (at 258.826 76.454 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 06f63fce-f228-4cb8-9470-c5ac9038354b)
-    (property "Reference" "J?" (at 258.318 73.152 0)
+    (property "Reference" "J805" (at 258.318 73.152 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "Con_01x02_0.1\"" (at 261.62 78.994 0)
@@ -4326,7 +4326,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "J?") (unit 1)
+          (reference "J805") (unit 1)
         )
       )
     )
@@ -4503,7 +4503,7 @@
           (reference "R48") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "R?") (unit 1)
+          (reference "R806") (unit 1)
         )
       )
     )
@@ -4512,7 +4512,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x02") (at 258.572 88.392 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 1aabf532-0b0b-4cca-bfde-c2dcf2111a39)
-    (property "Reference" "J?" (at 258.064 85.09 0)
+    (property "Reference" "J802" (at 258.064 85.09 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "Con_01x02_0.1\"" (at 261.366 90.932 0)
@@ -4547,7 +4547,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "J?") (unit 1)
+          (reference "J802") (unit 1)
         )
       )
     )
@@ -4587,7 +4587,7 @@
   (symbol (lib_id "Relay:G5LE-1") (at 233.68 35.56 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 3283d99d-208e-454e-8b93-6dea21d73440)
-    (property "Reference" "K?" (at 239.395 45.085 0)
+    (property "Reference" "K801" (at 239.395 45.085 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "Relay SRU-12VDC" (at 223.52 39.37 0)
@@ -4625,7 +4625,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "K?") (unit 1)
+          (reference "K801") (unit 1)
         )
       )
     )
@@ -4634,7 +4634,7 @@
   (symbol (lib_id "Connector:Screw_Terminal_01x04") (at 258.826 37.592 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp yes)
     (uuid 39ae99c3-4830-48b1-a43c-98b43d1cd055)
-    (property "Reference" "J?" (at 257.302 43.18 0)
+    (property "Reference" "J803" (at 257.302 43.18 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "Screw_Terminal_01x04_5.08mm" (at 254.762 45.212 0)
@@ -4671,7 +4671,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "J?") (unit 1)
+          (reference "J803") (unit 1)
         )
       )
     )
@@ -4732,7 +4732,7 @@
           (reference "R47") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "R?") (unit 1)
+          (reference "R803") (unit 1)
         )
       )
     )
@@ -4793,7 +4793,7 @@
           (reference "R48") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "R?") (unit 1)
+          (reference "R807") (unit 1)
         )
       )
     )
@@ -4802,7 +4802,7 @@
   (symbol (lib_id "Connector:Screw_Terminal_01x02") (at 258.826 55.372 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 45ab72cd-bb99-4e7a-988f-8dad13d89978)
-    (property "Reference" "J?" (at 261.366 55.372 0)
+    (property "Reference" "J804" (at 261.366 55.372 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "Screw_Terminal_01x02_5.08mm" (at 254 58.166 0)
@@ -4837,7 +4837,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "J?") (unit 1)
+          (reference "J804") (unit 1)
         )
       )
     )
@@ -4904,7 +4904,7 @@
           (reference "R20") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "R?") (unit 1)
+          (reference "R801") (unit 1)
         )
       )
     )
@@ -4963,7 +4963,7 @@
           (reference "Q4") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "Q?") (unit 1)
+          (reference "Q801") (unit 1)
         )
       )
     )
@@ -5024,7 +5024,7 @@
           (reference "R81") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "R?") (unit 1)
+          (reference "R802") (unit 1)
         )
       )
     )
@@ -5113,7 +5113,7 @@
           (reference "R89") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "R?") (unit 1)
+          (reference "R805") (unit 1)
         )
       )
     )
@@ -5163,7 +5163,7 @@
           (reference "D3") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "D?") (unit 1)
+          (reference "D801") (unit 1)
         )
       )
     )
@@ -5399,7 +5399,7 @@
       )
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "F?") (unit 1)
+          (reference "F801") (unit 1)
         )
       )
     )
@@ -5408,7 +5408,7 @@
   (symbol (lib_id "Connector_Generic:Conn_01x03") (at 258.318 158.242 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
     (uuid cec55cb7-e71f-4386-aa7c-d22285311abf)
-    (property "Reference" "J?" (at 260.35 156.972 0)
+    (property "Reference" "J801" (at 260.35 156.972 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "Conn_01x03_0.1\"" (at 260.35 159.512 0)
@@ -5444,7 +5444,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "J?") (unit 1)
+          (reference "J801") (unit 1)
         )
       )
     )
@@ -5633,7 +5633,7 @@
           (reference "R88") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c"
-          (reference "R?") (unit 1)
+          (reference "R804") (unit 1)
         )
       )
     )

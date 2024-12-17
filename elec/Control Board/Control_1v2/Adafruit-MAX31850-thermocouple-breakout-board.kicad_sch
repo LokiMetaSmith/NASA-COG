@@ -8412,7 +8412,7 @@
           (reference "R20") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "R?") (unit 1)
+          (reference "R202") (unit 1)
         )
       )
     )
@@ -8421,7 +8421,7 @@
   (symbol (lib_id "Control v1-eagle-import:microbuilder_HEADER-1X870MIL") (at 408.305 100.33 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 073272c7-b48c-46f5-baea-0adbe81f33e0)
-    (property "Reference" "JP?" (at 401.955 113.665 0)
+    (property "Reference" "JP205" (at 401.955 113.665 0)
       (effects (font (size 1.778 1.5113)) (justify left bottom))
     )
     (property "Value" "MAX31850K" (at 401.955 87.63 0)
@@ -8465,7 +8465,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "JP?") (unit 1)
+          (reference "JP205") (unit 1)
         )
       )
       (project "Control v1"
@@ -8720,7 +8720,7 @@
           (reference "R20") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "R?") (unit 1)
+          (reference "R203") (unit 1)
         )
       )
     )
@@ -8823,7 +8823,7 @@
   (symbol (lib_id "Jumper:SolderJumper_3_Bridged12") (at 337.185 107.95 90) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 2d4c1191-6be1-4770-9d4a-cd17ff88a89c)
-    (property "Reference" "JP?" (at 342.265 105.41 90)
+    (property "Reference" "JP204" (at 342.265 105.41 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "SolderJumper_3_Bridged12" (at 349.885 111.76 90)
@@ -8862,7 +8862,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "JP?") (unit 1)
+          (reference "JP204") (unit 1)
         )
       )
     )
@@ -9399,7 +9399,7 @@
   (symbol (lib_id "Jumper:SolderJumper_3_Bridged12") (at 337.185 95.25 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 76ad5bba-efdc-4afc-8a7a-b6b1fdca5004)
-    (property "Reference" "JP?" (at 342.265 97.79 90)
+    (property "Reference" "JP203" (at 342.265 97.79 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "SolderJumper_3_Bridged12" (at 349.885 91.44 90)
@@ -9438,7 +9438,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "JP?") (unit 1)
+          (reference "JP203") (unit 1)
         )
       )
     )
@@ -9568,7 +9568,7 @@
       )
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "TP?") (unit 1)
+          (reference "TP201") (unit 1)
         )
       )
     )
@@ -9626,7 +9626,7 @@
           (reference "R20") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "R?") (unit 1)
+          (reference "R201") (unit 1)
         )
       )
     )
@@ -10088,7 +10088,7 @@
           (reference "R20") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "R?") (unit 1)
+          (reference "R204") (unit 1)
         )
       )
     )
@@ -10097,7 +10097,7 @@
   (symbol (lib_id "Jumper:SolderJumper_3_Bridged12") (at 337.185 71.12 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid aedb14ee-b0a6-4b82-8928-c2ff0af1ebb4)
-    (property "Reference" "JP?" (at 342.265 73.66 90)
+    (property "Reference" "JP201" (at 342.265 73.66 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "SolderJumper_3_Bridged12" (at 349.885 67.31 90)
@@ -10136,7 +10136,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "JP?") (unit 1)
+          (reference "JP201") (unit 1)
         )
       )
     )
@@ -10244,7 +10244,7 @@
           (reference "J11") (unit 1)
         )
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "J?") (unit 1)
+          (reference "J201") (unit 1)
         )
       )
     )
@@ -10431,7 +10431,7 @@
   (symbol (lib_id "Jumper:SolderJumper_3_Bridged12") (at 337.185 82.55 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid cc3a5fac-cf43-431e-b740-fff8ada28a5a)
-    (property "Reference" "JP?" (at 342.265 85.09 90)
+    (property "Reference" "JP202" (at 342.265 85.09 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "SolderJumper_3_Bridged12" (at 349.885 78.74 90)
@@ -10470,7 +10470,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59/3ff32a52-b1ed-4756-8661-90a95f721605"
-          (reference "JP?") (unit 1)
+          (reference "JP202") (unit 1)
         )
       )
     )
