@@ -62,7 +62,7 @@ namespace CogApp
       case 'A':
         {
           float a = min(mc->BOUND_MAX_AMPERAGE_SETTING,ic.value_f);
-          a = max(0,a);
+          a = max(0.0,(double) a);
           mc->MAX_AMPERAGE = a;
           mc->report->max_stack_amps_A =
             mc->MAX_AMPERAGE;
@@ -74,7 +74,7 @@ namespace CogApp
       case 'W':
         {
           float w = min(mc->BOUND_MAX_WATTAGE,ic.value_f);
-          w = max(0,w);
+          w = max(0.0,(double) w);
           mc->MAX_STACK_WATTAGE = w;
           mc->report->max_stack_watts_W =
             mc->MAX_STACK_WATTAGE;
@@ -85,8 +85,8 @@ namespace CogApp
         }
       case 'F':
         {
-          float f = min(1.0,ic.value_f);
-          f =  max(0,f);
+          float f = min(1.0,(double) ic.value_f);
+          f =  max(0.0,(double) f);
           mc->FAN_SPEED = f;
           mc->report->fan_pwm =
             mc->FAN_SPEED;

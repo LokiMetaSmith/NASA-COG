@@ -96,4 +96,10 @@ unsigned long t_millis_assert_no_rollover(unsigned long previous,
   return t_millis();
 }
 
+// HACK! This is a test to get the ESP32 to compile.
+// The ESP32 has powerful watchdogs, but they are different than the Due ones. This should be made into an encapsulating function. - rlr
+#ifndef BOARD_DUE
+void watchdogReset() {};
+#endif
+
 #endif

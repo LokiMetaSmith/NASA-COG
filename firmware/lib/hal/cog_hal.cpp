@@ -40,7 +40,9 @@ bool COG_HAL::init() {
 
 
   pinMode(MAX31850_DATA_PIN, INPUT);
+#ifdef BOARD_DUE
   pinMode(RF_STACK, OUTPUT);
+#endif
 
   pinMode(SHUT_DOWN_BUTTON,INPUT_PULLUP);
 
