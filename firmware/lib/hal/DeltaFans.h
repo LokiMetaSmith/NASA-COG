@@ -39,8 +39,6 @@
 #ifndef DELTAFANS_H
 #define DELTAFANS_H
 
-#ifdef BOARD_DUE
-
 #ifdef ARDUINO
 #include <Arduino.h>
 #else
@@ -111,5 +109,4 @@ public:
 };
 
 
-#endif
 #endif

@@ -13,13 +13,10 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-#ifdef BOARD_DUE // This code will need to be completely different on an ESP32!
-
 #include <Arduino.h>
 #include <SPI.h>         // needed for Arduino versions later than 0018
 #include <network_task.h>
 #include <network_udp.h>
-
 #include <flash.h>
 
 #define FLASH_ACCESS_MODE_128    EFC_ACCESS_MODE_128
@@ -40,19 +37,11 @@ char macString[20];
 DueFlashStorage dfs;
 Configuration configuration;
 
-
 uint32_t
 getResetCause() {
-
-
-  // warning! This is a test HACK!
-#ifdef BOARD_DUE
   if (!resetCause)
     resetCause = rstc_get_reset_cause(RSTC) >> RSTC_SR_RSTTYP_Pos;
   return resetCause;
-#elif
-  return 0;
-#endif
 }
 
 uint32_t
@@ -100,7 +89,7 @@ initFlashConfiguration() {
     configuration.watchdog_count = 0;
     configuration.state = 0;
   } else {
-    byte* b = dfs.readAddress(4);
+    byte* b = dfs.readAddress(4); 
     memcpy(&configuration, b, sizeof(Configuration));
     // CogCore::Debug<const char *>(" update flash ");
     configuration.boot_count++;
@@ -117,7 +106,7 @@ initFlashConfiguration() {
 
 void
 writeFlashConfiguration() {
-  byte *b = dfs.readAddress(4);
+  byte *b = dfs.readAddress(4); 
   uint8_t needupdate = 0;
   byte b2[sizeof(Configuration)];
   memcpy(b2, &configuration, sizeof(Configuration));
@@ -129,5 +118,3 @@ writeFlashConfiguration() {
   }
   if (needupdate) dfs.write(4, b2, sizeof(Configuration));
 }
-
-#endif

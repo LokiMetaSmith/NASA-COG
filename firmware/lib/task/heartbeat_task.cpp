@@ -18,9 +18,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 using namespace std;
 
-#ifndef BOARD_DUE
-#define LED_BUILTIN 2
-#endif
 
 namespace CogApp
 {
