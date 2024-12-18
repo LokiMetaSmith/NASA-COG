@@ -68,18 +68,9 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 
 #ifdef RIBBONFISH
 
-#ifdef BOARD_DUE
 #define RF_STACK DAC0
 #define SENSE_12V A2
 #define SENSE_24V A1
-#else
-// HACK! WARNING -- This is for the ESP32 and needs to Changed --- this is OBVIOUSLY WRONG
-#define SENSE_12V 0
-#define SENSE_24V 0
-#endif
-
-
-
 #define MAX31850_DATA_PIN 5
 
 #define THERMOCOUPLE_PIN MAX31850_DATA_PIN //DIFFERENT FOR STAGE2_HEATER

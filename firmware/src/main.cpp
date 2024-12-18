@@ -28,7 +28,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <core.h>
 #include <cog_hal.h>
-#include <util.h>
 
 #include <flash.h>
 #include <network_task.h>
@@ -54,9 +53,7 @@ static Core core;
 
 /***** Declare your tasks here *****/
 // DisplayTask displayTask;
-#ifdef BOARD_DUE
 CogApp::OEDCSNetworkTask OEDCSNetworkTask;
-#endif
 CogApp::CogTask cogTask;
 CogApp::OEDCSSerialInputTask oedcsSerialInputTask;
 CogApp::FaultTask faultTask;
@@ -127,7 +124,6 @@ void setup()
    //Print out the reset reason
   Debug<const char *>("=================\n");
   Debug<const char *>("ResetCause: ");
-#ifdef BOARD_DUE // This code will need to be completely different on an ESP32!
   switch(getResetCause()) {
   case 0: Debug<const char *>("general\n"); break;
   case 1: Debug<const char *>("backup\n"); break;
@@ -135,7 +131,6 @@ void setup()
   case 3: Debug<const char *>("software\n"); break;
   case 4: Debug<const char *>("user\n"); break;
   }
-#endif
   Debug<const char *>("=================\n");
 
   // TODO: consider doing this....
@@ -239,13 +234,11 @@ void setup()
     OEDCSNetworkProperties.priority = CogCore::TaskPriority::High;
     OEDCSNetworkProperties.state_and_config = (void *) &machineConfig;
 
-#ifdef BOARD_DUE
     bool OEDCSNetwork = core.AddTask(&OEDCSNetworkTask, &OEDCSNetworkProperties);
     if (!OEDCSNetwork) {
       CogCore::Debug<const char *>("Retrieve Script UDP\n");
       abort();
     }
-#endif
   }
 
   dutyCycleTask.whichHeater = (Stage2Heater) 0;
@@ -324,9 +317,7 @@ void setup()
 
   // cogTask.heaterPIDTask = &heaterPIDTask;
 
-#ifdef BOARD_DUE
   logRecorderTask.oedcsNetworkTask = &OEDCSNetworkTask;
-#endif
   // We need the core on logRecorderTask (and, indeed, any long-running task
   // so that we can "feed the dog" for the software watchdog there
   logRecorderTask.core = &core;
@@ -349,10 +340,8 @@ void setup()
   cogTask.SM_DEBUG_LEVEL = 0;
   cogTask.DEBUG_LEVEL_OBA = 0;
   cogTask.wattagePIDObject->DEBUG_PID = 0;
-#ifdef BOARD_DUE
   OEDCSNetworkTask.DEBUG_UDP = 0;
   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
-#endif
   readTempsTask.DEBUG_READ_TEMPS = 0;
   oedcsSerialInputTask.DEBUG_SERIAL = 0;
   //oedcsSerialInputTask.DEBUG_SERIAL = 2; // FLE

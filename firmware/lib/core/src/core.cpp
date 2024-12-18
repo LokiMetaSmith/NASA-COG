@@ -21,9 +21,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifdef ARDUINO
 #include <Arduino.h>
 #include <limits.h>
-
-
-
 #define MAX_TIME (ULONG_MAX)
 #else
 #include <iostream>
@@ -33,10 +30,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #define HARDWARE_WATCHDOG_TIMOUT_MS 16000
 void watchdogSetup() {
-  // WARNING! HACK! This needs an ESP32 implementation of some kind! - rlr
-#ifdef BOARD_DUE
   watchdogEnable(HARDWARE_WATCHDOG_TIMOUT_MS);
-#endif
 }
 
 
