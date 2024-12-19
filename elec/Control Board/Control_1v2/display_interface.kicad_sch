@@ -4335,7 +4335,7 @@
   )
 
   (symbol (lib_id "Connector_Generic:Conn_02x05_Odd_Even") (at 160.02 142.24 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid 0bb76d0e-c7f3-4d99-a295-a63acab58b99)
     (property "Reference" "J36" (at 157.48 150.495 0)
       (effects (font (size 1.27 1.27)) (justify right))
@@ -4634,7 +4634,7 @@
   )
 
   (symbol (lib_id "Connector:Screw_Terminal_01x04") (at 259.08 38.1 0) (mirror x) (unit 1)
-    (in_bom yes) (on_board yes) (dnp yes)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid 39ae99c3-4830-48b1-a43c-98b43d1cd055)
     (property "Reference" "J803" (at 257.556 43.688 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -5172,7 +5172,7 @@
   )
 
   (symbol (lib_id "Connector_Generic:Conn_02x05_Odd_Even") (at 160.02 118.11 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid 9cc833e7-2c45-4bc9-a021-b2097f8e22be)
     (property "Reference" "J35" (at 157.48 125.73 0)
       (effects (font (size 1.27 1.27)) (justify right))
