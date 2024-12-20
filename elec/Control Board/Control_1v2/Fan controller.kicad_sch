@@ -8890,7 +8890,7 @@
   )
 
   (symbol (lib_id "Connector_Generic:Conn_01x04") (at 165.1 121.92 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom no) (on_board yes) (dnp yes) (fields_autoplaced)
     (uuid 320da60d-8e9e-4929-9da8-3b1155016e4f)
     (property "Reference" "J9" (at 167.64 121.9199 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -9768,7 +9768,7 @@
   )
 
   (symbol (lib_id "Connector_Generic:Conn_01x04") (at 177.8 100.33 0) (mirror x) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom no) (on_board yes) (dnp yes) (fields_autoplaced)
     (uuid aa8f8f6a-e6a3-4646-b966-b3db9315e076)
     (property "Reference" "J11" (at 177.8 88.9 0)
       (effects (font (size 1.27 1.27)))
@@ -9948,7 +9948,7 @@
   )
 
   (symbol (lib_id "Connector_Generic:Conn_01x05") (at 165.1 137.16 0) (mirror x) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid b8e5104a-8264-4f9c-b5f1-f383dd3d1dee)
     (property "Reference" "J10" (at 170.18 142.24 0)
       (effects (font (size 1.27 1.27)))
@@ -10286,7 +10286,7 @@
   )
 
   (symbol (lib_id "Connector:DB25_Female_MountingHoles") (at 96.52 109.22 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid df08a93b-0ee9-4b7e-98cc-7253e597c854)
     (property "Reference" "J6" (at 93.98 142.24 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -10415,7 +10415,7 @@
   )
 
   (symbol (lib_id "Connector_Generic:Conn_01x07") (at 187.96 74.93 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid eb35f362-36be-4161-8650-10307b6b1e35)
     (property "Reference" "J12" (at 176.53 60.96 0)
       (effects (font (size 1.27 1.27)) (justify left))

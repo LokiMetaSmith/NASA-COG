@@ -4397,7 +4397,7 @@
   )
 
   (symbol (lib_id "Control v1-eagle-import:HEADER-1X676MIL") (at 170.18 110.49 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid 62c62c24-7c5a-41c8-943a-05d7a6e721ac)
     (property "Reference" "JP1" (at 163.83 99.695 0)
       (effects (font (size 1.778 1.5113)) (justify left bottom))
@@ -4481,7 +4481,7 @@
   )
 
   (symbol (lib_id "Control v1-eagle-import:HEADER-1X676MIL") (at 137.16 110.49 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid 8c7b073a-5768-43f8-bfb5-2932b2e2f816)
     (property "Reference" "JP1" (at 130.81 99.695 0)
       (effects (font (size 1.778 1.5113)) (justify left bottom))
@@ -4637,7 +4637,7 @@
   )
 
   (symbol (lib_id "Control v1-eagle-import:HEADER-1X676MIL") (at 104.14 111.76 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid f8426052-9f90-40c9-972e-15e9f0454b2e)
     (property "Reference" "JP1" (at 97.79 100.965 0)
       (effects (font (size 1.778 1.5113)) (justify left bottom))
