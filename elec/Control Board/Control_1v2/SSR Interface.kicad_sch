@@ -1951,7 +1951,7 @@
   )
 
   (symbol (lib_id "Device:R") (at 119.38 137.16 90) (mirror x) (unit 1)
-    (in_bom yes) (on_board yes) (dnp yes)
+    (in_bom no) (on_board yes) (dnp yes)
     (uuid ae4b745d-1654-4292-b7da-1b0cfbd5d3be)
     (property "Reference" "R101" (at 120.65 132.08 90)
       (effects (font (size 1.27 1.27)))
