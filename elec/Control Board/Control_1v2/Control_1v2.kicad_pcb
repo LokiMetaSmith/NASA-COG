@@ -25088,7 +25088,7 @@
     (property "ki_description" "Generic screw terminal, single row, 01x04, script generated (kicad-library-utils/schlib/autogen/connector/)")
     (property "ki_keywords" "screw terminal")
     (path "/f2cc20dc-f81b-4e9e-a9e1-88ed6ea8264c/39ae99c3-4830-48b1-a43c-98b43d1cd055")
-    (attr through_hole exclude_from_bom)
+    (attr through_hole exclude_from_pos_files exclude_from_bom)
     (fp_text reference "J803" (at 7.62 -6.26 90) (layer "F.SilkS")
         (effects (font (size 1 1) (thickness 0.15)))
       (tstamp 17b407de-58dc-4386-8ef4-97b7ec9bbb0d)
