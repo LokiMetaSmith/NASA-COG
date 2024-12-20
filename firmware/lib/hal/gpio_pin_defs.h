@@ -114,14 +114,23 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define DISPLAY_DC 47 //display data / command line, keep high for display cs control
 #define DISPLAY_RESET 46 // display reset, keep high or don't care
 
+#elif ION_CONTROL_BOARD
+/*
+ * The ION control board is the official board for AmOx's commercial product.
+ *
+ * Analog0: 0-10V						GPIO-03
+ * Analog1: Current monitor				GPIO-02
+ * Analog2: 4-20mA						GPIO-01
+ * Analog3: Voltage monitor				GPIO-04
+ *
+ * Fan0 Tach							GPIO-05
+ * Fan0 PWM								GPIO-12
+ * Fan1 PWM								GPIO-13
+ * Fan2 PWM								GPIO-14
+ * Fan Enable							GPIO-11
+ */
+
 #else
-
-/* At present we only support CTL_V_1_1.
-
-   I would like to intentionally throw a compiler error here,
-   but that might disrupt our test code!
-
-*/
 
 
 #endif
