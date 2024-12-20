@@ -10629,10 +10629,10 @@
   (symbol (lib_id "GPAD_SCH_LIB:PCB_GPAD_VER1") (at 174.752 290.068 0) (unit 1)
     (in_bom yes) (on_board no) (dnp no)
     (uuid 3dbee09f-e92d-41b1-a989-9b0f73dc4389)
-    (property "Reference" "*_Comment101" (at 172.212 278.638 0)
+    (property "Reference" "*_Designator101" (at 172.212 278.638 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "Value" (at 158.242 307.848 0)
+    (property "Value" "*_Comment101" (at 158.242 307.848 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Footprint " (at 174.752 290.068 0)
@@ -10665,7 +10665,7 @@
     (instances
       (project "Control_1v2"
         (path "/c68c9deb-8d4d-42f0-adf8-4d3022f4ee59"
-          (reference "*_Comment101") (unit 1)
+          (reference "*_Designator101") (unit 1)
         )
       )
     )

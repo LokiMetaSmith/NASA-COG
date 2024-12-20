@@ -2536,7 +2536,7 @@
     (property "Reference" "J201" (at 255.6002 82.8548 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Value" "Con_01x02_0.1\"" (at 255.6002 85.1662 0)
+    (property "Value" "Con_01x02_0.1" (at 255.6002 85.1662 0)
       (effects (font (size 1.27 1.27)) (justify right))
     )
     (property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (at 262.89 88.9 0)
