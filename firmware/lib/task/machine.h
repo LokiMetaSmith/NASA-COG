@@ -273,6 +273,9 @@ public:
   // This is the maximum ramp in degrees C per minute.
   const float BOUND_MAX_RAMP_C_PER_MIN = 3.0;
 
+  // A definition of "cool" in which we consider the system safe...
+  const float SAFETY_COOL_TEMPERATURE_C = 50.0;
+
  #ifndef REDUCE_BOUND_MAX_TEMP_FOR_TESTING
   // This created false "stops" at 20 C.
   // At present, this throws a critical error. After thinking about it,
