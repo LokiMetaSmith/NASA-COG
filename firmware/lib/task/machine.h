@@ -16,7 +16,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #ifndef MACHINE_H
-#define MACHINE_H
+#define MACHINE_H 1
 
 #include <OnePinHeater.h>
 #include <machine_script.h>
@@ -48,24 +48,7 @@ public:
   virtual bool init() = 0;
 };
 
-
-constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINITIONS] = {
-    "Post Heater TC-A Bad",
-    "Post Getter TC-B Bad",
-    "Post Stack  TC-C Bad",
-    "Can not init three TCs",
-    "Fan Power Loss",
-    "Lost 12v Power",
-    "Lost 24v Power",
-    "Fan TACH unresponsive",
-    "Lost control of Heater",
-    "pid pegged, temp out of bounds",
-    "Lost control of the Stack",
-    "Lost control of the programmable PSU",
-    "Lost mains power, on UPS",
-    "System Over Temperature",
-    "Unable to Raise Temperature Securely"
-  };
+extern char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINITIONS];
 
 
 

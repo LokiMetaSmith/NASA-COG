@@ -510,7 +510,9 @@ namespace CogApp
     // class does not have to know about the LED. I don't
     // deem this worth doing now. - rlr
 
+#ifdef CTL_V_1_1
     digitalWrite(PANEL_LED_FAULT,doesAnyErrorExist());
+#endif
     if (doesAnyErrorExist()) {
       CogCore::Debug<const char *>("An Error Condition Exists.\n");
     }
@@ -813,7 +815,9 @@ namespace CogApp
         CogCore::Debug<const char *>("This is low enough to begin to damage the backup battery. The 12 power bus will now be shut off in 3 seconds.");
         // Now we
         delay(3000);
+#ifdef CTL_V_1_1
         getHAL()->batteryKeepAlive->turnOff();
+#endif
       }
     } else { // we will try to recover to normal operation...
       new_ms = Warmup;

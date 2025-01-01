@@ -35,8 +35,11 @@ bool COG_HAL::init() {
    HEATER_PINS[0] = HEATER_PIN;
 
   // This exist purely for the convenience of having another 3.3V signal for testing!
+
+#ifdef CTL_V_1_1
   pinMode(FIXED_HIGH_43, OUTPUT);
   digitalWrite(FIXED_HIGH_43,HIGH);
+#endif
 
 
   pinMode(MAX31850_DATA_PIN, INPUT);
@@ -44,8 +47,11 @@ bool COG_HAL::init() {
   pinMode(RF_STACK, OUTPUT);
 #endif
 
+#ifdef CTL_V_1_1
   pinMode(SHUT_DOWN_BUTTON,INPUT_PULLUP);
+#endif
 
+#ifdef CTL_V_1_1
   _fans[0] = new SanyoAceB97("FIRST_FAN",0);
   _fans[0]->init();
 
@@ -63,19 +69,31 @@ bool COG_HAL::init() {
     _ac_heaters[i]->init();
   }
   if (DEBUG_HAL > 0) {
-    CogCore::Debug<const char *>("HEATERS_INITIALIZED\n");
+    CogCore::Debug<const char *>("HEATERS_INITIALIZED.\n");
       delay(100);
   }
 
   //init  PSU
 
   _stacks[0] = new SL_PS("FIRST_STACK",0);
+
+  CogCore::Debug<const char *>("_stacks[0]\n");
+  CogCore::Debug<long>((long) &_stacks[0]);
+
+
   _stacks[0]->init();
+#endif
+
+  if (DEBUG_HAL > 0) {
+    CogCore::Debug<const char *>("STACK INITIALIZED.\n");
+  }
 
 
+#ifdef CTL_V_1_1
   // Init BatteryKeepAliveRelay
   batteryKeepAlive = new BatteryKeepAliveRelay();
   batteryKeepAlive->init();
+#endif
 
   if (DEBUG_HAL > 0) {
     CogCore::Debug<const char *>("HAL:About to return!\n");
@@ -92,7 +110,9 @@ void COG_HAL::_updateFanPWM(float unitInterval) {
   }
 }
 
+#ifdef CTL_V_1_1
 bool COG_HAL::isShutDownButtonPushed() {
   bool isPressed = !digitalRead(SHUT_DOWN_BUTTON);
   return isPressed;
 }
+#endif

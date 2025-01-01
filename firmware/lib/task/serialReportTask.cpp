@@ -20,7 +20,6 @@
 
 #include <serialReportTask.h>
 
-
 bool SerialReportTask::_run()
 {
   if (DEBUG_SERIAL_REPORT > 0) {
@@ -35,6 +34,12 @@ bool SerialReportTask::_run()
 
 bool SerialReportTask::_init()
 {
+  // for(int j = 0; j < 5; j++) {
+  //   CogCore::Debug<int>(j);
+  //   CogCore::Debug<const char *>("SerialReportTask _init()\n");
+  //   delay(1000);
+  //   CogCore::DebugLn<bool>(j < 5);
+  // }
 }
 SerialReportTask::SerialReportTask() {
 }

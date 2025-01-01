@@ -39,11 +39,16 @@ public:
   bool init() override;
   void _updateFanPWM(float unitInterval);
 
+#ifdef CTL_V_1_1
   bool isShutDownButtonPushed();
+#endif
+
   COG_HAL();
   ~COG_HAL()=default;
 
+#ifdef CTL_V_1_1
   BatteryKeepAliveRelay* batteryKeepAlive;
+#endif
 
   const double INIT_Kp = 0.005;
   const double INIT_Ki = 0.0005;

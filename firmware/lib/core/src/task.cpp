@@ -36,11 +36,31 @@ namespace CogCore
 
     TaskState Task::Init(TaskProperties *properties)
     {
+        CogCore::Debug<const char *>("INIT BEGIN\n");
         if (_state == TaskState::Undefined)
         {
-            _properties = *properties;
-            _state = _init() ? TaskState::Ready : TaskState::Error;
+          CogCore::Debug<const char *>("ABOUT TO DEREFERENCE\n");
+          //        _properties = *properties;
+          CogCore::Debug<const char *>("DONE WITH DEREFERENCE\n");
+
+           for(int k = 0; k < 5; k++) {
+            CogCore::Debug<int>(k);
+            CogCore::Debug<const char *>("D SerialReportTask _init()\n");
+            delay(100);
+            CogCore::DebugLn<bool>(k < 5);
+           }
+           _state = _init() ? TaskState::Ready : TaskState::Error;
+          for(int j = 0; j < 5; j++) {
+            CogCore::Debug<int>(j);
+            CogCore::Debug<const char *>("E SerialReportTask _init()\n");
+            delay(100);
+            CogCore::DebugLn<bool>(j < 5);
+          }
+          // CogCore::Debug<const char *>("POST_INIT\n"); delay(50);
+          CogCore::Debug<const char *>("QQQQ\n");
+          CogCore::Debug<const char *>("_init returned\n"); delay(50);
         }
+        CogCore::Debug<const char *>("INIT DONE\n");
         return _state;
     }
 

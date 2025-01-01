@@ -32,9 +32,9 @@ SL_PS::SL_PS(const char * name, uint8_t id) {
 }
 
 int SL_PS::init() {
-
   int retval = 0;
 
+#ifdef CTL_V_1_1
 
   Serial1.begin(4800);
   // This would be better done as an error message than a hard loop...
@@ -186,6 +186,8 @@ int SL_PS::init() {
   pinMode( PS1_AUX_SENSE, INPUT);
 #ifdef   TEST_OVER_CURRENT_EVENT
   pinMode(6, INPUT_PULLUP);    //TEST OVER CURRENT EVENT, sets reported amperage to 60
+#endif
+
 #endif
   return retval;
 }

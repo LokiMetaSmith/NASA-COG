@@ -129,8 +129,28 @@ void Scheduler::setupIdleTask() {
 }
 
 bool Scheduler::AddTask(Task *task, TaskProperties *properties) {
-    if (WithinArrayBounds(_numberOfTasks, MAX_TASKS)) {
-        TaskState state = task->Init(properties);
+  CogCore::Debug<const char *>("AddTask Begins\n");
+  Debug<const char *>("*task, *properties\n");
+  DebugLn<long>((long) properties);
+  //    if (WithinArrayBounds(_numberOfTasks, MAX_TASKS)) {
+      CogCore::Debug<const char *>("About to call Init!\n");
+
+          for(int k = 0; k < 5; k++) {
+            CogCore::Debug<int>(k);
+            CogCore::Debug<const char *>("C SerialReportTask _init()\n");
+            delay(100);
+            CogCore::DebugLn<bool>(k < 5);
+          }
+      TaskState state = task->Init(properties);
+
+                for(int k = 0; k < 5; k++) {
+            CogCore::Debug<int>(k);
+            CogCore::Debug<const char *>("X SerialReportTask _init()\n");
+            delay(100);
+            CogCore::DebugLn<bool>(k < 5);
+          }
+      //     TaskState state = TaskState::Ready;
+      CogCore::Debug<const char *>("Returned from Init!\n");
         if (state == TaskState::Ready) {
             map.add(properties->id, task);
             _numberOfTasks++;
@@ -138,7 +158,7 @@ bool Scheduler::AddTask(Task *task, TaskProperties *properties) {
         } else {
             ErrorHandler::Log(ErrorLevel::Error, ErrorCode::CoreFailedToAddTask);
         }
-    }
+        //    }
     // Out of bounds
 
     return false;

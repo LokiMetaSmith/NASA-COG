@@ -74,10 +74,11 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define SENSE_24V A1
 #else
 // HACK! WARNING -- This is for the ESP32 and needs to Changed --- this is OBVIOUSLY WRONG
-#define SENSE_12V 0
-#define SENSE_24V 0
+#define SENSE_12V 5
+#define SENSE_24V 5
 #endif
 
+#define HEATER_PIN 51
 
 
 #define MAX31850_DATA_PIN 5
@@ -93,7 +94,6 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define PANEL_SWITCH_DETECTION 42
 
 // Note, this has often been defined in Platform.ini
-#define HEATER_PIN 51
 
 #elif STAGE2_HEATER
 
@@ -129,6 +129,32 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
  * Fan2 PWM								GPIO-14
  * Fan Enable							GPIO-11
  */
+
+// HACK! WARNING -- This is for the ESP32 and needs to Changed --- this is OBVIOUSLY WRONG
+#define SENSE_12V 12
+#define SENSE_24V 12
+
+#define MAX31850_DATA_PIN 12
+
+//#define THERMOCOUPLE_PIN MAX31850_DATA_PIN
+#define THERMOCOUPLE_PIN 12
+
+#define SANYO_ACE_FAN_PWM_PIN 12
+#define SANYO_ACE_TACH_PIN 33
+
+// Rob is making an arbitrary assignment here to get it to compile - rlr
+#define HEATER_PIN 17
+#define BLOWER_ENABLE 13
+
+// There is no KEEP_ALIVE on ION
+// #define KEEP_ALIVE 45
+// There is no PANEL_LED on ION?
+// #define PANEL_LED_FAULT 44
+// #define PANEL_LED_STATUS 43 // on -- at temperature -- flashing = warmup/cooldown, off/standby -- Machine Off
+// #define PANEL_SWITCH_DETECTION 42
+
+// Note, this has often been defined in Platform.ini
+// #define HEATER_PIN 51
 
 #else
 

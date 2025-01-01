@@ -62,39 +62,50 @@ bool Core::_criticalError = false;
 bool Core::Boot() {
     bool result = false;
     //bool Core::_criticalError = false;
-    ErrorHandler::SetErrorMode(CogCore::ErrorMode::StdOut);
+    //    ErrorHandler::SetErrorMode(CogCore::ErrorMode::StdOut);
     // TODO: configure/validate HAL
 
-    SchedulerProperties properties;
-    properties.mode = SchedulerMode::RealTime;
-    properties.tickPeriodMs = TICK_PERIOD;
-    _scheduler.SetProperties(properties);
-    CreateSoftwareWatchdog(WATCHDOG_TIMEOUT_MS);
+    // SchedulerProperties properties;
+    // properties.mode = SchedulerMode::RealTime;
+    // properties.tickPeriodMs = TICK_PERIOD;
+    // _scheduler.SetProperties(properties);
+    //    CreateSoftwareWatchdog(WATCHDOG_TIMEOUT_MS);
 
     // Note: This CANNOT take a parameter!!
-    CreateHardwareWatchdog();
+    //    CreateHardwareWatchdog();
 
     _state = CoreState::Configured;
 
-    if (_state == CoreState::Configured) {
-#ifndef ARDUINO
-        std::cout << "Boot\n";
-#endif
-        //start();
-        result = true;
-    } else {
-        ErrorHandler::Log(ErrorLevel::Critical, ErrorCode::CoreFailedToBoot);
-    }
+//     if (_state == CoreState::Configured) {
+// #ifndef ARDUINO
+//         std::cout << "Boot\n";
+// #endif
+//         //start();
+//         result = true;
+//     } else {
+//         ErrorHandler::Log(ErrorLevel::Critical, ErrorCode::CoreFailedToBoot);
+//     }
 
-    bool success = _scheduler.Init();
-    if (success == false) {
-        return false;
-    }
-    _primaryTimer.Init();
+    // bool success = _scheduler.Init();
+    // if (success == false) {
+    //     return false;
+    // }
+    // _primaryTimer.Init();
+    return true;
     return result;
 }
 
 bool Core::AddTask(Task *task, TaskProperties *properties) {
+  Debug<const char *>("*task, *properties\n");
+  DebugLn<long>((long) task);
+  DebugLn<long>((long) properties);
+
+    for(int j = 0; j < 5; j++) {
+    CogCore::Debug<int>(j);
+    CogCore::Debug<const char *>("B SerialReportTask _init()\n");
+    delay(1000);
+    CogCore::DebugLn<bool>(j < 5);
+  }
     bool taskAdded = _scheduler.AddTask(task, properties);
     if (taskAdded) {
 #ifndef ARDUINO
@@ -210,8 +221,10 @@ void Core::CreateSoftwareWatchdog(uint32_t timeoutMs) {
 }
 
 void Core::ResetAllWatchdogs() {
+#ifdef CTL_V_1_1
     ResetHardwareWatchdog();
     ResetSoftwareWatchdog();
+#endif
 }
 
   // WARNING! DO NOT CHANGE THIS NAME OR INTERFACE
@@ -219,12 +232,16 @@ void Core::ResetAllWatchdogs() {
   // it MUST be overridden exactly this way.
 
 void Core::CreateHardwareWatchdog() {
+#ifdef CTL_V_1_1
     Debug<const char*>("Creating Hardware Watchdog\n");
     watchdogSetup();
+#endif
 }
 
 void Core::ResetHardwareWatchdog() {
+#ifdef CTL_V_1_1
   watchdogReset(); //arduino hardware reset library function
+#endif
 }
 
 bool Core::ResetSoftwareWatchdog() {
