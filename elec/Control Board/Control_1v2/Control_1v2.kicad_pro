@@ -55,7 +55,14 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "silk_over_copper|111788357|141920000|774899a8-db84-4140-a20b-ac20e5558ad9|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|111788357|141920000|c925b59f-6fe7-4e31-91c0-faacd5703be8|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|114508647|117100558|a30569bd-daaf-4b67-9157-544479d581f4|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|115238000|115445743|a1e73d5e-e1a7-44d2-97dd-e2b13bce346d|00000000-0000-0000-0000-000000000000",
+        "silk_overlap|115795839|141539485|c925b59f-6fe7-4e31-91c0-faacd5703be8|af0f2886-38ae-44ea-bc2a-631facf77c7f",
+        "silk_overlap|156322500|137729000|80498713-6da0-4c4a-b8b8-b0f5becd5729|af0f2886-38ae-44ea-bc2a-631facf77c7f"
+      ],
       "meta": {
         "version": 2
       },
@@ -84,14 +91,14 @@
         "lib_footprint_mismatch": "warning",
         "malformed_courtyard": "error",
         "microvia_drill_out_of_range": "error",
-        "missing_courtyard": "ignore",
+        "missing_courtyard": "warning",
         "missing_footprint": "warning",
         "net_conflict": "warning",
         "npth_inside_courtyard": "ignore",
         "padstack": "warning",
         "pth_inside_courtyard": "ignore",
         "shorting_items": "error",
-        "silk_edge_clearance": "ignore",
+        "silk_edge_clearance": "warning",
         "silk_over_copper": "warning",
         "silk_overlap": "warning",
         "skew_out_of_range": "error",
@@ -402,7 +409,7 @@
       "no_connect_dangling": "warning",
       "pin_not_connected": "error",
       "pin_not_driven": "error",
-      "pin_to_pin": "warning",
+      "pin_to_pin": "error",
       "power_pin_not_driven": "error",
       "similar_labels": "warning",
       "simulation_model_issue": "ignore",
@@ -617,6 +624,14 @@
       "version": 1
     },
     "net_format_name": "",
+    "ngspice": {
+      "fix_include_paths": true,
+      "meta": {
+        "version": 0
+      },
+      "model_mode": 0,
+      "workbook_filename": ""
+    },
     "page_layout_descr_file": "",
     "plot_directory": "",
     "spice_adjust_passive_values": false,

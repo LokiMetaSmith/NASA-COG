@@ -88,9 +88,7 @@ namespace CogApp
       unsigned long spot_time0 = t_millis();
       getConfig()->outputReport(msr_lre);
       unsigned long spot_time1 = t_millis();
-#ifdef BOARD_DUE
       oedcsNetworkTask->logReport(msr_lre);
-#endif
       unsigned long spot_time2 = t_millis();
       core->ResetAllWatchdogs();
       unsigned long spot_time3 = t_millis();

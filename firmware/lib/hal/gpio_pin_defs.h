@@ -68,7 +68,6 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 
 #ifdef RIBBONFISH
 
-#ifdef BOARD_DUE
 #define RF_STACK DAC0
 #define SENSE_12V A2
 #define SENSE_24V A1

@@ -15,8 +15,6 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#ifdef BOARD_DUE
-
 #include <Arduino.h>
 #include <util.h>
 #include <debug.h>
@@ -125,4 +123,3 @@ namespace CogApp
     return true;
   }
 }
-#endif

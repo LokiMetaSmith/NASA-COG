@@ -56,6 +56,7 @@ static Core core;
 
 /***** Declare your tasks here *****/
 // DisplayTask displayTask;
+
 // #ifdef BOARD_DUE
 // CogApp::OEDCSNetworkTask OEDCSNetworkTask;
 // #endif
@@ -130,7 +131,6 @@ void setup()
    //Print out the reset reason
   Debug<const char *>("=================\n");
   Debug<const char *>("ResetCause: ");
-#ifdef BOARD_DUE // This code will need to be completely different on an ESP32!
   switch(getResetCause()) {
   case 0: Debug<const char *>("general\n"); break;
   case 1: Debug<const char *>("backup\n"); break;
@@ -138,7 +138,6 @@ void setup()
   case 3: Debug<const char *>("software\n"); break;
   case 4: Debug<const char *>("user\n"); break;
   }
-#endif
   Debug<const char *>("=================\n");
 
   // TODO: consider doing this....
