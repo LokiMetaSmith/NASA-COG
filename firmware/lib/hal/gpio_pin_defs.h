@@ -71,14 +71,15 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define RF_STACK DAC0
 #define SENSE_12V A2
 #define SENSE_24V A1
-#else
+#elif ION_CONTROL_BOARD
 // HACK! WARNING -- This is for the ESP32 and needs to Changed --- this is OBVIOUSLY WRONG
 #define SENSE_12V 5
 #define SENSE_24V 5
 #endif
 
-#define HEATER_PIN 51
 
+#ifdef CTL_V_1_1
+#define HEATER_PIN 51
 
 #define MAX31850_DATA_PIN 5
 
@@ -160,4 +161,4 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 
 #endif
 
-#endif
+#endif // GPIO_PIN_DEFS_H

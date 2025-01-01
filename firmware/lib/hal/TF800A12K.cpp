@@ -215,7 +215,7 @@ int SL_PS::reInit() {
 // A negative return value means failure here...
 int SL_PS::reInit(uint16_t volts, uint16_t amps) {
 
-
+#ifdef CTL_V_1_1
   int retval = 1;
   watchdogReset();
   getPS_Control(ADDRESS); //set
@@ -285,11 +285,13 @@ int SL_PS::reInit(uint16_t volts, uint16_t amps) {
 	}
   }//if successfully set current and voltage, turn on EN
 
+  #endif
   return retval;
 }
 
 // Return True if Okay, false if bad.
 PSU_STATE SL_PS::evaluatePS(){
+#ifdef CTL_V_1_1
   int c = getPS_Control(ADDRESS);
   if (!c) return PSU_Bad;
   watchdogReset();
@@ -369,7 +371,7 @@ PSU_STATE SL_PS::evaluatePS(){
       return PSU_NeedsReinit;
     }
   }
-
+#endif
 }
 
 int SL_PS::setPS_Addr(uint8_t addr) {

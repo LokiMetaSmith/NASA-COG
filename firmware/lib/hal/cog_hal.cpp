@@ -43,7 +43,10 @@ bool COG_HAL::init() {
 
 
   pinMode(MAX31850_DATA_PIN, INPUT);
+
+#ifdef CTL_V_1_1
   pinMode(RF_STACK, OUTPUT);
+#endif
 
 #ifdef CTL_V_1_1
   pinMode(SHUT_DOWN_BUTTON,INPUT_PULLUP);

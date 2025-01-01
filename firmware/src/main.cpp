@@ -129,16 +129,16 @@ void setup()
   Debug<const char *>("\n");
 
    //Print out the reset reason
-  Debug<const char *>("=================\n");
-  Debug<const char *>("ResetCause: ");
-  switch(getResetCause()) {
-  case 0: Debug<const char *>("general\n"); break;
-  case 1: Debug<const char *>("backup\n"); break;
-  case 2: Debug<const char *>("watchdog\n"); break;
-  case 3: Debug<const char *>("software\n"); break;
-  case 4: Debug<const char *>("user\n"); break;
-  }
-  Debug<const char *>("=================\n");
+  // Debug<const char *>("=================\n");
+  // Debug<const char *>("ResetCause: ");
+  // switch(getResetCause()) {
+  // case 0: Debug<const char *>("general\n"); break;
+  // case 1: Debug<const char *>("backup\n"); break;
+  // case 2: Debug<const char *>("watchdog\n"); break;
+  // case 3: Debug<const char *>("software\n"); break;
+  // case 4: Debug<const char *>("user\n"); break;
+  // }
+  // Debug<const char *>("=================\n");
 
   // TODO: consider doing this....
     // Serial.begin(BAUDRATE);

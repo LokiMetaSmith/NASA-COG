@@ -13,6 +13,9 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
+
+#ifdef CTL_V_1_1
+
 #include <Arduino.h>
 #include <util.h>
 #include <SPI.h>         // needed for Arduino versions later than 0018
@@ -418,3 +421,4 @@ NetworkUDP::networkStart() {
 
   return 0;
 }
+#endif

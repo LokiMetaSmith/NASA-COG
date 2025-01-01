@@ -17,6 +17,7 @@
 #ifndef FLASH_H
 #define FLASH_H
 
+#ifdef CTL_V_1_1
 //Defines so the device can do a self reset
 #define SYSRESETREQ    (1<<2)
 #define VECTKEY        (0x05fa0000UL)
@@ -43,4 +44,5 @@ extern char macString[20];
 uint32_t getResetCause();
 uint32_t setGlobalMacAddress();
 
+#endif
 #endif

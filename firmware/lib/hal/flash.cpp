@@ -13,6 +13,8 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
+
+#ifdef CTL_V_1_1
 #include <Arduino.h>
 #include <SPI.h>         // needed for Arduino versions later than 0018
 #include <network_task.h>
@@ -89,7 +91,7 @@ initFlashConfiguration() {
     configuration.watchdog_count = 0;
     configuration.state = 0;
   } else {
-    byte* b = dfs.readAddress(4); 
+    byte* b = dfs.readAddress(4);
     memcpy(&configuration, b, sizeof(Configuration));
     // CogCore::Debug<const char *>(" update flash ");
     configuration.boot_count++;
@@ -106,7 +108,7 @@ initFlashConfiguration() {
 
 void
 writeFlashConfiguration() {
-  byte *b = dfs.readAddress(4); 
+  byte *b = dfs.readAddress(4);
   uint8_t needupdate = 0;
   byte b2[sizeof(Configuration)];
   memcpy(b2, &configuration, sizeof(Configuration));
@@ -118,3 +120,5 @@ writeFlashConfiguration() {
   }
   if (needupdate) dfs.write(4, b2, sizeof(Configuration));
 }
+
+#endif
