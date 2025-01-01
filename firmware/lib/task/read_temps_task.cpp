@@ -390,7 +390,9 @@ void ReadTempsTask::_configTemperatureSensors() {
 #endif
 
   _temperatureSensors[0]._config = config[0];
+#ifdef CTL_V_1_1
   watchdogReset();
+#endif
   if (DEBUG_READ_TEMPS > 0) {
     CogCore::Debug<const char *>("Read Temp Configuration done!\n");
     delay(50);

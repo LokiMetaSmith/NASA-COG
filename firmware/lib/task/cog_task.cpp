@@ -99,7 +99,7 @@ namespace CogApp
     // we have not choice but to decrease the stack watts...this is a bit of "magic"
     // that has no good rationale.
     if ((BC > currentTemp) && (heaterWatts <= 0.0)) {
-      return max(targetStackWatts - getConfig()->DECREASE_STACK_WATTAGE_INCREMENT_W,0);
+      return max((double) targetStackWatts - (double) getConfig()->DECREASE_STACK_WATTAGE_INCREMENT_W,0.0);
     }
     // here we implement a straight-line decrease in statck wattage proportional
     // to the difference C - B
@@ -113,7 +113,7 @@ namespace CogApp
       y = M;
     }
     float L = getConfig()->MAX_STACK_WATTAGE;
-    float w = max(0.0,min(L,y));
+    float w = max(0.0,(double) min(L,y));
     return min(w,targetTotalWattage);
   }
 
@@ -295,7 +295,7 @@ namespace CogApp
     if (I_A <= 0.0) return 0.0;
     const float Nernst_V = computeNernstVoltage(T_K);
     const float Pumping_V = Nernst_V * getConfig()->NUM_WAFERS;
-    const float effectivePumping_V = max(0,Pumping_V);
+    const float effectivePumping_V = max(0.0,(double) Pumping_V);
     const float Pumping_Work_W = effectivePumping_V * I_A;
     return Pumping_Work_W;
   }
@@ -391,7 +391,7 @@ namespace CogApp
     const float input_heat = limitedWattage - PW_W;
     c.H_w = min(totalWattage_w - input_heat,MachineConfig::HEATER_MAXIMUM_WATTAGE);
     c.SIH_w = input_heat;
-    c.H_w = max(0,c.H_w);
+    c.H_w = max(0.0,(double) c.H_w);
 
     // This is the most important action! This is used by change ramps
     // to set the actual wattage at a given moment.
@@ -424,9 +424,9 @@ namespace CogApp
     // into the heater.
     stackWattage_w = min(getConfig()->report->stack_watts + FUDGE_STACK_WATTS,
                                   limitedWattage);
-    heaterWattage_w = max(0,
-                          min(totalWattage_w - stackWattage_w,
-                              getConfig()->HEATER_MAXIMUM_WATTAGE));
+    heaterWattage_w = max(0.0,
+                          min((double) totalWattage_w - (double) stackWattage_w,
+                              (double) getConfig()->HEATER_MAXIMUM_WATTAGE));
 
     fanSpeed_p = computeFanSpeedTarget(getConfig()->SETPOINT_TEMP_C, A, heaterWattage_w,A,B,C);
 
@@ -455,7 +455,7 @@ namespace CogApp
     c.W_w += (((c.tW_w - c.W_w) > 0) ? 1.0 : -1.0) * c.Wr_Wdm * minutes;
 
     c.S_p += (((c.tS_p - c.S_p) > 0) ? 1.0 : -1.0) * c.Sr_Pdm * minutes;
-    c.S_p = min(max(0.0,c.S_p),100.0);
+    c.S_p = min(max(0.0,(double) c.S_p),100.0);
 
     MachineState ms = getConfig()->ms;
     if (ms != NormalOperation) {
@@ -481,7 +481,7 @@ namespace CogApp
     } else {
       getConfig()->SETPOINT_TEMP_C = getConfig()->TARGET_TEMP_C;
     }
-    c.W_w = max(c.W_w,0);
+    c.W_w = max((double) c.W_w,0.0);
   }
 
   bool CogTask::doesAnyErrorExist() {
@@ -608,7 +608,8 @@ namespace CogApp
       if (time_now < time_last_temp_changed_ms) { // ROLLOVER EVENT
         time_last_temp_changed_ms = 0;
       }
-      if (abs(time_now - time_last_temp_changed_ms) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
+      // if (abs((long unsigned) ((long unsigned) time_now - (long unsigned) time_last_temp_changed_ms)) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
+      if (abs(long(time_now -  time_last_temp_changed_ms)) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
         time_last_temp_changed_ms = time_now;
 
         // I now suspect that the proper action here is actually to do a controlled
@@ -854,7 +855,7 @@ namespace CogApp
   float CogTask::computeHeaterDutyCycleFromWattage(float heaterWattage_w) {
     return (heaterWattage_w < 0.0) ?
       0.0 :
-      min(1.0,heaterWattage_w/getConfig()->HEATER_MAX_WATTAGE_FOR_DC_CALC);
+      min(1.0,(double) heaterWattage_w/getConfig()->HEATER_MAX_WATTAGE_FOR_DC_CALC);
   }
 
   void CogTask::runOneButtonAlgorithm() {

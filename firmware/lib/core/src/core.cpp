@@ -30,7 +30,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #define HARDWARE_WATCHDOG_TIMOUT_MS 16000
 void watchdogSetup() {
+#ifdef CTL_V_1_1
   watchdogEnable(HARDWARE_WATCHDOG_TIMOUT_MS);
+#endif
 }
 
 

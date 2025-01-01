@@ -115,6 +115,8 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define DISPLAY_RESET 46 // display reset, keep high or don't care
 
 #elif ION_CONTROL_BOARD
+
+#define LED_BUILTIN 2
 /*
  * The ION control board is the official board for AmOx's commercial product.
  *
