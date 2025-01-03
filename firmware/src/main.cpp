@@ -203,6 +203,7 @@ void setup()
   // // }
 
   Debug<const char *>("BBBBBBBBBBB!\n"); delay(50);
+  serialReportTask.Init( &serialReportProperties);
 
   serialReportProperties.name = "serialReportTemps";
   serialReportProperties.id = 20;

@@ -35,13 +35,13 @@ HeaterPIDTask::HeaterPIDTask() {
 bool HeaterPIDTask::_init()
 {
   CogCore::Debug<const char *>("HeaterPIDTask init\n");
- 
+
   return true;
 }
 
 void HeaterPIDTask::printTunings() {
   CogCore::Debug<const char *>("Tunings for            : ");
-  CogCore::Debug<const char *>(MachineConfig::HeaterNames[whichHeater]);
+  //  CogCore::Debug<const char *>(MachineConfig::HeaterNames[whichHeater]);
   CogCore::Debug<const char *>(" ");
   char t[10];
   sprintf(t, "%.5f", FKp);
@@ -54,7 +54,7 @@ void HeaterPIDTask::printTunings() {
   CogCore::Debug<const char *>(t);
   CogCore::Debug<const char *>("\n");
   CogCore::Debug<const char *>("Tunings (Inverted, 1/x): ");
-  CogCore::Debug<const char *>(MachineConfig::HeaterNames[whichHeater]);
+  //  CogCore::Debug<const char *>(MachineConfig::HeaterNames[whichHeater]);
   CogCore::Debug<const char *>(" ");
     if (FKp == 0.0) CogCore::Debug<const char *>("nan");
     else {

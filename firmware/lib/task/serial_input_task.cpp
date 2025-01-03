@@ -183,7 +183,8 @@ namespace CogApp
           CogCore::Debug<const char *>(t);
           CogCore::Debug<const char *>("\n");
           CogCore::Debug<const char *>("New state is: ");
-          CogCore::Debug<const char *>(MachineConfig::MachineStateNames[mc->ms]);
+          //         CogCore::Debug<const char *>(MachineConfig::MachineStateNames[mc->ms]);
+          CogCore::Debug<const char *>(mc->MachineStateNames[mc->ms]);
           CogCore::Debug<const char *>("\n");
         }
       }

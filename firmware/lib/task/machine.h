@@ -117,7 +117,18 @@ public:
 
   static const int NUM_MACHINE_STATES = 9;
 
-  constexpr inline static char const *MachineStateNames[9] = {
+  // constexpr inline static char const *MachineStateNames[9] = {
+  //   "Off",
+  //   "AwaitingPower",
+  //   "Warmup",
+  //   "NormalOperation",
+  //   "Cooldown",
+  //   "CriticalFault",
+  //   "EmergencyShutdown",
+  //   "OffUserAck"
+  // };
+
+  char const *MachineStateNames[9] = {
     "Off",
     "AwaitingPower",
     "Warmup",
@@ -127,16 +138,31 @@ public:
     "EmergencyShutdown",
     "OffUserAck"
   };
-  constexpr inline static char const *MachineSubStateNames[2] = {
+  // constexpr inline static char const *MachineSubStateNames[2] = {
+  //   "(Not Idling)",
+  //   "(Idling)"
+  // };
+  // constexpr inline static char const *TempLocationNames[2] = {
+  //   "Post Heater",
+  //   "Post Stack"
+  // };
+
+  // constexpr inline static char const *HeaterNames[3] = {
+  //   "Int1",
+  //   "Ext1",
+  //   "Ext2"
+  // };
+
+  char const *MachineSubStateNames[2] = {
     "(Not Idling)",
     "(Idling)"
   };
-  constexpr inline static char const *TempLocationNames[2] = {
+  char const *TempLocationNames[2] = {
     "Post Heater",
     "Post Stack"
   };
 
-  constexpr inline static char const *HeaterNames[3] = {
+  char const *HeaterNames[3] = {
     "Int1",
     "Ext1",
     "Ext2"
@@ -247,7 +273,6 @@ public:
   const float FAN_SPEED_MAX_p = 80;
   const float FAN_SPEED_MIN_p = 30;
   static constexpr float FAN_SPEED_PREFERRED_p = 40;
-
 
   // The is an absolute max wattage allowed into the stack.
   const float BOUND_MAX_WATTAGE = 300.0;

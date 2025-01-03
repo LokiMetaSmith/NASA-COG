@@ -40,7 +40,8 @@ namespace CogCore
         if (_state == TaskState::Undefined)
         {
           CogCore::Debug<const char *>("ABOUT TO DEREFERENCE\n");
-          //        _properties = *properties;
+          //         _properties = *properties;
+          delay(5000);
           CogCore::Debug<const char *>("DONE WITH DEREFERENCE\n");
 
            for(int k = 0; k < 5; k++) {

@@ -34,12 +34,16 @@ bool SerialReportTask::_run()
 
 bool SerialReportTask::_init()
 {
+   CogCore::Debug<const char *>("XXXX SerialReportTask _init()\n");
   // for(int j = 0; j < 5; j++) {
   //   CogCore::Debug<int>(j);
   //   CogCore::Debug<const char *>("SerialReportTask _init()\n");
   //   delay(1000);
   //   CogCore::DebugLn<bool>(j < 5);
   // }
+   // NOTE: This simple statement is the root of the prolbem.
+   // Wihtout it, this routine crashes here!
+  return true;
 }
 SerialReportTask::SerialReportTask() {
 }
