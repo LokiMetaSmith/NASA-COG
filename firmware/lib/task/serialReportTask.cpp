@@ -35,6 +35,7 @@ bool SerialReportTask::_run()
 
 bool SerialReportTask::_init()
 {
+  return true;
 }
 SerialReportTask::SerialReportTask() {
 }
