@@ -190,8 +190,6 @@ void setup()
 
   /***** Configure and add your tasks here *****/
 
-  Debug<const char *>("AAAAAAA!\n");
-
   CogCore::TaskProperties readTempsProperties;
   readTempsProperties.name = "readTemps";
   readTempsProperties.id = 19;
@@ -205,28 +203,18 @@ void setup()
     abort();
   }
 
-  Debug<const char *>("BBBBBBBBBBB!\n"); delay(50);
-
   serialReportProperties.name = "serialReportTemps";
   serialReportProperties.id = 20;
-  Debug<const char *>("000000!\n");  delay(50);
   serialReportProperties.period = serialReportTask.PERIOD_MS;
   serialReportProperties.priority = CogCore::TaskPriority::High;
   serialReportProperties.state_and_config = (void *) &machineConfig;
-  Debug<const char *>("11111111!\n");  delay(50);
-  Debug<const char *>("*task, *properties\n");
-  DebugLn<long>((long) &serialReportTask);
-  DebugLn<long>((long) &serialReportProperties);
-
   bool serialReportAdd = core.AddTask(&serialReportTask, &serialReportProperties);
-  Debug<const char *>("YYYYYYY!\n");  delay(50);
   if (!serialReportAdd) {
     CogCore::Debug<const char *>("serialReport Task add failed\n");
     delay(50);
     abort();
   }
 
-  Debug<const char *>("XXXXXX!\n");  delay(50);
   CogCore::TaskProperties cogProperties;
   cogProperties.name = "cog";
   cogProperties.id = 21;
@@ -243,8 +231,6 @@ void setup()
   getConfig()->ms = Off;
   cogTask.heaterPIDTask = &heaterPIDTask;
 
-
-  Debug<const char *>("BBBBB!\n");
 
   CogCore::TaskProperties oedcsSerialProperties;
   oedcsSerialProperties.name = "oedcsSerial";
@@ -278,67 +264,65 @@ void setup()
 // // #endif
 // //   }
 
-//   dutyCycleTask.whichHeater = (Stage2Heater) 0;
+  dutyCycleTask.whichHeater = (Stage2Heater) 0;
 
-  // CogCore::Debug<const char *>("Duty Cycle Setup\n");
-  // CogCore::TaskProperties dutyCycleProperties;
-  // dutyCycleProperties.name = "dutyCycle";
-  // dutyCycleProperties.id = 25;
-  // dutyCycleProperties.period = dutyCycleTask.PERIOD_MS;
-  // dutyCycleProperties.priority = CogCore::TaskPriority::Low;
-  // dutyCycleProperties.state_and_config = (void *) &machineConfig;
-  // // bool dutyCycleAdd = core.AddTask(&dutyCycleTask, &dutyCycleProperties);
-  // // if (!dutyCycleAdd) {
-  // //   CogCore::Debug<const char *>("dutyCycleAdd Failed\n");
-  // //   delay(50);
-  // //   abort();
-  // // }
-  // // dutyCycleTask.one_pin_heater = getConfig()->hal->_ac_heaters[0];
+  CogCore::Debug<const char *>("Duty Cycle Setup\n");
+  CogCore::TaskProperties dutyCycleProperties;
+  dutyCycleProperties.name = "dutyCycle";
+  dutyCycleProperties.id = 25;
+  dutyCycleProperties.period = dutyCycleTask.PERIOD_MS;
+  dutyCycleProperties.priority = CogCore::TaskPriority::Low;
+  dutyCycleProperties.state_and_config = (void *) &machineConfig;
+  bool dutyCycleAdd = core.AddTask(&dutyCycleTask, &dutyCycleProperties);
+  if (!dutyCycleAdd) {
+    CogCore::Debug<const char *>("dutyCycleAdd Failed\n");
+    delay(50);
+    abort();
+  }
+  dutyCycleTask.one_pin_heater = getConfig()->hal->_ac_heaters[0];
 
 
-  // Debug<const char *>("CCCCC!\n");
+  CogCore::TaskProperties HeaterPIDProperties;
+  HeaterPIDProperties.name = "HeaterPID";
+  HeaterPIDProperties.id = 26;
+  HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
+  HeaterPIDProperties.priority = CogCore::TaskPriority::High;
+  HeaterPIDProperties.state_and_config = (void *) &machineConfig;
+  bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
 
-  // CogCore::TaskProperties HeaterPIDProperties;
-  // HeaterPIDProperties.name = "HeaterPID";
-  // HeaterPIDProperties.id = 26;
-  // HeaterPIDProperties.period = MachineConfig::INIT_PID_PERIOD_MS;
-  // HeaterPIDProperties.priority = CogCore::TaskPriority::High;
-  // HeaterPIDProperties.state_and_config = (void *) &machineConfig;
-  // bool heaterPIDAdd = core.AddTask(&heaterPIDTask, &HeaterPIDProperties);
+  if (!heaterPIDAdd) {
+    CogCore::Debug<const char *>("heaterPIDAdd Failed\n");
+    abort();
+  }
 
-  // if (!heaterPIDAdd) {
-  //   CogCore::Debug<const char *>("heaterPIDAdd Failed\n");
-  //   abort();
-  // }
+  CogCore::TaskProperties HeartbeatProperties;
+  HeartbeatProperties.name = "Heartbeat";
+  HeartbeatProperties.id = 27;
+  HeartbeatProperties.period = MachineConfig::INIT_HEARTBEAT_PERIOD_MS;
+  HeartbeatProperties.priority = CogCore::TaskPriority::High;
+  HeartbeatProperties.state_and_config = (void *) &machineConfig;
+  bool heartbeatAdd = core.AddTask(&heartbeatTask, &HeartbeatProperties);
 
-  // CogCore::TaskProperties HeartbeatProperties;
-  // HeartbeatProperties.name = "Heartbeat";
-  // HeartbeatProperties.id = 27;
-  // HeartbeatProperties.period = MachineConfig::INIT_HEARTBEAT_PERIOD_MS;
-  // HeartbeatProperties.priority = CogCore::TaskPriority::High;
-  // HeartbeatProperties.state_and_config = (void *) &machineConfig;
-  // bool heartbeatAdd = core.AddTask(&heartbeatTask, &HeartbeatProperties);
+  if (!heartbeatAdd) {
+    CogCore::Debug<const char *>("heartbeatAdd Failed\n");
+    delay(50);
+    abort();
+  }
 
-  // if (!heartbeatAdd) {
-  //   CogCore::Debug<const char *>("heartbeatAdd Failed\n");
-  //   delay(50);
-  //   abort();
-  // }
+  CogCore::TaskProperties Log_RecorderProperties;
+  Log_RecorderProperties.name = "Log_Recorder";
+  Log_RecorderProperties.id = 28;
+  Log_RecorderProperties.period = MachineConfig::INIT_LOG_RECORDER_PERIOD_MS;
+  Log_RecorderProperties.priority = CogCore::TaskPriority::High;
+  Log_RecorderProperties.state_and_config = (void *) &machineConfig;
+  cogTask.logRecorderTask = &logRecorderTask;
+  bool Log_RecorderAdd = core.AddTask(&logRecorderTask, &Log_RecorderProperties);
 
-//   CogCore::TaskProperties Log_RecorderProperties;
-//   Log_RecorderProperties.name = "Log_Recorder";
-//   Log_RecorderProperties.id = 28;
-//   Log_RecorderProperties.period = MachineConfig::INIT_LOG_RECORDER_PERIOD_MS;
-//   Log_RecorderProperties.priority = CogCore::TaskPriority::High;
-//   Log_RecorderProperties.state_and_config = (void *) &machineConfig;
-//   cogTask.logRecorderTask = &logRecorderTask;
-//   // bool Log_RecorderAdd = core.AddTask(&logRecorderTask, &Log_RecorderProperties);
-
-//   // if (!Log_RecorderAdd) {
-//   //   CogCore::Debug<const char *>("Log_RecorderAdd Failed\n");
-//   //   delay(50);
-//   //   abort();
-//   // }
+  if (!Log_RecorderAdd) {
+    CogCore::Debug<const char *>("Log_RecorderAdd Failed\n");
+    delay(50);
+    abort();
+  }
 // // #ifdef CTL_V_1_1
 // //   CogCore::TaskProperties ShutdownButtonProperties;
 // //   ShutdownButtonProperties.name = "ShutdownButton";
@@ -355,49 +339,49 @@ void setup()
 // //   }
 // // #endif
 
-//   //  core.ResetAllWatchdogs();
+  core.ResetAllWatchdogs();
 
-//   //  heaterPIDTask.whichHeater = (Stage2Heater) 0;
+  heaterPIDTask.whichHeater = (Stage2Heater) 0;
 
-//   cogTask.dutyCycleTask = &dutyCycleTask;
+   cogTask.dutyCycleTask = &dutyCycleTask;
 
-//   // cogTask.heaterPIDTask = &heaterPIDTask;
+   cogTask.heaterPIDTask = &heaterPIDTask;
 
-// #ifdef BOARD_DUE
-//   logRecorderTask.oedcsNetworkTask = &OEDCSNetworkTask;
-// #endif
-//   // We need the core on logRecorderTask (and, indeed, any long-running task
-//   // so that we can "feed the dog" for the software watchdog there
-//   logRecorderTask.core = &core;
+#ifdef BOARD_DUE
+  logRecorderTask.oedcsNetworkTask = &OEDCSNetworkTask;
+#endif
+  // We need the core on logRecorderTask (and, indeed, any long-running task
+  // so that we can "feed the dog" for the software watchdog there
+  logRecorderTask.core = &core;
 
-//   // Now we will check for anything that causes us to enter a critical error, such as missing hardware
-//   // components. We could not have done this earlier, because we want this to have our CogTask and
-//   // our logger set up...
+  // Now we will check for anything that causes us to enter a critical error, such as missing hardware
+  // components. We could not have done this earlier, because we want this to have our CogTask and
+  // our logger set up...
 
-//   // NOTHING HERE YET...
+   // NOTHING HERE YET...
 
-//   // now set up debugging levels...
-//   logRecorderTask.DEBUG_LOG_RECORDER = 2;
-//   core.DEBUG_CORE = 0;
+  // now set up debugging levels...
+  logRecorderTask.DEBUG_LOG_RECORDER = 2;
+  core.DEBUG_CORE = 0;
   core._scheduler.DEBUG_SCHEDULER = 0;
-//   core._scheduler._idleTask.DEBUG_IDLETASK = 0;
-//   dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
-//   heaterPIDTask.DEBUG_PID = 0;
-//   cogTask.DEBUG_FAN = 0;
-  cogTask.DEBUG_LEVEL = 5;
-//   cogTask.SM_DEBUG_LEVEL = 0;
-//   cogTask.DEBUG_LEVEL_OBA = 0;
-//   cogTask.wattagePIDObject->DEBUG_PID = 0;
-// #ifdef BOARD_DUE
-//   OEDCSNetworkTask.DEBUG_UDP = 0;
-//   OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
-// #endif
-//   readTempsTask.DEBUG_READ_TEMPS = 3;
-//   oedcsSerialInputTask.DEBUG_SERIAL = 0;
-//   //oedcsSerialInputTask.DEBUG_SERIAL = 2; // FLE
-//   heartbeatTask.DEBUG_HEARTBEAT = 0;
-//   heartbeatTask.debug_number_of_heartbeats = millis() / 500;
-//   getConfig()->script->DEBUG_MS = 0;
+  core._scheduler._idleTask.DEBUG_IDLETASK = 0;
+  dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
+  heaterPIDTask.DEBUG_PID = 0;
+  cogTask.DEBUG_FAN = 0;
+  cogTask.DEBUG_LEVEL = 0;
+  cogTask.SM_DEBUG_LEVEL = 0;
+  cogTask.DEBUG_LEVEL_OBA = 0;
+  cogTask.wattagePIDObject->DEBUG_PID = 0;
+#ifdef BOARD_DUE
+  OEDCSNetworkTask.DEBUG_UDP = 0;
+  OEDCSNetworkTask.net_udp.DEBUG_UDP = 0;
+#endif
+  readTempsTask.DEBUG_READ_TEMPS = 3;
+  oedcsSerialInputTask.DEBUG_SERIAL = 0;
+  //oedcsSerialInputTask.DEBUG_SERIAL = 2; // FLE
+  heartbeatTask.DEBUG_HEARTBEAT = 0;
+  heartbeatTask.debug_number_of_heartbeats = millis() / 500;
+  getConfig()->script->DEBUG_MS = 0;
 
 
 //   CogCore::Debug<const char *>("Added tasks\n");

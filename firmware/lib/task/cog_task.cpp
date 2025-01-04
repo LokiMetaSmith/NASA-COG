@@ -851,9 +851,13 @@ namespace CogApp
       CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
     }
     turnOffPowerButDoNotChangeState();
+    CogCore::DebugLn<const char *>("XXXXXXX\n");
     // Although after a minute this should turn off, we want
     // to do it immediately
     StateMachineManager::turnOff();
+    if (DEBUG_LEVEL > 1) {
+      CogCore::Debug<const char *>("MACHINE TURNED OFF\n");
+    }
   }
 
   MachineState CogTask::_updatePowerComponentsOff() {
