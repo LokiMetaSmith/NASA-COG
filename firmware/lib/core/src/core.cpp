@@ -57,36 +57,36 @@ bool Core::_criticalError = false;
 
 bool Core::Boot() {
     bool result = false;
-    //bool Core::_criticalError = false;
-    //    ErrorHandler::SetErrorMode(CogCore::ErrorMode::StdOut);
-    // TODO: configure/validate HAL
+    //    bool Core::_criticalError = false;
+       ErrorHandler::SetErrorMode(CogCore::ErrorMode::StdOut);
+       //    TODO: configure/validate HAL
 
-    // SchedulerProperties properties;
-    // properties.mode = SchedulerMode::RealTime;
-    // properties.tickPeriodMs = TICK_PERIOD;
-    // _scheduler.SetProperties(properties);
-    //    CreateSoftwareWatchdog(WATCHDOG_TIMEOUT_MS);
+    SchedulerProperties properties;
+    properties.mode = SchedulerMode::RealTime;
+    properties.tickPeriodMs = TICK_PERIOD;
+    _scheduler.SetProperties(properties);
+       CreateSoftwareWatchdog(WATCHDOG_TIMEOUT_MS);
 
-    // Note: This CANNOT take a parameter!!
-    //    CreateHardwareWatchdog();
+       //    Note: This CANNOT take a parameter!!
+       CreateHardwareWatchdog();
 
     _state = CoreState::Configured;
 
-//     if (_state == CoreState::Configured) {
-// #ifndef ARDUINO
-//         std::cout << "Boot\n";
-// #endif
-//         //start();
-//         result = true;
-//     } else {
-//         ErrorHandler::Log(ErrorLevel::Critical, ErrorCode::CoreFailedToBoot);
-//     }
+    if (_state == CoreState::Configured) {
+#ifndef ARDUINO
+        std::cout << "Boot\n";
+#endif
+        //start();
+        result = true;
+    } else {
+        ErrorHandler::Log(ErrorLevel::Critical, ErrorCode::CoreFailedToBoot);
+    }
 
-    // bool success = _scheduler.Init();
-    // if (success == false) {
-    //     return false;
-    // }
-    // _primaryTimer.Init();
+    bool success = _scheduler.Init();
+    if (success == false) {
+        return false;
+    }
+    _primaryTimer.Init();
     return true;
     return result;
 }
@@ -96,12 +96,6 @@ bool Core::AddTask(Task *task, TaskProperties *properties) {
   DebugLn<long>((long) task);
   DebugLn<long>((long) properties);
 
-    for(int j = 0; j < 5; j++) {
-    CogCore::Debug<int>(j);
-    CogCore::Debug<const char *>("B SerialReportTask _init()\n");
-    delay(1000);
-    CogCore::DebugLn<bool>(j < 5);
-  }
     bool taskAdded = _scheduler.AddTask(task, properties);
     if (taskAdded) {
 #ifndef ARDUINO

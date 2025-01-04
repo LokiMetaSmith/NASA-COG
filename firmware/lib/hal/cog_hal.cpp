@@ -52,7 +52,6 @@ bool COG_HAL::init() {
   pinMode(SHUT_DOWN_BUTTON,INPUT_PULLUP);
 #endif
 
-#ifdef CTL_V_1_1
   _fans[0] = new SanyoAceB97("FIRST_FAN",0);
   _fans[0]->init();
 
@@ -83,7 +82,6 @@ bool COG_HAL::init() {
 
 
   _stacks[0]->init();
-#endif
 
   if (DEBUG_HAL > 0) {
     CogCore::Debug<const char *>("STACK INITIALIZED.\n");

@@ -27,6 +27,7 @@
 // This should be made into a separte task,
 // this is just for debugging...
 // TODO: Move this into the core, and invoke it within a DEBUG_LEVEL guard.
+
 #ifdef __arm__
 // should use uinstd.h to define sbrk but Due causes a conflict
 extern "C" char* sbrk(int incr);
@@ -35,6 +36,7 @@ extern char *__brkval;
 #endif  // __arm__
 
 int freeMemory() {
+#ifndef ION_CONTROL_BOARD
   char top;
 #ifdef __arm__
   return &top - reinterpret_cast<char*>(sbrk(0));
@@ -43,7 +45,11 @@ int freeMemory() {
 #else  // __arm__
   return __brkval ? &top - __brkval : &top - __malloc_heap_start;
 #endif  // __arm__
+#else
+  return 0;
+#endif
 }
+
 
 
 using namespace std;
@@ -692,16 +698,25 @@ namespace CogApp
           float voltage =  read12V_busVoltage();
       CogCore::Debug<const char *>("12V bus voltage = ");
       CogCore::DebugLn<float>(voltage);
-      CogCore::Debug<const char *>("=======================");
+      CogCore::Debug<const char *>("=======================\n");
       // Note: initial test showed this to be very accurage!
     }
+
+    CogCore::DebugLn<long>((long) getHAL());
+    CogCore::DebugLn<long>((long) getHAL()->_fans[0]);
 
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
+    CogCore::Debug<const char *>("AAAAAAA");
+
     getConfig()->report->fan_rpm = calculated_fan_speed_rpms;
 
+    CogCore::Debug<const char *>("BBBBBBB");
+
     evaluateErrorConditions();
+
+    CogCore::Debug<const char *>("CCCCC");
 
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
@@ -718,6 +733,7 @@ namespace CogApp
       CogCore::Debug<int>(freeMemory());
       CogCore::Debug<const char *>("\n");
     }
+    return true;
   }
 
   // We believe someday an automatic algorithm will be needed here.

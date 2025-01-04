@@ -100,6 +100,7 @@ namespace CogApp
         break;
       };
     }
+    return true;
   }
 
   bool OEDCSSerialInputTask::_run()
@@ -111,5 +112,6 @@ namespace CogApp
     if (listen(ic)) {
       executeCommand(ic,getConfig(),cogTask);
     }
+    return true;
   }
 }

@@ -34,7 +34,7 @@ bool ShutdownButtonTask::_run()
     getConfig()->ms = EmergencyShutdown;
   }
 #endif
-
+  return true;
 }
 
 COG_HAL* ShutdownButtonTask::getHAL() {

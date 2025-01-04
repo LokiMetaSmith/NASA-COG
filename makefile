@@ -161,7 +161,7 @@ oedcs1_1:
 	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
 
 
-esp32test:
+esp32testdev:
 	cd firmware \
-	&& pio run -e esp32test -t upload  \
+	&& pio run -e esp32testdev -t upload  \
 	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt

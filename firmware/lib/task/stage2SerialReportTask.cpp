@@ -43,10 +43,12 @@ bool Stage2SerialReportTask::_run()
                                   measured_temp,
                                   duty_cycle,
                                   ramp_C_per_min);
+  return true;
 }
 bool Stage2SerialReportTask::_init()
 {
     CogCore::Debug<const char *>("Stage2SerialReport Task init\n");
+    return true;
 }
 Stage2SerialReportTask::Stage2SerialReportTask() {
 }

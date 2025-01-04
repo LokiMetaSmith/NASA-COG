@@ -27,22 +27,22 @@ bool SerialReportTask::_run()
   }
   // we need to copy the errors from the Config here...
   for (int i = 0; i < NUM_CRITICAL_ERROR_DEFINITIONS; i++) {
-    getConfig()->report->errors[i] = getConfig()->errors[i].fault_present;
+    CogCore::Debug<const char *>("SerialReportTask Done with List\n");
+    CogCore::DebugLn<int>(i);
+    CogCore::DebugLn<long>((long) getConfig());
+    CogCore::DebugLn<long>((long) &getConfig()->errors[i]);
+    CogCore::DebugLn<int>(getConfig()->errors[i].fault_present);
+
+    //getConfig()->report->errors[i] = getConfig()->errors[i].fault_present;
   }
+  CogCore::Debug<const char *>("SerialReportTask Done with List\n");
   getConfig()->outputReport(getConfig()->report);
+  return true;
 }
 
 bool SerialReportTask::_init()
 {
    CogCore::Debug<const char *>("XXXX SerialReportTask _init()\n");
-  // for(int j = 0; j < 5; j++) {
-  //   CogCore::Debug<int>(j);
-  //   CogCore::Debug<const char *>("SerialReportTask _init()\n");
-  //   delay(1000);
-  //   CogCore::DebugLn<bool>(j < 5);
-  // }
-   // NOTE: This simple statement is the root of the prolbem.
-   // Wihtout it, this routine crashes here!
   return true;
 }
 SerialReportTask::SerialReportTask() {

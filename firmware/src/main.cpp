@@ -27,29 +27,31 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #endif
 
 #include <core.h>
-// #include <cog_hal.h>
+#include <cog_hal.h>
 #include <util.h>
 
 // #include <flash.h>
-// #include <read_temps_task.h>
+#include <read_temps_task.h>
 #include <serialReportTask.h>
 
 
-// #include <network_task.h>
-// #include <cog_task.h>
-// #include <OEDCS_serial_input_task.h>
-// #include <fault_task.h>
-// #include <duty_cycle_task.h>
-// #include <heater_pid_task.h>
-// #include <OEDCSNetworkTask.h>
-// #include <heartbeat_task.h>
-// #include <log_recorder_task.h>
-// // #include <display_task.h>
-// #include <shutdown_button_task.h>
+#include <network_task.h>
+#include <cog_task.h>
+#include <OEDCS_serial_input_task.h>
+#include <fault_task.h>
+#include <duty_cycle_task.h>
+#include <heater_pid_task.h>
+#ifdef BOARD_DUE
+#include <OEDCSNetworkTask.h>
+#endif
+#include <heartbeat_task.h>
+#include <log_recorder_task.h>
+// #include <display_task.h>
+#include <shutdown_button_task.h>
 
-// #ifdef TEST_FANS_ONLY
-// #include <fanTEST_task.h>
-// #endif
+#ifdef TEST_FANS_ONLY
+#include <fanTEST_task.h>
+#endif
 
 using namespace CogCore;
 static Core core;
@@ -57,25 +59,25 @@ static Core core;
 /***** Declare your tasks here *****/
 // DisplayTask displayTask;
 
-// #ifdef BOARD_DUE
-// CogApp::OEDCSNetworkTask OEDCSNetworkTask;
-// #endif
-// CogApp::CogTask cogTask;
-// CogApp::OEDCSSerialInputTask oedcsSerialInputTask;
-// CogApp::FaultTask faultTask;
+#ifdef BOARD_DUE
+CogApp::OEDCSNetworkTask OEDCSNetworkTask;
+#endif
+CogApp::CogTask cogTask;
+CogApp::OEDCSSerialInputTask oedcsSerialInputTask;
+CogApp::FaultTask faultTask;
 
-// CogApp::HeartbeatTask heartbeatTask;
-// CogApp::Log_Recorder_Task logRecorderTask;
+CogApp::HeartbeatTask heartbeatTask;
+CogApp::Log_Recorder_Task logRecorderTask;
 
 
-// HeaterPIDTask heaterPIDTask;
-// DutyCycleTask dutyCycleTask;
-// ReadTempsTask readTempsTask;
+HeaterPIDTask heaterPIDTask;
+DutyCycleTask dutyCycleTask;
+ReadTempsTask readTempsTask;
 SerialReportTask serialReportTask;
 //ShutdownButtonTask shutdownButtonTask;
-// #include <machine.h>
+#include <machine.h>
 
-// MachineConfig machineConfig;
+MachineConfig machineConfig;
 /***********************************/
 
 // #define ETHERNET_REQUIRED 1
@@ -84,9 +86,9 @@ SerialReportTask serialReportTask;
 
 // This is to allow a code idiom compatible with the way
 // the machine config is found  inside the Tasks
-// MachineConfig *getConfig() {
-//   return &machineConfig;
-// }
+MachineConfig *getConfig() {
+   return &machineConfig;
+}
 
 // TODO: we need to have setups for individual pieces
 // of the Hardware Abstraction Layer
@@ -140,12 +142,7 @@ void setup()
   // }
   // Debug<const char *>("=================\n");
 
-  // TODO: consider doing this....
-    // Serial.begin(BAUDRATE);
-    // while (!Serial) {
-    //   watchdogReset();
-    // }
-    // Debug<const char *>("starting\n");
+    Debug<const char *>("starting\n");
 
   delay(100);
   if (core.Boot() == false) {
@@ -157,71 +154,70 @@ void setup()
   Debug<const char *>("Core booted...\n");
   delay(100);
 
-  //  core.ResetAllWatchdogs();
+  core.ResetAllWatchdogs();
 
-   //  machineConfig.init();
+   machineConfig.init();
 
    Debug<const char *>("MACHINE CONFIG INIT COMPLETE.\n");
 
 
 
-  // //  Eventually we will migrate all hardware to the COG_HAL..
-  // COG_HAL* hal = new COG_HAL();
+  //  Eventually we will migrate all hardware to the COG_HAL..
+  COG_HAL* hal = new COG_HAL();
 
-  // Debug<const char *>("COG HAL CONSTRUCTOR COMPLETE.\n");
+  Debug<const char *>("COG HAL CONSTRUCTOR COMPLETE.\n");
 
-  // machineConfig.hal = hal;
+  machineConfig.hal = hal;
 
-  // machineConfig.hal->DEBUG_HAL = 1;
-  // bool initSuccess  = machineConfig.hal->init();
-  // if (!initSuccess) {
-  //   Debug<const char *>("Could not init Hardware Abstraction Layer Properly!\n");
-  //   delay(50);
-  //   abort();
-  // } else {
-  //   Debug<const char *>("Successful init of Hardware Abstraction Layer!\n");
-  // }
 
-  // Now we will set the machine state to "Off"
-   //  getConfig()->ms = Off;
+  machineConfig.hal->DEBUG_HAL = 1;
+  bool initSuccess  = machineConfig.hal->init();
+  if (!initSuccess) {
+    Debug<const char *>("Could not init Hardware Abstraction Layer Properly!\n");
+    delay(50);
+    abort();
+  } else {
+    Debug<const char *>("Successful init of Hardware Abstraction Layer!\n");
+  }
+
+
+  CogCore::DebugLn<long>((long) hal);
+  CogCore::DebugLn<long>((long) hal->_fans[0]);
+  CogCore::DebugLn<long>((long) hal->_fans[0]->getRPM());
+
+  //  Now we will set the machine state to "Off"
+    getConfig()->ms = Off;
 
   /***** Configure and add your tasks here *****/
 
   Debug<const char *>("AAAAAAA!\n");
 
-  // CogCore::TaskProperties readTempsProperties;
-  // readTempsProperties.name = "readTemps";
-  // readTempsProperties.id = 19;
-  // //  readTempsProperties.period = readTempsTask.PERIOD_MS;
-  // readTempsProperties.priority = CogCore::TaskPriority::High;
-  // readTempsProperties.state_and_config = (void *) &machineConfig;
-  // // bool readAdd = core.AddTask(&readTempsTask, &readTempsProperties);
-  // // if (!readAdd) {
-  // //   CogCore::Debug<const char *>("ReadTemps Task add failed\n");
-  // //   delay(50);
-  // //   abort();
-  // // }
+  CogCore::TaskProperties readTempsProperties;
+  readTempsProperties.name = "readTemps";
+  readTempsProperties.id = 19;
+  readTempsProperties.period = readTempsTask.PERIOD_MS;
+  readTempsProperties.priority = CogCore::TaskPriority::High;
+  readTempsProperties.state_and_config = (void *) &machineConfig;
+  bool readAdd = core.AddTask(&readTempsTask, &readTempsProperties);
+  if (!readAdd) {
+    CogCore::Debug<const char *>("ReadTemps Task add failed\n");
+    delay(50);
+    abort();
+  }
 
   Debug<const char *>("BBBBBBBBBBB!\n"); delay(50);
-  serialReportTask.Init( &serialReportProperties);
 
   serialReportProperties.name = "serialReportTemps";
   serialReportProperties.id = 20;
   Debug<const char *>("000000!\n");  delay(50);
   serialReportProperties.period = serialReportTask.PERIOD_MS;
   serialReportProperties.priority = CogCore::TaskPriority::High;
-  //  serialReportProperties.state_and_config = (void *) &machineConfig;
+  serialReportProperties.state_and_config = (void *) &machineConfig;
   Debug<const char *>("11111111!\n");  delay(50);
   Debug<const char *>("*task, *properties\n");
   DebugLn<long>((long) &serialReportTask);
   DebugLn<long>((long) &serialReportProperties);
 
-  for(int j = 0; j < 5; j++) {
-    CogCore::Debug<int>(j);
-    CogCore::Debug<const char *>("A SerialReportTask _init()\n");
-    delay(1000);
-    CogCore::DebugLn<bool>(j < 5);
-  }
   bool serialReportAdd = core.AddTask(&serialReportTask, &serialReportProperties);
   Debug<const char *>("YYYYYYY!\n");  delay(50);
   if (!serialReportAdd) {
@@ -230,39 +226,39 @@ void setup()
     abort();
   }
 
-  // Debug<const char *>("XXXXXX!\n");  delay(50);
-  // CogCore::TaskProperties cogProperties;
-  // cogProperties.name = "cog";
-  // cogProperties.id = 21;
-  // cogProperties.period = cogTask.PERIOD_MS;
-  // cogProperties.priority = CogCore::TaskPriority::High;
-  // cogProperties.state_and_config = (void *) &machineConfig;
-  // bool cogAdd = core.AddTask(&cogTask, &cogProperties);
-  // if (!cogAdd) {
-  //   CogCore::Debug<const char *>("Cognitive Task add failed\n");
-  //   delay(50);
-  //   abort();
-  // }
+  Debug<const char *>("XXXXXX!\n");  delay(50);
+  CogCore::TaskProperties cogProperties;
+  cogProperties.name = "cog";
+  cogProperties.id = 21;
+  cogProperties.period = cogTask.PERIOD_MS;
+  cogProperties.priority = CogCore::TaskPriority::High;
+  cogProperties.state_and_config = (void *) &machineConfig;
+  bool cogAdd = core.AddTask(&cogTask, &cogProperties);
+  if (!cogAdd) {
+    CogCore::Debug<const char *>("Cognitive Task add failed\n");
+    delay(50);
+    abort();
+  }
 
-  // getConfig()->ms = Off;
-  // cogTask.heaterPIDTask = &heaterPIDTask;
+  getConfig()->ms = Off;
+  cogTask.heaterPIDTask = &heaterPIDTask;
 
 
-//   Debug<const char *>("BBBBB!\n");
+  Debug<const char *>("BBBBB!\n");
 
-//   CogCore::TaskProperties oedcsSerialProperties;
-//   oedcsSerialProperties.name = "oedcsSerial";
-//   oedcsSerialProperties.id = 22;
-//   oedcsSerialProperties.period = oedcsSerialInputTask.PERIOD_MS;
-//   oedcsSerialProperties.priority = CogCore::TaskPriority::High;
-//   oedcsSerialProperties.state_and_config = (void *) &machineConfig;
-//   //  bool oedcsSerialAdd = core.AddTask(&oedcsSerialInputTask, &oedcsSerialProperties);
-//   // if (!oedcsSerialAdd) {
-//   //   CogCore::Debug<const char *>("SerialInputProperties add failed\n");
-//   //   delay(50);
-//   //   abort();
-//   // }
-//   // oedcsSerialInputTask.cogTask = &cogTask;
+  CogCore::TaskProperties oedcsSerialProperties;
+  oedcsSerialProperties.name = "oedcsSerial";
+  oedcsSerialProperties.id = 22;
+  oedcsSerialProperties.period = oedcsSerialInputTask.PERIOD_MS;
+  oedcsSerialProperties.priority = CogCore::TaskPriority::High;
+  oedcsSerialProperties.state_and_config = (void *) &machineConfig;
+  bool oedcsSerialAdd = core.AddTask(&oedcsSerialInputTask, &oedcsSerialProperties);
+  if (!oedcsSerialAdd) {
+    CogCore::Debug<const char *>("SerialInputProperties add failed\n");
+    delay(50);
+    abort();
+  }
+  oedcsSerialInputTask.cogTask = &cogTask;
 
 //  //  if (ETHERNET_REQUIRED) {
 // //     CogCore::TaskProperties OEDCSNetworkProperties;
@@ -388,7 +384,7 @@ void setup()
 //   dutyCycleTask.DEBUG_DUTY_CYCLE = 0;
 //   heaterPIDTask.DEBUG_PID = 0;
 //   cogTask.DEBUG_FAN = 0;
-//   cogTask.DEBUG_LEVEL = 0;
+  cogTask.DEBUG_LEVEL = 5;
 //   cogTask.SM_DEBUG_LEVEL = 0;
 //   cogTask.DEBUG_LEVEL_OBA = 0;
 //   cogTask.wattagePIDObject->DEBUG_PID = 0;
@@ -438,24 +434,24 @@ void setup()
 void loop() {
   CogCore::Debug<const char *>("Loop starting...\n");
 
-//   // Blocking call
-//   if (core.Run() == false) {
-//       CogCore::ErrorHandler::Log(CogCore::ErrorLevel::Critical, CogCore::ErrorCode::CoreFailedToRun);
-// #ifdef ARDUINO
-//       // make sure we print anything needed!
-//       Debug<const char *>("Critical error!\n");
-//       delay(100);
-//       // Loop endlessly to stop the program from running
-//       Debug<const char *>("INTERNAL ERROR (CORE RETURNED)!\n");
-//       delay(1000);
-//       abort();
-// #endif
-//       return;
-//   } else {
-//     Debug<const char *>("INTERNAL ERROR (CORE DID NOT START)!\n");
-//     delay(300000);
-//     abort();
-//   }
+  // Blocking call
+  if (core.Run() == false) {
+      CogCore::ErrorHandler::Log(CogCore::ErrorLevel::Critical, CogCore::ErrorCode::CoreFailedToRun);
+#ifdef ARDUINO
+      // make sure we print anything needed!
+      Debug<const char *>("Critical error!\n");
+      delay(100);
+      // Loop endlessly to stop the program from running
+      Debug<const char *>("INTERNAL ERROR (CORE RETURNED)!\n");
+      delay(1000);
+      abort();
+#endif
+      return;
+  } else {
+    Debug<const char *>("INTERNAL ERROR (CORE DID NOT START)!\n");
+    delay(300000);
+    abort();
+  }
 }
 
 #ifndef ARDUINO

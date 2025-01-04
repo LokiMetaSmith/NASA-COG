@@ -91,6 +91,8 @@ namespace CogApp
   }
 
   bool OEDCSNetworkTask::logReport(MachineStatusReport* report)  {
+
+#ifndef ION_CONTROL_BOARD
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("outputReport\n");
     }
@@ -120,6 +122,7 @@ namespace CogApp
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("Data Sent!\n");
     }
+#endif
     return true;
   }
 }

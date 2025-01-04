@@ -36,4 +36,5 @@ void OnePinHeater::init() {
 }
 bool OnePinHeater::setHeater(int channelNum, bool onIfTrue) {
   digitalWrite(heater_pin,onIfTrue ? HIGH : LOW);
+  return true;
 }

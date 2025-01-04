@@ -133,15 +133,15 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
  */
 
 // HACK! WARNING -- This is for the ESP32 and needs to Changed --- this is OBVIOUSLY WRONG
-#define SENSE_12V 12
-#define SENSE_24V 12
+#define SENSE_12V 13
+#define SENSE_24V 13
 
-#define MAX31850_DATA_PIN 12
+#define MAX31850_DATA_PIN 13
 
 //#define THERMOCOUPLE_PIN MAX31850_DATA_PIN
-#define THERMOCOUPLE_PIN 12
+#define THERMOCOUPLE_PIN 13
 
-#define SANYO_ACE_FAN_PWM_PIN 12
+#define SANYO_ACE_FAN_PWM_PIN 13
 #define SANYO_ACE_TACH_PIN 33
 
 // Rob is making an arbitrary assignment here to get it to compile - rlr

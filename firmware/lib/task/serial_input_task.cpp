@@ -203,5 +203,6 @@ namespace CogApp
     default:
       CogCore::Debug<const char *>("Internal Error!\n");
     }
+    return true;
   }
 }

@@ -179,4 +179,5 @@ bool DutyCycleTask::_run()
     }
     return true;
   }
+  return true;
 }

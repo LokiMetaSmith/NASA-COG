@@ -201,6 +201,7 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
 #endif
 
   CogCore::Debug<const char *>("RETURNING READ VAL\n");
+  return true;
 }
 
 void ReadTempsTask::updateTemperatures() {
@@ -438,6 +439,7 @@ bool ReadTempsTask::_init()
 //   return true;
 // #endif
 //   CogCore::DebugLn<const char *>("ReadTempTask::_init() done!");
+  return true;
 }
 
 bool ReadTempsTask::_run()
@@ -452,6 +454,7 @@ bool ReadTempsTask::_run()
 //   }
 //   watchdogReset();
 // #endif
+  return true;
 }
 
 
@@ -461,6 +464,7 @@ bool stage2_ReadTempsTask::_run()
     CogCore::Debug<const char *>("Running ReadTemps\n");
   }
   updateTemperatures();
+  return true;
 }
 
 ReadTempsTask::ReadTempsTask() {

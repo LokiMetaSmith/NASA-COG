@@ -35,6 +35,7 @@ namespace CogApp
   bool Stage2HeaterTask::_run()
     {
       this->run_generic();
+      return true;
     }
 
   void Stage2HeaterTask::printGenericInstructions() {
