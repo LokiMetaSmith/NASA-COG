@@ -18,3 +18,4 @@
 *.kicad_pro binary
 *.gbr binary
 *.drl binary
+*.rpt binary
