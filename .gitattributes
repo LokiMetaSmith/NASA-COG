@@ -20,3 +20,4 @@
 *.drl binary
 *.rpt binary
 *.gbrjob binary
+*.STEP binary
