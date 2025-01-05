@@ -13,4 +13,4 @@
 *.pdf binary
 *.FCStd binary
 *.svg binary
-
+*.kicad_sch binary
