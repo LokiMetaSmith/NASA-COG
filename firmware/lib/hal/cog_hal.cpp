@@ -77,10 +77,6 @@ bool COG_HAL::init() {
 
   _stacks[0] = new SL_PS("FIRST_STACK",0);
 
-  CogCore::Debug<const char *>("_stacks[0]\n");
-  CogCore::Debug<long>((long) &_stacks[0]);
-
-
   _stacks[0]->init();
 
   if (DEBUG_HAL > 0) {

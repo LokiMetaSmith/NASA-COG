@@ -200,7 +200,6 @@ void Core::Tick() {
 #endif
 }
 
-  //
 void Core::CreateSoftwareWatchdog(uint32_t timeoutMs) {
     Debug<const char*>("Create watchdog (todo)\n");
     _watchdogTimer.Init();

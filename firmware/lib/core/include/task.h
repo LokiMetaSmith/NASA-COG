@@ -32,8 +32,6 @@ namespace CogCore {
 
 class Task {
 public:
-         // Only the scheduler should call these:
-        TaskState Init(TaskProperties *properties);
     private:
         bool _initialized;
         // User defined:
@@ -41,7 +39,7 @@ public:
         virtual bool _run() = 0;
 
         // Only the scheduler should call these:
-  //       TaskState Init(TaskProperties *properties);
+        TaskState Init(TaskProperties *properties);
         void Run();
         TaskState Wait(TimeMs now);
     protected:
