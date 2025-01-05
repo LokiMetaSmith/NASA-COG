@@ -16,3 +16,5 @@
 *.kicad_sch binary
 *.kicad_pcb binary
 *.kicad_pro binary
+*.gbr binary
+*.drl binary
