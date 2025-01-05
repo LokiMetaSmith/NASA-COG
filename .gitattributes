@@ -19,3 +19,4 @@
 *.gbr binary
 *.drl binary
 *.rpt binary
+*.gbrjob binary
