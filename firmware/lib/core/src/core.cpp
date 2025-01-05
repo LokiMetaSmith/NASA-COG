@@ -21,9 +21,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #ifdef ARDUINO
 #include <Arduino.h>
 #include <limits.h>
-
-
-
 #define MAX_TIME (ULONG_MAX)
 #else
 #include <iostream>
@@ -33,8 +30,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #define HARDWARE_WATCHDOG_TIMOUT_MS 16000
 void watchdogSetup() {
-  // WARNING! HACK! This needs an ESP32 implementation of some kind! - rlr
-#ifdef BOARD_DUE
+#ifdef CTL_V_1_1
   watchdogEnable(HARDWARE_WATCHDOG_TIMOUT_MS);
 #endif
 }
@@ -61,18 +57,18 @@ bool Core::_criticalError = false;
 
 bool Core::Boot() {
     bool result = false;
-    //bool Core::_criticalError = false;
-    ErrorHandler::SetErrorMode(CogCore::ErrorMode::StdOut);
-    // TODO: configure/validate HAL
+    //    bool Core::_criticalError = false;
+       ErrorHandler::SetErrorMode(CogCore::ErrorMode::StdOut);
+       //    TODO: configure/validate HAL
 
     SchedulerProperties properties;
     properties.mode = SchedulerMode::RealTime;
     properties.tickPeriodMs = TICK_PERIOD;
     _scheduler.SetProperties(properties);
-    CreateSoftwareWatchdog(WATCHDOG_TIMEOUT_MS);
+       CreateSoftwareWatchdog(WATCHDOG_TIMEOUT_MS);
 
-    // Note: This CANNOT take a parameter!!
-    CreateHardwareWatchdog();
+       //    Note: This CANNOT take a parameter!!
+       CreateHardwareWatchdog();
 
     _state = CoreState::Configured;
 
@@ -91,6 +87,7 @@ bool Core::Boot() {
         return false;
     }
     _primaryTimer.Init();
+    return true;
     return result;
 }
 
@@ -203,15 +200,16 @@ void Core::Tick() {
 #endif
 }
 
-  //
 void Core::CreateSoftwareWatchdog(uint32_t timeoutMs) {
     Debug<const char*>("Create watchdog (todo)\n");
     _watchdogTimer.Init();
 }
 
 void Core::ResetAllWatchdogs() {
+#ifdef CTL_V_1_1
     ResetHardwareWatchdog();
     ResetSoftwareWatchdog();
+#endif
 }
 
   // WARNING! DO NOT CHANGE THIS NAME OR INTERFACE
@@ -219,12 +217,16 @@ void Core::ResetAllWatchdogs() {
   // it MUST be overridden exactly this way.
 
 void Core::CreateHardwareWatchdog() {
+#ifdef CTL_V_1_1
     Debug<const char*>("Creating Hardware Watchdog\n");
     watchdogSetup();
+#endif
 }
 
 void Core::ResetHardwareWatchdog() {
+#ifdef CTL_V_1_1
   watchdogReset(); //arduino hardware reset library function
+#endif
 }
 
 bool Core::ResetSoftwareWatchdog() {

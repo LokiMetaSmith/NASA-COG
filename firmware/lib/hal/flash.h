@@ -17,19 +17,13 @@
 #ifndef FLASH_H
 #define FLASH_H
 
-// This whole file only works on a Due.
-// There is probably some other solution for the ESP32
-// Since I am just testing this, I'm not doing a great job
-// regularizing the C preprocessor defines for our boards!
-#ifdef BOARD_DUE
-
+#ifdef CTL_V_1_1
 //Defines so the device can do a self reset
 #define SYSRESETREQ    (1<<2)
 #define VECTKEY        (0x05fa0000UL)
 #define VECTKEY_MASK   (0x0000ffffUL)
 #define AIRCR          (*(uint32_t*)0xe000ed0cUL) // fixed arch-defined address
 #define REQUEST_EXTERNAL_RESET (AIRCR=(AIRCR&VECTKEY_MASK)|VECTKEY|SYSRESETREQ)
-
 
 #include <DueFlashStorage.h>
 extern DueFlashStorage dfs;
@@ -47,11 +41,8 @@ extern Configuration configuration;
 extern byte mac[6];
 extern char macString[20];
 
-#endif
-
 uint32_t getResetCause();
 uint32_t setGlobalMacAddress();
 
-
-
+#endif
 #endif

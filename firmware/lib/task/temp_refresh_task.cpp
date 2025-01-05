@@ -36,6 +36,7 @@ TempRefreshTask::TempRefreshTask() {
 
 bool TempRefreshTask::run() {
   _run();
+  return true;
 }
 
 // This is moot while we are doing the "5 knob" algorithm

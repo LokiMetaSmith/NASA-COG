@@ -62,7 +62,7 @@ namespace CogApp
       case 'A':
         {
           float a = min(mc->BOUND_MAX_AMPERAGE_SETTING,ic.value_f);
-          a = max(0.0,(double) a);
+          a = max(0.0, (double) a);
           mc->MAX_AMPERAGE = a;
           mc->report->max_stack_amps_A =
             mc->MAX_AMPERAGE;
@@ -100,6 +100,7 @@ namespace CogApp
         break;
       };
     }
+    return true;
   }
 
   bool OEDCSSerialInputTask::_run()
@@ -111,5 +112,6 @@ namespace CogApp
     if (listen(ic)) {
       executeCommand(ic,getConfig(),cogTask);
     }
+    return true;
   }
 }

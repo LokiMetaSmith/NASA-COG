@@ -17,7 +17,6 @@
 #ifndef NETWORK_UDP_H
 #define NETWORK_UDP_H
 
-#ifdef BOARD_DUE
 // buffers for receiving and sending data
 #define buffMax 2*1024
 
@@ -40,7 +39,5 @@ class NetworkUDP  {
     bool getParams(uint16_t timeout);
     void printNet();
 };
-
-#endif
 
 #endif

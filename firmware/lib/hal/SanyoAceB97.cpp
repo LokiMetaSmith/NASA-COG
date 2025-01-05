@@ -184,7 +184,7 @@ void SanyoAceB97::fanSpeedPerCentage(unsigned int s)
 
 // This would be clearer in the the .h!! or in the machine hal for the specific device
 bool SanyoAceB97::init() {
-
+#ifdef CTL_V_1_1
   PWM_PIN[0] = SANYO_ACE_FAN_PWM_PIN;
   TACH_PIN[0] = SANYO_ACE_TACH_PIN;
   // Add a symbolic constant here
@@ -210,6 +210,8 @@ bool SanyoAceB97::init() {
     pinMode(TACH_PIN[i],INPUT_PULLUP);
   }
   attachInterrupt(digitalPinToInterrupt(TACH_PIN[0]),tachISR0,FALLING);
+
+#endif
   return true;
 }
 

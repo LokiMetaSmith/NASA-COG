@@ -31,6 +31,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 namespace CogCore {
 
 class Task {
+public:
     private:
         bool _initialized;
         // User defined:

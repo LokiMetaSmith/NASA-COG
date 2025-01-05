@@ -37,6 +37,7 @@ namespace Temperature {
   DeviceAddress postStackThermometer;
 
   MAX31850Temperature::MAX31850Temperature() {
+#ifdef CTL_V_1_1
     oneWire.begin(MAX31850_DATA_PIN);
     // Pass our oneWire reference to Dallas Temperature.
 
@@ -146,6 +147,8 @@ namespace Temperature {
   CogCore::Debug<const char *>("Device 2 Resolution: ");
   CogCore::Debug<uint32_t>(sensors.getResolution(postStackThermometer));
   CogCore::Debug<const char *>("\n");
+
+#endif
   }
 
   MAX31850Temperature::MAX31850Temperature(SensorConfig &config) {

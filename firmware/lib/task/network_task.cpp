@@ -15,7 +15,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#ifdef BOARD_DUE
+#ifdef CTL_V_1_1
 
 #include <Arduino.h>
 #include <util.h>

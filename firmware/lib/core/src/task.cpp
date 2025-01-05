@@ -38,8 +38,9 @@ namespace CogCore
     {
         if (_state == TaskState::Undefined)
         {
-            _properties = *properties;
-            _state = _init() ? TaskState::Ready : TaskState::Error;
+          _properties = *properties;
+
+           _state = _init() ? TaskState::Ready : TaskState::Error;
         }
         return _state;
     }
@@ -52,11 +53,11 @@ namespace CogCore
             // We are initating the run 0 ms from the current virtual time
             _ms_since_last_run= 0;
             if (DEBUG_TASK > 0) {
-	      CogCore::Debug<const char *>("about to _run\n");
+              CogCore::Debug<const char *>("about to _run\n");
             }
             _run(); // TODO: use result
             if (DEBUG_TASK > 0) {
-	      CogCore::Debug<const char *>("finished _run\n");
+              CogCore::Debug<const char *>("finished _run\n");
             }
 
         } else {
@@ -65,7 +66,7 @@ namespace CogCore
         }
         _state = TaskState::Ready;
         if (DEBUG_TASK > 0) {
-	  CogCore::Debug<const char *>("Returning Run\n");
+          CogCore::Debug<const char *>("Returning Run\n");
         }
 
     }

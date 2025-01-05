@@ -26,12 +26,15 @@ bool ShutdownButtonTask::_init()
 
 bool ShutdownButtonTask::_run()
 {
+#ifdef CTL_V_1_1
   bool shutdownButtonPushed = getHAL()->isShutDownButtonPushed();
   if (shutdownButtonPushed) {
     CogCore::Debug<const char *>("Shut Down Button Is Pushed -- enterring emergency shutdown.\n");
     CogCore::Debug<const char *>("Note: The proper logging of this is not yet implemented.\n");
     getConfig()->ms = EmergencyShutdown;
   }
+#endif
+  return true;
 }
 
 COG_HAL* ShutdownButtonTask::getHAL() {

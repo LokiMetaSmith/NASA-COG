@@ -15,6 +15,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 
+#ifdef CTL_V_1_1
 
 #include "BatteryKeepAliveRelay.h"
 
@@ -41,3 +42,5 @@ void BatteryKeepAliveRelay::turnOff() {
   delay(100);
   abort();
 }
+
+#endif

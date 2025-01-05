@@ -32,9 +32,9 @@ SL_PS::SL_PS(const char * name, uint8_t id) {
 }
 
 int SL_PS::init() {
-
   int retval = 0;
 
+#ifdef CTL_V_1_1
 
   Serial1.begin(4800);
   // This would be better done as an error message than a hard loop...
@@ -187,6 +187,8 @@ int SL_PS::init() {
 #ifdef   TEST_OVER_CURRENT_EVENT
   pinMode(6, INPUT_PULLUP);    //TEST OVER CURRENT EVENT, sets reported amperage to 60
 #endif
+
+#endif
   return retval;
 }
 
@@ -213,7 +215,7 @@ int SL_PS::reInit() {
 // A negative return value means failure here...
 int SL_PS::reInit(uint16_t volts, uint16_t amps) {
 
-
+#ifdef CTL_V_1_1
   int retval = 1;
   watchdogReset();
   getPS_Control(ADDRESS); //set
@@ -283,20 +285,30 @@ int SL_PS::reInit(uint16_t volts, uint16_t amps) {
 	}
   }//if successfully set current and voltage, turn on EN
 
-  return retval;
-}
 
+  return retval;
+#endif
+  return true;
+}
 // Return True if Okay, false if bad.
 PSU_STATE SL_PS::evaluatePS(){
   int c = getPS_Control(ADDRESS);
   if (!c) return PSU_Bad;
+
+#ifdef CTL_V_1_1
   watchdogReset();
+#endif
   int s0 = getPS_Status0(ADDRESS);//doesn't trigger any bits
   if (!s0) return PSU_Bad;
+#ifdef CTL_V_1_1
   watchdogReset();
+#endif
   int s1 = getPS_Status1(ADDRESS);//doesn't trigger any bits for control or other flags
   if (!s1) return PSU_Bad;
+
+#ifdef CTL_V_1_1
   watchdogReset();
+#endif
   if (DEBUG_SL_PS > 0) {
     CogCore::Debug<const char *>( "status0: ");
     CogCore::DebugLn< uint8_t>(status0);

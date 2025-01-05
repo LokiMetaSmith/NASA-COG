@@ -22,35 +22,34 @@
 #include <abstract_temperature.h>
 #include <TF800A12K.h>
 #include <util.h>
-#include <math.h>
 
 // from: https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
 // This should be made into a separte task,
 // this is just for debugging...
 // TODO: Move this into the core, and invoke it within a DEBUG_LEVEL guard.
+
 #ifdef __arm__
 // should use uinstd.h to define sbrk but Due causes a conflict
 extern "C" char* sbrk(int incr);
 #else  // __ARM__
-#ifdef BOARD_DUE // WARNING! This is HACK! This will not work for ESP32
 extern char *__brkval;
-#endif
 #endif  // __arm__
 
 int freeMemory() {
+#ifndef ION_CONTROL_BOARD
   char top;
 #ifdef __arm__
   return &top - reinterpret_cast<char*>(sbrk(0));
 #elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
-#ifdef BOARD_DUE // WARNING! This is HACK! This will not work for ESP32
   return &top - __brkval;
-#endif
-#else
-#ifdef BOARD_DUE // WARNING! This is HACK! This will not work for ESP32
+#else  // __arm__
   return __brkval ? &top - __brkval : &top - __malloc_heap_start;
-#endif
 #endif  // __arm__
+#else
+  return 0;
+#endif
 }
+
 
 
 using namespace std;
@@ -106,7 +105,7 @@ namespace CogApp
     // we have not choice but to decrease the stack watts...this is a bit of "magic"
     // that has no good rationale.
     if ((BC > currentTemp) && (heaterWatts <= 0.0)) {
-      return max((double) (targetStackWatts - getConfig()->DECREASE_STACK_WATTAGE_INCREMENT_W),0.0);
+      return max((double) targetStackWatts - (double) getConfig()->DECREASE_STACK_WATTAGE_INCREMENT_W,0.0);
     }
     // here we implement a straight-line decrease in statck wattage proportional
     // to the difference C - B
@@ -432,8 +431,8 @@ namespace CogApp
     stackWattage_w = min(getConfig()->report->stack_watts + FUDGE_STACK_WATTS,
                                   limitedWattage);
     heaterWattage_w = max(0.0,
-                          (double) min((double) (totalWattage_w - stackWattage_w),
-                              (double)                            getConfig()->HEATER_MAXIMUM_WATTAGE));
+                          min((double) totalWattage_w - (double) stackWattage_w,
+                              (double) getConfig()->HEATER_MAXIMUM_WATTAGE));
 
     fanSpeed_p = computeFanSpeedTarget(getConfig()->SETPOINT_TEMP_C, A, heaterWattage_w,A,B,C);
 
@@ -510,7 +509,9 @@ namespace CogApp
     // class does not have to know about the LED. I don't
     // deem this worth doing now. - rlr
 
+#ifdef CTL_V_1_1
     digitalWrite(PANEL_LED_FAULT,doesAnyErrorExist());
+#endif
     if (doesAnyErrorExist()) {
       CogCore::Debug<const char *>("An Error Condition Exists.\n");
     }
@@ -613,7 +614,8 @@ namespace CogApp
       if (time_now < time_last_temp_changed_ms) { // ROLLOVER EVENT
         time_last_temp_changed_ms = 0;
       }
-      if (abs((double) (time_now - time_last_temp_changed_ms)) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
+      // if (abs((long unsigned) ((long unsigned) time_now - (long unsigned) time_last_temp_changed_ms)) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
+      if (abs(long(time_now -  time_last_temp_changed_ms)) > getConfig()->BOUND_MAX_TEMP_TRANSITION_TIME_MS){
         time_last_temp_changed_ms = time_now;
 
         // I now suspect that the proper action here is actually to do a controlled
@@ -692,13 +694,8 @@ namespace CogApp
 
   bool CogTask::_run() {
 
-    { // REMOVE THIS: This is for debugging only!
-          float voltage =  read12V_busVoltage();
-      CogCore::Debug<const char *>("12V bus voltage = ");
-      CogCore::DebugLn<float>(voltage);
-      CogCore::Debug<const char *>("=======================");
-      // Note: initial test showed this to be very accurage!
-    }
+    CogCore::DebugLn<long>((long) getHAL());
+    CogCore::DebugLn<long>((long) getHAL()->_fans[0]);
 
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
@@ -722,6 +719,7 @@ namespace CogApp
       CogCore::Debug<int>(freeMemory());
       CogCore::Debug<const char *>("\n");
     }
+    return true;
   }
 
   // We believe someday an automatic algorithm will be needed here.
@@ -813,7 +811,9 @@ namespace CogApp
         CogCore::Debug<const char *>("This is low enough to begin to damage the backup battery. The 12 power bus will now be shut off in 3 seconds.");
         // Now we
         delay(3000);
+#ifdef CTL_V_1_1
         getHAL()->batteryKeepAlive->turnOff();
+#endif
       }
     } else { // we will try to recover to normal operation...
       new_ms = Warmup;
@@ -840,6 +840,9 @@ namespace CogApp
     // Although after a minute this should turn off, we want
     // to do it immediately
     StateMachineManager::turnOff();
+    if (DEBUG_LEVEL > 1) {
+      CogCore::Debug<const char *>("MACHINE TURNED OFF\n");
+    }
   }
 
   MachineState CogTask::_updatePowerComponentsOff() {

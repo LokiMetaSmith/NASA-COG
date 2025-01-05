@@ -15,8 +15,6 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
-#ifdef BOARD_DUE
-
 #include <Arduino.h>
 #include <util.h>
 #include <debug.h>
@@ -93,6 +91,8 @@ namespace CogApp
   }
 
   bool OEDCSNetworkTask::logReport(MachineStatusReport* report)  {
+
+#ifndef ION_CONTROL_BOARD
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("outputReport\n");
     }
@@ -122,7 +122,7 @@ namespace CogApp
     if (DEBUG_UDP > 1) {
       CogCore::Debug<const char *>("Data Sent!\n");
     }
+#endif
     return true;
   }
 }
-#endif

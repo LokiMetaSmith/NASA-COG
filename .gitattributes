@@ -13,4 +13,11 @@
 *.pdf binary
 *.FCStd binary
 *.svg binary
-
+*.kicad_sch binary
+*.kicad_pcb binary
+*.kicad_pro binary
+*.gbr binary
+*.drl binary
+*.rpt binary
+*.gbrjob binary
+*.STEP binary

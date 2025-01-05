@@ -19,6 +19,7 @@
 #ifndef BATTERY_KEEP_ALIVE_RELAY_H
 #define BATTERY_KEEP_ALIVE_RELAY_H
 
+#ifdef CTL_V_1_1
 
 class BatteryKeepAliveRelay {
 public:
@@ -27,5 +28,7 @@ public:
   bool init();
 };
 
+
+#endif
 
 #endif

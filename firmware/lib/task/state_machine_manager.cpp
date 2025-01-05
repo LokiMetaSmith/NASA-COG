@@ -310,11 +310,13 @@ namespace CogApp
 	if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Critical Fault!\n");
     }
+    return CriticalFault;
   }
   MachineState StateMachineManager::_updatePowerComponentsEmergencyShutdown() {
 	if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Emergency Shutdown!\n");
     }
+    return EmergencyShutdown;
   }
 
   MachineState StateMachineManager::_updatePowerComponentsCooldown() {

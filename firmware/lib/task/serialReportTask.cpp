@@ -20,7 +20,6 @@
 
 #include <serialReportTask.h>
 
-
 bool SerialReportTask::_run()
 {
   if (DEBUG_SERIAL_REPORT > 0) {
@@ -31,6 +30,7 @@ bool SerialReportTask::_run()
     getConfig()->report->errors[i] = getConfig()->errors[i].fault_present;
   }
   getConfig()->outputReport(getConfig()->report);
+  return true;
 }
 
 bool SerialReportTask::_init()

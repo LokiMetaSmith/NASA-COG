@@ -129,8 +129,10 @@ void Scheduler::setupIdleTask() {
 }
 
 bool Scheduler::AddTask(Task *task, TaskProperties *properties) {
-    if (WithinArrayBounds(_numberOfTasks, MAX_TASKS)) {
-        TaskState state = task->Init(properties);
+  if (WithinArrayBounds(_numberOfTasks, MAX_TASKS)) {
+      TaskState state = task->Init(properties);
+      //      TaskState state = TaskState::Ready;
+      //      CogCore::Debug<const char *>("Returned from Init!\n");
         if (state == TaskState::Ready) {
             map.add(properties->id, task);
             _numberOfTasks++;

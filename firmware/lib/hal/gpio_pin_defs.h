@@ -68,17 +68,18 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 
 #ifdef RIBBONFISH
 
-#ifdef BOARD_DUE
 #define RF_STACK DAC0
 #define SENSE_12V A2
 #define SENSE_24V A1
-#else
+#elif ION_CONTROL_BOARD
 // HACK! WARNING -- This is for the ESP32 and needs to Changed --- this is OBVIOUSLY WRONG
-#define SENSE_12V 0
-#define SENSE_24V 0
+#define SENSE_12V 5
+#define SENSE_24V 5
 #endif
 
 
+#ifdef CTL_V_1_1
+#define HEATER_PIN 51
 
 #define MAX31850_DATA_PIN 5
 
@@ -93,7 +94,6 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define PANEL_SWITCH_DETECTION 42
 
 // Note, this has often been defined in Platform.ini
-#define HEATER_PIN 51
 
 #elif STAGE2_HEATER
 
@@ -115,6 +115,8 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define DISPLAY_RESET 46 // display reset, keep high or don't care
 
 #elif ION_CONTROL_BOARD
+
+#define LED_BUILTIN 2
 /*
  * The ION control board is the official board for AmOx's commercial product.
  *
@@ -130,9 +132,35 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
  * Fan Enable							GPIO-11
  */
 
+// HACK! WARNING -- This is for the ESP32 and needs to Changed --- this is OBVIOUSLY WRONG
+#define SENSE_12V 13
+#define SENSE_24V 13
+
+#define MAX31850_DATA_PIN 13
+
+//#define THERMOCOUPLE_PIN MAX31850_DATA_PIN
+#define THERMOCOUPLE_PIN 13
+
+#define SANYO_ACE_FAN_PWM_PIN 13
+#define SANYO_ACE_TACH_PIN 33
+
+// Rob is making an arbitrary assignment here to get it to compile - rlr
+#define HEATER_PIN 17
+#define BLOWER_ENABLE 13
+
+// There is no KEEP_ALIVE on ION
+// #define KEEP_ALIVE 45
+// There is no PANEL_LED on ION?
+// #define PANEL_LED_FAULT 44
+// #define PANEL_LED_STATUS 43 // on -- at temperature -- flashing = warmup/cooldown, off/standby -- Machine Off
+// #define PANEL_SWITCH_DETECTION 42
+
+// Note, this has often been defined in Platform.ini
+// #define HEATER_PIN 51
+
 #else
 
 
 #endif
 
-#endif
+#endif // GPIO_PIN_DEFS_H

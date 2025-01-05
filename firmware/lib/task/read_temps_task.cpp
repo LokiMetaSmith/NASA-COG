@@ -105,13 +105,17 @@ void ReadTempsTask::calculateDdelta() {
 }
 
 float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,int &rv) {
-
+  if (DEBUG_READ_TEMPS > 0) {
+    CogCore::Debug<const char *>("ABOUT TO DO  READ\n");
+  }
   float temp = _temperatureSensors[0].GetTemperature(idx);
+
 #ifndef ALLOW_BAD_THERMOCOUPLES_FOR_TESTING
 #ifdef USE_MAX31850_THERMOCOUPLES
   for(int i = 0; (i < 5) && (temp < 0.0); i++) {
     _temperatureSensors[0].ReadTemperature();
     temp = _temperatureSensors[0].GetTemperature(idx);
+      CogCore::Debug<const char *>("DONE WITH READ AND GET\n");
     if (temp < 0.0) {
       if (DEBUG_READ_TEMPS > 0) {
 	CogCore::Debug<const char *>("PERFORMING ADDITIONAL READ\n");
@@ -194,6 +198,9 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
   // probably the SPI based MAX31855_THERMOCOUPLES
 #endif
 #endif
+
+  CogCore::Debug<const char *>("RETURNING READ VAL\n");
+  return true;
 }
 
 void ReadTempsTask::updateTemperatures() {
@@ -202,6 +209,7 @@ void ReadTempsTask::updateTemperatures() {
       delay(30);
     }
 
+#ifdef CTL_V_1_1
   _readTemperatureSensors();
 
     if (DEBUG_READ_TEMPS > 0) {
@@ -239,6 +247,7 @@ void ReadTempsTask::updateTemperatures() {
   // value unchanged from the last read.
   int post_rv;
   float postHeaterTemp = evaluateThermocoupleRead(0,POST_HEATER_TC_BAD,post_rv);
+
   // The sentinel values are all less than this, so in addtion
   // to critical errors, we will leave this.
 
@@ -275,7 +284,7 @@ void ReadTempsTask::updateTemperatures() {
     //bad_temp_reads++;
     bad_temp_reads_stack++;
   }
-
+    CogCore::Debug<const char *>("BBBB\n");
   // Add the OVER TEMPERATURE checks here.
   if ((postHeaterTemp > MachineConfig::OVER_TEMPERATURE_C) ||
       (postGetterTemp > MachineConfig::OVER_TEMPERATURE_C) ||
@@ -312,6 +321,7 @@ void ReadTempsTask::updateTemperatures() {
   getConfig()->report->setpoint_temp_C = getConfig()->SETPOINT_TEMP_C;
   getConfig()->report->target_ramp_C = getConfig()->RAMP_UP_TARGET_D_MIN;
 
+    CogCore::Debug<const char *>("CCCCC\n");
   // Notice we are keeping the queue only for the post_heater thermocouple,
   // which is what we are using as a control variable.
   addTempToQueue(getConfig()->report->post_heater_C);
@@ -339,9 +349,12 @@ void ReadTempsTask::updateTemperatures() {
   if (DEBUG_READ_TEMPS > 2) {
     CogCore::Debug<const char *>("Done with ReadTaskUpdateTemperatures\n");
   }
+
+#endif
 }
 
 void stage2_ReadTempsTask::updateTemperatures() {
+#ifdef CTL_V_1_1
   ReadTempsTask::updateTemperatures();
 
   // note: This is confugsing; we are naming the temperatures
@@ -357,7 +370,7 @@ void stage2_ReadTempsTask::updateTemperatures() {
     mcs[i]->report->setpoint_temp_C = mcs[i]->SETPOINT_TEMP_C;
     mcs[i]->report->ms = mcs[i]->ms;
   }
-
+#endif
 }
 void ReadTempsTask::_configTemperatureSensors() {
 
@@ -374,7 +387,9 @@ void ReadTempsTask::_configTemperatureSensors() {
 #endif
 
   _temperatureSensors[0]._config = config[0];
+#ifdef CTL_V_1_1
   watchdogReset();
+#endif
   if (DEBUG_READ_TEMPS > 0) {
     CogCore::Debug<const char *>("Read Temp Configuration done!\n");
     delay(50);
@@ -382,6 +397,7 @@ void ReadTempsTask::_configTemperatureSensors() {
 }
 
 void ReadTempsTask::_readTemperatureSensors() {
+#ifdef CTL_V_1_1
   for (int i = 0; i < NUM_TEMP_INDICES; i++) {
     _temperatureSensors[i].ReadTemperature();
 
@@ -399,32 +415,42 @@ void ReadTempsTask::_readTemperatureSensors() {
   //  if (DEBUG_READ_TEMPS > 1) {
   //    dumpQueue();
   //  }
+#endif
 }
 
 bool ReadTempsTask::_init()
 {
-  CogCore::Debug<const char *>("ReadTempsTask init\n");
-  _configTemperatureSensors();
-  CogCore::Debug<const char *>("Config of temperature sensors done: ");
-  CogCore::DebugLn<int>(NUM_TEMP_INDICES);
-  for (int i = 0; i < NUM_TEMP_INDICES; i++) {
-    temps[i] = 0.0;
-  }
-  CogCore::Debug<const char *>("ReadTempTask::_init() done!");
-  watchdogReset();
+//   CogCore::Debug<const char *>("ReadTempsTask init\n");
+// #ifdef CTL_V_1_1
+//   _configTemperatureSensors();
+//   CogCore::Debug<const char *>("Config of temperature sensors done: ");
+//   CogCore::DebugLn<int>(NUM_TEMP_INDICES);
+//   for (int i = 0; i < NUM_TEMP_INDICES; i++) {
+//     temps[i] = 0.0;
+//   }
+//   CogCore::DebugLn<const char *>("ReadTempTask::_init() done!");
+//   watchdogReset();
+//   CogCore::DebugLn<const char *>("watchgotReset done!");
+//   delay(50);
+//   return true;
+// #endif
+//   CogCore::DebugLn<const char *>("ReadTempTask::_init() done!");
   return true;
 }
 
 bool ReadTempsTask::_run()
 {
-  if (DEBUG_READ_TEMPS > 1) {
-    CogCore::Debug<const char *>("Running ReadTemps\n");
-  }
-  updateTemperatures();
-  if (DEBUG_READ_TEMPS > 1) {
-    CogCore::Debug<const char *>("Done with ReadTempsTask:_run()\n");
-  }
-  watchdogReset();
+// #ifdef CTL_V_1_1
+//     if (DEBUG_READ_TEMPS > 1) {
+//     CogCore::Debug<const char *>("Running ReadTemps\n");
+//   }
+//   updateTemperatures();
+//   if (DEBUG_READ_TEMPS > 1) {
+//     CogCore::Debug<const char *>("Done with ReadTempsTask:_run()\n");
+//   }
+//   watchdogReset();
+// #endif
+  return true;
 }
 
 
@@ -434,6 +460,7 @@ bool stage2_ReadTempsTask::_run()
     CogCore::Debug<const char *>("Running ReadTemps\n");
   }
   updateTemperatures();
+  return true;
 }
 
 ReadTempsTask::ReadTempsTask() {

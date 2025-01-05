@@ -16,7 +16,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 #ifndef MACHINE_H
-#define MACHINE_H
+#define MACHINE_H 1
 
 #include <OnePinHeater.h>
 #include <machine_script.h>
@@ -48,24 +48,7 @@ public:
   virtual bool init() = 0;
 };
 
-
-constexpr inline static char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINITIONS] = {
-    "Post Heater TC-A Bad",
-    "Post Getter TC-B Bad",
-    "Post Stack  TC-C Bad",
-    "Can not init three TCs",
-    "Fan Power Loss",
-    "Lost 12v Power",
-    "Lost 24v Power",
-    "Fan TACH unresponsive",
-    "Lost control of Heater",
-    "pid pegged, temp out of bounds",
-    "Lost control of the Stack",
-    "Lost control of the programmable PSU",
-    "Lost mains power, on UPS",
-    "System Over Temperature",
-    "Unable to Raise Temperature Securely"
-  };
+extern char const *CriticalErrorNames[NUM_CRITICAL_ERROR_DEFINITIONS];
 
 
 
@@ -134,7 +117,18 @@ public:
 
   static const int NUM_MACHINE_STATES = 9;
 
-  constexpr inline static char const *MachineStateNames[9] = {
+  // constexpr inline static char const *MachineStateNames[9] = {
+  //   "Off",
+  //   "AwaitingPower",
+  //   "Warmup",
+  //   "NormalOperation",
+  //   "Cooldown",
+  //   "CriticalFault",
+  //   "EmergencyShutdown",
+  //   "OffUserAck"
+  // };
+
+  char const *MachineStateNames[9] = {
     "Off",
     "AwaitingPower",
     "Warmup",
@@ -144,16 +138,31 @@ public:
     "EmergencyShutdown",
     "OffUserAck"
   };
-  constexpr inline static char const *MachineSubStateNames[2] = {
+  // constexpr inline static char const *MachineSubStateNames[2] = {
+  //   "(Not Idling)",
+  //   "(Idling)"
+  // };
+  // constexpr inline static char const *TempLocationNames[2] = {
+  //   "Post Heater",
+  //   "Post Stack"
+  // };
+
+  // constexpr inline static char const *HeaterNames[3] = {
+  //   "Int1",
+  //   "Ext1",
+  //   "Ext2"
+  // };
+
+  char const *MachineSubStateNames[2] = {
     "(Not Idling)",
     "(Idling)"
   };
-  constexpr inline static char const *TempLocationNames[2] = {
+  char const *TempLocationNames[2] = {
     "Post Heater",
     "Post Stack"
   };
 
-  constexpr inline static char const *HeaterNames[3] = {
+  char const *HeaterNames[3] = {
     "Int1",
     "Ext1",
     "Ext2"
@@ -264,7 +273,6 @@ public:
   const float FAN_SPEED_MAX_p = 80;
   const float FAN_SPEED_MIN_p = 30;
   static constexpr float FAN_SPEED_PREFERRED_p = 40;
-
 
   // The is an absolute max wattage allowed into the stack.
   const float BOUND_MAX_WATTAGE = 300.0;

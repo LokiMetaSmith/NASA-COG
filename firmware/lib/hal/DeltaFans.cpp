@@ -17,7 +17,8 @@
 // WARNING -- This code is now stale and exists only in case we
 // have to ressurect or test the DeltaFans.
 
-#ifdef BOARD_DUE
+
+#ifdef CTL_V_1_1
 #include "DeltaFans.h"
 #include <math.h>
 #include <debug.h>
