@@ -384,34 +384,34 @@ void setup()
   getConfig()->script->DEBUG_MS = 0;
 
 
-//   CogCore::Debug<const char *>("Added tasks\n");
+  CogCore::Debug<const char *>("Added tasks\n");
 
-//   // Now we will set the initial tunings for the heater_pid tasks
-//   // This is a place where one could change the settings for
-//   // one of the heaters but not another.
+  // Now we will set the initial tunings for the heater_pid tasks
+  // This is a place where one could change the settings for
+  // one of the heaters but not another.
 
-//   heaterPIDTask.SetTunings(hal->INIT_Kp, hal->INIT_Ki, hal->INIT_Kd);
+  heaterPIDTask.SetTunings(hal->INIT_Kp, hal->INIT_Ki, hal->INIT_Kd);
 
-//   CogCore::Debug<const char *>("PID Tuning Set\n");
+  CogCore::Debug<const char *>("PID Tuning Set\n");
 
-//   core.ResetAllWatchdogs();
-//   // We want to make sure we have run the temps before we start up.
-// #ifdef CTL_V_1_1
-//   CogCore::Debug<const char *>("Reading First Temp\n");
-//   readTempsTask._run();
-//   CogCore::Debug<const char *>("Reading Second Temp\n");
-//   readTempsTask._run();
-//   CogCore::Debug<const char *>("Reading Third Temp\n");
-//   readTempsTask._run();
-// #endif
-//   //Debug<const char *>("BBBBBB!\n"); compiler fails when readTempTask runs, suspect issue inside how TC's are inited ;;platform_packages = toolchain-gccarmnoneeabi @ ~1.90301.0
+  core.ResetAllWatchdogs();
+  // We want to make sure we have run the temps before we start up.
+#ifdef CTL_V_1_1
+  CogCore::Debug<const char *>("Reading First Temp\n");
+  readTempsTask._run();
+  CogCore::Debug<const char *>("Reading Second Temp\n");
+  readTempsTask._run();
+  CogCore::Debug<const char *>("Reading Third Temp\n");
+  readTempsTask._run();
+#endif
+  //Debug<const char *>("BBBBBB!\n"); compiler fails when readTempTask runs, suspect issue inside how TC's are inited ;;platform_packages = toolchain-gccarmnoneeabi @ ~1.90301.0
 
-//   getConfig()->GLOBAL_RECENT_TEMP = getConfig()->report->post_heater_C;
-//   Debug<const char *>("starting temp is: ");
-//   Debug<uint32_t>(getConfig()->GLOBAL_RECENT_TEMP);
-//   Debug<const char *>("\n");
-//   CogCore::Debug<const char *>("Starting\n");
-//   /*********************************************/
+  getConfig()->GLOBAL_RECENT_TEMP = getConfig()->report->post_heater_C;
+  Debug<const char *>("starting temp is: ");
+  Debug<uint32_t>(getConfig()->GLOBAL_RECENT_TEMP);
+  Debug<const char *>("\n");
+  CogCore::Debug<const char *>("Starting\n");
+  /*********************************************/
 }
 
 

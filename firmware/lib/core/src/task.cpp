@@ -36,20 +36,12 @@ namespace CogCore
 
     TaskState Task::Init(TaskProperties *properties)
     {
-        CogCore::Debug<const char *>("INIT BEGIN\n");
         if (_state == TaskState::Undefined)
         {
-          CogCore::Debug<const char *>("ABOUT TO DEREFERENCE\n");
           _properties = *properties;
-          CogCore::Debug<const char *>("DONE WITH DEREFERENCE\n");
 
            _state = _init() ? TaskState::Ready : TaskState::Error;
-
-          // CogCore::Debug<const char *>("POST_INIT\n"); delay(50);
-          CogCore::Debug<const char *>("QQQQ\n");
-          CogCore::Debug<const char *>("_init returned\n"); delay(50);
         }
-        CogCore::Debug<const char *>("INIT DONE\n");
         return _state;
     }
 
@@ -61,11 +53,11 @@ namespace CogCore
             // We are initating the run 0 ms from the current virtual time
             _ms_since_last_run= 0;
             if (DEBUG_TASK > 0) {
-	      CogCore::Debug<const char *>("about to _run\n");
+              CogCore::Debug<const char *>("about to _run\n");
             }
             _run(); // TODO: use result
             if (DEBUG_TASK > 0) {
-	      CogCore::Debug<const char *>("finished _run\n");
+              CogCore::Debug<const char *>("finished _run\n");
             }
 
         } else {
@@ -74,7 +66,7 @@ namespace CogCore
         }
         _state = TaskState::Ready;
         if (DEBUG_TASK > 0) {
-	  CogCore::Debug<const char *>("Returning Run\n");
+          CogCore::Debug<const char *>("Returning Run\n");
         }
 
     }

@@ -694,29 +694,15 @@ namespace CogApp
 
   bool CogTask::_run() {
 
-    { // REMOVE THIS: This is for debugging only!
-          float voltage =  read12V_busVoltage();
-      CogCore::Debug<const char *>("12V bus voltage = ");
-      CogCore::DebugLn<float>(voltage);
-      CogCore::Debug<const char *>("=======================\n");
-      // Note: initial test showed this to be very accurage!
-    }
-
     CogCore::DebugLn<long>((long) getHAL());
     CogCore::DebugLn<long>((long) getHAL()->_fans[0]);
 
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
-    CogCore::Debug<const char *>("AAAAAAA");
-
     getConfig()->report->fan_rpm = calculated_fan_speed_rpms;
 
-    CogCore::Debug<const char *>("BBBBBBB");
-
     evaluateErrorConditions();
-
-    CogCore::Debug<const char *>("CCCCC");
 
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
@@ -851,7 +837,6 @@ namespace CogApp
       CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
     }
     turnOffPowerButDoNotChangeState();
-    CogCore::DebugLn<const char *>("XXXXXXX\n");
     // Although after a minute this should turn off, we want
     // to do it immediately
     StateMachineManager::turnOff();

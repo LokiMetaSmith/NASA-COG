@@ -109,7 +109,6 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
     CogCore::Debug<const char *>("ABOUT TO DO  READ\n");
   }
   float temp = _temperatureSensors[0].GetTemperature(idx);
-  CogCore::Debug<const char *>("DONE WITH READ AND GET\n");
 
 #ifndef ALLOW_BAD_THERMOCOUPLES_FOR_TESTING
 #ifdef USE_MAX31850_THERMOCOUPLES
@@ -246,11 +245,8 @@ void ReadTempsTask::updateTemperatures() {
   // Sometimes we get a data read error, that comes across
   // as -127.00. In that case, we will leave the
   // value unchanged from the last read.
-    CogCore::Debug<const char *>("AAAAAAAA\n");
   int post_rv;
   float postHeaterTemp = evaluateThermocoupleRead(0,POST_HEATER_TC_BAD,post_rv);
-
-  CogCore::Debug<const char *>("QQQQQ\n"); delay(500);
 
   // The sentinel values are all less than this, so in addtion
   // to critical errors, we will leave this.

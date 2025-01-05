@@ -92,10 +92,6 @@ bool Core::Boot() {
 }
 
 bool Core::AddTask(Task *task, TaskProperties *properties) {
-  Debug<const char *>("*task, *properties\n");
-  DebugLn<long>((long) task);
-  DebugLn<long>((long) properties);
-
     bool taskAdded = _scheduler.AddTask(task, properties);
     if (taskAdded) {
 #ifndef ARDUINO
