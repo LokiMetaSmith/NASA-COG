@@ -14,3 +14,4 @@
 *.FCStd binary
 *.svg binary
 *.kicad_sch binary
+*.kicad_pcb binary
