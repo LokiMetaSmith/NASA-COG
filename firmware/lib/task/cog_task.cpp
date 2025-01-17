@@ -93,7 +93,8 @@ namespace CogApp
     float totalWattage = wattagePIDObject->compute(controlTemp);
     return totalWattage;
   }
-  float CogTask::computeTargetStackWattage(float targetTotalWattage, float heaterWatts, float currentTemp, float B, float C, float targetStackWatts) {
+  float CogTask::computeTargetStackWattage(float targetTotalWattage, float heaterWatts, float currentTemp,
+                                           float B, float C, float targetStackWatts) {
     float BC = (B + C) / 2.0;
     // if the operating temp is higher than the current setpoint temp and and the heater is off,
     // we have not choice but to decrease the stack watts...this is a bit of "magic"
