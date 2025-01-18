@@ -29,7 +29,7 @@
 #install tmux https://github.com/tmux/tmux/wiki                                          
 #edit /etc/dpkg/dpkg.cfg.d/excludes                                              
 sudo apt update
-sudo apt dist-upgrade
+sudo apt-get dist-upgrade -y
 sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-essential python3-venv git tmux
 
 #   comment out the excludes for man and docs                                    
