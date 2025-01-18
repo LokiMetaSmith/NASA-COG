@@ -31,6 +31,10 @@ namespace CogApp
       CogCore::Debug<const char *>("starting run generic: ");
     }
 
+    if (!getConfig()->USE_ONE_BUTTON) {
+      CogCore::Debug<const char *>("\nWARNING: TROUBLESHOOTING MODE\n");
+    }
+
     MachineState ms = getConfig()->ms;
 
     if (SM_DEBUG_LEVEL > 0) {
