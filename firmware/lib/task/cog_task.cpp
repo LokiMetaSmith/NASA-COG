@@ -93,7 +93,8 @@ namespace CogApp
     float totalWattage = wattagePIDObject->compute(controlTemp);
     return totalWattage;
   }
-  float CogTask::computeTargetStackWattage(float targetTotalWattage, float heaterWatts, float currentTemp, float B, float C, float targetStackWatts) {
+  float CogTask::computeTargetStackWattage(float targetTotalWattage, float heaterWatts, float currentTemp,
+                                           float B, float C, float targetStackWatts) {
     float BC = (B + C) / 2.0;
     // if the operating temp is higher than the current setpoint temp and and the heater is off,
     // we have not choice but to decrease the stack watts...this is a bit of "magic"
@@ -438,7 +439,7 @@ namespace CogApp
     // delta_ms it the number of change that we want to do...
     // but all of our ramp rates are in terms of minutes
     // However, if for some reason delta_ms is very long, we don't want
-    // to jump rapidly, so we will camp it at one minute!
+    // to jump rapidly, so we will clamp it at one minute!
 
     const float minutes = ((float)((delta_ms > 60 * 1000.0) ?
                                    60 * 1000.0 :
@@ -857,6 +858,8 @@ namespace CogApp
       if (DEBUG_LEVEL_OBA > 2) {
         CogCore::Debug<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
       }
+
+      CogCore::Debug<const char *>("WARNING: TROUBLESHOOTING MODE\n");
 
       unsigned long now_ms = t_millis();
       if (now_ms < last_time_ramp_changed_ms) { // ROLLOVER_EVENT
