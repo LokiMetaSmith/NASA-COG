@@ -385,6 +385,11 @@ namespace CogApp
   }
 
   float StateMachineManager::read12V_busVoltage() {
+  float v12BusVoltage = 0.0f;
+#ifndef SENSE_12V
+  return v12BusVoltage;
+#endif //SENSE_12V
+#ifdef SENSE_12V
     int _v12read = analogRead(SENSE_12V);
 
     // Note: Presente in the V1.1 Control board, the resistors
@@ -397,17 +402,23 @@ namespace CogApp
     // Vout = Vs * 10000 / (40000)
     // Vout = Vs / 4.
 
-    float v12BusVoltage = (float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2));
+    v12BusVoltage = (float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2));
     if (SM_DEBUG_LEVEL > -1) {
       CogCore::Debug<const char *>("analogRead(SENSE_12V)= ");
       CogCore::DebugLn<uint32_t>(_v12read);
       CogCore::Debug<float>((float) v12BusVoltage);
       CogCore::Debug<const char *>("\n");
     }
+
     return v12BusVoltage ;
+#endif //SENSE_12V
   }
   bool StateMachineManager::is12VPowerGood()
   {
+#ifndef SENSE_12V
+    return true ;
+#endif
+#ifdef SENSE_12V
     if (SM_DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
 
     //Analog read of the +12V expected about 3.25V at ADC input.
@@ -457,10 +468,15 @@ namespace CogApp
       CogCore::Debug<const char *>("\n");
       return false;
     }
+#endif //SENSE_12V
   }
 
   bool StateMachineManager::is24VPowerGood()
   {
+#ifndef SENSE_24V
+    return true ;
+#endif
+#ifdef SENSE_24V
     if (SM_DEBUG_LEVEL >0 ) CogCore::Debug<const char *>("PowerMonitorTask run\n");
 
     //Analog read of the +24V expected about 3.25V at ADC input.
@@ -508,5 +524,6 @@ namespace CogApp
       CogCore::Debug<const char *>("\n");
       return false;
     }
+#endif //SENSE_24V
   }
 }

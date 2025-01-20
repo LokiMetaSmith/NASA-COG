@@ -92,7 +92,10 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 #define PANEL_LED_FAULT 44
 #define PANEL_LED_STATUS 43 // on -- at temperature -- flashing = warmup/cooldown, off/standby -- Machine Off
 #define PANEL_SWITCH_DETECTION 42
-
+//Name the pins from the Due
+#define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
+#define DISPLAY_DC 47 //display data / command line, keep high for display cs control
+#define DISPLAY_RESET 46 // display reset, keep high or don't care
 // Note, this has often been defined in Platform.ini
 
 #elif STAGE2_HEATER
@@ -109,20 +112,17 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 // #define RF_MOSTPLUS_FLOW_LOW_CUTOFF_VOLTAGE 1.75
 
 #endif
-//Name the pins from the Due
-#define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
-#define DISPLAY_DC 47 //display data / command line, keep high for display cs control
-#define DISPLAY_RESET 46 // display reset, keep high or don't care
+
 
 #elif ION_CONTROL_BOARD
 
-#define LED_BUILTIN 2
+
 /*
  * The ION control board is the official board for AmOx's commercial product.
  *
- * Analog0: 0-10V						GPIO-03
+ * Analog0: 4-20mA						GPIO-01
  * Analog1: Current monitor				GPIO-02
- * Analog2: 4-20mA						GPIO-01
+ * Analog2: 0-10V						GPIO-03
  * Analog3: Voltage monitor				GPIO-04
  *
  * Fan0 Tach							GPIO-05
@@ -130,33 +130,70 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
  * Fan1 PWM								GPIO-13
  * Fan2 PWM								GPIO-14
  * Fan Enable							GPIO-11
+ * 
+ * GPIO-0 switch						GPIO-0
+ * LED RED								GPIO-17
+ * WS2812_DIN							GPIO-18
+ * SSR_CTL1 							GPIO-10
+ *
+ *
+ * Switch Begin_Production 				GPIO-8
+ *
+ * Ethernet GPIO Defines
+ * CSn									GPIO-34
+ * MISO									GPIO-35
+ * MOSI									GPIO-36
+ * SCLK									GPIO-37
+ *
+ * Toggle defines, default in (bracket) 
+ * TC_CS_4								GPIO-6
+ * TC_CS_5								GPIO-7
+ * AC_HOT								GPIO-9
+ *
+ * Thermocouple GPIO Defines
+ * TC_SO								GPIO-40
+ * TC_SCK								GPIO-42
+ * TC_CS_2								GPIO-45
+ * TC_CS_1								GPIO-46
+ * TC_CS_0								GPIO-47
+ *
+ *
+ * Temp Humidity GPIO Defines
+ * SCL									GPIO-26
+ * SDA									GPIO-33
+ *
  */
+#define LED_BUILTIN 17
+#define MAX31850_DATA_PIN 48
+//GPIO 48 not used
+//#define SENSE_12V 48
+//#define SENSE_24V 48
 
-// HACK! WARNING -- This is for the ESP32 and needs to Changed --- this is OBVIOUSLY WRONG
-#define SENSE_12V 13
-#define SENSE_24V 13
+#define MAX31855_DATA_PIN 40
 
-#define MAX31850_DATA_PIN 13
+#define MAXDO   2
+#define EXT1_MAXCS   3
+#define EXT2_MAXCS   29
+#define INT1_MAXCS   28
+#define MAXCLK  8
 
-//#define THERMOCOUPLE_PIN MAX31850_DATA_PIN
-#define THERMOCOUPLE_PIN 13
+#define THERMOCOUPLE_PIN MAX31855_DATA_PIN
 
-#define SANYO_ACE_FAN_PWM_PIN 13
-#define SANYO_ACE_TACH_PIN 33
+#define SANYO_ACE_FAN_PWM_PIN 12
+#define SANYO_ACE_TACH_PIN 5
 
 // Rob is making an arbitrary assignment here to get it to compile - rlr
-#define HEATER_PIN 17
-#define BLOWER_ENABLE 13
+#define HEATER_PIN 10
+#define BLOWER_ENABLE 11
 
 // There is no KEEP_ALIVE on ION
 // #define KEEP_ALIVE 45
-// There is no PANEL_LED on ION?
-// #define PANEL_LED_FAULT 44
-// #define PANEL_LED_STATUS 43 // on -- at temperature -- flashing = warmup/cooldown, off/standby -- Machine Off
-// #define PANEL_SWITCH_DETECTION 42
 
-// Note, this has often been defined in Platform.ini
-// #define HEATER_PIN 51
+// #define PANEL_LED_FAULT 44
+ #define PANEL_LED_STATUS 17 // on -- at temperature -- flashing = warmup/cooldown, off/standby -- Machine Off
+#define PANEL_SWITCH_DETECTION 8
+#define SHUT_DOWN_BUTTON 0
+
 
 #else
 
