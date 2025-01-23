@@ -22,6 +22,7 @@
 #include <abstract_temperature.h>
 #include <TF800A12K.h>
 #include <util.h>
+#include <panel.h>
 
 // from: https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
 // This should be made into a separte task,
@@ -688,14 +689,6 @@ namespace CogApp
 
   bool CogTask::_run() {
 
-    { // REMOVE THIS: This is for debugging only!
-          float voltage =  read12V_busVoltage();
-      CogCore::Debug<const char *>("12V bus voltage = ");
-      CogCore::DebugLn<float>(voltage);
-      CogCore::Debug<const char *>("=======================");
-      // Note: initial test showed this to be very accurage!
-    }
-
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
 
@@ -708,6 +701,17 @@ namespace CogApp
     }
 
     this->StateMachineManager::run_generic();
+
+    MachineState ms = getConfig()->ms;
+    LED_STATUS ls = LED_STATUS::OFF;
+    if (ms == NormalOperation) {
+      ls = LED_STATUS::STEADY_ON;
+    } else if ((ms == Warmup) || (ms == Cooldown)) {
+      ls = LED_STATUS::BLINKING;
+    }
+    getHAL()->panel->setStatusLEDfromState(ls);
+
+
 
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");

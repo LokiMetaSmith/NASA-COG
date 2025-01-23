@@ -1,7 +1,7 @@
 /*
   state_machine_manager.cpp
 
-  Copyright 2023, Robert L. Read
+  Copyright 2025, Robert L. Read
 
   This program includes free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
@@ -36,6 +36,8 @@ namespace CogApp
     }
 
     MachineState ms = getConfig()->ms;
+
+
 
     if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("ms : ");
