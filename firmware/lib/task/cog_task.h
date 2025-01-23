@@ -127,8 +127,8 @@ namespace CogApp
     //    float computeFanSpeedTargetFromSchedule(float temp);
     float computeFanSpeedTarget(float currentTargetTemp,float temp, float heaterWatts, float A, float B, float C);
     //    bool heaterWattsAtFullPowerPred(float watts);
-    void oneButtonAlgorithm(float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p);
-    void runOneButtonAlgorithm() override;
+    void oneButtonAlgorithm(MachineState ms,float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p);
+    void runOneButtonAlgorithm(MachineState ms) override;
 	bool evaluateHeaterEnvelope(double goal_temperature,double current_input_temperature, double value_PID);
     float computeNernstVoltage(float T_K);
     float computePumpingWork(float T_k,float V,float R_O, float I_A);
