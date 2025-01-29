@@ -1,7 +1,7 @@
 /*
   state_machine_manager.cpp
 
-  Copyright 2023, Robert L. Read
+  Copyright 2025, Robert L. Read
 
   This program includes free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
@@ -36,6 +36,8 @@ namespace CogApp
     }
 
     MachineState ms = getConfig()->ms;
+
+
 
     if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("ms : ");
@@ -287,7 +289,7 @@ namespace CogApp
 
     // TODO: this should really be in the cog_task, not here.
     if (getConfig()->USE_ONE_BUTTON) {
-      runOneButtonAlgorithm();
+      runOneButtonAlgorithm(new_ms);
     } else {
       // These also are dependent on which heater we are using
       float tt = computeRampUpSetpointTemp(t,
@@ -335,7 +337,7 @@ namespace CogApp
     }
 
     if (getConfig()->USE_ONE_BUTTON) {
-      runOneButtonAlgorithm();
+      runOneButtonAlgorithm(new_ms);
     } else {
 
       float tt = computeRampDnSetpointTemp(t,
@@ -368,7 +370,7 @@ namespace CogApp
 
     MachineState new_ms = NormalOperation;
     if (getConfig()->USE_ONE_BUTTON) {
-      runOneButtonAlgorithm();
+      runOneButtonAlgorithm(new_ms);
       if (SM_DEBUG_LEVEL > 0) {
         CogCore::Debug<const char *>("Run One Button Algorithm Done!");
       }
@@ -465,8 +467,8 @@ namespace CogApp
     // SENSE_24V on A1.
     // Full scale is 1023, ten bits for 3.3V.
     //30K into 4K7
-    const long FullScale = 1023;
-    const float percentOK = 0.25;
+    //    const long FullScale = 1023;
+    //    const float percentOK = 0.25;
     const float R1=40000;
     const float R2=4700;
     const float Vcc = 3.3;

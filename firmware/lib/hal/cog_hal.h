@@ -25,6 +25,7 @@
 #include <abstract_fan.h>
 #include <gpio_pin_defs.h>
 #include <BatteryKeepAliveRelay.h>
+#include <panel.h>
 
 class COG_HAL : public MachineHAL {
 public:
@@ -33,6 +34,7 @@ public:
   const static int NUM_STACKS = 1;
   AbstractPS* _stacks[NUM_STACKS];
   //  Mini12864* _displays[1];
+  FrontPanel* panel;
 
   const static int NUM_HEATERS = 1;
   int HEATER_PINS[NUM_HEATERS];

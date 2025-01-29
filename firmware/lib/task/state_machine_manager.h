@@ -50,7 +50,7 @@ namespace CogApp
     virtual float getTemperatureReadingA_C() = 0;
     virtual float getTemperatureReadingB_C() = 0;
     virtual float getTemperatureReadingC_C() = 0;
-    virtual void runOneButtonAlgorithm() = 0;
+    virtual void runOneButtonAlgorithm(MachineState ms) = 0;
     bool run_generic();
 
     // I'm not sure if this should be here or in the cog_task
