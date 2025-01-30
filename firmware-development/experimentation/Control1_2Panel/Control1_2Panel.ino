@@ -3,10 +3,11 @@
 // Toggles Status LED, Fault LED, Battery 
 // Poles O2_Switch_FRONT_PANEL the O2_Switch_FRONT_PANEL switch and reports status on Serial Monitor port
 // On serial input poles the SHUT_DOWN switch and reports status on Serial Monitor port
+// Version 0.2 Set switch for input.
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "Control1_2Panel"
-#define VERSION ":V0.1"
+#define VERSION ":V0.2"
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.2_Firmware:_"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -50,7 +51,7 @@ void setup() {
   pinMode(SHUT_DOWN, INPUT_PULLUP);
 
   //Front Panel Parts
-  pinMode(O2_Switch_FRONT_PANEL, INPUT_PULLUP);
+  pinMode(O2_Switch_FRONT_PANEL, INPUT);
   pinMode(STATUS_LED_FRONT_PANEL, OUTPUT);
   pinMode(FAULT_LED_FRONT_PANEL, OUTPUT);
   //Battery Relay
