@@ -22,6 +22,7 @@
 #include <abstract_temperature.h>
 #include <TF800A12K.h>
 #include <util.h>
+#include <panel.h>
 
 // from: https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory
 // This should be made into a separte task,
@@ -307,7 +308,7 @@ namespace CogApp
     return Pumping_Work_W;
   }
 
-  void CogTask::oneButtonAlgorithm(float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p) {
+  void CogTask::oneButtonAlgorithm(MachineState ms, float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p) {
     const float A = getTemperatureReadingA_C();
     const float B = getTemperatureReadingB_C();
     const float C = getTemperatureReadingC_C();
@@ -316,7 +317,7 @@ namespace CogApp
     const float T_k = T_c + 273.15;
 
     unsigned long time = t_millis();
-    if (USE_PAUSING) {
+    if (USE_PAUSING && ms == Warmup) {
         const float DT_K = abs(B - C);
         if (DEBUG_LEVEL_OBA > 2) {
           CogCore::Debug<const char *>("abs(B-C): ");
@@ -349,6 +350,8 @@ namespace CogApp
               c.current_pause_began = time;
             }
         }
+    } else {
+      c.pause_substate = 0;
     }
 
 
@@ -465,7 +468,7 @@ namespace CogApp
     c.S_p = min(max(0.0,(double) c.S_p),100.0);
 
     MachineState ms = getConfig()->ms;
-    if (ms != NormalOperation) {
+    if (ms != NormalOperation && ms != Cooldown) {
       if (c.pause_substate == 0) {
         // Is this using the correct variables?
         float diff = getConfig()->TARGET_TEMP_C - getConfig()->SETPOINT_TEMP_C;
@@ -694,9 +697,9 @@ namespace CogApp
   }
 
   bool CogTask::_run() {
-
-    CogCore::DebugLn<long>((long) getHAL());
-    CogCore::DebugLn<long>((long) getHAL()->_fans[0]);
+    //not sure what the purpose of this code is LRK 1/31/2025
+    //CogCore::DebugLn<long>((long) getHAL());
+    //CogCore::DebugLn<long>((long) getHAL()->_fans[0]);
 
     // Report fan speed
     float calculated_fan_speed_rpms = getHAL()->_fans[0]->getRPM();
@@ -710,6 +713,17 @@ namespace CogApp
     }
 
     this->StateMachineManager::run_generic();
+
+    MachineState ms = getConfig()->ms;
+    LED_STATUS ls = LED_STATUS::OFF;
+    if (ms == NormalOperation) {
+      ls = LED_STATUS::STEADY_ON;
+    } else if ((ms == Warmup) || (ms == Cooldown)) {
+      ls = LED_STATUS::BLINKING;
+    }
+    getHAL()->panel->setStatusLEDfromState(ls);
+
+
 
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");
@@ -864,14 +878,12 @@ namespace CogApp
       min(1.0,(double) heaterWattage_w/getConfig()->HEATER_MAX_WATTAGE_FOR_DC_CALC);
   }
 
-  void CogTask::runOneButtonAlgorithm() {
+  void CogTask::runOneButtonAlgorithm(MachineState ms) {
       if (DEBUG_LEVEL_OBA > 2) {
         CogCore::Debug<const char *>("Run One Button XXXXXXXXXXXXXXXXXXXXXXXXXXXX\n");
       }
 
-      CogCore::Debug<const char *>("WARNING: TROUBLESHOOTING MODE\n");
-
-      unsigned long now_ms = t_millis();
+       unsigned long now_ms = t_millis();
       if (now_ms < last_time_ramp_changed_ms) { // ROLLOVER_EVENT
         last_time_ramp_changed_ms = 0;
       }
@@ -888,7 +900,7 @@ namespace CogApp
       float heaterWattage_w;
       float tFanSpeed_p;
 
-      oneButtonAlgorithm(totalWattage_w,stackWattage_w,heaterWattage_w,tFanSpeed_p);
+      oneButtonAlgorithm(ms,totalWattage_w,stackWattage_w,heaterWattage_w,tFanSpeed_p);
       float dc = computeHeaterDutyCycleFromWattage(heaterWattage_w);
       if (DEBUG_LEVEL_OBA > 0) {
         CogCore::Debug<const char *>("One Button Summary\n");
@@ -990,7 +1002,7 @@ namespace CogApp
 
     //    new_ms = StateMachineManager::_updatePowerComponentsWarmup();
     if (getConfig()->USE_ONE_BUTTON) {
-      runOneButtonAlgorithm();
+      runOneButtonAlgorithm(new_ms);
     } else {
       if (new_ms == Warmup) {
         _updateCOGSpecificComponents();
@@ -1013,7 +1025,7 @@ namespace CogApp
       return new_ms;
     }
     if (getConfig()->USE_ONE_BUTTON) {
-      runOneButtonAlgorithm();
+      runOneButtonAlgorithm(new_ms);
     } else {
       if (new_ms == Cooldown) {
         _updateCOGSpecificComponents();
@@ -1135,8 +1147,7 @@ namespace CogApp
 
   MachineState CogTask::_updatePowerComponentsOperation(IdleOrOperateSubState i_or_o) {
     MachineState new_ms = NormalOperation;
-    //    StateMachineManager::_updatePowerComponentsOperation(i_or_o);
-    runOneButtonAlgorithm();
+    runOneButtonAlgorithm(new_ms);
     return new_ms;
   }
 }

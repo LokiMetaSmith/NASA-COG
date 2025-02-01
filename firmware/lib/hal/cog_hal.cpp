@@ -52,6 +52,11 @@ bool COG_HAL::init() {
   pinMode(SHUT_DOWN_BUTTON,INPUT_PULLUP);
 #endif
 
+
+
+  panel = new FrontPanel();
+  panel->init();
+
   _fans[0] = new SanyoAceB97("FIRST_FAN",0);
   _fans[0]->init();
 
