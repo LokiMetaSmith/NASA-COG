@@ -48,6 +48,7 @@ sudo ln -s ~/.platformio/penv/bin/pio /usr/local/bin/pio
 sudo ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 
 #install the local mcogserver
+#sudo apt-get install libssl-dev
 #git clone https://github.com/PubInv/mcogserver.git
 #make iotserver
 #sudo systemctl start mcogs.service

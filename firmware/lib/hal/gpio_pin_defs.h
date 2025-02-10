@@ -189,7 +189,7 @@ D53 HEAT3			Output		Positive SSR signal for heater PID
 // There is no KEEP_ALIVE on ION
 // #define KEEP_ALIVE 45
 
-// #define PANEL_LED_FAULT 44
+ #define PANEL_LED_FAULT 18
  #define PANEL_LED_STATUS 17 // on -- at temperature -- flashing = warmup/cooldown, off/standby -- Machine Off
 #define PANEL_SWITCH_DETECTION 8
 #define SHUT_DOWN_BUTTON 0

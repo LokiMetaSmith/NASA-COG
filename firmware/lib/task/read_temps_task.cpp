@@ -194,8 +194,12 @@ float ReadTempsTask::evaluateThermocoupleRead(int idx,CriticalErrorCondition ec,
   }
 
   return temp;
-#else
+
+#elif USE_MAX31855_THERMOCOUPLES
   // probably the SPI based MAX31855_THERMOCOUPLES
+    return temp;
+#else
+  CogCore::Debug<const char *>("MAJOR INTERNAL ERROR, THERMOCOUPLE PREPROCESSOR DIRECTIVES NOT DEFINED in evaluateThermocoupleRead!\n");
 #endif
 #endif
 
