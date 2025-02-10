@@ -709,9 +709,9 @@ namespace CogApp
     } else if ((ms == Warmup) || (ms == Cooldown)) {
       ls = LED_STATUS::BLINKING;
     }
+
+    CogCore::Debug<const char *>("Calling setStatusLED\n ");
     getHAL()->panel->setStatusLEDfromState(ls);
-
-
 
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");
