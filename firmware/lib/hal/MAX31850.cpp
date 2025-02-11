@@ -33,7 +33,9 @@ namespace Temperature {
   // Print out an ordering so we can match ID against index
   // arrays to hold device addresses
   DeviceAddress postHeaterThermometer;
+#ifdef USE_THREE_TC_CONFIG
   DeviceAddress postGetterThermometer;
+#endif
   DeviceAddress postStackThermometer;
 
   MAX31850Temperature::MAX31850Temperature() {
@@ -86,6 +88,7 @@ namespace Temperature {
       CogCore::Debug<const char *>("Foolishly carrying on because ALLOW_BAD_THERMO_COUPLES_FOR_TESTING is set!\n");
     }
   }
+#ifdef USE_THREE_TC_CONFIG
   if (!sensors.getAddress(postGetterThermometer, 1)) {
     CogCore::Debug<const char *>("Unable to find address for Device 1\n");
     if (!ALLOW_BAD_THERMOCOUPLES) {
@@ -94,8 +97,17 @@ namespace Temperature {
       CogCore::Debug<const char *>("Foolishly carrying on because ALLOW_BAD_THERMO_COUPLES_FOR_TESTING is set!\n");
     }
   }
-  if (!sensors.getAddress(postStackThermometer, 2)) {
-    CogCore::Debug<const char *>("Unable to find address for Device 2\n");
+#endif
+  int lastIndex;
+#ifdef USE_THREE_TC_CONFIG
+  lastIndex = 2;
+#else
+  lastIndex = 1;
+#endif
+  if (!sensors.getAddress(postStackThermometer, lastIndex)) {
+    CogCore::Debug<const char *>("Unable to find address for Device: ");
+    CogCore::Debug<int>(lastIndex);
+    CogCore::Debug<const char *>("\n");
     if (!ALLOW_BAD_THERMOCOUPLES) {
       CogCore::Debug<const char *>("Refusing to continue without a working thermocouple.\n");
     } else {
@@ -118,30 +130,38 @@ namespace Temperature {
   //if (!oneWire.search(postGetterThermometer)) CogCore::Debug<const char *>("Unable to find address for postGetterThermometer\n");
 
   // show the addresses we found on the bus
-  CogCore::Debug<const char *>("Device 0 Address: ");
+  CogCore::Debug<const char *>("Address of Device : 0 ");
   printAddress(postHeaterThermometer);
   CogCore::Debug<const char *>("\n");
 
-  CogCore::Debug<const char *>("Device 1 Address: ");
+#ifdef USE_THREE_TC_CONFIG
+  CogCore::Debug<const char *>("Address of Device : 1 ");
   printAddress(postGetterThermometer);
   CogCore::Debug<const char *>("\n");
+#endif
 
-  CogCore::Debug<const char *>("Device 2 Address: ");
+  CogCore::Debug<const char *>("Address of Device Down Stream Device ");
+  CogCore::Debug<int>(lastIndex);
+  CogCore::Debug<const char *>("\n");
   printAddress(postStackThermometer);
   CogCore::Debug<const char *>("\n");
 
   // set the resolution to 9 bit
   sensors.setResolution(postHeaterThermometer, TEMPERATURE_PRECISION);
+#ifdef USE_THREE_TC_CONFIG
   sensors.setResolution(postGetterThermometer, TEMPERATURE_PRECISION);
+#endif
   sensors.setResolution(postStackThermometer, TEMPERATURE_PRECISION);
 
   CogCore::Debug<const char *>("Device 0 Resolution: ");
   CogCore::Debug<uint32_t>(sensors.getResolution(postHeaterThermometer));
   CogCore::Debug<const char *>("\n");
 
+#ifdef USE_THREE_TC_CONFIG
   CogCore::Debug<const char *>("Device 1 Resolution: ");
   CogCore::Debug<uint32_t>(sensors.getResolution(postGetterThermometer));
   CogCore::Debug<const char *>("\n");
+#endif
 
   CogCore::Debug<const char *>("Device 2 Resolution: ");
   CogCore::Debug<uint32_t>(sensors.getResolution(postStackThermometer));
@@ -185,7 +205,12 @@ namespace Temperature {
       tempC = this->sensors.getTempC(postHeaterThermometer);
       break;
     case 1:
+
+#ifdef USE_THREE_TC_
       tempC = this->sensors.getTempC(postGetterThermometer);
+#else
+      tempC = this->sensors.getTempC(postStackThermometer);
+#endif
       break;
     case 2:
       tempC = this->sensors.getTempC(postStackThermometer);
