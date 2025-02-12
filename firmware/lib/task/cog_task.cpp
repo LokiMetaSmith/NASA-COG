@@ -78,14 +78,18 @@ namespace CogApp
     return (COG_HAL *) (getConfig()->hal);
   }
 
-  float CogTask::getTemperatureReadingA_C() {
-    return getConfig()->report->post_heater_C;
+  float CogTask::getTemperatureReadingUpStream_C() {
+    float upStream;
+#ifdef USE_THREE_TC_CONFIG
+    upStream = getConfig()->report->post_heater_C + getConfig()->report->post_getter_C;
+#else
+    upStream = getConfig()->report->post_heater_C;
+#endif
+    return upStream;
   }
-  float CogTask::getTemperatureReadingB_C() {
-    return getConfig()->report->post_getter_C;
-  }
-  float CogTask::getTemperatureReadingC_C() {
-    return getConfig()->report->post_stack_C;
+  float CogTask::getTemperatureReadingDnStream_C() {
+    float dnStream =  getConfig()->report->post_heater_C;
+    return dnStream;
   }
 
   // I am currently in the process of implementing the "One-Button Algorithm".
@@ -119,7 +123,7 @@ namespace CogApp
     return min(w,targetTotalWattage);
   }
 
-  float CogTask::computeFanSpeedTarget(float currentTargetTemp, float temp, float heaterWatts,float A, float B, float C) {
+  float CogTask::computeFanSpeedTarget(float currentTargetTemp, float temp, float heaterWatts, float B, float C) {
     // const bool NEW_STRATEGY = true;
     // The NEW_STRATEGY is based on learnings that we have to adjust the fan dynamically.
     // The idea is to adjust the fan between three values: MIN, MAX, and PREFERRED.
@@ -303,9 +307,8 @@ namespace CogApp
   }
 
   void CogTask::oneButtonAlgorithm(MachineState ms, float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p) {
-    const float A = getTemperatureReadingA_C();
-    const float B = getTemperatureReadingB_C();
-    const float C = getTemperatureReadingC_C();
+    const float B = getTemperatureReadingUpStream_C();
+    const float C = getTemperatureReadingDnStream_C();
 
     const float T_c = (B+C) / 2.0;
     const float T_k = T_c + 273.15;
@@ -322,7 +325,7 @@ namespace CogApp
                 c.pause_substate = 1;
                 c.current_pause_began = time;
                 CogCore::Debug<const char *>("PAUSING! X and temp:");
-                CogCore::Debug<float>(A);
+                CogCore::Debug<float>(B);
             } else {
               if (time < c.current_pause_began) { // ROLLOVER EVENT
                 c.current_pause_began = 0;
@@ -349,11 +352,12 @@ namespace CogApp
     }
 
 
-    totalWattage_w = computeTotalWattage(A);
+    totalWattage_w = computeTotalWattage(B);
     const float cur_heater_w = getConfig()->CURRENT_HEATER_WATTAGE_W;
+
     const float sw = computeTargetStackWattage(totalWattage_w,
                                                cur_heater_w,
-                                               A,B,C,
+                                               B,B,C,
                                                getConfig()->CURRENT_STACK_WATTAGE_W);
 
 
@@ -432,7 +436,7 @@ namespace CogApp
                           min(totalWattage_w - stackWattage_w,
                               getConfig()->HEATER_MAXIMUM_WATTAGE));
 
-    fanSpeed_p = computeFanSpeedTarget(getConfig()->SETPOINT_TEMP_C, A, heaterWattage_w,A,B,C);
+    fanSpeed_p = computeFanSpeedTarget(getConfig()->SETPOINT_TEMP_C, B, heaterWattage_w,B,C);
 
   }
 
@@ -462,9 +466,8 @@ namespace CogApp
     c.S_p = min(max(0.0,c.S_p),100.0);
 
     MachineState ms = getConfig()->ms;
-    if (ms != NormalOperation && ms != Cooldown) {
-      if (c.pause_substate == 0) {
-        // Is this using the correct variables?
+    if (ms != NormalOperation) {
+      if (c.pause_substate == 0 || (ms == Cooldown)) {
         float diff = getConfig()->TARGET_TEMP_C - getConfig()->SETPOINT_TEMP_C;
         // Here I am trying to make sure we don't raise the SETPOINT_TEMP_C past our target
         // or lower it past our target.
@@ -482,7 +485,7 @@ namespace CogApp
       } else {
         CogCore::DebugLn<const char *>("PAUSED!");
       }
-    } else {
+    } else { // TODO: I am confused by this.
       getConfig()->SETPOINT_TEMP_C = getConfig()->TARGET_TEMP_C;
     }
     c.W_w = max(c.W_w,0);
@@ -615,13 +618,13 @@ namespace CogApp
 
         // I now suspect that the proper action here is actually to do a controlled
         // cooldown.
-        if (!evaluateHeaterEnvelope(getTemperatureReadingA_C(),
+        if (!evaluateHeaterEnvelope(getTemperatureReadingUpStream_C(),
                                     getConfig()->SETPOINT_TEMP_C,
                                     getConfig()->report->heater_duty_cycle)){
           if (DEBUG_LEVEL > 1) CogCore::Debug<const char *>("TESTING ENVELOPE\n");
           if (DEBUG_LEVEL > 1) {
             CogCore::Debug<const char *>("TEMP BOUND EXCEEDED\n");
-            CogCore::Debug<float>(abs(getConfig()->SETPOINT_TEMP_C - getTemperatureReadingA_C()));
+            CogCore::Debug<float>(abs(getConfig()->SETPOINT_TEMP_C - getTemperatureReadingUpStream_C()));
             CogCore::Debug<const char *>("\n");
           }
           CogCore::DebugLn<const char *>("Heater Fault Present");
@@ -709,9 +712,9 @@ namespace CogApp
     } else if ((ms == Warmup) || (ms == Cooldown)) {
       ls = LED_STATUS::BLINKING;
     }
+
+    CogCore::Debug<const char *>("Calling setStatusLED\n ");
     getHAL()->panel->setStatusLEDfromState(ls);
-
-
 
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");
@@ -938,7 +941,7 @@ namespace CogApp
 
   void CogTask::_updateCOGSpecificComponents() {
 
-      float t = getTemperatureReadingA_C();
+      float t = getTemperatureReadingUpStream_C();
       float a = computeAmperage(t);
       // TODO: t is not used here, and it should be removed to clarify it...
       float fs = getFanSpeed(t);
@@ -972,7 +975,7 @@ namespace CogApp
   MachineState CogTask::_updatePowerComponentsWarmup() {
     MachineState new_ms = Warmup;
 
-    float t = getTemperatureReadingA_C();
+    float t = getTemperatureReadingUpStream_C();
     getConfig()->GLOBAL_RECENT_TEMP = t;
 
     // if we've reached operating temperature, we switch
@@ -999,7 +1002,7 @@ namespace CogApp
     if (DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Cooldown Mode!\n");
     }
-    float t = getTemperatureReadingA_C();
+    float t = getTemperatureReadingUpStream_C();
     getConfig()->GLOBAL_RECENT_TEMP = t;
 
     if (t <= getConfig()->TARGET_TEMP_C) {
@@ -1020,7 +1023,6 @@ namespace CogApp
     CogCore::Debug<const char *>("IN IDLE FUNCTION\n ");
     MachineState new_ms = NormalOperation;
     getConfig()->idleOrOperate = Idle;
-    //    _updateStackVoltage(MachineConfig::IDLE_STACK_VOLTAGE);
     _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
     return new_ms;
   }
@@ -1029,8 +1031,6 @@ namespace CogApp
   // I think we can shift to the off conditions.
   MachineState CogTask::_updatePowerComponentsCriticalFault() {
     MachineState new_ms = OffUserAck;
-    //    _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
-    //    _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
     turnOff();
     logRecorderTask->dumpRecords();
     // Although debatable, we want to clear all the erorrs when
@@ -1046,8 +1046,6 @@ namespace CogApp
   }
   MachineState CogTask::_updatePowerComponentsOffUserAck() {
     MachineState new_ms = OffUserAck;
-    //    _updateStackVoltage(MachineConfig::MIN_OPERATING_STACK_VOLTAGE);
-    //    _updateStackAmperage(MachineConfig::MIN_OPERATING_STACK_AMPERAGE);
 
     // We need to be sure we are off in all of the Off states...
     turnOff();
