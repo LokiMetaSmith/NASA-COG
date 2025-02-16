@@ -222,7 +222,6 @@ namespace CogApp
   }
 
   void StateMachineManager::turnOff() {
-    //    heaterPIDTask->shutHeaterDown();
   }
 
   void StateMachineManager::turnOffPowerButDoNotChangeState() {
@@ -234,6 +233,7 @@ namespace CogApp
   // if we change the targetTemp, we will enter either
   // Warmup or Cooldown, with new values.
   void StateMachineManager::transitionToWarmup(float recent) {
+     CogCore::Debug<const char *>("Transition to Warmup!\n");
     getConfig()->previous_ms = getConfig()->ms;
     getConfig()->ms = Warmup;
     getConfig()->WARM_UP_BEGIN_TEMP = recent;
@@ -265,6 +265,32 @@ namespace CogApp
     } else {
       // no change needed
     }
+  }
+
+  void StateMachineManager::changeToOperatingTemp() {
+    MachineConfig *mc = getConfig();
+
+    float t = getConfig()->OPERATING_TEMPERATURE_C;
+    float tt = min(mc->BOUND_MAX_TEMP,t);
+    tt = max(mc->BOUND_MIN_TEMP,tt);
+
+    mc->TARGET_TEMP_C = tt;
+    mc->report->target_temp_C = tt;
+    float current = mc->GLOBAL_RECENT_TEMP;
+    transitionToWarmup(current);
+  }
+
+  void StateMachineManager::changeToRoomTemp() {
+    MachineConfig *mc = getConfig();
+
+    float t = getConfig()->TARGET_TEMP_WHEN_OFF_C;
+    float tt = min(mc->BOUND_MAX_TEMP,t);
+    tt = max(mc->BOUND_MIN_TEMP,tt);
+
+    mc->TARGET_TEMP_C = tt;
+    mc->report->target_temp_C = tt;
+    float current = mc->GLOBAL_RECENT_TEMP;
+    transitionToCooldown(current);
   }
 
 

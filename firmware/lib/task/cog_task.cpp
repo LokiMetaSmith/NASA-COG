@@ -716,6 +716,52 @@ namespace CogApp
     CogCore::Debug<const char *>("Calling setStatusLED\n ");
     getHAL()->panel->setStatusLEDfromState(ls);
 
+    CogCore::Debug<int>(getHAL()->panel->isSwitchOn());
+    CogCore::Debug<const char *>("\n");
+
+    if (getHAL()->panel->isSwitchOn()) {
+      if (!(ms == NormalOperation || ms == Warmup || ms == Cooldown || ms == AwaitingPower)) {
+        CogCore::Debug<const char *>("Entering Warmup because of button!\n");
+        if (getConfig()->OPERATING_TEMPERATURE_C < getConfig()->SAFETY_COOL_TEMPERATURE_C) {
+          CogCore::Debug<const char *>("Switch on, but Target less than SAFETY_COOL_TEMPERATURE_C\n");
+        } else {
+          ms = Warmup;
+          getConfig()->clearErrors();
+          turnOn();
+          this->StateMachineManager::changeToOperatingTemp();
+        }
+      }
+      // Now treat a change of the switch as an acknowledgement...
+      if (getConfig()->panelSwitchState == false && ms == OffUserAck) {
+        ms = Off;
+      }
+      getConfig()->panelSwitchState = true;
+    } else {
+      CogCore::Debug<const char *>("Switch is off: State: ");
+      CogCore::DebugLn<int>(ms);
+      CogCore::Debug<const char *>("\n");
+      if ((ms == NormalOperation || ms == Warmup || ms == Cooldown || ms == AwaitingPower)) {
+        if ((getConfig()->TARGET_TEMP_C > getConfig()->SAFETY_COOL_TEMPERATURE_C)) {
+          CogCore::Debug<const char *>("Entering Cooldown because of button!\n");
+          ms = Cooldown;
+          this->StateMachineManager::changeToRoomTemp();
+        }
+      }
+      // Now treat a change of the switch as an acknowledgement...
+      if (getConfig()->panelSwitchState == true && ms == OffUserAck) {
+        ms = Off;
+      }
+      getConfig()->panelSwitchState = false;
+    }
+
+    // Now we do a final piece of logic... if we are in Cooldown
+    // and the setpoint is < than the SAFETY_COOL_TEMPERATURE, we turn off.
+    if (((ms == NormalOperation) || (ms == Cooldown)) && (getConfig()->TARGET_TEMP_C < getConfig()->SAFETY_COOL_TEMPERATURE_C)) {
+      CogCore::Debug<const char *>("Turning off becuase Target is less than SAFETY_COOL_TEMPERATURE_C ");
+      ms = Off;
+      turnOff();
+    }
+
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("AFTER RUN GENERIC!");
     }
@@ -841,7 +887,7 @@ namespace CogApp
     }
     turnOffPowerButDoNotChangeState();
     // Although after a minute this should turn off, we want
-    // to do it immediately
+    // to do it immediatelys
     StateMachineManager::turnOff();
   }
 
@@ -981,11 +1027,14 @@ namespace CogApp
     // if we've reached operating temperature, we switch
     // states
     if (t >= getConfig()->TARGET_TEMP_C) {
-      new_ms = NormalOperation;
+      if ((getConfig()->TARGET_TEMP_C > getConfig()->SAFETY_COOL_TEMPERATURE_C)) {
+        new_ms = NormalOperation;
+      } else {
+        new_ms = Off;
+      }
       return new_ms;
     }
 
-    //    new_ms = StateMachineManager::_updatePowerComponentsWarmup();
     if (getConfig()->USE_ONE_BUTTON) {
       runOneButtonAlgorithm(new_ms);
     } else {
@@ -1006,7 +1055,11 @@ namespace CogApp
     getConfig()->GLOBAL_RECENT_TEMP = t;
 
     if (t <= getConfig()->TARGET_TEMP_C) {
-      new_ms = NormalOperation;
+      if ((getConfig()->TARGET_TEMP_C > getConfig()->SAFETY_COOL_TEMPERATURE_C)) {
+        new_ms = NormalOperation;
+      } else {
+        new_ms = Off;
+      }
       return new_ms;
     }
     if (getConfig()->USE_ONE_BUTTON) {

@@ -88,6 +88,7 @@ public:
   CriticalError errors[NUM_CRITICAL_ERROR_DEFINITIONS];
   void change_ramp(float ramp);
 
+  bool panelSwitchState = false; // false == off
 
   // TEST CONFIGURATION PARAMETERS
   // ALL OF THESE COULD BE CONFIGURABLE, BUT FOR THIS TEST
@@ -104,7 +105,8 @@ public:
   // two numbers
   float RAMP_UP_TARGET_D_MIN = 0.5; // R (degrees C per minute)
   float RAMP_DN_TARGET_D_MIN = -0.5; // R (degrees C per minute)
-    float TARGET_TEMP_C = 30.0; // This is the goal target
+  float TARGET_TEMP_C = 30.0; // This is the goal target
+  const float TARGET_TEMP_WHEN_OFF_C = 30.0;
 
   float MAX_AMPERAGE = 30.0; // A (Amperes)
   float MAX_STACK_WATTAGE = 250.0; // W (Wattage)
@@ -258,7 +260,9 @@ public:
   const float MAX_STACK_VOLTAGE = 12.0;
 
   // This is the most important parameter!
-  static constexpr float OPERATING_TEMPERATURE_C = 750.0;
+  //  static constexpr float OPERATING_TEMPERATURE_C = 750.0;
+  // This is temporary...
+  static constexpr float OPERATING_TEMPERATURE_C = 300.0;
 
   // You may have to adjust these based on altitude;
   // if the air is thin, the fan can over-spin, and
@@ -334,6 +338,7 @@ public:
 
   // The "heartbeat" on the OEDCS v.1.1 is both a red LED and PIN 13.
   static const int INIT_HEARTBEAT_PERIOD_MS = 500; // heartbeat task period
+  static const int INIT_PANEL_BLINK_PERIOD_MS = 500; // heartbeat task period
 
   // The is the basic recording of values in "emergency logging mode"
   static const int INIT_LOG_RECORDER_PERIOD_MS = 1000;

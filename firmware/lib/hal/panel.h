@@ -29,8 +29,12 @@ enum class LED_STATUS {
 
 class FrontPanel {
  public:
+  LED_STATUS status;
   void init();
+  bool isSwitchOn();
   void setFaultLED(bool onOrOff);
+  bool isStatusLEDOnOrOff();
+  LED_STATUS getStatusLEDStatus();
   void setStatusLED(bool onOrOff);
   void setStatusLEDfromState(LED_STATUS ms);
 };
