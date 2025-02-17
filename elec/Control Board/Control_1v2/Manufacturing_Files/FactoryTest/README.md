@@ -1,7 +1,7 @@
 # Factory Test Plan, Control V1.2, Printed Wiring Assembly
 Journal of tests for assemblies of January 2025.  
 PCB assembly by JLCPCB with some finish work in Maryville TN.  
-Fiffteen Assemblies assigned SN 15-30.  
+Fiffteen Assemblies assigned SN 16-30.  
 
 Notes made in issue #TBD during the development of this test plan.
 
@@ -16,8 +16,10 @@ Arduino Sketches:
 
 ## Test Procedure
 ### Before Test, Finish Assembly
-Install on these units the feed through headers for the Due connections which make this assembly become a shield for a Due.
-Color the connector J11, +12VIn red with a sharpie.
+
+1. Install on these units the feed through headers for the Due connections which make this assembly become a shield for a Due.
+2. Install PolyFuse F801 near the relay.  ![image](https://github.com/user-attachments/assets/339f6acd-438f-4da2-925a-ca8c99533dc1)
+3. Color the connector J11, +12VIn red with a sharpie.
 
 
 ### Unpowered Test of PWA.
