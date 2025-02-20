@@ -1,26 +1,24 @@
 /* Program: DueWithThreeSSRs
-  Tests the three SSR drive circuits on the Control V1.1 assembly
+  Tests the three SSR drive circuits on the Control V1.2 assembly
   Tests the SHUT DOWN switch
-  Tests BigTreeTech MINI 12864 Rotary Encoder and switch
   Tests four power supplies, 24V, 12V, AUX1 and AUX2.
   Setup:
-  Connect an LED with series resistor at J13, J30 and J31.
-  Pin 1 is positive and Pin 2 is ground.
+  Connect the +12V batter to TBD.
+  Connect the progrmable current supply at J10
+  Connect an LED with series resistor at J13, J30 and J31. Pin 1 is positive and Pin 2 is ground.
   Series resistor should limit current from +24V for LED.
   SSR1 and SSR2 flash independently.
   Press switch S2, "SHUT DOWN" to turn on the SSR3 LED.
-  Press the BigTreeTech MINI 12864 Rotary Encoder switch and hear buzzer
-  Rotate the BigTreeTech MINI 12864 Rotary Encoder and see the text message about position and direction.
   Ethernet link status reported on serial monitor.
   Read voltages and display during setup before the long power supply setup.
   Note the power supply test takes about 38 seconds.
 */
 
 #define COMPANY_NAME "pubinv.org "
-//#define PROG_NAME "OEDCS_Factory_Test"
-#define PROG_NAME "DueWithThreeSSRs"
-#define VERSION ";_Rev_0.8" //Enable power supply test during setup()
-#define DEVICE_UNDER_TEST "Hardware:_Control_V1.1"  //A model number
+#define PROG_NAME "OEDCS_Factory_Test V1.2"
+//#define PROG_NAME "DueWithThreeSSRs"
+#define VERSION ";_Rev_0.1" //Enable power supply test during setup()
+#define DEVICE_UNDER_TEST "Hardware:_Control_V1.2"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
 #define BAUD_RATE 115200
@@ -28,22 +26,19 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
+//#include <RotaryEncoder.h>
+//#include <U8g2lib.h>
+//#include <Adafruit_NeoPixel.h>
 
-
-#include <RotaryEncoder.h>
-#include <U8g2lib.h>
-
-
-#include <Adafruit_NeoPixel.h>
-
-#define NEOPIX_DIN 43
-#define NUMPIXELS 3
-Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIX_DIN, NEO_RGB + NEO_KHZ400);
+//#define NEOPIX_DIN 43
+//#define NUMPIXELS 3
+//Adafruit_NeoPixel pixels(NUMPIXELS, NEOPIX_DIN, NEO_RGB + NEO_KHZ400);
 
 //Name the pins from the Due
-#define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
-#define DISPLAY_DC 47 //display data / command line, keep high for display cs control
-#define DISPLAY_RESET 46 // display reset, keep high or don't care
+//#define DISPLAY_CS 48 // display LOW->Enabled, HIGH->Disabled
+//#define DISPLAY_DC 47 //display data / command line, keep high for display cs control
+//#define DISPLAY_RESET 46 // display reset, keep high or don't care
+
 #define ETHERNET_CS 10//HIGH->Enabled, LOW->Disabled
 int link_status;
 
@@ -51,33 +46,33 @@ long previousLinkMillis = 0;
 const long LINK_TIME = 1500 ; // One and 1/2 second.
 
 // OLED Display
-U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET); //Rotation 180
+//U8G2_ST7567_JLX12864_F_4W_HW_SPI u8g2(U8G2_R2, /* cs=*/ DISPLAY_CS, /* dc=*/ DISPLAY_DC, /* reset=*/ DISPLAY_RESET); //Rotation 180
 
-//Display link status
-void reportLAN_DisplayUnknown(void) {
-  u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
-  u8g2.setFontMode(0);
-  u8g2.setCursor(0, 41);
-  u8g2.print(F("Link: Unknown?"));
-  u8g2.sendBuffer();
-}//end unknown
+// //Display link status
+// void reportLAN_DisplayUnknown(void) {
+//   u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
+//   u8g2.setFontMode(0);
+//   u8g2.setCursor(0, 41);
+//   u8g2.print(F("Link: Unknown?"));
+//   u8g2.sendBuffer();
+// }//end unknown
 
-void reportLAN_DisplayOn(void) {
-  u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
-  u8g2.setFontMode(0);
-  u8g2.setCursor(0, 41);
-  u8g2.print(F("Link: On           "));
-  u8g2.sendBuffer();
-}//end On
+// void reportLAN_DisplayOn(void) {
+//   u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
+//   u8g2.setFontMode(0);
+//   u8g2.setCursor(0, 41);
+//   u8g2.print(F("Link: On           "));
+//   u8g2.sendBuffer();
+// }//end On
 
 
-void reportLAN_DisplayOff(void) {
-  u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
-  u8g2.setFontMode(0);
-  u8g2.setCursor(0, 41);
-  u8g2.print(F("Link: Off         "));
-  u8g2.sendBuffer();
-}//end Off
+// void reportLAN_DisplayOff(void) {
+//   u8g2.setFont(u8g2_font_6x10_mf); //Small, Not transparent font
+//   u8g2.setFontMode(0);
+//   u8g2.setCursor(0, 41);
+//   u8g2.print(F("Link: Off         "));
+//   u8g2.sendBuffer();
+// }//end Off
 
 
 //Check power supplies. Reports status on serial port, OLED display.
@@ -123,30 +118,30 @@ class PowerSense
         Serial.print(": ");  //
         Serial.println(voltage);  // RAW Read of the ADC
 
-        digitalWrite(DISPLAY_CS, LOW);       // select Display mode
-        //Update OLED display
-        u8g2.setFont(u8g2_font_6x10_mf); //Not transparent font
-        u8g2.setFontMode(0);
-        u8g2.setCursor(my_offsetX, my_offsetY);
-        u8g2.print("               ");
-        u8g2.sendBuffer();
-        switch (link_status) {
-          case Unknown:
-            reportLAN_DisplayUnknown();
-            break;
-          case LinkON:
-            reportLAN_DisplayOn();
-            break;
-          case LinkOFF:
-            reportLAN_DisplayOff();
-            break;
-        }
-        u8g2.setCursor(my_offsetX, my_offsetY);
-        u8g2.print(my_pinName);
-        u8g2.print(voltage);
-        u8g2.sendBuffer();
-        digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
-        digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+        // digitalWrite(DISPLAY_CS, LOW);       // select Display mode
+        // //Update OLED display
+        // u8g2.setFont(u8g2_font_6x10_mf); //Not transparent font
+        // u8g2.setFontMode(0);
+        // u8g2.setCursor(my_offsetX, my_offsetY);
+        // u8g2.print("               ");
+        // u8g2.sendBuffer();
+        // switch (link_status) {
+        //   case Unknown:
+        //     reportLAN_DisplayUnknown();
+        //     break;
+        //   case LinkON:
+        //     reportLAN_DisplayOn();
+        //     break;
+        //   case LinkOFF:
+        //     reportLAN_DisplayOff();
+        //     break;
+        // }
+        // u8g2.setCursor(my_offsetX, my_offsetY);
+        // u8g2.print(my_pinName);
+        // u8g2.print(voltage);
+        // u8g2.sendBuffer();
+        // digitalWrite(DISPLAY_CS, HIGH);       // deselect Display mode
+        // digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
       }
     }
 };//end PowersSense
@@ -257,8 +252,8 @@ PowerSense SENSE_AUX2("AUX2 ", 6, 2000, 10000, 14700, 64, 60); //Read A6 R126, R
 #define PS2_EN 8
 
 
-// Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
-RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
+// // Setup a RotaryEncoder with 2 steps per latch for the 2 signal input pins:
+// RotaryEncoder encoder(PIN_IN1, PIN_IN2, RotaryEncoder::LatchMode::TWO03);
 
 
 //Flasher to exercise the SSRs pins and the Building LED.
@@ -279,18 +274,18 @@ void updateSHUTDOWN() {
   }
 }//end update shutdown button
 
-//Check for encoder button pressed and return true
-bool updateENC_BUT() {
-  if (digitalRead(ENC_SW) == LOW) {
-    Serial.println("ENC pressed");
-    digitalWrite(SSR3, LOW);
-    digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
-    return true; //Reset the position
-  } else {
-    digitalWrite(SSR3, HIGH);
-    return false;
-  }
-}//end update shutdown button
+// //Check for encoder button pressed and return true
+// bool updateENC_BUT() {
+//   if (digitalRead(ENC_SW) == LOW) {
+//     Serial.println("ENC pressed");
+//     digitalWrite(SSR3, LOW);
+//     digitalWrite(BEEPER, !digitalRead(BEEPER));  //Make some sound
+//     return true; //Reset the position
+//   } else {
+//     digitalWrite(SSR3, HIGH);
+//     return false;
+//   }
+// }//end update shutdown button
 
 
 bool updatePowerMonitor(void) {
@@ -685,14 +680,16 @@ void setup() {
   pinMode(ETHERNET_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
   digitalWrite(ETHERNET_CS, HIGH);
   pinMode(4, OUTPUT);      // On the Ethernet Shield, CS is pin 4
-  pinMode(DISPLAY_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
-  pinMode(DISPLAY_DC, OUTPUT);
-  pinMode(DISPLAY_RESET, OUTPUT);
-  digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
-  digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
-  digitalWrite(DISPLAY_RESET, HIGH);
+
+  // pinMode(DISPLAY_CS, OUTPUT);    // make sure that the default chip select pin is set to output, even if you don't use it:
+  // pinMode(DISPLAY_DC, OUTPUT);
+  // pinMode(DISPLAY_RESET, OUTPUT);
+  // digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+  // digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+  // digitalWrite(DISPLAY_RESET, HIGH);
+  //pinMode(ENC_SW, INPUT_PULLUP);
+  
   pinMode(SHUT_DOWN, INPUT_PULLUP);
-  pinMode(ENC_SW, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
   pinMode(BEEPER, OUTPUT);
   pinMode(BLOWER_ENABLE, OUTPUT);
@@ -705,13 +702,13 @@ void setup() {
   digitalWrite(PS2_EN, HIGH); //Set high to enable PS2
   // You can use Ethernet.init(pin) to configure the CS pin
   Ethernet.init(ETHERNET_CS);  // Most Arduino shields
-  setupBacklights(); //Setup the neopixels
-
-  digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
-  digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
-  setupu8g2(); //Setup the graphics display
-  digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
-  digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+  
+  // setupBacklights(); //Setup the neopixels
+  // digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+  // digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+  // setupu8g2(); //Setup the graphics display
+  // digitalWrite(DISPLAY_CS, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
+  // digitalWrite(DISPLAY_DC, HIGH);   // turn the CS on (HIGH is the logic level and is normally held high)
 
   SENSE_24V.Update(); //Read A1 every two seconds.
   SENSE_12V.Update(); //Read A2 every two seconds.
@@ -727,15 +724,16 @@ void setup() {
 
 void loop() {
   static int pos = 0;
-  encoder.tick();
-  int newPos = encoder.getPosition();
-  if (pos != newPos) {
-    Serial.print("pos:");
-    Serial.print(newPos);
-    Serial.print(" dir:");
-    Serial.println((int)(encoder.getDirection()));
-    pos = newPos;
-  } // if
+
+//  encoder.tick(); 
+  // int newPos = encoder.getPosition();
+  // if (pos != newPos) {
+  //   Serial.print("pos:");
+  //   Serial.print(newPos);
+  //   Serial.print(" dir:");
+  //   Serial.println((int)(encoder.getDirection()));
+  //   pos = newPos;
+  // } // if
 
   led0.Update();
   led1.Update();  //cannot be used on systems with a stack
@@ -748,10 +746,11 @@ void loop() {
 
   updateSHUTDOWN(); //Check for press of switch
 
-  if (updateENC_BUT()) { //Check encoder, zero if button pressed
-    pos = 0;
-    encoder.setPosition(0);
-  }
+  // if (updateENC_BUT()) { //Check encoder, zero if button pressed
+  //   pos = 0;
+  //   encoder.setPosition(0);
+  // }
+
   UpdateEthernet();
   if (!updatePowerMonitor()) {
     ;
