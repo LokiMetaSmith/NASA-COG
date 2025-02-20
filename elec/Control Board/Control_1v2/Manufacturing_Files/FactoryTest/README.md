@@ -9,6 +9,8 @@ Notes made in issue #TBD during the development of this test plan.
 12V power supply with current monitor. Color the plug Red. 
 Multi meter to measure voltage and resistance.  (Actual Multimeter (EMCO DMR-3800) )  
 PC with Arduino IDE to connect to USB programing port of Due  
+![image](https://github.com/user-attachments/assets/a4672b03-30f1-4d7a-87e9-0666e32118ae)
+
 Firmware: https://github.com/PubInv/NASA-MCOG/tree/develop/elec/Control%20Board/Control_1v1/FactoryTest  
 Arduino Sketches: 
 1. DueWithThreeSSRs
