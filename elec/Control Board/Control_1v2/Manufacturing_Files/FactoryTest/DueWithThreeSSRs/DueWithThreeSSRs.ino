@@ -17,7 +17,7 @@
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS_Factory_Test V1.2"
 //#define PROG_NAME "DueWithThreeSSRs"
-#define VERSION ";_Rev_0.1" //Enable power supply test during setup()
+#define VERSION ";_Rev_0.2" //Enable power supply test during setup()
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.2"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -51,7 +51,7 @@ class PowerSense
     // Constructor - creates a Flasher
     // and initializes the member variables and state
   public:
-    PowerSense(const String pinName, int pin, long period, float R1 = 40000, float R2 = 4700, int offsetX = 0, int offsetY = 0)
+    PowerSense(const String pinName, int pin, long period, float R1 = 10000, float R2 = 24700, int offsetX = 0, int offsetY = 0)
     {
       ADCinPin = pin;
       previousMillis = millis();
@@ -158,19 +158,20 @@ void UpdateEthernet()
 // Resistive dividers Vin = Vadc*3.3/1032 *(R1+R1)/R2
 //Read every two seconds
 //              Signal name, Pin number, R1, R2, Xoffset, Yoffset
-PowerSense SENSE_24V("+24V ", 1, 2000, 40000, 4700, 0, 50); //Read A1. R101+R105+R106, R102.
-PowerSense SENSE_12V("+12V ", 2, 2000, 40000, 10000, 64, 50); //Read A2. R103+R107+R108, R104.
-PowerSense SENSE_AUX1("AUX1 ", 3, 2000, 10000, 14700, 0, 60); //Read A3. R123, R124+R125.
-PowerSense SENSE_AUX2("AUX2 ", 6, 2000, 10000, 14700, 64, 60); //Read A6 R126, R127+R128.
+//        PowerSense(const String pinName, int pin, long period, float R1 = 10000, float R2 = 24700, int offsetX = 0, int offsetY = 0)
+PowerSense SENSE_24V("+24V ", 1, 10000, 40000, 4700, 0, 50); //Read A1. R101+R105+R106, R102.
+PowerSense SENSE_12V("+12V ", 2, 10000, 40000, 10000, 64, 50); //Read A2. R103+R107+R108, R104.
+PowerSense SENSE_AUX1("AUX1 ", 3, 10000, 10000, 14700, 0, 60); //Read A3. R123, R124+R125.
+PowerSense SENSE_AUX2("AUX2 ", 6, 10000, 10000, 14700, 64, 60); //Read A6 R126, R127+R128.
 
 //Control V1.1 signal pin names
 #define SSR1 51
 #define SSR2 52
 #define SSR3 53
 #define SHUT_DOWN 49
-#define LED_RED 43
-#define LED_BLUE 44
-#define LED_GREEN 45
+// #define LED_RED 43
+// #define LED_BLUE 44
+// #define LED_GREEN 45
 #define nFAN1_PWM 9 // The pin D9 for driving the Blower.
 #define BLOWER_ENABLE 22 // The pin D22 for Enable 24V to the Blower.
 
@@ -185,12 +186,12 @@ Flasher led1(SSR1, 100, 400);    //Pins for Control V1.1
 Flasher led2(SSR2, 350, 350);
 //Flasher led3(SSR3, 150, 350);
 
-//Tests for press of switch, "SHUT DOWN". Buzzes on BigTreeTech MINI 12864
+//Tests for press of switch, "SHUT DOWN". Turns OFF the SSR3 LED
 void updateSHUTDOWN() {
   if (digitalRead(SHUT_DOWN) == LOW) {
     Serial.println("Shutdown button pressed");
     digitalWrite(SSR3, LOW);
-    delay(10);
+    delay(500);
   } else {
     digitalWrite(SSR3, HIGH);
   }
@@ -204,8 +205,8 @@ bool updatePowerMonitor(void) {
   //30K into 4K7
   const long FullScale = 1023;
   const float percentOK = 0.75;
-  const long R1 = 40000;
-  const long R2 = 4700;
+  const long R1 = 10000;
+  const long R2 = 24700;
   const float Vcc = 3.3;
   bool powerIsGood = false;
   int lowThreshold24V = (24 * (R2 / (R1 + R2)) / Vcc) * FullScale * percentOK; //1023 * 3 / 4;
