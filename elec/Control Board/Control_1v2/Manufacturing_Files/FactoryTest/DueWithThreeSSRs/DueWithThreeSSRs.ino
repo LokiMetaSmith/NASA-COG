@@ -16,8 +16,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS_Factory_Test V1.2"
-//#define PROG_NAME "DueWithThreeSSRs"
-#define VERSION ";_Rev_0.2"                         //Enable power supply test during setup()
+#define VERSION ";_Rev_0.3"                         //Enable power supply test during setup()
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.2"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -167,6 +166,11 @@ PowerSense SENSE_AUX2("AUX2 ", 6, 10000, 10000, 14700, 64, 60);  //Read A6 R126,
 #define nFAN1_PWM 9       // The pin D9 for driving the Blower.
 #define BLOWER_ENABLE 22  // The pin D22 for Enable 24V to the Blower.
 
+/*(GPIO HIGH, Battery engaged, GPIO LOW, battery disengaged; when GPIO LOW unit will shut off when front
+power switch is toggled)  */
+#define KEEP_ALIVE 45  // The pin D45 for the control to the relay which when active high connects Standby Battery
+
+
 // Programable Power Supply Enable
 #define PS1_EN 23
 #define PS2_EN 8
@@ -184,11 +188,12 @@ void updateSHUTDOWN() {
     Serial.println("Shutdown button pressed");
     digitalWrite(SSR3, LOW);
     analogWrite(nFAN1_PWM, SET_BLOWER_HIGH);  // Set for high
-    //analogWrite(nFAN1_PWM, 20);  // Set for high
+    digitalWrite(KEEP_ALIVE, HIGH);           // TUrn on Keep Alive.
     delay(500);
   } else {
     digitalWrite(SSR3, HIGH);
     analogWrite(nFAN1_PWM, SET_BLOWER_LOW);  // Set for low
+    digitalWrite(KEEP_ALIVE, LOW);           // TUrn off Keep Alive.
   }
 }  //end update shutdown button
 
@@ -205,7 +210,7 @@ bool updatePowerMonitor(void) {
   const float Vcc = 3.3;
   bool powerIsGood = false;
   //int lowThreshold24V = (24 * (R2 / (R1 + R2)) / Vcc) * FullScale * percentOK;  //1023 * 3 / 4;
-  int lowThreshold24V = (24 * (24700 / (10000 + 24700)) / 3.3) * 1023 * 3/4;  //1023 * 3 / 4;
+  int lowThreshold24V = (24 * (24700 / (10000 + 24700)) / 3.3) * 1023 * 3 / 4;  //1023 * 3 / 4;
   const long POWER_MONITOR_TIME = 2000;
   static long previousPowerMillis = 0;
 
@@ -221,7 +226,7 @@ bool updatePowerMonitor(void) {
       Serial.println("Bad 24V power");
       powerIsGood = false;
       return false;
-    } 
+    }
   }
 }
 class PSU {
@@ -593,6 +598,9 @@ void setup() {
   // You can use Ethernet.init(pin) to configure the CS pin
   Ethernet.init(ETHERNET_CS);  // Most Arduino shields
 
+  pinMode(KEEP_ALIVE, OUTPUT);
+  digitalWrite(KEEP_ALIVE, LOW);  // TUrn off Keep Alive.
+
   SENSE_24V.Update();   //Read A1 every two seconds.
   SENSE_12V.Update();   //Read A2 every two seconds.
   SENSE_AUX1.Update();  //Read A3 every two seconds.
@@ -622,7 +630,7 @@ void loop() {
   UpdateEthernet();
 
   if (!updatePowerMonitor()) {
-//    Serial.println("Bad power");
+    //    Serial.println("Bad power");
     ;
   }
 
