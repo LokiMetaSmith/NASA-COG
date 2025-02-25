@@ -1,7 +1,7 @@
 # Factory Test Plan, Control V1.2, Printed Wiring Assembly
 Journal of tests for assemblies of January 2025.  
 PCB assembly by JLCPCB with some finish work in Maryville TN.  
-Fiffteen Assemblies assigned SN 15-30.  
+Fiffteen Assemblies assigned SN 16-30.  
 
 Notes made in issue #TBD during the development of this test plan.
 
@@ -9,6 +9,8 @@ Notes made in issue #TBD during the development of this test plan.
 12V power supply with current monitor. Color the plug Red. 
 Multi meter to measure voltage and resistance.  (Actual Multimeter (EMCO DMR-3800) )  
 PC with Arduino IDE to connect to USB programing port of Due  
+![image](https://github.com/user-attachments/assets/a4672b03-30f1-4d7a-87e9-0666e32118ae)
+
 Firmware: https://github.com/PubInv/NASA-MCOG/tree/develop/elec/Control%20Board/Control_1v1/FactoryTest  
 Arduino Sketches: 
 1. DueWithThreeSSRs
@@ -16,11 +18,17 @@ Arduino Sketches:
 
 ## Test Procedure
 ### Before Test, Finish Assembly
-Install on these units the feed through headers for the Due connections which make this assembly become a shield for a Due.
-Color the connector J11, +12VIn red with a sharpie.
+
+1. Color the connector J11, +12VIn red with a sharpie.
+2. Install PolyFuse F801 near the relay.  ![image](https://github.com/user-attachments/assets/339f6acd-438f-4da2-925a-ca8c99533dc1)
+3. Add an new resistor R186 a 10K on D42. ![image](https://github.com/user-attachments/assets/4bda4713-b8a1-43a6-a2e8-ea4b3a86b847) from J8 pin 24 5o pin 30 (GND), ![image](https://github.com/user-attachments/assets/7586917d-1c07-479e-9c7b-e52c6a60cb8c)
+4. DO NOT INSTALL DUE AT THIS TIME, but do install stackable (feed through) headers for the Due connections which make this assembly become a shield for a Due.
+
+Time: Steps 1-4 took 26 minutes on the second board. Fourth board took 20 minutes.
 
 
 ### Unpowered Test of PWA.
+To prevent possible damage to units and test equipment, **before** adding power to the assembly make the following tests.
 
 Summary and data capture table
 

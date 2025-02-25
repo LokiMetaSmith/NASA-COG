@@ -37,6 +37,8 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #endif
 
 
+#define MISSING_TC_SENTINEL -999.0
+
 class MachineHAL {
 public:
 

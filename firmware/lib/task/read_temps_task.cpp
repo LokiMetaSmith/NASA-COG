@@ -249,6 +249,11 @@ void ReadTempsTask::updateTemperatures() {
   // Sometimes we get a data read error, that comes across
   // as -127.00. In that case, we will leave the
   // value unchanged from the last read.
+
+
+
+    // TODO: the use of fixed indices here are terrible.
+    // This should be fixed by Issue #63.
   int post_rv;
   float postHeaterTemp = evaluateThermocoupleRead(0,POST_HEATER_TC_BAD,post_rv);
 
@@ -265,6 +270,7 @@ void ReadTempsTask::updateTemperatures() {
     bad_temp_reads_heater++;
   }
 
+#ifdef USE_THREE_TC_CONFIG
   float postGetterTemp = evaluateThermocoupleRead(2,POST_GETTER_TC_BAD,post_rv);
   //_temperatureSensors[0].GetTemperature(2);
   if (postGetterTemp > 0.0) {
@@ -276,8 +282,12 @@ void ReadTempsTask::updateTemperatures() {
     //bad_temp_reads++;
     bad_temp_reads_getter++;
   }
+#else
+  getConfig()->report->post_getter_C = MISSING_TC_SENTINEL;
+#endif
 
   float postStackTemp = evaluateThermocoupleRead(1,POST_STACK_TC_BAD,post_rv);
+  //  float postStackTemp = evaluateThermocoupleRead(1,POST_STACK_TC_BAD,post_rv);
   // _temperatureSensors[0].GetTemperature(1);
   if (postStackTemp > 0.0) {
     getConfig()->report->post_stack_C = postStackTemp;
@@ -291,13 +301,17 @@ void ReadTempsTask::updateTemperatures() {
     CogCore::Debug<const char *>("BBBB\n");
   // Add the OVER TEMPERATURE checks here.
   if ((postHeaterTemp > MachineConfig::OVER_TEMPERATURE_C) ||
+#ifdef USE_THREE_TC_CONFIG
       (postGetterTemp > MachineConfig::OVER_TEMPERATURE_C) ||
+#endif
       (postStackTemp > MachineConfig::OVER_TEMPERATURE_C)) {
       if (!getConfig()->errors[SYSTEM_OVER_TEMPERATURE].fault_present) {
         CogCore::Debug<const char *>("Bad  Temp Reads:");
         CogCore::Debug<unsigned long>(bad_temp_reads_heater);
         CogCore::Debug<const char *>(", ");
+ #ifdef USE_THREE_TC_CONFIG
         CogCore::Debug<unsigned long>(bad_temp_reads_getter);
+ #endif
         CogCore::Debug<const char *>(", ");
         CogCore::Debug<unsigned long>(bad_temp_reads_stack);
         CogCore::Debug<const char *>("\n");
@@ -306,9 +320,11 @@ void ReadTempsTask::updateTemperatures() {
         if (postHeaterTemp > MachineConfig::OVER_TEMPERATURE_C) {
           CogCore::Debug<const char *>("THE POST HEATER TEMP IS TOO HIGH\n");
         }
+ #ifdef USE_THREE_TC_CONFIG
         if (postGetterTemp > MachineConfig::OVER_TEMPERATURE_C) {
           CogCore::Debug<const char *>("THE POST GETTER TEMP IS TOO HIGH\n");
         }
+ #endif
         if (postStackTemp > MachineConfig::OVER_TEMPERATURE_C) {
           CogCore::Debug<const char *>("THE POST STACK TEMP IS TOO HIGH\n");
         }

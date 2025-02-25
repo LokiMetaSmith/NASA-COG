@@ -110,9 +110,14 @@ namespace CogApp
     const static int NUM_TEMP_INDICES = 2;
     const static int NUM_FANS = 1;
 
+    /*
     float getTemperatureReadingA_C() override;
     float getTemperatureReadingB_C() override;
     float getTemperatureReadingC_C() override;
+    */
+
+    float getTemperatureReadingUpStream_C();
+    float getTemperatureReadingDnStream_C();
 
     bool doesAnyErrorExist();
     bool evaluateErrorConditions();
@@ -125,7 +130,7 @@ namespace CogApp
     float computeTotalWattage(float controlTemp);
     float computeTargetStackWattage(float targetTotalWattage, float heaterWatts, float currentTemp, float B, float C, float targetStackWatts);
     //    float computeFanSpeedTargetFromSchedule(float temp);
-    float computeFanSpeedTarget(float currentTargetTemp,float temp, float heaterWatts, float A, float B, float C);
+    float computeFanSpeedTarget(float currentTargetTemp,float temp, float heaterWatts, float B, float C);
     //    bool heaterWattsAtFullPowerPred(float watts);
     void oneButtonAlgorithm(MachineState ms,float &totalWattage_w,float &stackWattage_w,float &heaterWattage_w,float &fanSpeed_p);
     void runOneButtonAlgorithm(MachineState ms) override;

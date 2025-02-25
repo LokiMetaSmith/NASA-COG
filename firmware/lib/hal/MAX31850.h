@@ -46,12 +46,13 @@ namespace Temperature {
   class MAX31850Temperature : public AbstractTemperature {
   public:
 
-    
+
     OneWire oneWire;
     DallasTemperature sensors;
     boolean ABORT_DUE_TO_SENSOR_INIT = false;
     // Pass our oneWire reference to Dallas Temperature.
   public:
+    void readAddressPins();
     MAX31850Temperature();
     MAX31850Temperature(SensorConfig &config);
 

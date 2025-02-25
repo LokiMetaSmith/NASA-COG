@@ -70,7 +70,11 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
         CogCore::Debug<float>(msr->post_heater_C);
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Post Getter C: ");
-        CogCore::Debug<float>(msr->post_getter_C);
+        if (msr->post_getter_C == MISSING_TC_SENTINEL) {
+          CogCore::Debug<const char *>("NA");
+        } else {
+          CogCore::Debug<float>(msr->post_getter_C);
+        }
         CogCore::Debug<const char *>("\n");
         CogCore::Debug<const char *>("Post Stack  C: ");
         CogCore::Debug<float>(msr->post_stack_C);
@@ -137,7 +141,11 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
   strcat(buffer, ",\n");
   sprintf(buffer+strlen(buffer), "\"StackC\": %.2f",msr->post_stack_C);
   strcat(buffer, ",\n");
-  sprintf(buffer+strlen(buffer), "\"GetterC\": %.2f",msr->post_getter_C);
+  if (msr->post_getter_C == MISSING_TC_SENTINEL) {
+    sprintf(buffer+strlen(buffer), "\"GetterC\": %.2f",msr->post_getter_C);
+  } else {
+    sprintf(buffer+strlen(buffer), "\"GetterC\": NA");
+  }
   strcat(buffer, ",\n");
   sprintf(buffer+strlen(buffer), "\"HeaterDutyCycle\": %.2f",msr->heater_duty_cycle);
   strcat(buffer, ",\n");

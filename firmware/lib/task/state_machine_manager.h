@@ -47,9 +47,14 @@ namespace CogApp
     virtual MachineState _updatePowerComponentsCriticalFault() = 0;
     virtual MachineState _updatePowerComponentsEmergencyShutdown() = 0;
     virtual MachineState _updatePowerComponentsOffUserAck() = 0;
+    /*
     virtual float getTemperatureReadingA_C() = 0;
     virtual float getTemperatureReadingB_C() = 0;
     virtual float getTemperatureReadingC_C() = 0;
+    */
+
+    virtual float getTemperatureReadingUpStream_C() = 0;
+    virtual float getTemperatureReadingDnStream_C() = 0;
     virtual void runOneButtonAlgorithm(MachineState ms) = 0;
     bool run_generic();
 

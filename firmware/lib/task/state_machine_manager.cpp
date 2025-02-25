@@ -274,7 +274,7 @@ namespace CogApp
       CogCore::Debug<const char *>("Warmup Mode!\n");
     }
 
-    float t = getTemperatureReadingA_C();
+    float t = getTemperatureReadingUpStream_C();
     getConfig()->GLOBAL_RECENT_TEMP = t;
 
     // if we've reached operating temperature, we switch
@@ -330,7 +330,7 @@ namespace CogApp
     if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Cooldown Mode!\n");
     }
-    float t = getTemperatureReadingA_C();
+    float t = getTemperatureReadingUpStream_C();
     getConfig()->GLOBAL_RECENT_TEMP = t;
 
     if (t <= getConfig()->TARGET_TEMP_C) {

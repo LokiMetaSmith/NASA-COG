@@ -20,6 +20,7 @@
 #include <panel.h>
 #include <gpio_pin_defs.h>
 #include <arduino.h>
+#include <debug.h>
 
 void FrontPanel::setFaultLED(bool onOrOff) {
   digitalWrite(PANEL_LED_FAULT,onOrOff);
@@ -46,9 +47,19 @@ void FrontPanel::setStatusLEDfromState(LED_STATUS ls) {
   };
   setStatusLED(onOrOff);
   setStatusLED(true);
+
+  setFaultLED(true);
+  int switchState = analogRead(PANEL_SWITCH_DETECTION);
+  CogCore::Debug<const char *>("Switch Status : ");
+  CogCore::Debug<int>(switchState);
+  CogCore::Debug<const char *>("\n");
+  bool dswitchState = digitalRead(PANEL_SWITCH_DETECTION);
+  CogCore::Debug<bool>(dswitchState);
+  CogCore::Debug<const char *>("\n");
+
 }
 void FrontPanel::init() {
   pinMode(PANEL_LED_FAULT,OUTPUT);
   pinMode(PANEL_LED_STATUS,OUTPUT);
-  pinMode(PANEL_SWITCH_DETECTION,OUTPUT);
+  pinMode(PANEL_SWITCH_DETECTION,INPUT_PULLUP);
 };
