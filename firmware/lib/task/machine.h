@@ -248,6 +248,9 @@ public:
    Begin compile-time parameters
    ********************************************/
 
+    // This is the most important parameter!
+  static constexpr float OPERATING_TEMPERATURE_C = 750.0;
+
   static const int RELAY_PIN = 45;
 
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
@@ -259,17 +262,18 @@ public:
   // This should not change, unless you change your PSU
   const float MAX_STACK_VOLTAGE = 12.0;
 
-  // This is the most important parameter!
-  //  static constexpr float OPERATING_TEMPERATURE_C = 750.0;
-  // This is temporary...
-  static constexpr float OPERATING_TEMPERATURE_C = 300.0;
+  //  // This is temporary...
+  //  static constexpr float OPERATING_TEMPERATURE_C = 600.0;
 
   // You may have to adjust these based on altitude;
   // if the air is thin, the fan can over-spin, and
   // you may want to lower the max speed to 60%.
   const float FAN_SPEED_MAX_p = 80;
-  const float FAN_SPEED_MIN_p = 30;
-  static constexpr float FAN_SPEED_PREFERRED_p = 40;
+  const float FAN_SPEED_MIN_p = 15;
+  // Note: the "Blue" unit seems to raise its temperature even at 40%, but
+  // 20% has been suggested.
+  //  static constexpr float FAN_SPEED_PREFERRED_p = 40;
+  static constexpr float FAN_SPEED_PREFERRED_p = 20;
 
 
   // The is an absolute max wattage allowed into the stack.

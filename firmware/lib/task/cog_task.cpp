@@ -118,8 +118,21 @@ namespace CogApp
     } else {
       y = M;
     }
+
+
     float L = getConfig()->MAX_STACK_WATTAGE;
     float w = max(0.0,min(L,y));
+    if (DEBUG_LEVEL_OBA > 0) {
+        CogCore::Debug<const char *>("BC: ");
+        CogCore::Debug<float>(BC);
+        CogCore::Debug<const char *>(" y: ");
+        CogCore::Debug<float>(y);
+        CogCore::Debug<const char *>(" L: ");
+        CogCore::Debug<float>(L);
+        CogCore::Debug<const char *>(" w: ");
+        CogCore::Debug<float>(w);
+        CogCore::Debug<const char *>("\n");
+    }
     return min(w,targetTotalWattage);
   }
 
@@ -409,9 +422,9 @@ namespace CogApp
     // We could simulate the stack wattage as a function of T,
     // or we could just use the most recently measured stack wattage...
     // I believe doing the latter is more accurate.
-    // Possibly we need to fudge this by adding 1 watt to it
+    // Possibly we need to fudge this by adding 10 watt to it
     // so that we don't get stuck at the present value.
-    const float FUDGE_STACK_WATTS = 1.0;
+    const float FUDGE_STACK_WATTS = 10.0;
 
     // This will be used to set the actual stack watts in the
     // One Button algorithm. I'm not sure why this should not be just sw!
@@ -424,8 +437,6 @@ namespace CogApp
         CogCore::Debug<const char *>("\n");
     }
 
-    // I'm not sure why I was performing the action below that is commented!
-    //    stackWattage_w = sw;
     // This is needed because the stack especially when cold, cannot obtain
     // all of the wattage that we want...we limit it to what we have actually
     // achieved, plus a fudge factor. Without this action, we never put enough
@@ -435,6 +446,14 @@ namespace CogApp
     heaterWattage_w = max(0,
                           min(totalWattage_w - stackWattage_w,
                               getConfig()->HEATER_MAXIMUM_WATTAGE));
+
+    if (DEBUG_LEVEL_OBA > 0) {
+        CogCore::Debug<const char *>("stackWattage_w: ");
+        CogCore::Debug<float>(stackWattage_w );
+        CogCore::Debug<const char *>(" heaterWattage_w ");
+        CogCore::Debug<float>(heaterWattage_w);
+        CogCore::Debug<const char *>("\n");
+    }
 
     fanSpeed_p = computeFanSpeedTarget(getConfig()->SETPOINT_TEMP_C, B, heaterWattage_w,B,C);
 
@@ -756,7 +775,7 @@ namespace CogApp
 
     // Now we do a final piece of logic... if we are in Cooldown
     // and the setpoint is < than the SAFETY_COOL_TEMPERATURE, we turn off.
-    if (((ms == NormalOperation) || (ms == Cooldown)) && (getConfig()->TARGET_TEMP_C < getConfig()->SAFETY_COOL_TEMPERATURE_C)) {
+    if (((ms == NormalOperation) || (ms == Cooldown)) && (getTemperatureReadingUpStream_C() <  getConfig()->SAFETY_COOL_TEMPERATURE_C)) {
       CogCore::Debug<const char *>("Turning off becuase Target is less than SAFETY_COOL_TEMPERATURE_C ");
       ms = Off;
       turnOff();
