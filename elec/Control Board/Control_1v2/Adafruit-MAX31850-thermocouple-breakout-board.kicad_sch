@@ -8216,7 +8216,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 7e9c8a67-ab38-4551-8fca-5314c891113b)
   )
-  (text "Subaddress: 0x04\nA0 Low\nA1 Low\nA2 Low\nA3 Hi\n" (at 309.245 95.25 0)
+  (text "Subaddress: 0x08\nA0 Low\nA1 Low\nA2 Low\nA3 Hi\n" (at 309.245 95.25 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid e14700ae-c517-454f-a57f-98aa1865a36c)
   )
