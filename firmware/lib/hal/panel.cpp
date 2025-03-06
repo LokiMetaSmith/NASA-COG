@@ -25,30 +25,38 @@
 void FrontPanel::setFaultLED(bool onOrOff) {
   digitalWrite(PANEL_LED_FAULT,onOrOff);
 }
+
 void FrontPanel::setStatusLED(bool onOrOff) {
   digitalWrite(PANEL_LED_STATUS,onOrOff);
 }
+
+bool FrontPanel::isStatusLEDOnOrOff() {
+  return digitalRead(PANEL_LED_STATUS);
+}
+
+bool FrontPanel::isSwitchOn() {
+  return digitalRead(PANEL_SWITCH_DETECTION);
+}
+
+
 void FrontPanel::setStatusLEDfromState(LED_STATUS ls) {
   // Now make the panel lights reflect our status...
-
+  status = ls;
   bool onOrOff = false;
   switch (ls) {
   case LED_STATUS::OFF:
     onOrOff = false;
+    setStatusLED(onOrOff);
     break;
   case LED_STATUS::BLINKING: {
-    unsigned long int time_now_ms = millis();
-    onOrOff = ((time_now_ms / 1000) & 2);
-  }
     break;
+  }
   case LED_STATUS::STEADY_ON:
     onOrOff = true;
+    setStatusLED(onOrOff);
     break;
   };
-  setStatusLED(onOrOff);
-  setStatusLED(true);
 
-  setFaultLED(true);
   int switchState = analogRead(PANEL_SWITCH_DETECTION);
   CogCore::Debug<const char *>("Switch Status : ");
   CogCore::Debug<int>(switchState);
@@ -62,4 +70,6 @@ void FrontPanel::init() {
   pinMode(PANEL_LED_FAULT,OUTPUT);
   pinMode(PANEL_LED_STATUS,OUTPUT);
   pinMode(PANEL_SWITCH_DETECTION,INPUT_PULLUP);
-};
+  digitalWrite(PANEL_LED_FAULT,false);
+  digitalWrite(PANEL_LED_STATUS,false);
+}

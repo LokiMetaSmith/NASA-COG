@@ -88,6 +88,7 @@ public:
   CriticalError errors[NUM_CRITICAL_ERROR_DEFINITIONS];
   void change_ramp(float ramp);
 
+  bool panelSwitchState = false; // false == off
 
   // TEST CONFIGURATION PARAMETERS
   // ALL OF THESE COULD BE CONFIGURABLE, BUT FOR THIS TEST
@@ -104,7 +105,8 @@ public:
   // two numbers
   float RAMP_UP_TARGET_D_MIN = 0.5; // R (degrees C per minute)
   float RAMP_DN_TARGET_D_MIN = -0.5; // R (degrees C per minute)
-    float TARGET_TEMP_C = 30.0; // This is the goal target
+  float TARGET_TEMP_C = 30.0; // This is the goal target
+  const float TARGET_TEMP_WHEN_OFF_C = 30.0;
 
   float MAX_AMPERAGE = 30.0; // A (Amperes)
   float MAX_STACK_WATTAGE = 250.0; // W (Wattage)
@@ -246,6 +248,9 @@ public:
    Begin compile-time parameters
    ********************************************/
 
+    // This is the most important parameter!
+  static constexpr float OPERATING_TEMPERATURE_C = 750.0;
+
   static const int RELAY_PIN = 45;
 
 // our CFC Heater measures at 14.4 ohms, by W = V^2 / R assuming
@@ -257,15 +262,18 @@ public:
   // This should not change, unless you change your PSU
   const float MAX_STACK_VOLTAGE = 12.0;
 
-  // This is the most important parameter!
-  static constexpr float OPERATING_TEMPERATURE_C = 750.0;
+  //  // This is temporary...
+  //  static constexpr float OPERATING_TEMPERATURE_C = 600.0;
 
   // You may have to adjust these based on altitude;
   // if the air is thin, the fan can over-spin, and
   // you may want to lower the max speed to 60%.
   const float FAN_SPEED_MAX_p = 80;
-  const float FAN_SPEED_MIN_p = 30;
-  static constexpr float FAN_SPEED_PREFERRED_p = 40;
+  const float FAN_SPEED_MIN_p = 15;
+  // Note: the "Blue" unit seems to raise its temperature even at 40%, but
+  // 20% has been suggested.
+  //  static constexpr float FAN_SPEED_PREFERRED_p = 40;
+  static constexpr float FAN_SPEED_PREFERRED_p = 20;
 
 
   // The is an absolute max wattage allowed into the stack.
@@ -334,6 +342,7 @@ public:
 
   // The "heartbeat" on the OEDCS v.1.1 is both a red LED and PIN 13.
   static const int INIT_HEARTBEAT_PERIOD_MS = 500; // heartbeat task period
+  static const int INIT_PANEL_BLINK_PERIOD_MS = 500; // heartbeat task period
 
   // The is the basic recording of values in "emergency logging mode"
   static const int INIT_LOG_RECORDER_PERIOD_MS = 1000;

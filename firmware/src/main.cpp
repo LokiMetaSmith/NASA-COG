@@ -17,7 +17,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.4.10"  // Improving Thermocouple Handling
+#define OEDCS_VERSION "; Rev: 0.4.12"  // Slight adjustment for Blue unit
 #define DEVICE_UNDER_TEST "Hardware: Due"  // A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -40,6 +40,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <serialReportTask.h>
 #include <OEDCSNetworkTask.h>
 #include <heartbeat_task.h>
+#include <panel_blink_task.h>
 #include <log_recorder_task.h>
 // #include <display_task.h>
 #include <shutdown_button_task.h>
@@ -59,6 +60,7 @@ CogApp::OEDCSSerialInputTask oedcsSerialInputTask;
 CogApp::FaultTask faultTask;
 
 CogApp::HeartbeatTask heartbeatTask;
+CogApp::PanelBlinkTask panelBlinkTask;
 CogApp::Log_Recorder_Task logRecorderTask;
 
 
@@ -72,8 +74,8 @@ ShutdownButtonTask shutdownButtonTask;
 MachineConfig machineConfig;
 /***********************************/
 
-// #define ETHERNET_REQUIRED 1
-#define ETHERNET_REQUIRED 0 //No ethernet.
+#define ETHERNET_REQUIRED 1
+// #define ETHERNET_REQUIRED 0 //No ethernet.
 
 
 // This is to allow a code idiom compatible with the way
@@ -309,13 +311,24 @@ void setup()
     abort();
   }
 
-  core.ResetAllWatchdogs();
 
-  //  heaterPIDTask.whichHeater = (Stage2Heater) 0;
+  CogCore::TaskProperties PanelBlinkProperties;
+  PanelBlinkProperties.name = "PanelBlink";
+  PanelBlinkProperties.id = 30;
+  PanelBlinkProperties.period = MachineConfig::INIT_PANEL_BLINK_PERIOD_MS;
+  PanelBlinkProperties.priority = CogCore::TaskPriority::High;
+  PanelBlinkProperties.state_and_config = (void *) &machineConfig;
+  bool panelBlinkAdd = core.AddTask(&panelBlinkTask, &PanelBlinkProperties);
+
+  if (!panelBlinkAdd) {
+    CogCore::Debug<const char *>("panelBlinkAdd Failed\n");
+    abort();
+  }
+
+  core.ResetAllWatchdogs();
 
   cogTask.dutyCycleTask = &dutyCycleTask;
 
-  // cogTask.heaterPIDTask = &heaterPIDTask;
 
   logRecorderTask.oedcsNetworkTask = &OEDCSNetworkTask;
   // We need the core on logRecorderTask (and, indeed, any long-running task
@@ -329,7 +342,7 @@ void setup()
   // NOTHING HERE YET...
 
   // now set up debugging levels...
-  logRecorderTask.DEBUG_LOG_RECORDER = 2;
+  logRecorderTask.DEBUG_LOG_RECORDER = 0;
   core.DEBUG_CORE = 0;
   core._scheduler.DEBUG_SCHEDULER = 0;
   core._scheduler._idleTask.DEBUG_IDLETASK = 0;

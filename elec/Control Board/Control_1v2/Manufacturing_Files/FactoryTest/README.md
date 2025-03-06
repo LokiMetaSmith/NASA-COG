@@ -139,49 +139,55 @@ Note resutls in table
 |                   |                           |                     |            |
 
 
-Load and run factory test firmware DueWithThreeSSRs.ino
-Open the Arduino Serial Monitor. Observe the data.
-**Test ID10 ** Observe SSR1, SSR2, SSR3 LED Blinking.
-**Test ID11 ** Observe Mini12864 Display back lit and displaying splash message and four measurements.
-**Test ID12 ** Encoder Rotation Knob is back lit. Rotate the know and observe the serial port reporting changes.
-**Test ID13 ** Encoder knob switch. Press the knob and observer serial port message about shutdown.
-**Test ID14 ** PCB mount SHUT DOWN button. Press the button and observer serial port message about shutdown.
+#### Load and run factory test firmware DueWithThreeSSRs.ino  
+Open the Arduino Serial Monitor. Observe the data.  
+**Test ID10 ** Observe SSR1, SSR2, SSR3 LED Blinking.  
+**Test ID11 ** Observe Mini12864 Display back lit and displaying splash message and four measurements.  
+**Test ID12 ** Encoder Rotation Knob is back lit. Rotate the know and observe the serial port reporting changes.  
+**Test ID13 ** Encoder knob switch. Press the knob and observer serial port message about shutdown.  
+**Test ID14 ** PCB mount SHUT DOWN button. Press the button and observer serial port message about shutdown.  
+**Test ID15 ** Observer serial port message about "Link Status: ON"  
+**Test ID16 ** Stack Voltage, Observer serial port message about "?????"  
+**Test ID17 ** Stack Power, Observer serial port message about "?????"  
+**Test ID18 ** Cumulocity, Observer serial port message about "?????"  
+**Test ID19 ** Reset, Observer serial port message as DUT reboots"  
+**Test ID20 ** PCB mount SHUT DOWN button. Press the button and observer the Battery Connection LED lights.  
+**Test ID21 ** PCB mount SHUT DOWN button. Press the button and observer the Blower goes to high speed.  
 
 
 **Results continued...**
 
-| **Test ID**       | 10                         | 11                | 12                    | 13                  | 14                   | 15             | 16                        | 17                  | 18                   | 19            | 20                  |
-|-------------------|----------------------------|-------------------|-----------------------|---------------------|----------------------|----------------|---------------------------|---------------------|----------------------|---------------|---------------------|
-| **Test Name**     | SSR1, SSR2, SSR3 LED Blink | Mini12864 Display | Encoder Rotation Knob | Encoder knob switch | PCB button SHUT DOWN | LAN CONNECTION | Stack voltage at reset 1V | Stack power to load | Cumulocity reporting | Reset to safe | PxxxxxxxxxxxxxxxxxN |
-| **Setup**         |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Test Location** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Requirements**  |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 9**  | OK                         |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 10** | OK                         | OK                | OK                    | OK                  | OK                   | OK             | OK                        | OK                  | OK                   | OK            |                     |
-| **Results SN 11** | OK                         | OK                | OK                    | OK                  | OK                   | OK             | OK                        | OK                  | OK                   | OK            |                     |
-| **Results SN 12** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 13** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 14** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 15** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 16** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 17** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 18** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 19** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 20** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 21** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 22** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 23** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 24** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 25** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 26** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 27** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 28** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 29** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-| **Results SN 30** |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-|                   |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-|                   |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-|                   |                            |                   |                       |                     |                      |                |                           |                     |                      |               |                     |
-
+| **Test ID**       | 10                          | 11                 | 12                      | 13                    | 14                    | 15              | 16                         | 17                   | 18                     | 19             | 20                    | 21                  |
+|-------------------|-----------------------------|--------------------|-------------------------|-----------------------|-----------------------|-----------------|----------------------------|----------------------|------------------------|----------------|-----------------------|---------------------|
+| **Test Name**     | SSR1, SSR2, SSR3  LED Blink | Mini12864  Display | Encoder  Rotation  Knob | Encoder  knob  switch | PCB button  SHUT DOWN | LAN  CONNECTION | Stack voltage  at reset 1V | Stack power  to load | Cumulocity  reporting  | Reset  to safe | Connection  @ Battery | Blower              |
+| **Setup**         |                             |                    |                         |                       |                       |                 |                            |                      |                        |                | Press  SHUT DOWN      | Press  SHUT DOWN    |
+| **Test Location** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                | NA                    |                     |
+| **Requirements**  |                             |                    |                         |                       |                       | Link OK         |                            |                      |                        |                | Battery  LED          | Blower  High  Speed |
+| **Results SN 9**  | OK                          |                    |                         |                       |                       |                 |                            |                      |                        |                | NA                    |                     |
+| **Results SN 10** | OK                          | OK                 | OK                      | OK                    | OK                    | OK              | OK                         | OK                   | OK                     | OK             | NA                    |                     |
+| **Results SN 11** | OK                          | OK                 | OK                      | OK                    | OK                    | OK              | OK                         | OK                   | OK                     | OK             | NA                    |                     |
+| **Results SN 12** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                | NA                    |                     |
+| **Results SN 13** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                | NA                    |                     |
+| **Results SN 14** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                | NA                    |                     |
+| **Results SN 15** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                | NA                    |                     |
+| **Results SN 16** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 17** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 18** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 19** | OK                          | NA                 | NA                      | NA                    | OK                    | OK              |                            |                      |                        |                | OK                    |                     |
+| **Results SN 20** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 21** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 22** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 23** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 24** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 25** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 26** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 27** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 28** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 29** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+| **Results SN 30** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+|                   |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+|                   |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
+|                   |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
 
 ### Stack Power Supply Control 
 With AC power on.
@@ -235,7 +241,7 @@ After reset and connection to a LAN the Serial Monitor report displays the devic
 | 16	| NA |
 | 17	| NA |
 | 18	| NA |
-| 19	| NA |
+| 19	| FE:ED:1D:70:00:6D |
 | 20	| NA |
 | 21	| NA |
 | 22	| NA |

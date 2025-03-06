@@ -53,6 +53,7 @@ namespace CogApp
     virtual float getTemperatureReadingC_C() = 0;
     */
 
+
     virtual float getTemperatureReadingUpStream_C() = 0;
     virtual float getTemperatureReadingDnStream_C() = 0;
     virtual void runOneButtonAlgorithm(MachineState ms) = 0;
@@ -83,6 +84,9 @@ namespace CogApp
     void transitionToWarmup(float tt);
     void transitionToCooldown(float tt);
     void changeTargetTemp(float t);
+    void changeToOperatingTemp();
+    void changeToRoomTemp();
+
     virtual void turnOff();
     virtual void turnOn();
     virtual void turnOffPowerButDoNotChangeState();
