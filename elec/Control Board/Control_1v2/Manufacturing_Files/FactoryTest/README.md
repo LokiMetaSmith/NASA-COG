@@ -155,7 +155,7 @@ Open the Arduino Serial Monitor. Observe the data.
 **Test ID21 ** PCB mount SHUT DOWN button. Press the button and observer the Blower goes to high speed.  
 
 
-**Results continued...**
+**Results ID 10-21 continued...**
 
 | **Test ID**       | 10                          | 11                 | 12                      | 13                    | 14                    | 15              | 16                         | 17                   | 18                     | 19             | 20                    | 21                  |
 |-------------------|-----------------------------|--------------------|-------------------------|-----------------------|-----------------------|-----------------|----------------------------|----------------------|------------------------|----------------|-----------------------|---------------------|
@@ -173,7 +173,7 @@ Open the Arduino Serial Monitor. Observe the data.
 | **Results SN 16** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
 | **Results SN 17** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
 | **Results SN 18** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
-| **Results SN 19** | OK                          | NA                 | NA                      | NA                    | OK                    | OK              |                            |                      |                        |                | OK                    |                     |
+| **Results SN 19** | OK                          | NA                 | NA                      | NA                    | OK                    | OK              | Return "SL_Power"          | NA                   | NA                     | NA             | OK                    | OK                  |
 | **Results SN 20** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
 | **Results SN 21** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
 | **Results SN 22** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
@@ -238,7 +238,7 @@ After reset and connection to a LAN the Serial Monitor report displays the devic
 | 12	| FE:ED:17:73:0E:69 |
 | 13	|  |
 | 15	| ?? |
-| 16	| NA |
+| 16	| FE:ED:74:66:03:6E |
 | 17	| NA |
 | 18	| NA |
 | 19	| FE:ED:1D:70:00:6D |
