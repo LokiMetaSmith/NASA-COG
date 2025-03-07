@@ -100,7 +100,8 @@ Apply power by switching on the AC power strip.
 Check that the BUILDIN_LED ner the LAN Shield and SSR2 and SSR3 connectors is blinking rapidly as an idication that the firmware is running.
 Open the Arduino Serial Plotter (<Ctrl> <Shift> <L>) and touch some thermocouples.
 
-### Temperature Measurements.
+### Temperature Measurements for SN 1 to SN15.
+For SN16 and beyond the test is moved further below and uses the OEDCS firmware
 **Test ID8:** Typical Serial Plotter results. Touching some of the thermocouples to ensure they respond.
 Note resutls in table
 ![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/e4f5bb6a-2a47-4039-8720-b6846f36b7f7)
@@ -119,24 +120,7 @@ Note resutls in table
 | **Results SN 13** |                           |                     |            |
 | **Results SN 14** |                           |                     |            |
 | **Results SN 15** |                           |                     |            |
-| **Results SN 16** |                           |                     |            |
-| **Results SN 17** |                           |                     |            |
-| **Results SN 18** |                           |                     |            |
-| **Results SN 19** |                           |                     |            |
-| **Results SN 20** |                           |                     |            |
-| **Results SN 21** |                           |                     |            |
-| **Results SN 22** |                           |                     |            |
-| **Results SN 23** |                           |                     |            |
-| **Results SN 24** |                           |                     |            |
-| **Results SN 25** |                           |                     |            |
-| **Results SN 26** |                           |                     |            |
-| **Results SN 27** |                           |                     |            |
-| **Results SN 28** |                           |                     |            |
-| **Results SN 29** |                           |                     |            |
-| **Results SN 30** |                           |                     |            |
-|                   |                           |                     |            |
-|                   |                           |                     |            |
-|                   |                           |                     |            |
+
 
 
 #### Load and run factory test firmware DueWithThreeSSRs.ino  
@@ -193,7 +177,14 @@ Open the Arduino Serial Monitor. Observe the data.
 With AC power on.
 
 Load the OEDCS firmware into the unit under test.  
-Open the serial monitor. 
+For the firmware to report the MAC address, before compiling, set the ETHERNET_REQUIRED define for 1
+In the main.cpp file lines 75 and 76 are:
+...
+#define ETHERNET_REQUIRED 1
+//#define ETHERNET_REQUIRED 0 //No ethernet.  FLE
+...
+
+Once the fimrware is loaded, open the serial monitor. 
 Observe the traffice and note that a Power supply  is reported.  
 ![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/f4dca5d2-eb4a-4583-9b26-30fd3afd920a)  
 Observe the traffice and note that an IP address is reported.  
@@ -239,7 +230,7 @@ After reset and connection to a LAN the Serial Monitor report displays the devic
 | 13	|  |
 | 15	| ?? |
 | 16	| FE:ED:74:66:03:6E |
-| 17	| NA |
+| 17	| FE:ED:16:73:00:65 |
 | 18	| NA |
 | 19	| FE:ED:1D:70:00:6D |
 | 20	| NA |
@@ -254,18 +245,44 @@ After reset and connection to a LAN the Serial Monitor report displays the devic
 | 29	| NA |
 | 30	| NA |
 
-
 At end of shift send all new MAC Addresses for addition ot the server.
 
+### Temperature Measurements.
+**Test ID8:** 
+Observe on Serial monitor that two thermocouples report abmiant temprature.
+![image](https://github.com/user-attachments/assets/481c901c-4578-4e7c-a5c2-71b3fb57a0cd)
+Touching some of the thermocouples to ensure they respond.
+Note resutls in table on colum 8
 
-
-
+**Results continued...**
+| **Test ID**       | 7                         | 8                   | 9          |
+|-------------------|---------------------------|---------------------|------------|
+| **Test Name**     | Current, Temperature Only | Check thermocouples | future use |
+| **Setup**         | In line DC current meter  | Connect three       |            |
+| **Test Location** | Due input                 | Serial Plolter      |            |
+| **Requirements**  | 85 mA                     | Three traces        |            |
+| **Results SN 16** |                           |                     |            |
+| **Results SN 17** |                           |                     |            |
+| **Results SN 18** |                           |                     |            |
+| **Results SN 19** |                           |                     |            |
+| **Results SN 20** |                           |                     |            |
+| **Results SN 21** |                           |                     |            |
+| **Results SN 22** |                           |                     |            |
+| **Results SN 23** |                           |                     |            |
+| **Results SN 24** |                           |                     |            |
+| **Results SN 25** |                           |                     |            |
+| **Results SN 26** |                           |                     |            |
+| **Results SN 27** |                           |                     |            |
+| **Results SN 28** |                           |                     |            |
+| **Results SN 29** |                           |                     |            |
+| **Results SN 30** |                           |                     |            |
+|                   |                           |                     |            |
+|                   |                           |                     |            |
+|                   |                           |                     |            |
 
 ### End of Test
 Power off the unit under test.
-Remove all connections including the jumper wire at J14 and J25.
-Very carfuly so as to not bend pins, remove the LAN Sheild.
-Very carfuly so as to not bend pins, remove the Due controller. A modified pop cycle stick helps.
+Apply a green permanet lable near the PubInv logo.
 
 ## Rejoice another great OEDCS has been born!
 
