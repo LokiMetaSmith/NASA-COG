@@ -268,8 +268,8 @@ public:
   // You may have to adjust these based on altitude;
   // if the air is thin, the fan can over-spin, and
   // you may want to lower the max speed to 60%.
-  const float FAN_SPEED_MAX_p = 80;
-  const float FAN_SPEED_MIN_p = 15;
+  const float FAN_SPEED_MAX_p = 80.0;
+  const float FAN_SPEED_MIN_p = 10.0;
   // Note: the "Blue" unit seems to raise its temperature even at 40%, but
   // 20% has been suggested.
   //  static constexpr float FAN_SPEED_PREFERRED_p = 40;
@@ -388,6 +388,12 @@ public:
   static constexpr float FAN_MODEL_QUAD_FACTOR_A = -8180.0;
   static constexpr float FAN_MODEL_LINE_FACTOR_B = 17620.0;
   static constexpr float FAN_MODEL_CONST_FACTOR_C = 7.6;
+
+  static constexpr float SENTINEL = -999.0;
+  float TEMP_AT_POWER_FAILURE = -999.0;
+  unsigned long TIME_OF_POWER_FAILURE_MS = 0;
+  static constexpr float TIME_CONSTANT_OF_COOLING_EXP_DECAY = 19764.0;
+
   /********************************************
    FUTURE PARAMETERS, THESE HAVE NO MEANING AT PRESENT
    ********************************************/
@@ -398,6 +404,7 @@ public:
   static const int INIT_SHUTDOWN_BUTTON_PERIOD_MS = 250;
 
   static const int DISPLAY_UPDATE_MS = 2000;
+
 
 };
 
