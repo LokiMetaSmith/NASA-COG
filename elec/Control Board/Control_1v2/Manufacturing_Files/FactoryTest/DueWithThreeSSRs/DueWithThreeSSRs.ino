@@ -16,7 +16,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS_Factory_Test V1.2"
-#define VERSION ";_Rev_0.3"                         //Enable power supply test during setup()
+#define VERSION ";_Rev_0.4"                         //Simplified PS test returns manufacturer name.
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.2"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -124,6 +124,7 @@ void UpdateEthernet() {
 
   if (((currentMillis - previousLinkMillis) >= LINK_TIME) || (currentMillis < previousLinkMillis)) {
     previousLinkMillis = currentMillis;
+    Serial.println("Checking LAN.");
     digitalWrite(ETHERNET_CS, LOW);  // select ethernet mode
     link_status = Ethernet.linkStatus();
     //      delay(1000);  // Hold the splash screen a second
@@ -210,7 +211,8 @@ bool updatePowerMonitor(void) {
   const float Vcc = 3.3;
   bool powerIsGood = false;
   //int lowThreshold24V = (24 * (R2 / (R1 + R2)) / Vcc) * FullScale * percentOK;  //1023 * 3 / 4;
-  int lowThreshold24V = (24 * (24700 / (10000 + 24700)) / 3.3) * 1023 * 3 / 4;  //1023 * 3 / 4;
+//  int lowThreshold24V = (24 * (24700 / (10000 + 24700)) / 3.3) * 1023.0 * 3.0 / 4.0;  //1023 * 3 / 4;
+  int lowThreshold24V = 600;  // Typical is 790 so use about 3/4
   const long POWER_MONITOR_TIME = 2000;
   static long previousPowerMillis = 0;
 
@@ -218,6 +220,13 @@ bool updatePowerMonitor(void) {
 
   if (((currentMillis - previousPowerMillis) >= POWER_MONITOR_TIME) || (currentMillis < previousPowerMillis)) {
     previousPowerMillis = currentMillis;
+    Serial.print("analogRead(A1)= ");
+    Serial.println(analogRead(A1));
+
+    Serial.print("lowThreshold24V= ");
+    Serial.println(lowThreshold24V);
+
+
     if (analogRead(A1) > lowThreshold24V) {
       Serial.println("24V power OK");
       powerIsGood = true;
@@ -379,6 +388,8 @@ public:
   void getPS_Manuf(int addr) {
     char *r = getPS_Val(addr, "INFO 0");
     strncpy(manuf, r, sizeof manuf);
+    Serial.print("PS Manufacturier= ");
+    Serial.println(manuf);
   }
 
   void getPS_Model(int addr) {
@@ -598,6 +609,22 @@ void setup() {
   // You can use Ethernet.init(pin) to configure the CS pin
   Ethernet.init(ETHERNET_CS);  // Most Arduino shields
 
+
+  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+  IPAddress ip(10, 0, 0, 177);
+  Ethernet.begin(mac, ip);  //Hard code the MAC and the IP address
+
+  byte macBuffer[6];               // create a buffer to hold the MAC address
+  Ethernet.MACAddress(macBuffer);  // fill the buffer
+  Serial.print("The MAC address is: ");
+  for (byte octet = 0; octet < 6; octet++) {
+    Serial.print(macBuffer[octet], HEX);
+    if (octet < 5) {
+      Serial.print('-');
+    }
+  }
+  Serial.println();
+
   pinMode(KEEP_ALIVE, OUTPUT);
   digitalWrite(KEEP_ALIVE, LOW);  // TUrn off Keep Alive.
 
@@ -609,6 +636,9 @@ void setup() {
   Serial.print("Start of test_PSU1: ");
   Serial.println(millis());
   //  test_PSU1.test_PS();  //run once to test psu
+
+  test_PSU1.getPS_Manuf(0x00); //Test for PS at default address.
+
   Serial.print("End of test_PSU1: ");
   Serial.println(millis());
 }  //End setup()
