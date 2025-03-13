@@ -423,7 +423,9 @@ namespace CogApp
     // Vout = Vs * 10000 / (40000)
     // Vout = Vs / 4.
 
-    float v12BusVoltage = (float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2));
+    float v12BusVoltage = (float) _v12read *
+      ((getConfig()->Vcc * (getConfig()->R1+getConfig()->R2))
+       /  (1023.0 * getConfig()->R2));
     if (SM_DEBUG_LEVEL > -1) {
       CogCore::Debug<const char *>("analogRead(SENSE_12V)= ");
       CogCore::DebugLn<uint32_t>(_v12read);
@@ -463,7 +465,7 @@ namespace CogApp
     if (SM_DEBUG_LEVEL >0 ) {
       CogCore::Debug<const char *>("analogRead(SENSE_12V)= ");
       CogCore::DebugLn<uint32_t>(_v12read);
-      CogCore::Debug<float>((float) _v12read * ((Vcc * (R1+R2))/(1023.0 * R2)));
+      CogCore::Debug<float>((float) _v12read * ((getConfig()->Vcc * (getConfig()->R1+getConfig()->R2))/(1023.0 * getConfig()->R2)));
       CogCore::Debug<const char *>("\n");
     }
 

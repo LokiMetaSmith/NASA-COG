@@ -890,13 +890,13 @@ namespace CogApp
       // Now, here we need to check the voltage against a
       // low power value and turn off the relay if we reach it.
 
-      if (voltage < BATTERY_BUS_TRICKLE_CHARGE - 0.5) {
+      if (voltage < getConfig()->BATTERY_BUS_TRICKLE_CHARGE - 0.5) {
         CogCore::Debug<const char *>("12V bus voltage = ");
         CogCore::DebugLn<float>(voltage);
         CogCore::Debug<const char *>("This is too low to trickle charge the backup battery. Please trim the 12V power supply to 13.6 volts.");
       }
 
-      if (voltage < LOW_BATTERY_BUS_VOLTAGE) {
+      if (voltage < getConfig()->LOW_BATTERY_BUS_VOLTAGE) {
         // now we want to turn off the relay that connects
         // the battery bus by driving its pin low.
         CogCore::Debug<const char *>("12V bus voltage = ");
@@ -916,7 +916,7 @@ namespace CogApp
         CogCore::Debug<const char *>("Setting expected Target Temp from cooling time: ");
         CogCore::DebugLn<float>(expected_temp_c);
         CogCore::Debug<const char *>("BASED ON COOLED TIME OF:");
-        CogCore::DebugLn<float>(getConfig()->TIME_OF_POWER_FAILURE_MS/1000.0);
+        CogCore::DebugLn<float>((millis() - getConfig()->TIME_OF_POWER_FAILURE_MS)/1000.0);
       }
       new_ms = Warmup;
     }
