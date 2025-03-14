@@ -100,7 +100,8 @@ Apply power by switching on the AC power strip.
 Check that the BUILDIN_LED ner the LAN Shield and SSR2 and SSR3 connectors is blinking rapidly as an idication that the firmware is running.
 Open the Arduino Serial Plotter (<Ctrl> <Shift> <L>) and touch some thermocouples.
 
-### Temperature Measurements.
+### Temperature Measurements for SN 1 to SN15.
+For SN16 and beyond the test is moved further below and uses the OEDCS firmware
 **Test ID8:** Typical Serial Plotter results. Touching some of the thermocouples to ensure they respond.
 Note resutls in table
 ![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/e4f5bb6a-2a47-4039-8720-b6846f36b7f7)
@@ -119,24 +120,7 @@ Note resutls in table
 | **Results SN 13** |                           |                     |            |
 | **Results SN 14** |                           |                     |            |
 | **Results SN 15** |                           |                     |            |
-| **Results SN 16** |                           |                     |            |
-| **Results SN 17** |                           |                     |            |
-| **Results SN 18** |                           |                     |            |
-| **Results SN 19** |                           |                     |            |
-| **Results SN 20** |                           |                     |            |
-| **Results SN 21** |                           |                     |            |
-| **Results SN 22** |                           |                     |            |
-| **Results SN 23** |                           |                     |            |
-| **Results SN 24** |                           |                     |            |
-| **Results SN 25** |                           |                     |            |
-| **Results SN 26** |                           |                     |            |
-| **Results SN 27** |                           |                     |            |
-| **Results SN 28** |                           |                     |            |
-| **Results SN 29** |                           |                     |            |
-| **Results SN 30** |                           |                     |            |
-|                   |                           |                     |            |
-|                   |                           |                     |            |
-|                   |                           |                     |            |
+
 
 
 #### Load and run factory test firmware DueWithThreeSSRs.ino  
@@ -147,15 +131,15 @@ Open the Arduino Serial Monitor. Observe the data.
 **Test ID13 ** Encoder knob switch. Press the knob and observer serial port message about shutdown.  
 **Test ID14 ** PCB mount SHUT DOWN button. Press the button and observer serial port message about shutdown.  
 **Test ID15 ** Observer serial port message about "Link Status: ON"  
-**Test ID16 ** Stack Voltage, Observer serial port message about "?????"  
-**Test ID17 ** Stack Power, Observer serial port message about "?????"  
-**Test ID18 ** Cumulocity, Observer serial port message about "?????"  
+**Test ID16 ** Stack Voltage, SKIP after SN15 Observer serial port message about "?????"  
+**Test ID17 ** Stack Power,  SKIP after SN15 Observer serial port message about "?????"  
+**Test ID18 ** Cumulocity,  SKIP after SN15 Observer serial port message about "?????"  
 **Test ID19 ** Reset, Observer serial port message as DUT reboots"  
 **Test ID20 ** PCB mount SHUT DOWN button. Press the button and observer the Battery Connection LED lights.  
 **Test ID21 ** PCB mount SHUT DOWN button. Press the button and observer the Blower goes to high speed.  
 
 
-**Results continued...**
+**Results ID 10-21 continued...**
 
 | **Test ID**       | 10                          | 11                 | 12                      | 13                    | 14                    | 15              | 16                         | 17                   | 18                     | 19             | 20                    | 21                  |
 |-------------------|-----------------------------|--------------------|-------------------------|-----------------------|-----------------------|-----------------|----------------------------|----------------------|------------------------|----------------|-----------------------|---------------------|
@@ -173,7 +157,7 @@ Open the Arduino Serial Monitor. Observe the data.
 | **Results SN 16** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
 | **Results SN 17** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
 | **Results SN 18** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
-| **Results SN 19** | OK                          | NA                 | NA                      | NA                    | OK                    | OK              |                            |                      |                        |                | OK                    |                     |
+| **Results SN 19** | OK                          | NA                 | NA                      | NA                    | OK                    | OK              | Return "SL_Power"          | NA                   | NA                     | NA             | OK                    | OK                  |
 | **Results SN 20** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
 | **Results SN 21** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
 | **Results SN 22** |                             |                    |                         |                       |                       |                 |                            |                      |                        |                |                       |                     |
@@ -193,7 +177,14 @@ Open the Arduino Serial Monitor. Observe the data.
 With AC power on.
 
 Load the OEDCS firmware into the unit under test.  
-Open the serial monitor. 
+For the firmware to report the MAC address, before compiling, set the ETHERNET_REQUIRED define for 1
+In the main.cpp file lines 75 and 76 are:
+...
+#define ETHERNET_REQUIRED 1
+//#define ETHERNET_REQUIRED 0 //No ethernet.  FLE
+...
+
+Once the fimrware is loaded, open the serial monitor. 
 Observe the traffice and note that a Power supply  is reported.  
 ![image](https://github.com/PubInv/NASA-MCOG/assets/5836181/f4dca5d2-eb4a-4583-9b26-30fd3afd920a)  
 Observe the traffice and note that an IP address is reported.  
@@ -225,47 +216,74 @@ Recorde results in test issue **ID19**
 ### Capture MAC, Send for Server Setup
 After reset and connection to a LAN the Serial Monitor report displays the device MAC address. Catpure to the table below.
 
-| Unite Serial Number | MAC Address |
-|---------------|-------------|
-| 1	| FE:ED:1B:70:08:77 |
-| 2	| FE:ED:10:69:73:70 |
-| 3	| NA |
-| 4	| NA |
-| 5	| NA |
-| 9	| FE:ED:1D:70:05:6D |
-| 10	| FE:ED:12:71:06:65 |
-| 11	| FE:ED:16:6B:72:67 |
-| 12	| FE:ED:17:73:0E:69 |
-| 13	|  |
-| 15	| ?? |
-| 16	| NA |
-| 17	| NA |
-| 18	| NA |
-| 19	| FE:ED:1D:70:00:6D |
-| 20	| NA |
-| 21	| NA |
-| 22	| NA |
-| 23	| NA |
-| 24	| NA |
-| 25	| NA |
-| 26	| NA |
-| 27	| NA |
-| 28	| NA |
-| 29	| NA |
-| 30	| NA |
-
+| **Unite Serial Number** | **MAC Address**   | **Note** |
+|-------------------------|-------------------|----------|
+| 1                       | FE:ED:1B:70:08:77 |          |
+| 2                       | FE:ED:10:69:73:70 |          |
+| 3                       | NA                |          |
+| 4                       | NA                |          |
+| 5                       | NA                |          |
+| 9                       | FE:ED:1D:70:05:6D |          |
+| 10                      | FE:ED:12:71:06:65 |          |
+| 11                      | FE:ED:16:6B:72:67 |          |
+| 12                      | FE:ED:17:73:0E:69 |          |
+| 13                      |                   |          |
+| 15                      | ??                |          |
+| 16                      | FE:ED:74:66:03:6E |          |
+| 17                      | FE:ED:16:73:00:65 |          |
+| 18                      | FE:ED:13:70:06:6D |          |
+| 19                      | FE:ED:1D:70:00:6D |          |
+| 20                      | FE:ED:74:66:03:67 |          |
+| 21                      | FE:ED:10:73:00:6F |  FAILED?        |
+| 22                      | NA                |          |
+| 23                      | NA                |          |
+| 24                      | NA                |          |
+| 25                      | NA                |          |
+| 26                      | NA                |          |
+| 27                      | NA                |          |
+| 28                      | NA                |          |
+| 29                      | NA                |          |
+| 30                      | NA                |          |
 
 At end of shift send all new MAC Addresses for addition ot the server.
 
+### Temperature Measurements.
+**Test ID8:** 
+Observe on Serial monitor that two thermocouples report abmiant temprature.
+![image](https://github.com/user-attachments/assets/481c901c-4578-4e7c-a5c2-71b3fb57a0cd)
+Touching some of the thermocouples to ensure they respond.
+Note resutls in table on colum 8
 
-
-
+**Results continued...**
+| **Test ID**       | 7                         | 8                                                           | 9          |
+|-------------------|---------------------------|-------------------------------------------------------------|------------|
+| **Test Name**     | Current, Temperature Only | Check thermocouples                                         | future use |
+| **Setup**         | In line DC current meter  | Connect three                                               |            |
+| **Test Location** | Due input                 | Serial Plolter                                              |            |
+| **Requirements**  | 85 mA                     | Three traces                                                |            |
+| **Control V1.2**  | Skip test                 | Post Heater/Post Stack                                      |            |
+| **Results SN 16** | NA                        | Not captured                                                |            |
+| **Results SN 17** | NA                        | Not captured                                                |            |
+| **Results SN 18** | NA                        | Post Heater C: 20.25 Post Getter C: NA Post Stack  C: 20.50 |            |
+| **Results SN 19** | NA                        | Not captured                                                |            |
+| **Results SN 20** | NA                        | Post Heater C: 21.75 Post Getter C: NA Post Stack  C: 23.25 |            |
+| **Results SN 21** | NA                        |                                                             |            |
+| **Results SN 22** | NA                        |                                                             |            |
+| **Results SN 23** | NA                        |                                                             |            |
+| **Results SN 24** | NA                        |                                                             |            |
+| **Results SN 25** | NA                        |                                                             |            |
+| **Results SN 26** | NA                        |                                                             |            |
+| **Results SN 27** | NA                        |                                                             |            |
+| **Results SN 28** | NA                        |                                                             |            |
+| **Results SN 29** | NA                        |                                                             |            |
+| **Results SN 30** | NA                        |                                                             |            |
+|                   |                           |                                                             |            |
+|                   |                           |                                                             |            |
+|                   |                           |                                                             |            |
 
 ### End of Test
 Power off the unit under test.
-Remove all connections including the jumper wire at J14 and J25.
-Very carfuly so as to not bend pins, remove the LAN Sheild.
-Very carfuly so as to not bend pins, remove the Due controller. A modified pop cycle stick helps.
+Apply a green permanet lable near the PubInv logo.
 
 ## Rejoice another great OEDCS has been born!
 

@@ -268,8 +268,8 @@ public:
   // You may have to adjust these based on altitude;
   // if the air is thin, the fan can over-spin, and
   // you may want to lower the max speed to 60%.
-  const float FAN_SPEED_MAX_p = 80;
-  const float FAN_SPEED_MIN_p = 15;
+  const float FAN_SPEED_MAX_p = 80.0;
+  const float FAN_SPEED_MIN_p = 10.0;
   // Note: the "Blue" unit seems to raise its temperature even at 40%, but
   // 20% has been suggested.
   //  static constexpr float FAN_SPEED_PREFERRED_p = 40;
@@ -388,6 +388,28 @@ public:
   static constexpr float FAN_MODEL_QUAD_FACTOR_A = -8180.0;
   static constexpr float FAN_MODEL_LINE_FACTOR_B = 17620.0;
   static constexpr float FAN_MODEL_CONST_FACTOR_C = 7.6;
+
+  static constexpr float SENTINEL = -999.0;
+  float TEMP_AT_POWER_FAILURE = -999.0;
+  unsigned long TIME_OF_POWER_FAILURE_MS = 0;
+  static constexpr float TIME_CONSTANT_OF_COOLING_EXP_DECAY = 19764.0;
+
+
+
+    // These are constants used for measuring the 12V bus.
+    // Thsese shoudl probably be moved to machine.h
+    // TODO: These constants could be moved to machine.h!
+    const long FullScale = 1023;
+    const float percentOK = 0.25;
+    const float R1=40000;
+    const float R2=10000;
+    const float Vcc = 3.3;
+    const float LOW_BATTERY_BUS_VOLTAGE = 12.2;
+    // Note: This is mostly unused, it exists primarily for
+    // documentation and to make sure the 12V power supply is
+    // properly trimmed.
+    const float BATTERY_BUS_TRICKLE_CHARGE = 13.6;
+
   /********************************************
    FUTURE PARAMETERS, THESE HAVE NO MEANING AT PRESENT
    ********************************************/
@@ -398,6 +420,7 @@ public:
   static const int INIT_SHUTDOWN_BUTTON_PERIOD_MS = 250;
 
   static const int DISPLAY_UPDATE_MS = 2000;
+
 
 };
 

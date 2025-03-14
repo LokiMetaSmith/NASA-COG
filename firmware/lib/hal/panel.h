@@ -29,6 +29,7 @@ enum class LED_STATUS {
 
 class FrontPanel {
  public:
+  int DEBUG_LEVEL = 0;
   LED_STATUS status;
   void init();
   bool isSwitchOn();

@@ -66,7 +66,8 @@ namespace CogApp
     float SIH_w= 0;
     // Computing Pumping Wattage
     float PW_w = 0;
-    // Current Fan Speed
+    // Current Fan Speed -- we want this to ramp up slowly
+    // at statup (and if we restart after a power outage).
     float S_p = MachineConfig::FAN_SPEED_PREFERRED_p;
     // Current Total Wattage
     float TW_w = 0;
@@ -138,6 +139,8 @@ namespace CogApp
     float computeNernstVoltage(float T_K);
     float computePumpingWork(float T_k,float V,float R_O, float I_A);
     void changeRamps(unsigned long ms);
+
+    float expectedTempFromUnpoweredCooling();
 
     // TODO: I think we should separate all of this
     // computation from state machine by creating a new

@@ -55,16 +55,19 @@ void FrontPanel::setStatusLEDfromState(LED_STATUS ls) {
     onOrOff = true;
     setStatusLED(onOrOff);
     break;
-  };
+  }
 
   int switchState = analogRead(PANEL_SWITCH_DETECTION);
-  CogCore::Debug<const char *>("Switch Status : ");
-  CogCore::Debug<int>(switchState);
-  CogCore::Debug<const char *>("\n");
+  if (DEBUG_LEVEL > 0) {
+    CogCore::Debug<const char *>("Switch Status : ");
+    CogCore::Debug<int>(switchState);
+    CogCore::Debug<const char *>("\n");
+  }
   bool dswitchState = digitalRead(PANEL_SWITCH_DETECTION);
-  CogCore::Debug<bool>(dswitchState);
-  CogCore::Debug<const char *>("\n");
-
+  if (DEBUG_LEVEL > 0) {
+    CogCore::Debug<bool>(dswitchState);
+    CogCore::Debug<const char *>("\n");
+  }
 }
 void FrontPanel::init() {
   pinMode(PANEL_LED_FAULT,OUTPUT);

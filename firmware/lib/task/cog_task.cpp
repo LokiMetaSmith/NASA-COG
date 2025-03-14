@@ -136,6 +136,23 @@ namespace CogApp
     return min(w,targetTotalWattage);
   }
 
+  float CogTask::expectedTempFromUnpoweredCooling() {
+    if ((getConfig()->TEMP_AT_POWER_FAILURE == MachineConfig::SENTINEL) ||
+        (getConfig()->TIME_OF_POWER_FAILURE_MS == 0 )){
+      CogCore::Debug<const char *>("INTERNAL ERROR! COMPUTING COOLING RATE WITHOUT DATA!\n");
+      return MachineConfig::SENTINEL;
+    }
+    float T_orig_C = getConfig()->TEMP_AT_POWER_FAILURE;
+    float t_s =  (millis() - getConfig()->TIME_OF_POWER_FAILURE_MS) / 1000.0;
+    CogCore::Debug<const char *>("Time, Orig, !\n");
+    CogCore::DebugLn<float>(t_s);
+    CogCore::DebugLn<float>(T_orig_C);
+    float exponent = -t_s / MachineConfig::TIME_CONSTANT_OF_COOLING_EXP_DECAY;
+    CogCore::DebugLn<float>(exponent);
+    float current_temp_C = T_orig_C * pow(EULER, exponent);
+    return current_temp_C;
+  }
+
   float CogTask::computeFanSpeedTarget(float currentTargetTemp, float temp, float heaterWatts, float B, float C) {
     // const bool NEW_STRATEGY = true;
     // The NEW_STRATEGY is based on learnings that we have to adjust the fan dynamically.
@@ -716,6 +733,13 @@ namespace CogApp
 
     getConfig()->report->fan_rpm = calculated_fan_speed_rpms;
 
+
+    // now, if we are not "AWAITING_POWER", we will set these, for use if
+    // we ARE in AWAITING_POWER and the power comes back on.
+    getConfig()->TEMP_AT_POWER_FAILURE = getTemperatureReadingUpStream_C();
+    getConfig()->TIME_OF_POWER_FAILURE_MS = millis();
+
+
     evaluateErrorConditions();
 
     if (DEBUG_LEVEL > 0) {
@@ -732,11 +756,7 @@ namespace CogApp
       ls = LED_STATUS::BLINKING;
     }
 
-    CogCore::Debug<const char *>("Calling setStatusLED\n ");
     getHAL()->panel->setStatusLEDfromState(ls);
-
-    CogCore::Debug<int>(getHAL()->panel->isSwitchOn());
-    CogCore::Debug<const char *>("\n");
 
     if (getHAL()->panel->isSwitchOn()) {
       if (!(ms == NormalOperation || ms == Warmup || ms == Cooldown || ms == AwaitingPower)) {
@@ -826,6 +846,9 @@ namespace CogApp
 
   MachineState CogTask::_updateAwaitingPower() {
     MachineState new_ms = AwaitingPower;
+    // When we turn back on, we want the fan to be at minimum power.
+    c.S_p = getConfig()->FAN_SPEED_MIN_p;
+
     if (SM_DEBUG_LEVEL > 0) {
       CogCore::Debug<const char *>("Awating Power!\n");
     }
@@ -867,13 +890,13 @@ namespace CogApp
       // Now, here we need to check the voltage against a
       // low power value and turn off the relay if we reach it.
 
-      if (voltage < BATTERY_BUS_TRICKLE_CHARGE - 0.5) {
+      if (voltage < getConfig()->BATTERY_BUS_TRICKLE_CHARGE - 0.5) {
         CogCore::Debug<const char *>("12V bus voltage = ");
         CogCore::DebugLn<float>(voltage);
         CogCore::Debug<const char *>("This is too low to trickle charge the backup battery. Please trim the 12V power supply to 13.6 volts.");
       }
 
-      if (voltage < LOW_BATTERY_BUS_VOLTAGE) {
+      if (voltage < getConfig()->LOW_BATTERY_BUS_VOLTAGE) {
         // now we want to turn off the relay that connects
         // the battery bus by driving its pin low.
         CogCore::Debug<const char *>("12V bus voltage = ");
@@ -884,6 +907,17 @@ namespace CogApp
         getHAL()->batteryKeepAlive->turnOff();
       }
     } else { // we will try to recover to normal operation...
+      // now we will use the meausred cooling temp of the stack to set
+      // the target temp. This algorithm is slightly different than
+      // simply using the measured temperature to set the setpoint.
+      float expected_temp_c = expectedTempFromUnpoweredCooling();
+      if (expected_temp_c != MachineConfig::SENTINEL) {
+        changeTargetTemp(expected_temp_c);
+        CogCore::Debug<const char *>("Setting expected Target Temp from cooling time: ");
+        CogCore::DebugLn<float>(expected_temp_c);
+        CogCore::Debug<const char *>("BASED ON COOLED TIME OF:");
+        CogCore::DebugLn<float>((millis() - getConfig()->TIME_OF_POWER_FAILURE_MS)/1000.0);
+      }
       new_ms = Warmup;
     }
     return new_ms;
