@@ -16,12 +16,20 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS_Factory_Test V1.2"
-#define VERSION ";_Rev_0.5"    //Tests Pumping/Standby Switch and BLOWER_ENABLE (+24 to blower).
+#define VERSION ";_Rev_0.5"                         //Tests Pumping/Standby Switch and BLOWER_ENABLE (+24 to blower).
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.2"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
 #define BAUD_RATE 115200
 //
+
+#include <LiquidCrystal_I2C.h>
+#define ADDRESS_LCD_MARYVILLE 0x27
+#define COLUMNs_LCD_MARYVILLE 20
+#define ROWs_LCD_MARYVILLE 4
+LiquidCrystal_I2C lcd(ADDRESS_LCD_MARYVILLE, COLUMNs_LCD_MARYVILLE, ROWs_LCD_MARYVILLE);  // set the LCD address to 0x27 for a 16 chars and 2 line display
+
+
 #include <SPI.h>
 #include <Ethernet.h>
 
@@ -609,6 +617,24 @@ void updatePumping(void) {
   }
 }  //end updatePumping
 
+void init_LCD(void) {
+  lcd.init();  // initialize the lcd
+  // Print a message to the LCD.
+  lcd.backlight();
+}//end init_LCD
+
+void splashLCD(void){
+  lcd.setCursor(0, 0); //Column, row
+//  lcd.print("Hello, world!");
+  lcd.print(PROG_NAME);
+  lcd.setCursor(0, 1);
+  lcd.print(VERSION);
+  lcd.setCursor(0, 2);
+  lcd.print("Compiled at: ");
+  lcd.setCursor(0, 3);
+  lcd.print(F(__DATE__ " " __TIME__));
+}//end splashLCD
+
 void setup() {
   //serial1Buffer.reserve(256);
 
@@ -618,6 +644,9 @@ void setup() {
   Serial.println(VERSION);
   Serial.print("Compiled at: ");
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
+
+  init_LCD();
+  splashLCD();
 
   Serial1.begin(4800);
   while (!Serial1)
@@ -694,12 +723,12 @@ void loop() {
   SENSE_AUX1.Update();  //Read A3 every two seconds.
   SENSE_AUX2.Update();  //Read A4 every two seconds.
   led3.Update();        //FAULT_LED blink
-  led4.Update();        //STATUS_LED blink 
+  led4.Update();        //STATUS_LED blink
   updateSHUTDOWN();     //Press switch and make blower go fast.
   UpdateEthernet();     //Check link status.
   updatePumping();      //Pumping/Standby switch,turn on blower and STATUS_LED
 
-//Check the AC input power by inference of the +24V.  March 2025 Redundant
+  //Check the AC input power by inference of the +24V.  March 2025 Redundant
   // if (!updatePowerMonitor()) {
   //    Serial.println("Bad power");
   //   ;
