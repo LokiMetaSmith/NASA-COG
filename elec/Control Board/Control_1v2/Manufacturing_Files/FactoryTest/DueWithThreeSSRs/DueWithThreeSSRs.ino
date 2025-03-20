@@ -147,15 +147,24 @@ void UpdateEthernet() {
     //      delay(1000);  // Hold the splash screen a second
     digitalWrite(ETHERNET_CS, HIGH);  // deselect ethernet mode
     Serial.print("Link status: ");
-    switch (link_status) {
+    lcd.setCursor(0, 2);
+    lcd.print("Link status: ");
+    
+      switch (link_status) {
       case Unknown:
         Serial.println("Unknown");
+        lcd.setCursor(12, 2);
+        lcd.print("Unknown");
         break;
       case LinkON:
         Serial.println("ON");
+        lcd.setCursor(12, 2);
+        lcd.print("ON     ");
         break;
       case LinkOFF:
         Serial.println("OFF");
+        lcd.setCursor(12, 2);
+        lcd.print("OFF   ");
         break;
     }
   }  // update time.
