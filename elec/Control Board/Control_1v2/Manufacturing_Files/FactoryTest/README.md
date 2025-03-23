@@ -9,7 +9,7 @@ Notes made in issue #TBD during the development of this test plan.
 12V power supply with current monitor. Color the plug Red. 
 Multi meter to measure voltage and resistance.  (Actual Multimeter (EMCO DMR-3800) )  
 PC with Arduino IDE to connect to USB programing port of Due  
-![image](https://github.com/user-attachments/assets/a4672b03-30f1-4d7a-87e9-0666e32118ae)
+<img width="400" atl="USB programing port of Due" src="https://github.com/user-attachments/assets/a4672b03-30f1-4d7a-87e9-0666e32118ae">  
 
 Firmware: https://github.com/PubInv/NASA-MCOG/tree/develop/elec/Control%20Board/Control_1v1/FactoryTest  
 Arduino Sketches: 
@@ -28,9 +28,12 @@ Notes: All of the JST two pin hearders were found to be incorrecly orentaged bac
 4. Remove and rotate 180 degrees connector J11, J12, J13, J25, J30, and J31.
 5. Change R106 and R108 from 10K to 20K. This rework is done by unsoldering the existing 10K resistor and rotating it 90 degrees on one pad. Add a second 10K resistor to the now vacant pad and a short wire beween the two resistors. Lee used 30 AWG wire wrap wire.
 6. Add a 1 Ohm 0603 SMT resistor at R74 to provide 5V power at the I2C connector J24.
-7. Install PolyFuse F801 near the relay.  ![image](https://github.com/user-attachments/assets/339f6acd-438f-4da2-925a-ca8c99533dc1)
-8. Add an new resistor R186 a 10K on D42. ![image](https://github.com/user-attachments/assets/4bda4713-b8a1-43a6-a2e8-ea4b3a86b847) from J8 pin 24 5o pin 30 (GND), ![image](https://github.com/user-attachments/assets/7586917d-1c07-479e-9c7b-e52c6a60cb8c)
-9. DO NOT INSTALL DUE AT THIS TIME, but do install stackable (feed through) headers for the Due connections which make this assembly become a shield for a Due.
+7. Install PolyFuse F801 near the relay.  
+<img width="300" atl="PolyFuse F80" src="https://github.com/user-attachments/assets/339f6acd-438f-4da2-925a-ca8c99533dc1">  
+
+8. Add an new resistor R186 a 10K on D42 from J8 pin 24 5o pin 30 (GND).   
+<img width="300" atl="new resistor R186" src="https://github.com/user-attachments/assets/4bda4713-b8a1-43a6-a2e8-ea4b3a86b847"> <img width="400" atl="image2" src="https://github.com/user-attachments/assets/7586917d-1c07-479e-9c7b-e52c6a60cb8c">  
+9. DO NOT INSTALL DUE AT THIS TIME, but do install stackable (feed through) headers for the Due connections which make this assembly become a shield for a Due. 
 
 
 ### Unpowered Test of PWA.
