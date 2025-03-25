@@ -28,7 +28,7 @@ void readUID_ComposeMAC(){
   Serial.println("-I- Reading 128 bits Unique Identifier\r");
   ul_rc = flash_read_unique_id(unique_id, 4);
 
-  Serial.print(" ID = ");
+  Serial.print("ID = ");
   Serial.print((UL)unique_id[0]);
   Serial.print(",");
   Serial.print((UL)unique_id[1]);
