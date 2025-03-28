@@ -16,12 +16,20 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS_Factory_Test V1.2"
-#define VERSION ";_Rev_0.4"                         //Simplified PS test returns manufacturer name.
+#define VERSION ";_Rev_0.5"                         //Tests Pumping/Standby Switch and BLOWER_ENABLE (+24 to blower).
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.2"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
 #define BAUD_RATE 115200
 //
+
+#include <LiquidCrystal_I2C.h>
+#define ADDRESS_LCD_MARYVILLE 0x27
+#define COLUMNs_LCD_MARYVILLE 20
+#define ROWs_LCD_MARYVILLE 4
+LiquidCrystal_I2C lcd(ADDRESS_LCD_MARYVILLE, COLUMNs_LCD_MARYVILLE, ROWs_LCD_MARYVILLE);  // set the LCD address to 0x27 for a 16 chars and 2 line display
+
+
 #include <SPI.h>
 #include <Ethernet.h>
 
@@ -68,7 +76,14 @@ public:
     // check to see if it's time to change the state of the LED
     unsigned long currentMillis = millis();
     if (currentMillis - previousMillis >= ReadPeriod) {
-      previousMillis = currentMillis;                                           // Remember the time
+      previousMillis = currentMillis;  // Remember the time
+
+      //Force ADCinPin low so that if floating it will read low for the test below.
+      // pinMode(ADCinPin, OUTPUT);
+      // digitalWrite(ADCinPin, LOW);
+      // pinMode(ADCinPin,INPUT);
+      // delay(100)    ;
+
       voltage = analogRead(ADCinPin) * 3.3 * (my_R1 + my_R2) / (1023 * my_R2);  // RAW Read of the ADC
       Serial.print(my_pinName);                                                 //
       Serial.print(": ");                                                       //
@@ -125,22 +140,31 @@ void UpdateEthernet() {
   if (((currentMillis - previousLinkMillis) >= LINK_TIME) || (currentMillis < previousLinkMillis)) {
     previousLinkMillis = currentMillis;
     Serial.println("Checking LAN.");
-    digitalWrite(ETHERNET_CS, LOW);  // select ethernet mode
+    //FLE    digitalWrite(ETHERNET_CS, LOW);  // select ethernet mode
     link_status = Ethernet.linkStatus();
     //      delay(1000);  // Hold the splash screen a second
     auto link = Ethernet.linkStatus();
     //      delay(1000);  // Hold the splash screen a second
     digitalWrite(ETHERNET_CS, HIGH);  // deselect ethernet mode
     Serial.print("Link status: ");
-    switch (link_status) {
+    lcd.setCursor(0, 2);
+    lcd.print("Link status: ");
+    
+      switch (link_status) {
       case Unknown:
         Serial.println("Unknown");
+        lcd.setCursor(12, 2);
+        lcd.print("Unknown");
         break;
       case LinkON:
         Serial.println("ON");
+        lcd.setCursor(12, 2);
+        lcd.print("ON     ");
         break;
       case LinkOFF:
         Serial.println("OFF");
+        lcd.setCursor(12, 2);
+        lcd.print("OFF   ");
         break;
     }
   }  // update time.
@@ -164,6 +188,11 @@ PowerSense SENSE_AUX2("AUX2 ", 6, 10000, 10000, 14700, 64, 60);  //Read A6 R126,
 // #define LED_RED 43
 // #define LED_BLUE 44
 // #define LED_GREEN 45
+//Front Panel LEDs and switches
+#define FAULT_LED 43
+#define STATUS_LED 44
+#define ENC_SW 42
+
 #define nFAN1_PWM 9       // The pin D9 for driving the Blower.
 #define BLOWER_ENABLE 22  // The pin D22 for Enable 24V to the Blower.
 
@@ -181,6 +210,8 @@ power switch is toggled)  */
 Flasher led0(13, 100, 400);    //Pins for Control V1.1
 Flasher led1(SSR1, 100, 400);  //Pins for Control V1.1
 Flasher led2(SSR2, 350, 350);
+Flasher led3(FAULT_LED, 300, 400);
+Flasher led4(STATUS_LED, 375, 400);
 //Flasher led3(SSR3, 150, 350);
 
 //Tests for press of switch, "SHUT DOWN". Turns OFF the SSR3 LED
@@ -211,7 +242,7 @@ bool updatePowerMonitor(void) {
   const float Vcc = 3.3;
   bool powerIsGood = false;
   //int lowThreshold24V = (24 * (R2 / (R1 + R2)) / Vcc) * FullScale * percentOK;  //1023 * 3 / 4;
-//  int lowThreshold24V = (24 * (24700 / (10000 + 24700)) / 3.3) * 1023.0 * 3.0 / 4.0;  //1023 * 3 / 4;
+  //  int lowThreshold24V = (24 * (24700 / (10000 + 24700)) / 3.3) * 1023.0 * 3.0 / 4.0;  //1023 * 3 / 4;
   int lowThreshold24V = 600;  // Typical is 790 so use about 3/4
   const long POWER_MONITOR_TIME = 2000;
   static long previousPowerMillis = 0;
@@ -226,13 +257,17 @@ bool updatePowerMonitor(void) {
     Serial.print("lowThreshold24V= ");
     Serial.println(lowThreshold24V);
 
-
-    if (analogRead(A1) > lowThreshold24V) {
+    // pinMode(A1, OUTPUT);    //Force A1 low so that if floating it will read low for the lowThreshold24V test below
+    // digitalWrite(A1, LOW);
+    // pinMode(A1, INPUT);
+    int read24V = analogRead(A1);
+    if (read24V > lowThreshold24V) {
       Serial.println("24V power OK");
       powerIsGood = true;
       return true;
     } else {
-      Serial.println("Bad 24V power");
+      Serial.print("Bad 24V power = ");
+      Serial.println(int((3.3 * read24V) / 1023));
       powerIsGood = false;
       return false;
     }
@@ -578,6 +613,37 @@ public:
 
 PSU test_PSU1;
 
+void updatePumping(void) {
+  // If ENC_SW high then enable blower and flashing of STATUS_LED
+  if (digitalRead(ENC_SW)) {
+    //Blower enable high
+    digitalWrite(BLOWER_ENABLE, HIGH);
+    pinMode(STATUS_LED, OUTPUT);
+  } else {
+    //Blower enable low and turn off STATUS_LED
+    digitalWrite(BLOWER_ENABLE, LOW);
+    pinMode(STATUS_LED, LOW);
+  }
+}  //end updatePumping
+
+void init_LCD(void) {
+  lcd.init();  // initialize the lcd
+  // Print a message to the LCD.
+  lcd.backlight();
+}//end init_LCD
+
+void splashLCD(void){
+  lcd.setCursor(0, 0); //Column, row
+//  lcd.print("Hello, world!");
+  lcd.print(PROG_NAME);
+  lcd.setCursor(0, 1);
+  lcd.print(VERSION);
+  lcd.setCursor(0, 2);
+  lcd.print("Compiled at: ");
+  lcd.setCursor(0, 3);
+  lcd.print(F(__DATE__ " " __TIME__));
+}//end splashLCD
+
 void setup() {
   //serial1Buffer.reserve(256);
 
@@ -588,6 +654,9 @@ void setup() {
   Serial.print("Compiled at: ");
   Serial.println(F(__DATE__ " " __TIME__));  //compile date that is used for a unique identifier
 
+  init_LCD();
+  splashLCD();
+
   Serial1.begin(4800);
   while (!Serial1)
     ;
@@ -596,9 +665,15 @@ void setup() {
   digitalWrite(ETHERNET_CS, HIGH);
   pinMode(4, OUTPUT);  // On the Ethernet Shield, CS is pin 4
 
+  pinMode(FAULT_LED, OUTPUT);  // On the Front Panel
+  digitalWrite(FAULT_LED, HIGH);
+  pinMode(STATUS_LED, OUTPUT);  // On the Front Panel
+  digitalWrite(STATUS_LED, HIGH);
+
   pinMode(SHUT_DOWN, INPUT_PULLUP);
   pinMode(SSR3, OUTPUT);
   pinMode(BLOWER_ENABLE, OUTPUT);
+  pinMode(ENC_SW, INPUT);                  // If low lets turn off the BLOWER_ENABLE (24V to blower.)
   digitalWrite(BLOWER_ENABLE, HIGH);       //Set high to enable blower power.
   analogWrite(nFAN1_PWM, SET_BLOWER_LOW);  // Set for low RPM
   //analogWrite(nFAN1_PWM, 128);  // Set for medium RPM
@@ -637,31 +712,36 @@ void setup() {
   Serial.println(millis());
   //  test_PSU1.test_PS();  //run once to test psu
 
-  test_PSU1.getPS_Manuf(0x00); //Test for PS at default address.
+  test_PSU1.getPS_Manuf(0x00);  //Test for PS at default address.
 
   Serial.print("End of test_PSU1: ");
   Serial.println(millis());
+
+  digitalWrite(FAULT_LED, LOW);
+  digitalWrite(STATUS_LED, LOW);
+
 }  //End setup()
 
 void loop() {
-  static int pos = 0;
 
-  led0.Update();
-  led1.Update();  //cannot be used on systems with a stack
-  led2.Update();  //cannot be used on systems with a stack
-  //led3.Update();  //Does not work on Due hardware.
+  led0.Update();        //SSR1
+  led1.Update();        //SSR2 cannot be used on systems with a stack
+  led2.Update();        //SSR3 cannot be used on systems with a stack
   SENSE_24V.Update();   //Read A1 every two seconds.
   SENSE_12V.Update();   //Read A2 every two seconds.
   SENSE_AUX1.Update();  //Read A3 every two seconds.
   SENSE_AUX2.Update();  //Read A4 every two seconds.
+  led3.Update();        //FAULT_LED blink
+  led4.Update();        //STATUS_LED blink
+  updateSHUTDOWN();     //Press switch and make blower go fast.
+  UpdateEthernet();     //Check link status.
+  updatePumping();      //Pumping/Standby switch,turn on blower and STATUS_LED
 
-  updateSHUTDOWN();  //Check for press of switch
+  //Check the AC input power by inference of the +24V.  March 2025 Redundant
+  // if (!updatePowerMonitor()) {
+  //    Serial.println("Bad power");
+  //   ;
+  // }
 
-  UpdateEthernet();
-
-  if (!updatePowerMonitor()) {
-    //    Serial.println("Bad power");
-    ;
-  }
 
 }  //end of loop()
