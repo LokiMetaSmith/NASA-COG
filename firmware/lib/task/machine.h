@@ -283,7 +283,16 @@ public:
   // This is the maximum ramp in degrees C per minute.
   const float BOUND_MAX_RAMP_C_PER_MIN = 3.0;
 
-  // A definition of "cool" in which we consider the system safe...
+
+  // We have observed that when the system is very cool
+  // (that is, less than 60C), we cannot cool it fast enough
+  // with normal airflow. This throws a "HEATER_OUT_BOUND" error.
+  // It is not actually an error, just a consequence of the
+  // the fact that the thermal mass of the stack is quite high.
+  // We solve this by not checking for this error when below this floor.
+  const float CONTROL_BOUND_FLOOR_TEMPERATURE_C = 100.0;
+  // A definition of "cool" in which we consider the system safe;
+  // This is the transition from "COOL" to "OFF"
   const float SAFETY_COOL_TEMPERATURE_C = 50.0;
 
  #ifndef REDUCE_BOUND_MAX_TEMP_FOR_TESTING
