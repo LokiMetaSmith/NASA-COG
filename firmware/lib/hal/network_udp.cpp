@@ -334,7 +334,7 @@ NetworkUDP::printNet() {
   CogCore::Debug<const char *>("The MAC address is: ");
   for (uint8_t i = 0; i < 6; i++) {
     char t[4];
-    sprintf(t, "%0X", mac[i]);
+    sprintf(t, "%02X", mac[i]);
     CogCore::Debug<const char *>(t);
     if (i < 5) CogCore::Debug<const char *>(":");
   }

@@ -298,14 +298,15 @@ namespace CogApp
 	return true;
   }
 
+  // Return true if good, false if bad.
   bool CogTask::evaluateHeaterEnvelope(double current_input_temperature,
                                        double goal_temperature,
                                        double value_PID)
   {
 
     return !(((value_PID >=1.0) || (value_PID<=0.0))
-&&
-             current_input_temperature < getConfig()->SAFETY_COOL_TEMPERATURE_C
+             &&
+             current_input_temperature > getConfig()->CONTROL_BOUND_FLOOR_TEMPERATURE_C
              &&
              (abs(goal_temperature - current_input_temperature) > getConfig()->BOUND_MAX_TEMP_TRANSITION));
   }

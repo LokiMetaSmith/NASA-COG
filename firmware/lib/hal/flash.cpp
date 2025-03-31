@@ -73,9 +73,9 @@ setGlobalMacAddress() {
 
   sprintf(macString, "%02X:%02X:%02X:%02X:%02X:%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
-  CogCore::Debug<const char *>("MAC Address: ");
-  CogCore::Debug<const char *>(macString);
-  CogCore::Debug<const char *>("\n");
+  // CogCore::Debug<const char *>("MAC Address: ");
+  // CogCore::Debug<const char *>(macString);
+  // CogCore::Debug<const char *>("\n");
   return 0;
 }
 
@@ -89,7 +89,7 @@ initFlashConfiguration() {
     configuration.watchdog_count = 0;
     configuration.state = 0;
   } else {
-    byte* b = dfs.readAddress(4); 
+    byte* b = dfs.readAddress(4);
     memcpy(&configuration, b, sizeof(Configuration));
     // CogCore::Debug<const char *>(" update flash ");
     configuration.boot_count++;
@@ -106,7 +106,7 @@ initFlashConfiguration() {
 
 void
 writeFlashConfiguration() {
-  byte *b = dfs.readAddress(4); 
+  byte *b = dfs.readAddress(4);
   uint8_t needupdate = 0;
   byte b2[sizeof(Configuration)];
   memcpy(b2, &configuration, sizeof(Configuration));
