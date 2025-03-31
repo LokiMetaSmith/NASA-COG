@@ -16,7 +16,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS_Factory_Test V1.2"
-#define VERSION ";_Rev_0.5"                         //Tests Pumping/Standby Switch and BLOWER_ENABLE (+24 to blower).
+#define VERSION ";_Rev_0.6"                // Report UID and MAC
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.2"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -657,6 +657,8 @@ void setup() {
   init_LCD();
   splashLCD();
 
+  readUID_ComposeMAC();
+
   Serial1.begin(4800);
   while (!Serial1)
     ;
@@ -689,16 +691,16 @@ void setup() {
   IPAddress ip(10, 0, 0, 177);
   Ethernet.begin(mac, ip);  //Hard code the MAC and the IP address
 
-  byte macBuffer[6];               // create a buffer to hold the MAC address
-  Ethernet.MACAddress(macBuffer);  // fill the buffer
-  Serial.print("The MAC address is: ");
-  for (byte octet = 0; octet < 6; octet++) {
-    Serial.print(macBuffer[octet], HEX);
-    if (octet < 5) {
-      Serial.print('-');
-    }
-  }
-  Serial.println();
+  // byte macBuffer[6];               // create a buffer to hold the MAC address
+  // Ethernet.MACAddress(macBuffer);  // fill the buffer
+  // Serial.print("The MAC address is: ");
+  // for (byte octet = 0; octet < 6; octet++) {
+  //   Serial.print(macBuffer[octet], HEX);
+  //   if (octet < 5) {
+  //     Serial.print('-');
+  //   }
+  // }
+  // Serial.println();
 
   pinMode(KEEP_ALIVE, OUTPUT);
   digitalWrite(KEEP_ALIVE, LOW);  // TUrn off Keep Alive.
