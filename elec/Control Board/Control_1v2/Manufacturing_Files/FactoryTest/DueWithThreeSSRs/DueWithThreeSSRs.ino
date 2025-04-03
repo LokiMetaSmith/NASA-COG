@@ -16,7 +16,7 @@
 
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS_Factory_Test V1.2"
-#define VERSION ";_Rev_0.6"                // Report UID and MAC
+#define VERSION ";_Rev_0.7"                         // Report UID and MAC
 #define DEVICE_UNDER_TEST "Hardware:_Control_V1.2"  //A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -32,6 +32,35 @@ LiquidCrystal_I2C lcd(ADDRESS_LCD_MARYVILLE, COLUMNs_LCD_MARYVILLE, ROWs_LCD_MAR
 
 #include <SPI.h>
 #include <Ethernet.h>
+#include <MQTT.h>
+
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte ip[] = { 192, 168, 1, 177 };  // <- change to match your network
+
+
+EthernetClient net;
+MQTTClient client;
+
+//MQTT Connect
+void connect() {
+  Serial.print("connecting...");
+  while (!client.connect("PubInv", "public", "public")) {
+    Serial.print(".");
+    delay(1000);
+  }
+  Serial.println("\nMQTT connected!");
+  // client.subscribe("/hello");
+  // client.unsubscribe("/hello");
+}
+
+void messageReceived(String &topic, String &payload) {
+  Serial.println("incoming: " + topic + " - " + payload);
+
+  // Note: Do not use the client in the callback to publish, subscribe or
+  // unsubscribe as it may cause deadlocks when other things arrive while
+  // sending and receiving acknowledgments. Instead, change a global variable,
+  // or push to a queue and handle it in the loop after calling `client.loop()`.
+}
 
 #define ETHERNET_CS 10  //HIGH->Enabled, LOW->Disabled
 int link_status;
@@ -149,8 +178,8 @@ void UpdateEthernet() {
     Serial.print("Link status: ");
     lcd.setCursor(0, 2);
     lcd.print("Link status: ");
-    
-      switch (link_status) {
+
+    switch (link_status) {
       case Unknown:
         Serial.println("Unknown");
         lcd.setCursor(12, 2);
@@ -630,11 +659,11 @@ void init_LCD(void) {
   lcd.init();  // initialize the lcd
   // Print a message to the LCD.
   lcd.backlight();
-}//end init_LCD
+}  //end init_LCD
 
-void splashLCD(void){
-  lcd.setCursor(0, 0); //Column, row
-//  lcd.print("Hello, world!");
+void splashLCD(void) {
+  lcd.setCursor(0, 0);  //Column, row
+                        //  lcd.print("Hello, world!");
   lcd.print(PROG_NAME);
   lcd.setCursor(0, 1);
   lcd.print(VERSION);
@@ -642,11 +671,37 @@ void splashLCD(void){
   lcd.print("Compiled at: ");
   lcd.setCursor(0, 3);
   lcd.print(F(__DATE__ " " __TIME__));
-}//end splashLCD
+}  //end splashLCD
+
+void updateMQTTmessage(void) {
+  static unsigned long lastMillis = 0;
+  // publish a message roughly every second.
+  if (millis() - lastMillis > 5000) {
+    lastMillis = millis();
+    char message[80] = { "a1OEDCS_Factory_Test V1.2, V(A1)= " };  //The constant part of the message
+
+    //float voltage = analogRead(ADCinPin) * 3.3 * (my_R1 + my_R2) / (1023 * my_R2);
+    float voltage = analogRead(A1) * 3.3 / 1023;
+    Serial.print("voltage= ");
+    Serial.println(voltage);
+
+    char char_val[80] = { (char)voltage };
+    //    char messageValue[80] = {"99Volts"};
+    //strcat(dest, src);
+    //sprintf(char_array, "%f", float_num);
+    sprintf(char_val, "%.2f", voltage);
+    strcat(message, char_val);
+
+    //    client.publish("/hello", "world");
+    client.publish("3C61053DF08C_ALM", message);
+    Serial.print("char_val= ");
+    Serial.println(char_val);
+
+  }  //updateMQTTmessage
+}  //updateMQTTmessage
 
 void setup() {
   //serial1Buffer.reserve(256);
-
   Serial.begin(BAUD_RATE);
   Serial.println();
   Serial.print(PROG_NAME);
@@ -657,15 +712,22 @@ void setup() {
   init_LCD();
   splashLCD();
 
-  readUID_ComposeMAC();
+  //readUID_ComposeMAC();
+  // pinMode(ETHERNET_CS, OUTPUT);  // make sure that the default chip select pin is set to output, even if you don't use it:
+  // digitalWrite(ETHERNET_CS, HIGH);
+  // pinMode(4, OUTPUT);  // On the Ethernet Shield, CS is pin 4
+  // You can use Ethernet.init(pin) to configure the CS pin
+  // Ethernet.init(ETHERNET_CS);  // Most Arduino shields
+  Ethernet.begin(mac, ip);  //Hard code the MAC and the IP address
+  // Note: Local domain names (e.g. "Computer.local" on OSX) are not supported
+  // by Arduino. You need to set the IP address directly.
+  client.begin("public.cloud.shiftr.io", net);
+  client.onMessage(messageReceived);
+  connect();
 
   Serial1.begin(4800);
   while (!Serial1)
     ;
-
-  pinMode(ETHERNET_CS, OUTPUT);  // make sure that the default chip select pin is set to output, even if you don't use it:
-  digitalWrite(ETHERNET_CS, HIGH);
-  pinMode(4, OUTPUT);  // On the Ethernet Shield, CS is pin 4
 
   pinMode(FAULT_LED, OUTPUT);  // On the Front Panel
   digitalWrite(FAULT_LED, HIGH);
@@ -683,24 +745,8 @@ void setup() {
   pinMode(PS2_EN, OUTPUT);
   digitalWrite(PS1_EN, HIGH);  //Set high to enable PS1
   digitalWrite(PS2_EN, HIGH);  //Set high to enable PS2
-  // You can use Ethernet.init(pin) to configure the CS pin
-  Ethernet.init(ETHERNET_CS);  // Most Arduino shields
 
 
-  byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-  IPAddress ip(10, 0, 0, 177);
-  Ethernet.begin(mac, ip);  //Hard code the MAC and the IP address
-
-  // byte macBuffer[6];               // create a buffer to hold the MAC address
-  // Ethernet.MACAddress(macBuffer);  // fill the buffer
-  // Serial.print("The MAC address is: ");
-  // for (byte octet = 0; octet < 6; octet++) {
-  //   Serial.print(macBuffer[octet], HEX);
-  //   if (octet < 5) {
-  //     Serial.print('-');
-  //   }
-  // }
-  // Serial.println();
 
   pinMode(KEEP_ALIVE, OUTPUT);
   digitalWrite(KEEP_ALIVE, LOW);  // TUrn off Keep Alive.
@@ -724,7 +770,15 @@ void setup() {
 
 }  //End setup()
 
+
 void loop() {
+  //MQTT
+  client.loop();
+  if (!client.connected()) {
+    connect();
+  }
+
+  updateMQTTmessage();
 
   led0.Update();        //SSR1
   led1.Update();        //SSR2 cannot be used on systems with a stack
