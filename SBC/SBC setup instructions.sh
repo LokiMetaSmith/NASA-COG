@@ -1,4 +1,4 @@
-#download  Ubuntu Server 22.04.3 LTS                                                       
+#download  Ubuntu Server 24.10.0 LTS                                                       
 #copy to usb                                                                     
 #plug in keyboard , display and usb to sbc
 #power up sbc                                       
@@ -6,14 +6,14 @@
 #boot to usb
 
 #install ubuntu server name it 'pubinv-sbc-#' where # is the serial number of the Single board computer                                                      th
-#   (you can choose minimal install)                                             
+#   (don't choose minimal install, unless more testing is done)                                             
 #   use entire disk                                                              
-#     (you can turn off lvm - don't need it)                                     
+#   (you can turn off lvm - don't need it)                                     
 #   install open ssh server                                                      
 #   no need for any extra programs (at this time)                                
 #   set username and password   
 #   username: user password:(strong password, record for later use)                                                  
-#   add GitHub Keys to SSH account
+#   add GitHub Keys to SSH account by providing your github user name (case sensitive)
 
 #   let install finish                                                           
 #   unplug usb flash drive
@@ -64,6 +64,11 @@ make iotserver
 sudo ln -s ~/mcogserver/iotserver /usr/local/bin/iotserver
 
 #or maybe https://github.com/garywill/linux-router
+# enp1s0 (ethernet port closest to USB-C power inlet) (OEDCS connection)
+# enp3s0 (ethernet port next to enp1s0) (Internet source)
+# wlp2s0 (wifi device) (Internet source)
+#sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 --no-dns --dhcp-dns 1.1.1.1  -6 --dhcp-dns6 [2606:4700:4700::1111]
+
 #https://arstechnica.com/gadgets/2016/04/the-ars-guide-to-building-a-linux-router-from-scratch/
 #cp dhcpd.conf /etc/dhcp/dhcpd.conf
 #/etc/default/isc-dhcp-server INTERFACESv4="eth4"
@@ -74,3 +79,4 @@ sudo ln -s ~/mcogserver/iotserver /usr/local/bin/iotserver
 #use wormhole send ~/path/to/file
 #and wormhole receive codeXYZ
 
+# 

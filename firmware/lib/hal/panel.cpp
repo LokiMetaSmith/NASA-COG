@@ -19,7 +19,7 @@
 
 #include <panel.h>
 #include <gpio_pin_defs.h>
-#include <arduino.h>
+#include <Arduino.h>
 #include <debug.h>
 
 void FrontPanel::setFaultLED(bool onOrOff) {
