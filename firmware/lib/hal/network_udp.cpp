@@ -31,7 +31,7 @@ char timeServer[] = "time.nist.gov";
 
 // #define UDP_SERVER_LOCAL
 #ifdef UDP_SERVER_LOCAL
-char mcogs[] = "192.168.1.118";  // Lee's Processing server on desk top, Maryville.
+char mcogs[] = UDP_SERVER_LOCAL;  //platformio.ini defined address
 #else
 char mcogs[] = "mcogs.coslabs.com"; // Used the internet.
 #endif
