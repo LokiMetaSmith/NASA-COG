@@ -293,7 +293,7 @@ public:
   const float CONTROL_BOUND_FLOOR_TEMPERATURE_C = 100.0;
   // A definition of "cool" in which we consider the system safe;
   // This is the transition from "COOL" to "OFF"
-  const float SAFETY_COOL_TEMPERATURE_C = 50.0;
+  const float SAFETY_COOL_TEMPERATURE_C = 60.0;
 
  #ifndef REDUCE_BOUND_MAX_TEMP_FOR_TESTING
   // This created false "stops" at 20 C.
