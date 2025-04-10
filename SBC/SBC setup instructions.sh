@@ -110,7 +110,7 @@ sudo ufw status
 #    }
 #}
 #clear old tables if present
-sudo rm /etc/nftables.conf
+#sudo rm /etc/nftables.conf
 #copy new tables to 
 echo "" >> /etc/nftables.conf
 echo "table inet nat {" >> /etc/nftables.conf
