@@ -623,6 +623,7 @@ namespace CogApp
         CogCore::DebugLn<float>(fan_rpm);
       }
     }//end debug block
+
 #ifndef DISABLE_FAN_EVAL//ADDED SO FAN CAN BE DISABLED !!! DO NOT LET THIS BE COMMENTED OUT IN production
 
     if (!getHAL()->_fans[0]->evaluateFan(fan_pwm_ratio,fan_rpm,
@@ -676,8 +677,9 @@ namespace CogApp
           }
         }
       }
-    }//evaluateHeaterEnvelope
+    }
 
+    // Check digital power state.
     PSU_STATE psu_state = getHAL()->_stacks[0]->evaluatePS();
     switch (psu_state) {
     case PSU_Bad:
@@ -720,10 +722,8 @@ namespace CogApp
           CogCore::DebugLn<const char *>("We reinitalized the PSU, but it still failed in some way!");
         };
       }
-
       break;
     };
-
     return retval;
   }
 
@@ -740,8 +740,9 @@ namespace CogApp
     getConfig()->TEMP_AT_POWER_FAILURE = getTemperatureReadingUpStream_C();
     getConfig()->TIME_OF_POWER_FAILURE_MS = millis();
 
-
-    evaluateErrorConditions();
+    if (!(Off == getConfig()->ms)) {
+      evaluateErrorConditions();
+    }
 
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
@@ -811,6 +812,7 @@ namespace CogApp
       CogCore::Debug<int>(freeMemory());
       CogCore::Debug<const char *>("\n");
     }
+    getConfig()->ms = ms;
   }
 
   // We believe someday an automatic algorithm will be needed here.
