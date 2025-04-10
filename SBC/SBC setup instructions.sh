@@ -43,6 +43,10 @@
 #edit /etc/dpkg/dpkg.cfg.d/excludes                                              
 sudo apt update
 sudo apt-get dist-upgrade -y
+#check for firmware updates
+sudo fwupdatemgr get-upgrades
+sudo fwupdatemgr update -y
+
 sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-essential python3-venv python3-pip git tmux
 
 #   comment out the excludes for man and docs                                    
@@ -61,8 +65,10 @@ sudo ln -s ~/.platformio/penv/bin/pio /usr/local/bin/pio
 sudo ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 
 #install the local mcogserver
+sudo mkdir -p /var/www/mcogs
 sudo apt install -y  build-essential git libssl-dev isc-dhcp-server procps dnsmasq hostapd iptables  iproute2 resolvconf firewalld fail2ban wormhole
 git clone --recurse-submodules https://github.com/PubInv/mcogserver.git
+sudo ln -s ~/mcogserver /var/www/mcogs
 # use following if recurse failed: git submodule init / git submodule update
 #
 cd ~/mcogserver 
@@ -83,14 +89,60 @@ sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 \
 
 sudo ufw allow ssh
 sudo ufw allow 57575 /udp
+sudo ufw status
+
+#echo "" >> 
+
+#table ip mangle
+#delete table ip mangle
+
+#table ip mangle {
+#    chain prerouting {
+#        type filter hook prerouting priority mangle; policy accept;
+#        iifname "enp1s0" udp dport 57575 \
+#      dup to 127.0.0.1 device lo udp dport set 57575 notrack     
+#    }#
+#
+#    chain input {
+#        type filter hook input priority mangle; policy accept;
+#        iifname lo udp dport 57575 ip daddr set 127.0.0.1 notrack
+#        
+#    }
+#}
+#clear old tables if present
+sudo rm /etc/nftables.conf
+#copy new tables to 
+echo "" >> /etc/nftables.conf
+echo "table inet nat {" >> /etc/nftables.conf
+echo "  chain prerouting { type nat hook prerouting priority dstnat; policy accept; }" >> /etc/nftables.conf
+echo "  chain postrouting { type nat hook postrouting priority masquerade; policy accept; }" >> /etc/nftables.conf
+echo "}" >> /etc/nftables.conf
+echo "" >> /etc/nftables.conf
+echo "table inet filter {" >> /etc/nftables.conf
+echo "  chain forward { type filter hook forward priority filter; policy accept; }" >> /etc/nftables.conf
+echo "}" >> /etc/nftables.conf
+echo "" >> /etc/nftables.conf
+echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 tee to 127.0.0.1:57575" >> /etc/nftables.conf
+echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 dnat to mcogs.coslabs.com:57575" >> /etc/nftables.conf
+echo "add rule inet filter forward iifname \"enp1s0\" oifname != \"enp1s0\" udp dport 57575 daddr mcogs.coslabs.com accept" >> /etc/nftables.conf
+echo "add rule inet nat postrouting oifname != \"enp1s0\" masquerade" >> /etc/nftables.conf
+sudo nft table ip nat
+sudo delete table ip nat
+
+sudo nft list rules 
+sudo systemctl enable nftables
+sudo systemctl start nftables
+sudo nft -f /etc/nftables.conf
+
 #https://arstechnica.com/gadgets/2016/04/the-ars-guide-to-building-a-linux-router-from-scratch/
 #cp dhcpd.conf /etc/dhcp/dhcpd.conf
 #/etc/default/isc-dhcp-server INTERFACESv4="eth4"
 #sudo systemctl restart isc-dhcp-server.service
-#sudo systemctl start mcogs.service
-#sudo systemctl enable mcogs.service
+sudo systemctl start mcogs.service
+sudo systemctl enable mcogs.service
 
 #use wormhole send ~/path/to/file
 #and wormhole receive codeXYZ
+#or use scp such as winscp or scp on linux
 
 # 
