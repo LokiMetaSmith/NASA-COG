@@ -1,3 +1,9 @@
+#SBC requirements recommendations
+#Ethernet Ports |  one   | two
+#WiFi           | none |yes 
+#boot on power cycle | yes | yes
+#
+
 #download  Ubuntu Server 24.10.0 LTS                                                       
 #copy to usb                                                                     
 #plug in keyboard , display and usb to sbc
@@ -67,8 +73,16 @@ sudo ln -s ~/mcogserver/iotserver /usr/local/bin/iotserver
 # enp1s0 (ethernet port closest to USB-C power inlet) (OEDCS connection)
 # enp3s0 (ethernet port next to enp1s0) (Internet source)
 # wlp2s0 (wifi device) (Internet source)
-#sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 --no-dns --dhcp-dns 1.1.1.1  -6 --dhcp-dns6 [2606:4700:4700::1111]
+sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 \
+--no-dns \
+--dhcp-dns 1.1.1.1  
+-6 \
+--dhcp-dns6  [2606:4700:4700::1111] \
+-g 192.168.5.254
+--daemon
 
+sudo ufw allow ssh
+sudo ufw allow 57575 /udp
 #https://arstechnica.com/gadgets/2016/04/the-ars-guide-to-building-a-linux-router-from-scratch/
 #cp dhcpd.conf /etc/dhcp/dhcpd.conf
 #/etc/default/isc-dhcp-server INTERFACESv4="eth4"
