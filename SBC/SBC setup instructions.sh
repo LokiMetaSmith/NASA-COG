@@ -8,8 +8,8 @@
 #copy to usb                                                                     
 #plug in keyboard , display and usb to sbc
 #power up sbc                                       
-#when splash screen hit F12                                                      
-#boot to usb
+#when splash screen hit F12 or DEL                                                     
+#boot to usb, and make sure the SBC powers on automatically
 
 #install ubuntu server name it 'pubinv-sbc-#' where # is the serial number of the Single board computer                                                      th
 #   (don't choose minimal install, unless more testing is done)                                             
@@ -33,10 +33,11 @@
 #ssh -A  user@pubinv-sbc-# 
 #run the following
 #sudo apt install git
+#cd /usr/local/etc/
 #git clone git@github.com:PubInv/NASA-MCOG.git
 
-#chmod +x ./NASA-COG/'SBC setup instructions'
-#run ./NASA-COG/'SBC setup instructions'
+#chmod +x /usr/local/etc/NASA-COG/'SBC setup instructions'
+#run /usr/local/etc/NASA-COG/'SBC setup instructions'
 
 #//install your favorite editor (sudo apt install emacs-nox)                 
 #install tmux https://github.com/tmux/tmux/wiki                                          
@@ -67,25 +68,39 @@ sudo ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 #install the local mcogserver
 sudo mkdir -p /var/www/mcogs
 sudo apt install -y  build-essential git libssl-dev isc-dhcp-server procps dnsmasq hostapd iptables  iproute2 resolvconf firewalld fail2ban wormhole
+cd /usr/local/etc/
 git clone --recurse-submodules https://github.com/PubInv/mcogserver.git
-sudo ln -s ~/mcogserver /var/www/mcogs
+sudo ln -s /usr/local/etc/mcogserver /var/www/mcogs
 # use following if recurse failed: git submodule init / git submodule update
 #
-cd ~/mcogserver 
+cd /usr/local/etc/mcogserver 
 make iotserver
-sudo ln -s ~/mcogserver/iotserver /usr/local/bin/iotserver
+sudo ln -s /usr/local/etc/mcogserver/iotserver /usr/local/bin/iotserver
+
+sudo systemctl start mcogs.service
+sudo systemctl enable mcogs.service
 
 #or maybe https://github.com/garywill/linux-router
 # enp1s0 (ethernet port closest to USB-C power inlet) (OEDCS connection)
 # enp3s0 (ethernet port next to enp1s0) (Internet source)
 # wlp2s0 (wifi device) (Internet source)
-sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 \
---no-dns \
---dhcp-dns 1.1.1.1  
--6 \
---dhcp-dns6  [2606:4700:4700::1111] \
--g 192.168.5.254
---daemon
+cd /usr/local/etc/
+git clone https://github.com/garywill/linux-router
+chmod 755 /usr/local/etc/linux-router/lnxrouter
+sudo ln -s /usr/local/etc/linux-router/lnxrouter /usr/local/bin/lnxrouter
+cd /usr/local/etc/NASA-MCOG/SBC/
+sudo systemctl enable linux-router.service
+sudo systemctl start linux-router.service
+
+
+
+#sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 \
+#--no-dns \
+#--dhcp-dns 1.1.1.1  
+#-6 \
+#--dhcp-dns6  [2606:4700:4700::1111] \
+#-g 192.168.5.254
+#--daemon
 
 sudo ufw allow ssh
 sudo ufw allow 57575 /udp
@@ -111,21 +126,22 @@ sudo ufw status
 #}
 #clear old tables if present
 #sudo rm /etc/nftables.conf
+sudo cp /usr/local/etc/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
 #copy new tables to 
-echo "" >> /etc/nftables.conf
-echo "table inet nat {" >> /etc/nftables.conf
-echo "  chain prerouting { type nat hook prerouting priority dstnat; policy accept; }" >> /etc/nftables.conf
-echo "  chain postrouting { type nat hook postrouting priority masquerade; policy accept; }" >> /etc/nftables.conf
-echo "}" >> /etc/nftables.conf
-echo "" >> /etc/nftables.conf
-echo "table inet filter {" >> /etc/nftables.conf
-echo "  chain forward { type filter hook forward priority filter; policy accept; }" >> /etc/nftables.conf
-echo "}" >> /etc/nftables.conf
-echo "" >> /etc/nftables.conf
-echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 tee to 127.0.0.1:57575" >> /etc/nftables.conf
-echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 dnat to mcogs.coslabs.com:57575" >> /etc/nftables.conf
-echo "add rule inet filter forward iifname \"enp1s0\" oifname != \"enp1s0\" udp dport 57575 daddr mcogs.coslabs.com accept" >> /etc/nftables.conf
-echo "add rule inet nat postrouting oifname != \"enp1s0\" masquerade" >> /etc/nftables.conf
+#echo "" >> /etc/nftables.conf
+#echo "table inet nat {" >> /etc/nftables.conf
+#echo "  chain prerouting { type nat hook prerouting priority dstnat; policy accept; }" >> /etc/nftables.conf
+#echo "  chain postrouting { type nat hook postrouting priority masquerade; policy accept; }" >> /etc/nftables.conf
+#echo "}" >> /etc/nftables.conf
+#echo "" >> /etc/nftables.conf
+#echo "table inet filter {" >> /etc/nftables.conf
+#echo "  chain forward { type filter hook forward priority filter; policy accept; }" >> /etc/nftables.conf
+#echo "}" >> /etc/nftables.conf
+#echo "" >> /etc/nftables.conf
+#echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 tee to 127.0.0.1:57575" >> /etc/nftables.conf
+#echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 dnat to mcogs.coslabs.com:57575" >> /etc/nftables.conf
+#echo "add rule inet filter forward iifname \"enp1s0\" oifname != \"enp1s0\" udp dport 57575 daddr mcogs.coslabs.com accept" >> /etc/nftables.conf
+#echo "add rule inet nat postrouting oifname != \"enp1s0\" masquerade" >> /etc/nftables.conf
 sudo nft table ip nat
 sudo delete table ip nat
 
@@ -138,8 +154,7 @@ sudo nft -f /etc/nftables.conf
 #cp dhcpd.conf /etc/dhcp/dhcpd.conf
 #/etc/default/isc-dhcp-server INTERFACESv4="eth4"
 #sudo systemctl restart isc-dhcp-server.service
-sudo systemctl start mcogs.service
-sudo systemctl enable mcogs.service
+
 
 #use wormhole send ~/path/to/file
 #and wormhole receive codeXYZ

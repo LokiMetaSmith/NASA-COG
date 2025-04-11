@@ -1,0 +1,13 @@
+[Unit]
+Description=Apply custom nftables rules for MCOG
+After=network-online.target
+After=linux-router.service  # Adjust if the linux-router service has a different name
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c "nft -f /etc/nftables.conf"
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
