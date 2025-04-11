@@ -142,19 +142,15 @@ sudo cp /usr/local/etc/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
 #echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 dnat to mcogs.coslabs.com:57575" >> /etc/nftables.conf
 #echo "add rule inet filter forward iifname \"enp1s0\" oifname != \"enp1s0\" udp dport 57575 daddr mcogs.coslabs.com accept" >> /etc/nftables.conf
 #echo "add rule inet nat postrouting oifname != \"enp1s0\" masquerade" >> /etc/nftables.conf
-sudo nft table ip nat
-sudo delete table ip nat
 
-sudo nft list rules 
-sudo systemctl enable nftables
-sudo systemctl start nftables
+
+#sudo nft list rules 
+#sudo systemctl enable nftables
+#sudo systemctl start nftables
 sudo nft -f /etc/nftables.conf
 
-#https://arstechnica.com/gadgets/2016/04/the-ars-guide-to-building-a-linux-router-from-scratch/
-#cp dhcpd.conf /etc/dhcp/dhcpd.conf
-#/etc/default/isc-dhcp-server INTERFACESv4="eth4"
-#sudo systemctl restart isc-dhcp-server.service
-
+#should resolve remote server ip address correctly
+dig +short "mcogs.coslabs.com"
 
 #use wormhole send ~/path/to/file
 #and wormhole receive codeXYZ
