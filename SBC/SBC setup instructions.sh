@@ -36,8 +36,8 @@
 #cd /usr/local/etc/
 #git clone git@github.com:PubInv/NASA-MCOG.git
 
-#chmod +x /usr/local/etc/NASA-COG/'SBC setup instructions'
-#run /usr/local/etc/NASA-COG/'SBC setup instructions'
+#chmod +x /home/user/NASA-COG/'SBC setup instructions'
+#run: ./home/user/NASA-COG/SBC/'SBC setup instructions'
 
 #//install your favorite editor (sudo apt install emacs-nox)                 
 #install tmux https://github.com/tmux/tmux/wiki                                          
@@ -76,7 +76,7 @@ sudo ln -s /usr/local/etc/mcogserver /var/www/mcogs
 cd /usr/local/etc/mcogserver 
 sudo make iotserver
 sudo ln -s /usr/local/etc/mcogserver/iotserver /usr/local/bin/iotserver
-cd /usr/local/etc/NASA-MCOG/SBC
+cd /home/user/NASA-MCOG/SBC
 sudo systemctl start mcogs.service
 sudo systemctl enable mcogs.service
 
@@ -88,7 +88,7 @@ cd /usr/local/etc/
 sudo git clone https://github.com/garywill/linux-router
 sudo chmod 755 /usr/local/etc/linux-router/lnxrouter
 sudo ln -s /usr/local/etc/linux-router/lnxrouter /usr/local/bin/lnxrouter
-cd /usr/local/etc/NASA-MCOG/SBC/
+cd /home/user/NASA-MCOG/SBC/
 sudo systemctl enable linux-router.service
 sudo systemctl start linux-router.service
 
@@ -126,7 +126,7 @@ sudo ufw status
 #}
 #clear old tables if present
 #sudo rm /etc/nftables.conf
-sudo cp /usr/local/etc/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
+sudo cp /home/user/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
 #copy new tables to 
 #echo "" >> /etc/nftables.conf
 #echo "table inet nat {" >> /etc/nftables.conf
