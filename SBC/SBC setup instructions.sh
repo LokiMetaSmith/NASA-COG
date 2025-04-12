@@ -45,8 +45,8 @@
 sudo apt update
 sudo apt-get dist-upgrade -y
 #check for firmware updates
-sudo fwupdatemgr get-upgrades
-sudo fwupdatemgr update -y
+sudo fwupdmgr get-upgrades
+sudo fwupdmgr update -y
 
 sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-essential python3-venv python3-pip git tmux
 
@@ -54,7 +54,7 @@ sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-e
 sudo apt install -y man-db manpages manpages-dev manpages-posix manpages-posix-dev                                                                            
 sudo mv /usr/bin/man.REAL /usr/bin/man
 sudo mandb -c
-
+cd ~
 #use one of these
 #wget https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -O get-platformio.py
 curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
@@ -69,14 +69,14 @@ sudo ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 sudo mkdir -p /var/www/mcogs
 sudo apt install -y  build-essential git libssl-dev isc-dhcp-server procps dnsmasq hostapd iptables  iproute2 resolvconf firewalld fail2ban wormhole
 cd /usr/local/etc/
-git clone --recurse-submodules https://github.com/PubInv/mcogserver.git
+sudo git clone --recurse-submodules https://github.com/PubInv/mcogserver.git
 sudo ln -s /usr/local/etc/mcogserver /var/www/mcogs
 # use following if recurse failed: git submodule init / git submodule update
 #
 cd /usr/local/etc/mcogserver 
-make iotserver
+sudo make iotserver
 sudo ln -s /usr/local/etc/mcogserver/iotserver /usr/local/bin/iotserver
-
+cd /usr/local/etc/NASA-MCOG/SBC
 sudo systemctl start mcogs.service
 sudo systemctl enable mcogs.service
 
@@ -85,8 +85,8 @@ sudo systemctl enable mcogs.service
 # enp3s0 (ethernet port next to enp1s0) (Internet source)
 # wlp2s0 (wifi device) (Internet source)
 cd /usr/local/etc/
-git clone https://github.com/garywill/linux-router
-chmod 755 /usr/local/etc/linux-router/lnxrouter
+sudo git clone https://github.com/garywill/linux-router
+sudo chmod 755 /usr/local/etc/linux-router/lnxrouter
 sudo ln -s /usr/local/etc/linux-router/lnxrouter /usr/local/bin/lnxrouter
 cd /usr/local/etc/NASA-MCOG/SBC/
 sudo systemctl enable linux-router.service
