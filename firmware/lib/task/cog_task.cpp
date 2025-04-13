@@ -743,7 +743,6 @@ namespace CogApp
     if (!(Off == getConfig()->ms)) {
       evaluateErrorConditions();
     }
-
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
     }
@@ -938,6 +937,9 @@ namespace CogApp
   }
 
   void CogTask::turnOff() {
+    if (getConfig()->ms != Off) {
+      getHAL()->batteryKeepAlive->turnOff();
+    }
     if (DEBUG_LEVEL > 1) {
       CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
     }
