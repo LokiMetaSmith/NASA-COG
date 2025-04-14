@@ -171,3 +171,6 @@ dig +short "mcogs.coslabs.com"
 
 # stty -F /dev/ttyACM0 raw 115200
 # cat /dev/ttyACM0
+
+#  sudo journalctl -u mcogserver.service -f
+
