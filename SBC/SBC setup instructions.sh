@@ -105,6 +105,7 @@ sudo systemctl status linux-router.service
 
 sudo ufw allow ssh
 sudo ufw allow 57575/udp
+sudo ufw allow 57576/udp
 sudo ufw status
 
 #echo "" >> 
@@ -127,7 +128,7 @@ sudo ufw status
 #}
 #clear old tables if present
 #sudo rm /etc/nftables.conf
-sudo cp /home/user/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
+##sudo cp /home/user/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
 #copy new tables to 
 #echo "" >> /etc/nftables.conf
 #echo "table inet nat {" >> /etc/nftables.conf
@@ -148,8 +149,19 @@ sudo cp /home/user/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
 #sudo nft list rules 
 #sudo systemctl enable nftables
 #sudo systemctl start nftables
-sudo nft -f /etc/nftables.conf
+#sudo nft -f /etc/nftables.conf
 
+sudo apt install automake
+./autogen.sh
+./configure
+make
+make install
+
+sudo samplicate -s 192.168.5.254 -p 57575 -d 1 mcogs.coslab.com/57575 127.0.0.1/57576 
+
+cp samplicator.service /etc/systemd/system/samplicator.service
+systemctl daemon-reload
+systemctl start samplicator.service
 #should resolve remote server ip address correctly
 dig +short "mcogs.coslabs.com"
 
