@@ -91,7 +91,7 @@ sudo ln -s /usr/local/etc/linux-router/lnxrouter /usr/local/bin/lnxrouter
 cd /home/user/NASA-MCOG/SBC/
 sudo systemctl enable linux-router.service
 sudo systemctl start linux-router.service
-
+sudo systemctl status linux-router.service
 
 
 #sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 \
@@ -156,4 +156,5 @@ dig +short "mcogs.coslabs.com"
 #and wormhole receive codeXYZ
 #or use scp such as winscp or scp on linux
 
-# 
+# stty -F /dev/ttyACM0 raw 115200
+# cat /dev/ttyACM0

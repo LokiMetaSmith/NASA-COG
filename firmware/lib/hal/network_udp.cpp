@@ -32,15 +32,19 @@ char timeServer[] = "time.nist.gov";
 // #define UDP_SERVER_LOCAL
 #ifdef UDP_SERVER_LOCAL
 char mcogs[] = UDP_SERVER_LOCAL;  //platformio.ini defined address
+
 #else
 char mcogs[] = "mcogs.coslabs.com"; // Used the internet.
 #endif
 
 byte packetBuffer[buffMax]; //buffer to hold incoming packet,
-
 #define localPort 2390
-#define serverPort 57575
+#ifdef UDP_SERVER_PORT
+#define serverPort UDP_SERVER_PORT
+#else
 
+#define serverPort 57575
+#endif
 // An EthernetUDP instance to let us send and receive packets over UDP
 EthernetUDP Udp;
 #define W5200_CS  10
