@@ -48,7 +48,8 @@ sudo apt-get dist-upgrade -y
 sudo fwupdmgr get-upgrades
 sudo fwupdmgr update -y
 
-sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-essential python3-venv python3-pip git tmux
+sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-essential python3-venv python3-pip git tmux net-tools
+# netstat -tulpn # to troubleshoot port issues
 
 #   comment out the excludes for man and docs                                    
 sudo apt install -y man-db manpages manpages-dev manpages-posix manpages-posix-dev                                                                            
