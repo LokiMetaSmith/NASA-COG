@@ -104,7 +104,7 @@ sudo systemctl status linux-router.service
 #--daemon
 
 sudo ufw allow ssh
-sudo ufw allow 57575 /udp
+sudo ufw allow 57575/udp
 sudo ufw status
 
 #echo "" >> 
