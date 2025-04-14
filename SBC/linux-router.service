@@ -1,13 +1,14 @@
 [Unit]
 Description=Start linux-router script
-After=network-online.target
-Wants=network-online.target
+After=network.target
+Wants=network.target
 
 [Service]
-User=root  # Or a specific user if the script doesn't require root
-WorkingDirectory=/usr/local/etc/linux-router  # Or the directory where lnxrouter is located
-ExecStart=/usr/local/bin/lnxrouter -i enp1s0 -o enp3s0 wlp2s0 --no-dns --dhcp-dns 1.1.1.1 -6 --dhcp-dns6 [2606:4700:4700::1111] -g 192.168.5.254 --daemon
-Restart=on-failure
+#User=root  # Or a specific user if the script doesn't require root
+#WorkingDirectory=/usr/local/etc/linux-router/  # Or the directory where lnxrouter is located
+ExecStart=/usr/local/bin/lnxrouter -i enp1s0 -o enp3s0 -6 -g 192.168.5.254 
+Restart=always
+RestartSec=1
 StandardOutput=journal
 StandardError=journal
 
