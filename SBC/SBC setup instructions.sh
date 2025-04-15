@@ -25,6 +25,9 @@
 #   unplug usb flash drive
 #   reboot                                                                       
 #   add personal ssh key, use the password recorded previously 
+#   when logged in 
+#   ssh-import-id gh:github_username
+#   when on the same network
 #   ssh-copy-id user@pubinv-sbc-#
 
 #ssh into sbc, you must be on a computer that has valid github repo keys already
