@@ -163,3 +163,8 @@ oedcs1_1:
 monitor:
 	cd firmware \
 	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
+
+## SBC configured make directive points UDP to  192.168.5.254
+        cd firmware \
+        && pio run -e due_ctl_1_1_SBC \
+        && pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
