@@ -25,6 +25,9 @@
 #   unplug usb flash drive
 #   reboot                                                                       
 #   add personal ssh key, use the password recorded previously 
+#   when logged in 
+#   ssh-import-id gh:github_username
+#   when on the same network
 #   ssh-copy-id user@pubinv-sbc-#
 
 #ssh into sbc, you must be on a computer that has valid github repo keys already
@@ -48,7 +51,8 @@ sudo apt-get dist-upgrade -y
 sudo fwupdmgr get-upgrades
 sudo fwupdmgr update -y
 
-sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-essential python3-venv python3-pip git tmux
+sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-essential python3-venv python3-pip git tmux net-tools
+# netstat -tulpn # to troubleshoot port issues
 
 #   comment out the excludes for man and docs                                    
 sudo apt install -y man-db manpages manpages-dev manpages-posix manpages-posix-dev                                                                            
@@ -91,7 +95,7 @@ sudo ln -s /usr/local/etc/linux-router/lnxrouter /usr/local/bin/lnxrouter
 cd /home/user/NASA-MCOG/SBC/
 sudo systemctl enable linux-router.service
 sudo systemctl start linux-router.service
-
+sudo systemctl status linux-router.service
 
 
 #sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 \
@@ -103,7 +107,8 @@ sudo systemctl start linux-router.service
 #--daemon
 
 sudo ufw allow ssh
-sudo ufw allow 57575 /udp
+sudo ufw allow 57575/udp
+sudo ufw allow 57576/udp
 sudo ufw status
 
 #echo "" >> 
@@ -126,7 +131,7 @@ sudo ufw status
 #}
 #clear old tables if present
 #sudo rm /etc/nftables.conf
-sudo cp /home/user/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
+##sudo cp /home/user/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
 #copy new tables to 
 #echo "" >> /etc/nftables.conf
 #echo "table inet nat {" >> /etc/nftables.conf
@@ -147,8 +152,19 @@ sudo cp /home/user/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
 #sudo nft list rules 
 #sudo systemctl enable nftables
 #sudo systemctl start nftables
-sudo nft -f /etc/nftables.conf
+#sudo nft -f /etc/nftables.conf
 
+sudo apt install automake
+./autogen.sh
+./configure
+make
+make install
+
+sudo samplicate -s 192.168.5.254 -p 57575 -d 1 mcogs.coslab.com/57575 127.0.0.1/57576 
+
+cp samplicator.service /etc/systemd/system/samplicator.service
+systemctl daemon-reload
+systemctl start samplicator.service
 #should resolve remote server ip address correctly
 dig +short "mcogs.coslabs.com"
 
@@ -156,4 +172,8 @@ dig +short "mcogs.coslabs.com"
 #and wormhole receive codeXYZ
 #or use scp such as winscp or scp on linux
 
-# 
+# stty -F /dev/ttyACM0 raw 115200
+# cat /dev/ttyACM0
+
+#  sudo journalctl -u mcogserver.service -f
+
