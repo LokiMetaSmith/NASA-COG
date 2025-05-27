@@ -4,11 +4,15 @@
 #boot on power cycle | yes | yes
 #
 
-#download  Ubuntu Server 24.10.0 LTS                                                       
+#download  Ubuntu Server 24.04.2 LTS                                                       
 #copy to usb                                                                     
 #plug in keyboard , display and usb to sbc
 #power up sbc                                       
-#when splash screen hit F12 or DEL                                                     
+#when splash screen hit F12 or DEL 
+#change Wake on Power to S0, such that "System will boot when power is applied"
+#make sure Advanced->"Intel Trusted Execution Technology" enabled
+
+                                                    
 #boot to usb, and make sure the SBC powers on automatically
 
 #install ubuntu server name it 'pubinv-sbc-#' where # is the serial number of the Single board computer                                                      th
