@@ -1,9 +1,10 @@
+#SBC setup script V1.0
 #SBC requirements recommendations
 #Ethernet Ports |  one   | two
 #WiFi           | none |yes 
 #boot on power cycle | yes | yes
 #
-
+#
 #download  Ubuntu Server 24.04.2 LTS                                                       
 #copy to usb                                                                     
 #plug in keyboard , display and usb to sbc
@@ -40,10 +41,9 @@
 #ssh -A  user@pubinv-sbc-# 
 #run the following
 #sudo apt install git
-#cd /usr/local/etc/
-#git clone git@github.com:PubInv/NASA-MCOG.git
-
-#chmod +x /home/user/NASA-COG/'SBC setup instructions'
+#cd /home/user/
+#git clone git@github.com:PubInv/NASA-MCOG.git -y
+#the file should be executable but if not, run the following command: chmod +x /home/user/NASA-COG/'SBC setup instructions'
 #run: ./home/user/NASA-COG/SBC/'SBC setup instructions'
 
 #//install your favorite editor (sudo apt install emacs-nox)                 
