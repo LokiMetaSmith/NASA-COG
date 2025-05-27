@@ -116,6 +116,12 @@ run_monitor:
 	cd firmware \
 	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a logfile.txt
 
+run_ts_monitor:
+	cd firmware \
+	&& pio device monitor --filter=direct --baud=115200 2>&1  | while IFS= read -r line; do printf '%s #: %s\n' "$(date)" "$line"; done | tee -a logfile.txt
+	#alternatively requires ts installed
+	#&& pio device monitor --filter=direct --baud=115200 2>&1  | ts | tee -a logfile.txt
+
 # for more verbose output, use this...
 #	&& pio run -e due_ribbonfish -vvv -t upload
 oedcs:
