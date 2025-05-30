@@ -84,12 +84,13 @@ sudo ln -s /usr/local/etc/mcogserver /var/www/mcogs
 cd /usr/local/etc/mcogserver/cJSON
 sudo make
 cd /usr/local/etc/mcogserver 
+sudo cp  mcogs.service /etc/systemd/system/linux-router.service
 sudo cp secrets.h_example secrets.h
 sudo make iotserver
 sudo ln -s /usr/local/etc/mcogserver/iotserver /usr/local/bin/iotserver
-cd /home/user/NASA-MCOG/SBC
-sudo systemctl start mcogs.service
 sudo systemctl enable mcogs.service
+sudo systemctl start mcogs.service
+sudo systemctl status mcogs.service
 
 #or maybe https://github.com/garywill/linux-router
 # enp1s0 (ethernet port closest to USB-C power inlet) (OEDCS connection)
@@ -100,6 +101,7 @@ sudo git clone https://github.com/garywill/linux-router
 sudo chmod 755 /usr/local/etc/linux-router/lnxrouter
 sudo ln -s /usr/local/etc/linux-router/lnxrouter /usr/local/bin/lnxrouter
 cd /home/user/NASA-MCOG/SBC/
+sudo cp linux-router.service /etc/systemd/system/linux-router.service
 sudo systemctl enable linux-router.service
 sudo systemctl start linux-router.service
 sudo systemctl status linux-router.service
@@ -169,9 +171,9 @@ make install
 
 sudo samplicate -s 192.168.5.254 -p 57575 -d 1 mcogs.coslab.com/57575 127.0.0.1/57576 
 
-cp samplicator.service /etc/systemd/system/samplicator.service
-systemctl daemon-reload
-systemctl start samplicator.service
+sudo cp samplicator.service /etc/systemd/system/samplicator.service
+sudo systemctl daemon-reload
+sudo systemctl start samplicator.service
 #should resolve remote server ip address correctly
 dig +short "mcogs.coslabs.com"
 
