@@ -82,6 +82,7 @@ sudo ln -s /usr/local/etc/mcogserver /var/www/mcogs
 # use following if recurse failed: git submodule init / git submodule update
 #
 cd /usr/local/etc/mcogserver 
+sudo cp secrets.h_example secrets.h
 sudo make iotserver
 sudo ln -s /usr/local/etc/mcogserver/iotserver /usr/local/bin/iotserver
 cd /home/user/NASA-MCOG/SBC
