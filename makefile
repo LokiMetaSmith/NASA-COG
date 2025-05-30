@@ -171,6 +171,7 @@ monitor:
 	&& pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
 
 ## SBC configured make directive points UDP to  192.168.5.254
+oedcsSBC:
         cd firmware \
-        && pio run -e due_ctl_1_1_SBC \
+        && pio run -e due_ctl_1_1_SBC -vvv -f "test_stage2_heater" \
         && pio device monitor --filter=direct --baud=115200 2>&1 | tee -a oedcs.logfile.txt
