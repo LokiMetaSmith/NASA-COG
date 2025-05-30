@@ -80,7 +80,9 @@ cd /usr/local/etc/
 sudo git clone --recurse-submodules https://github.com/PubInv/mcogserver.git
 sudo ln -s /usr/local/etc/mcogserver /var/www/mcogs
 # use following if recurse failed: git submodule init / git submodule update
-#
+#build cJSON first
+cd /usr/local/etc/mcogserver/cJSON
+sudo make
 cd /usr/local/etc/mcogserver 
 sudo cp secrets.h_example secrets.h
 sudo make iotserver
