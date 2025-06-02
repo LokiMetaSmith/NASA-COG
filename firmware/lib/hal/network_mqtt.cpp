@@ -47,34 +47,42 @@ bool NetworkMQTT::connect() {
         return true;
     }
 
-    // Construct Client ID
+    _lastReconnectAttemptMillis = millis(); // Set initial attempt time for _reconnect logic
+
+    CogCore::Debug<const char*>("Attempting MQTT connection (initial)...
+");
+
     String clientIdStr = MQTT_CLIENT_ID_PREFIX;
     clientIdStr += _macAddressStr;
 
-    // Construct LWT Topic
     String lwtTopicStr = MQTT_DEVICE_BASE_TOPIC;
     lwtTopicStr += _macAddressStr;
     lwtTopicStr += LWT_TOPIC_SUFFIX;
 
-    CogCore::Debug<const char*>("Attempting MQTT connection with Client ID: ");
-    CogCore::Debug<const char*>(clientIdStr.c_str());
-    CogCore::Debug<const char*>(" LWT Topic: ");
-    CogCore::Debug<const char*>(lwtTopicStr.c_str());
-    CogCore::Debug<const char*>("...
-");
+    const char* mqttUser = MQTT_USERNAME;
+    const char* mqttPass = MQTT_PASSWORD;
+    bool useCredentials = (strlen(mqttUser) > 0);
 
-    if (_mqttClient.connect(clientIdStr.c_str(), lwtTopicStr.c_str(), LWT_QOS, LWT_RETAIN, LWT_MESSAGE_OFFLINE)) {
+    bool success;
+    if (useCredentials) {
+        CogCore::Debug<const char*>("Connecting with MQTT credentials. User: ");
+        CogCore::Debug<const char*>(mqttUser);
+        CogCore::Debug<const char*>("...
+");
+        success = _mqttClient.connect(clientIdStr.c_str(), mqttUser, mqttPass,
+                                      lwtTopicStr.c_str(), LWT_QOS, LWT_RETAIN, LWT_MESSAGE_OFFLINE);
+    } else {
+        CogCore::Debug<const char*>("Connecting without MQTT credentials.
+");
+        success = _mqttClient.connect(clientIdStr.c_str(), 
+                                      lwtTopicStr.c_str(), LWT_QOS, LWT_RETAIN, LWT_MESSAGE_OFFLINE);
+    }
+
+    if (success) {
         CogCore::Debug<const char*>("MQTT connected.
 ");
-        // Publish online message to LWT topic
         publish(lwtTopicStr.c_str(), LWT_MESSAGE_ONLINE, LWT_RETAIN);
-        
-        // Resubscribe to any necessary topics if needed upon reconnection
-        // This part would require knowledge of topics this specific client instance needs to be subscribed to.
-        // Example: 
-        // if (_subscribedTopic && strlen(_subscribedTopic) > 0) { 
-        //    subscribe(_subscribedTopic); 
-        // }
+        // Resubscribe logic here if needed
     } else {
         CogCore::Debug<const char*>("MQTT connection failed, rc=");
         CogCore::Debug<int>(_mqttClient.state());
@@ -84,32 +92,57 @@ bool NetworkMQTT::connect() {
     return _mqttClient.connected();
 }
 
-// Handles reconnection logic
+// Handles reconnection logic (non-blocking)
 void NetworkMQTT::_reconnect() {
-    // Loop until we're reconnected
-    // TODO: Add a timeout or max retries to avoid blocking indefinitely
-    unsigned long startAttemptTime = millis();
-    while (!_mqttClient.connected()) {
-        if (millis() - startAttemptTime > 30000) { // Try for 30 seconds
-             CogCore::Debug<const char*>("MQTT reconnection timed out.
+    // Check if it's time to try connecting again
+    if (millis() - _lastReconnectAttemptMillis > _reconnectIntervalMillis) {
+        _lastReconnectAttemptMillis = millis(); // Update the last attempt time
+
+        CogCore::Debug<const char*>("Attempting MQTT reconnection (non-blocking)...
 ");
-             return; // Give up after 30 seconds
+        
+        // Construct client ID and LWT topic strings (as they are not members)
+        String clientIdStr = MQTT_CLIENT_ID_PREFIX;
+        clientIdStr += _macAddressStr; 
+
+        String lwtTopicStr = MQTT_DEVICE_BASE_TOPIC;
+        lwtTopicStr += _macAddressStr;
+        lwtTopicStr += LWT_TOPIC_SUFFIX;
+
+        // Determine if username and password are set
+        const char* mqttUser = MQTT_USERNAME;
+        const char* mqttPass = MQTT_PASSWORD;
+        bool useCredentials = (strlen(mqttUser) > 0); // Connect with credentials if username is present
+
+        bool connected;
+        if (useCredentials) {
+            CogCore::Debug<const char*>("Reconnecting with MQTT credentials. User: ");
+            CogCore::Debug<const char*>(mqttUser);
+            CogCore::Debug<const char*>("...
+");
+            connected = _mqttClient.connect(clientIdStr.c_str(), mqttUser, mqttPass,
+                                            lwtTopicStr.c_str(), LWT_QOS, LWT_RETAIN, LWT_MESSAGE_OFFLINE);
+        } else {
+            CogCore::Debug<const char*>("Reconnecting without MQTT credentials.
+");
+            connected = _mqttClient.connect(clientIdStr.c_str(), 
+                                            lwtTopicStr.c_str(), LWT_QOS, LWT_RETAIN, LWT_MESSAGE_OFFLINE);
         }
-        CogCore::Debug<const char*>("Attempting MQTT reconnection...
-");
-        if (connect()) { // connect() already prints messages
+
+        if (connected) {
             CogCore::Debug<const char*>("MQTT reconnected.
 ");
-            break; 
+            // Publish "online" message to LWT topic
+            publish(lwtTopicStr.c_str(), LWT_MESSAGE_ONLINE, LWT_RETAIN);
+            // Resubscribe logic might be needed here if subscriptions are used
         } else {
             CogCore::Debug<const char*>("MQTT reconnection failed, rc=");
             CogCore::Debug<int>(_mqttClient.state());
-            CogCore::Debug<const char*>(". Retrying in 5 seconds...
+            CogCore::Debug<const char*>(". Will retry later.
 ");
-            // Wait 5 seconds before retrying
-            delay(5000); 
         }
     }
+    // If not enough time has passed, this function does nothing, allowing other code to run.
 }
 
 
