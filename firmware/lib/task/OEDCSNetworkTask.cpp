@@ -29,6 +29,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include "OEDCSNetworkTask.h" // Includes network_mqtt.h implicitly
 #include "mqtt_config.h"    // Include the new MQTT configuration
+#include "time_utils.h"     // For NTP time synchronization
 
 // extern byte packetBuffer[buffMax]; // Removed, was for UDP
 
@@ -106,6 +107,16 @@ bool OEDCSNetworkTask::_init() { // Renaming to match existing class structure i
         CogCore::Debug<const char*>("Ethernet connected. IP: ");
         CogCore::Debug<IPAddress>(Ethernet.localIP());
         CogCore::Debug<const char*>("\n");
+
+        // Synchronize time with NTP server
+        CogCore::Debug<const char*>("Attempting NTP time synchronization...\n");
+        if (syncNTPTime()) {
+            CogCore::Debug<const char*>("NTP synchronization successful. Current epoch: ");
+            CogCore::Debug<unsigned long>(system_epoch); // Access global epoch from time_utils.h
+            CogCore::Debug<const char*>("\n");
+        } else {
+            CogCore::Debug<const char*>("NTP synchronization failed. Timestamps will be millis-based.\n");
+        }
     }
 
     // Initialize EthernetClient and NetworkMQTT
@@ -153,6 +164,11 @@ bool OEDCSNetworkTask::_init() { // Renaming to match existing class structure i
     }
     
     // NTP Time Sync:
+    // The original NetworkUDP::networkStart() called getTime() to get NTP time.
+    // This is important for accurate timestamps. This logic needs to be integrated,
+    // possibly as a separate system service or called here.
+    // NTP Time Sync has been attempted above.
+    // The old comment below is now addressed.
     // The original NetworkUDP::networkStart() called getTime() to get NTP time.
     // This is important for accurate timestamps. This logic needs to be integrated,
     // possibly as a separate system service or called here.

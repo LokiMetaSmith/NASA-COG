@@ -20,6 +20,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <core.h>
 // #include <Wire.h>
 #include <assert.h>
+#include "time_utils.h" // For getCurrentTimestamp()
 
 
 void MachineConfig::outputReport(MachineStatusReport *msr) {
@@ -102,8 +103,15 @@ void MachineConfig::outputReport(MachineStatusReport *msr) {
 }
 
 void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
-  sprintf(buffer+strlen(buffer), "\"RawMillis\": %ld",msr->timestamp);
+  // Ensure msr->timestamp is populated with getCurrentTimestamp() before this function,
+  // OR replace its usage here directly.
+  // For this change, we will use getCurrentTimestamp() directly here.
+  // The MachineStatusReport struct's timestamp field might still be raw millis unless updated elsewhere.
+  sprintf(buffer+strlen(buffer), "\"TimestampEpoch\": %lu", getCurrentTimestamp());
   strcat(buffer, ",\n");
+  // The original line used msr->timestamp, which was raw millis.
+  // sprintf(buffer+strlen(buffer), "\"RawMillis\": %ld",msr->timestamp);
+  // strcat(buffer, ",\n");
   sprintf(buffer+strlen(buffer), "\"MachineState\": %d",msr->ms);
   strcat(buffer, ",\n");
   sprintf(buffer+strlen(buffer), "\"TargetC\": %.2f",msr->target_temp_C);

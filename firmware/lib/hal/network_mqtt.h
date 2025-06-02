@@ -47,6 +47,9 @@ private:
     // Let's add macAddress as a private member to be stored from constructor.
     String _macAddressStr; 
 
+    // For non-blocking reconnection attempts
+    unsigned long _lastReconnectAttemptMillis = 0;
+    const unsigned long _reconnectIntervalMillis = 5000; // 5 seconds
 
     void _reconnect();
 };
