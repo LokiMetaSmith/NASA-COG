@@ -27,18 +27,21 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <core.h>
 
 #include <machine.h>
-#include <network_udp.h>
+// #include <network_udp.h> // Removed
 
 namespace CogApp
 {
   // Note this class is really a virtual; it makes no sense to
-  // instantiated it directly, though it would give you network functionality
+  // instantiated it directly.
+  // After removing NetworkUDP, this class has become more generic.
+  // OEDCSNetworkTask now handles its own network client (MQTT).
   class NetworkTask : public CogCore::Task {
   public:
     // DEBUG_UDP == 1 means debug logging,
     // DEBUG_UDP == 2 means debug script retreival
-    int DEBUG_UDP = 0;
-    NetworkUDP net_udp;
+    // This flag might need to be renamed or moved if specific to a particular network type.
+    int DEBUG_UDP = 0; 
+    // NetworkUDP net_udp; // Removed
     bool _init() override;
     bool _run() override;
   };
