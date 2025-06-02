@@ -161,18 +161,19 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
   {
 	if (msr->errors[i])//critical error detected
 	{
-	  if(is_fault_present)strcat(buffer, ",");
+	  if(is_fault_present) {
+        strcat(buffer, ", "); // Add comma and a space for readability
+      }
 	  is_fault_present = true;
 	  strcat(buffer, "\"");
-	  sprintf(buffer+strlen(buffer),CriticalErrorNames[i]);
+	  sprintf(buffer+strlen(buffer), CriticalErrorNames[i]);
 	  strcat(buffer, "\"");
-
-	  strcat(buffer, "\n");
+      // Removed: strcat(buffer, "\n"); 
 	}
   }
   if (!is_fault_present)
   {
-    strcat(buffer, "\"No Error\"\n");
+    strcat(buffer, "\"No Error\""); // Removed \n
   }
   strcat(buffer, "],\n");
 
