@@ -1,3 +1,8 @@
+# Contents of This Folder Copyed. MAKE NO MORE CHANGES HERE
+See: https://github.com/PubInv/high-amp-controller-board
+Copied on date: 20250526
+
+<hr>
 # Control V1.1 aka 1V1
 Version 1.1 control board for NASA COG
 

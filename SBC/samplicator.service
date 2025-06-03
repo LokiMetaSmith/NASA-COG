@@ -1,0 +1,17 @@
+
+# /etc/systemd/system/samplicator.service
+#
+# a startup file for samplicator. See INSTALL.md
+
+
+[Unit]
+Description=Samplicator
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/samplicate -s 192.168.5.254 -p 57575 -d 0 mcogs.coslabs.com/57575 127.0.0.1/57576 -f
+
+
+[Install]
+WantedBy=multi-user.target
