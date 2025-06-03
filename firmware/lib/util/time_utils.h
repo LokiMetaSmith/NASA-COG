@@ -13,9 +13,7 @@ extern volatile unsigned long system_epoch;
 
 // Function to initialize and perform NTP synchronization
 // Needs access to an EthernetUDP instance.
-
 bool syncNTPTime();
-
 
 // Function to get current Unix timestamp
 unsigned long getCurrentTimestamp();

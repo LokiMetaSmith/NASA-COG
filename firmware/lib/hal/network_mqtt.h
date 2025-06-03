@@ -19,13 +19,9 @@
                                      // EthernetWebServer_SSL examples use SSLClientParameters which abstracts these.
 #include <EthernetWebSocketClient.h> // Assuming this is the WSS client from khoih-prog's library suite
 
-// Forward declare BearSSL types if full headers are not included or are problematic.
-// This is a workaround if the types are not easily accessible otherwise.
-namespace BearSSL {
-    class X509List;
-    class PrivateKey;
-    // class PublicKey; // If needed
-}
+// Forward declarations for BearSSL types are removed as direct member usage is removed.
+// Certificate data will be handled via SSLClientParameters using PEM strings directly.
+
 
 class NetworkMQTT {
 public:
@@ -54,17 +50,11 @@ private:
     EthernetSSLClient* _ssl_client = nullptr; // Secure client for TLS layer
     EthernetWebSocketClient* _ws_client = nullptr; // WebSocket client, may wrap _ssl_client or _ethernet_client
 
-    // BearSSL objects to hold parsed certificates and key.
-    // These types might come from a BearSSL helper header included by EthernetSSLClient or a core ESP32/ESP8266 SSL header.
-    // For SAMD/Due with EthernetWebServer_SSL, these specific types (BearSSL::X509List, BearSSL::PrivateKey)
-    // are typically available if using ESP32/ESP8266 core's BearSSL wrappers.
-    // EthernetWebServer_SSL itself uses SSLClientParameters which can load from PEM directly.
-    // Storing them as parsed objects could be useful if they need to be applied multiple times or inspected.
-    // However, the SSLClientParameters approach might be simpler if direct parsing in constructor is complex.
-    // For now, declaring them, but their usage might simplify to direct PEM usage with SSLClientParameters.
-    BearSSL::X509List _TA_list;          // For CA certificate (Trust Anchors)
-    BearSSL::X509List _client_cert_list; // For Client certificate
-    BearSSL::PrivateKey _client_key;        // For Client private key
+    // BearSSL objects (_TA_list, _client_cert_list, _client_key) removed.
+    // Certificate data (CA, client cert, client key) will be passed directly
+    // as PEM strings from certificates.h to EthernetSSLClient methods
+    // (e.g., setCACert) or via SSLClientParameters::fromPEM.
+
 
     // For TLS, _ethernet_client would be wrapped by a TLS-capable client.
     // Example: BearSSLClient _tls_client;

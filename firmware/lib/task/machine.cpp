@@ -168,7 +168,6 @@ void MachineConfig::createJSONReport(MachineStatusReport* msr, char *buffer) {
 	  strcat(buffer, "\"");
 	  sprintf(buffer+strlen(buffer), CriticalErrorNames[i]);
 	  strcat(buffer, "\"");
-
       // Removed: strcat(buffer, "\n");
 
 	}
