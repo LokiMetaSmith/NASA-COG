@@ -1,15 +1,20 @@
+#SBC setup script V1.0
 #SBC requirements recommendations
 #Ethernet Ports |  one   | two
 #WiFi           | none |yes 
 #boot on power cycle | yes | yes
 #
-
-#download  Ubuntu Server 24.10.0 LTS                                                       
+#
+#download  Ubuntu Server 24.04.2 LTS                                                       
 #copy to usb                                                                     
 #plug in keyboard , display and usb to sbc
 #power up sbc                                       
-#when splash screen hit F12                                                      
-#boot to usb
+#when splash screen hit F12 or DEL 
+#change Wake on Power to S0, such that "System will boot when power is applied"
+#make sure Advanced->"Intel Trusted Execution Technology" enabled
+
+                                                    
+#boot to usb, and make sure the SBC powers on automatically
 
 #install ubuntu server name it 'pubinv-sbc-#' where # is the serial number of the Single board computer                                                      th
 #   (don't choose minimal install, unless more testing is done)                                             
@@ -25,6 +30,9 @@
 #   unplug usb flash drive
 #   reboot                                                                       
 #   add personal ssh key, use the password recorded previously 
+#   when logged in 
+#   ssh-import-id gh:github_username
+#   when on the same network
 #   ssh-copy-id user@pubinv-sbc-#
 
 #ssh into sbc, you must be on a computer that has valid github repo keys already
@@ -33,10 +41,10 @@
 #ssh -A  user@pubinv-sbc-# 
 #run the following
 #sudo apt install git
-#git clone git@github.com:PubInv/NASA-MCOG.git
-
-#chmod +x ./NASA-COG/'SBC setup instructions'
-#run ./NASA-COG/'SBC setup instructions'
+#cd /home/user/
+#git clone git@github.com:PubInv/NASA-MCOG.git -y
+#the file should be executable but if not, run the following command: chmod +x /home/user/NASA-COG/'SBC setup instructions'
+#run: ./home/user/NASA-COG/SBC/'SBC setup instructions'
 
 #//install your favorite editor (sudo apt install emacs-nox)                 
 #install tmux https://github.com/tmux/tmux/wiki                                          
@@ -44,16 +52,17 @@
 sudo apt update
 sudo apt-get dist-upgrade -y
 #check for firmware updates
-sudo fwupdatemgr get-upgrades
-sudo fwupdatemgr update -y
+sudo fwupdmgr get-upgrades
+sudo fwupdmgr update -y
 
-sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-essential python3-venv python3-pip git tmux
+sudo apt install -y avahi-daemon bash-completion emacs-nox nano vim less build-essential python3-venv python3-pip git tmux net-tools moreutils
+# netstat -tulpn # to troubleshoot port issues
 
 #   comment out the excludes for man and docs                                    
 sudo apt install -y man-db manpages manpages-dev manpages-posix manpages-posix-dev                                                                            
 sudo mv /usr/bin/man.REAL /usr/bin/man
 sudo mandb -c
-
+cd ~
 #use one of these
 #wget https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py -O get-platformio.py
 curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
@@ -67,28 +76,48 @@ sudo ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 #install the local mcogserver
 sudo mkdir -p /var/www/mcogs
 sudo apt install -y  build-essential git libssl-dev isc-dhcp-server procps dnsmasq hostapd iptables  iproute2 resolvconf firewalld fail2ban wormhole
-git clone --recurse-submodules https://github.com/PubInv/mcogserver.git
-sudo ln -s ~/mcogserver /var/www/mcogs
+cd /usr/local/etc/
+sudo git clone --recurse-submodules https://github.com/PubInv/mcogserver.git
+sudo ln -s /usr/local/etc/mcogserver /var/www/mcogs
 # use following if recurse failed: git submodule init / git submodule update
-#
-cd ~/mcogserver 
-make iotserver
-sudo ln -s ~/mcogserver/iotserver /usr/local/bin/iotserver
+#build cJSON first
+cd /usr/local/etc/mcogserver/cJSON
+sudo make
+cd /usr/local/etc/mcogserver 
+sudo cp  mcogs.service /etc/systemd/system/linux-router.service
+sudo cp secrets.h_example secrets.h
+sudo make iotserver
+sudo ln -s /usr/local/etc/mcogserver/iotserver /usr/local/bin/iotserver
+sudo systemctl enable mcogs.service
+sudo systemctl start mcogs.service
+sudo systemctl status mcogs.service
 
 #or maybe https://github.com/garywill/linux-router
 # enp1s0 (ethernet port closest to USB-C power inlet) (OEDCS connection)
 # enp3s0 (ethernet port next to enp1s0) (Internet source)
 # wlp2s0 (wifi device) (Internet source)
-sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 \
---no-dns \
---dhcp-dns 1.1.1.1  
--6 \
---dhcp-dns6  [2606:4700:4700::1111] \
--g 192.168.5.254
---daemon
+cd /usr/local/etc/
+sudo git clone https://github.com/garywill/linux-router
+sudo chmod 755 /usr/local/etc/linux-router/lnxrouter
+sudo ln -s /usr/local/etc/linux-router/lnxrouter /usr/local/bin/lnxrouter
+cd /home/user/NASA-MCOG/SBC/
+sudo cp linux-router.service /etc/systemd/system/linux-router.service
+sudo systemctl enable linux-router.service
+sudo systemctl start linux-router.service
+sudo systemctl status linux-router.service
+
+
+#sudo lnxrouter -i enp1s0 -o enp3s0 wlp2s0 \
+#--no-dns \
+#--dhcp-dns 1.1.1.1  
+#-6 \
+#--dhcp-dns6  [2606:4700:4700::1111] \
+#-g 192.168.5.254
+#--daemon
 
 sudo ufw allow ssh
-sudo ufw allow 57575 /udp
+sudo ufw allow 57575/udp
+sudo ufw allow 57576/udp
 sudo ufw status
 
 #echo "" >> 
@@ -110,39 +139,50 @@ sudo ufw status
 #    }
 #}
 #clear old tables if present
-sudo rm /etc/nftables.conf
+#sudo rm /etc/nftables.conf
+##sudo cp /home/user/NASA-MCOG/SBC/nftables.conf /etc/nftables.conf
 #copy new tables to 
-echo "" >> /etc/nftables.conf
-echo "table inet nat {" >> /etc/nftables.conf
-echo "  chain prerouting { type nat hook prerouting priority dstnat; policy accept; }" >> /etc/nftables.conf
-echo "  chain postrouting { type nat hook postrouting priority masquerade; policy accept; }" >> /etc/nftables.conf
-echo "}" >> /etc/nftables.conf
-echo "" >> /etc/nftables.conf
-echo "table inet filter {" >> /etc/nftables.conf
-echo "  chain forward { type filter hook forward priority filter; policy accept; }" >> /etc/nftables.conf
-echo "}" >> /etc/nftables.conf
-echo "" >> /etc/nftables.conf
-echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 tee to 127.0.0.1:57575" >> /etc/nftables.conf
-echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 dnat to mcogs.coslabs.com:57575" >> /etc/nftables.conf
-echo "add rule inet filter forward iifname \"enp1s0\" oifname != \"enp1s0\" udp dport 57575 daddr mcogs.coslabs.com accept" >> /etc/nftables.conf
-echo "add rule inet nat postrouting oifname != \"enp1s0\" masquerade" >> /etc/nftables.conf
-sudo nft table ip nat
-sudo delete table ip nat
+#echo "" >> /etc/nftables.conf
+#echo "table inet nat {" >> /etc/nftables.conf
+#echo "  chain prerouting { type nat hook prerouting priority dstnat; policy accept; }" >> /etc/nftables.conf
+#echo "  chain postrouting { type nat hook postrouting priority masquerade; policy accept; }" >> /etc/nftables.conf
+#echo "}" >> /etc/nftables.conf
+#echo "" >> /etc/nftables.conf
+#echo "table inet filter {" >> /etc/nftables.conf
+#echo "  chain forward { type filter hook forward priority filter; policy accept; }" >> /etc/nftables.conf
+#echo "}" >> /etc/nftables.conf
+#echo "" >> /etc/nftables.conf
+#echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 tee to 127.0.0.1:57575" >> /etc/nftables.conf
+#echo "add rule inet nat prerouting iifname \"enp1s0\" udp dport 57575 daddr 192.168.5.254 dnat to mcogs.coslabs.com:57575" >> /etc/nftables.conf
+#echo "add rule inet filter forward iifname \"enp1s0\" oifname != \"enp1s0\" udp dport 57575 daddr mcogs.coslabs.com accept" >> /etc/nftables.conf
+#echo "add rule inet nat postrouting oifname != \"enp1s0\" masquerade" >> /etc/nftables.conf
 
-sudo nft list rules 
-sudo systemctl enable nftables
-sudo systemctl start nftables
-sudo nft -f /etc/nftables.conf
 
-#https://arstechnica.com/gadgets/2016/04/the-ars-guide-to-building-a-linux-router-from-scratch/
-#cp dhcpd.conf /etc/dhcp/dhcpd.conf
-#/etc/default/isc-dhcp-server INTERFACESv4="eth4"
-#sudo systemctl restart isc-dhcp-server.service
-sudo systemctl start mcogs.service
-sudo systemctl enable mcogs.service
+#sudo nft list rules 
+#sudo systemctl enable nftables
+#sudo systemctl start nftables
+#sudo nft -f /etc/nftables.conf
+
+sudo apt install automake
+./autogen.sh
+./configure
+make
+make install
+
+sudo samplicate -s 192.168.5.254 -p 57575 -d 1 mcogs.coslab.com/57575 127.0.0.1/57576 
+
+sudo cp samplicator.service /etc/systemd/system/samplicator.service
+sudo systemctl daemon-reload
+sudo systemctl start samplicator.service
+#should resolve remote server ip address correctly
+dig +short "mcogs.coslabs.com"
 
 #use wormhole send ~/path/to/file
 #and wormhole receive codeXYZ
 #or use scp such as winscp or scp on linux
 
-# 
+# stty -F /dev/ttyACM0 raw 115200
+# cat /dev/ttyACM0
+
+#  sudo journalctl -u mcogserver.service -f
+

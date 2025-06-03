@@ -69,6 +69,7 @@
 // and potentially SSLClientParameters.h or similar helpers for certificate handling.
 // SSLClientParameters.h is typically part of the EthernetWebServer_SSL library structure.
 
+
 // Initialize static members
 NetworkMQTT* NetworkMQTT::_instance = nullptr;
 
@@ -103,6 +104,7 @@ void parseWebSocketUri(const String& uri_str, ParsedUri& result) {
     int path_start = remaining.indexOf('/');
     if (path_start == -1) {
         result.path = "/";
+
     } else {
         result.path = remaining.substring(path_start);
     }
@@ -117,6 +119,7 @@ void parseWebSocketUri(const String& uri_str, ParsedUri& result) {
         result.host = host_port_str;
     }
     if (result.port == 0) { // Set default port if not parsed or zero
+
         result.port = (result.scheme == "wss") ? 443 : 80;
     }
 
@@ -139,6 +142,7 @@ NetworkMQTT::NetworkMQTT(const char* macAddress)
     _network_client_for_mqtt = &_ethernet_client;
     _mqttClient.onMessage(NetworkMQTT::_internalMessageReceived);
     CogCore::Debug<const char*>("NetworkMQTT: Instance created. Certificate setup occurs at connect time.\n");
+
 }
 
 NetworkMQTT::~NetworkMQTT() {
@@ -163,6 +167,7 @@ void NetworkMQTT::_setupSecureClient(const ParsedUri* ws_uri_details) {
     delete _ws_client; _ws_client = nullptr; // Ensure clean state
     delete _ssl_client; _ssl_client = nullptr;
     _network_client_for_mqtt = &_ethernet_client; // Default to plain
+
 
     bool needs_tls = false;
     bool use_websocket = (ws_uri_details && ws_uri_details->valid);
@@ -202,6 +207,7 @@ void NetworkMQTT::_setupSecureClient(const ParsedUri* ws_uri_details) {
             // For development, you might allow insecure connections:
             // _ssl_client->setInsecure(); // This skips CA validation - NOT FOR PRODUCTION!
         }
+
 
         if (strlen(client_cert_pem) > 100 && strlen(client_key_pem) > 100) { // Basic check
             CogCore::Debug<const char*>("Configuring mTLS with client certificate and key...\n");
@@ -253,17 +259,20 @@ void NetworkMQTT::_setupSecureClient(const ParsedUri* ws_uri_details) {
         // For now, _network_client_for_mqtt remains what it was set to in TLS section or plain ethernet.
         // To actually use WebSockets, the line below would be uncommented after ws_client is fully set up and handshaked:
         // _network_client_for_mqtt = _ws_client;
+
     }
 
     // Final client assignment report
     if (_network_client_for_mqtt == _ws_client && use_websocket) {
          CogCore::Debug<const char*>("Network client intended for WebSocket (WS/WSS) - (Handshake PLACEHOLDER).\n");
+
     } else if (_network_client_for_mqtt == _ssl_client && needs_tls) {
         CogCore::Debug<const char*>("Network client configured for MQTTS (TLS over TCP).\n");
     } else {
         CogCore::Debug<const char*>("Network client configured for plain MQTT (TCP).\n");
     }
 }
+
 
 bool NetworkMQTT::connect() {
     if (_mqttClient.connected()) {
@@ -277,6 +286,7 @@ bool NetworkMQTT::connect() {
     ParsedUri uri_details;
     String ws_uri_str = MQTT_BROKER_WEBSOCKET_URI;
     bool is_websocket_flow = false;
+
 
     if (!ws_uri_str.isEmpty()) {
         parseWebSocketUri(ws_uri_str, uri_details);
@@ -308,6 +318,7 @@ bool NetworkMQTT::connect() {
 
     CogCore::Debug<const char*>("MQTTClient.begin with Host: "); CogCore::Debug<const char*>(target_host_str.c_str());
     CogCore::Debug<const char*>(", Port: "); CogCore::Debug<int>(target_port_val); CogCore::Debug<const char*>("
+
 ");
     _mqttClient.begin(target_host_str.c_str(), target_port_val, *_network_client_for_mqtt);
 
@@ -342,6 +353,7 @@ void NetworkMQTT::_reconnect() {
     if (millis() - _lastReconnectAttemptMillis > _reconnectIntervalMillis) {
         CogCore::Debug<const char*>("Attempting MQTT reconnection (non-blocking)...\n");
         connect();
+
     }
 }
 
@@ -388,6 +400,7 @@ void NetworkMQTT::loop() {
         _reconnect();
     }
     _mqttClient.loop();
+
 }
 
 bool NetworkMQTT::isConnected() {

@@ -743,7 +743,6 @@ namespace CogApp
     if (!(Off == getConfig()->ms)) {
       evaluateErrorConditions();
     }
-
     if (DEBUG_LEVEL > 0) {
       CogCore::DebugLn<const char *>("BEFORE RUN GENERIC!");
     }
@@ -761,16 +760,25 @@ namespace CogApp
     getHAL()->panel->setStatusLEDfromState(ls);
 
     if (getHAL()->panel->isSwitchOn()) {
-      if (!(ms == NormalOperation || ms == Warmup || ms == Cooldown || ms == AwaitingPower)) {
-        CogCore::Debug<const char *>("Entering Warmup because of button!\n");
-        if (getConfig()->OPERATING_TEMPERATURE_C < getConfig()->SAFETY_COOL_TEMPERATURE_C) {
-          CogCore::Debug<const char *>("Switch on, but Target less than SAFETY_COOL_TEMPERATURE_C\n");
-        } else {
+      // I supsect this is root cause of issue #411.
+      // If you are already cooling down, this will not enter warmup!
+      //     if (!(ms == NormalOperation || ms == Warmup || ms == Cooldown || ms == AwaitingPower)) {
+      //   CogCore::Debug<const char *>("Entering Warmup because of button!\n");
+      //   if (getConfig()->OPERATING_TEMPERATURE_C < getConfig()->SAFETY_COOL_TEMPERATURE_C) {
+      //     CogCore::Debug<const char *>("Switch on, but Target less than SAFETY_COOL_TEMPERATURE_C\n");
+      //   } else {
+      //     ms = Warmup;
+      //     getConfig()->clearErrors();
+      //     turnOn();
+      //     this->StateMachineManager::changeToOperatingTemp();
+      //   }
+      // }
+      if (m == Cooldown) {
+          CogCore::Debug<const char *>("Entering Warmup because of button!\n");
           ms = Warmup;
           getConfig()->clearErrors();
           turnOn();
           this->StateMachineManager::changeToOperatingTemp();
-        }
       }
       // Now treat a change of the switch as an acknowledgement...
       if (getConfig()->panelSwitchState == false && ms == OffUserAck) {
@@ -781,7 +789,7 @@ namespace CogApp
       CogCore::Debug<const char *>("Switch is off: State: ");
       CogCore::DebugLn<int>(ms);
       CogCore::Debug<const char *>("\n");
-      if ((ms == NormalOperation || ms == Warmup || ms == Cooldown || ms == AwaitingPower)) {
+      if ((ms == NormalOperation || ms == Warmup  || ms == AwaitingPower)) {
         if ((getConfig()->TARGET_TEMP_C > getConfig()->SAFETY_COOL_TEMPERATURE_C)) {
           CogCore::Debug<const char *>("Entering Cooldown because of button!\n");
           ms = Cooldown;
@@ -938,6 +946,9 @@ namespace CogApp
   }
 
   void CogTask::turnOff() {
+    if (getConfig()->ms != Off) {
+      getHAL()->batteryKeepAlive->turnOff();
+    }
     if (DEBUG_LEVEL > 1) {
       CogCore::Debug<const char *>("TURNING OFF  -- TURNING OFF -- TURNING OFF\n");
     }

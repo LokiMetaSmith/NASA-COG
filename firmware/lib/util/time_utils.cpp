@@ -49,6 +49,7 @@ bool syncNTPTime() {
 ");
             delay(1000); // Wait a bit before retrying
             watchdogReset();
+
             continue;
         }
         Udp.write(ntp_packet_buffer, NTP_PACKET_SIZE);

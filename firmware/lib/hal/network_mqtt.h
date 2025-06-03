@@ -22,6 +22,7 @@
 // Forward declarations for BearSSL types are removed as direct member usage is removed.
 // Certificate data will be handled via SSLClientParameters using PEM strings directly.
 
+
 class NetworkMQTT {
 public:
     // Constructor now takes only macAddress, network clients are managed internally
@@ -53,6 +54,7 @@ private:
     // Certificate data (CA, client cert, client key) will be passed directly
     // as PEM strings from certificates.h to EthernetSSLClient methods
     // (e.g., setCACert) or via SSLClientParameters::fromPEM.
+
 
     // For TLS, _ethernet_client would be wrapped by a TLS-capable client.
     // Example: BearSSLClient _tls_client;

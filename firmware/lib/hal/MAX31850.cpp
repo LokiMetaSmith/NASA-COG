@@ -140,6 +140,7 @@ namespace Temperature {
         for( i = 0; i < 8; i++) {
 #ifdef USE_THREE_TC_CONFIG
           postStackThermometer[i] = addr[i];
+          //          postHeaterThermometer[i] = addr[i];
 #endif
         }
         break;
@@ -148,12 +149,13 @@ namespace Temperature {
 #ifdef USE_THREE_TC_CONFIG
           postGetterThermometer[i] = addr[i];
 #endif
-          postStackThermometer[i] = addr[i];
+         postStackThermometer[i] = addr[i];
         }
         break;
       case 0x2: // This is the first socket from the panel
         for( i = 0; i < 8; i++) {
-          postHeaterThermometer[i] = addr[i];
+           postHeaterThermometer[i] = addr[i];
+           //           postStackThermometer[i] = addr[i];
         }
         break;
       default:
