@@ -2,7 +2,7 @@
 // Program information
 #define COMPANY_NAME "pubinv.org "
 #define PROG_NAME "OEDCS"
-#define OEDCS_VERSION "; Rev: 0.4.13"  // Improving turning off
+#define OEDCS_VERSION "; Rev: 0.4.16"  // potential fix to issue #411
 #define DEVICE_UNDER_TEST "Hardware: Due"  // A model number
 #define LICENSE "GNU Affero General Public License, version 3 "
 
@@ -59,8 +59,8 @@ ShutdownButtonTask shutdownButtonTask;
 MachineConfig machineConfig;
 /***********************************/
 
-#define ETHERNET_REQUIRED 1
-// #define ETHERNET_REQUIRED 0 //No ethernet.
+// #define ETHERNET_REQUIRED 1
+#define ETHERNET_REQUIRED 0 //No ethernet.
 
 
 // This is to allow a code idiom compatible with the way

@@ -15,6 +15,7 @@
 #include <debug.h> // For CogCore::Debug
 #include <EthernetClient.h>
 
+
 // Initialize static members
 NetworkMQTT* NetworkMQTT::_instance = nullptr;
 
@@ -48,7 +49,9 @@ void parseWebSocketUri(const String& uri_str, ParsedUri& result) {
     String remaining = uri_str.substring(scheme_end + 3);
     int path_start = remaining.indexOf('/');
     if (path_start == -1) { // Path is required for WebSockets. Default to "/" if not like "host.com:port"
+
         result.path = "/";
+
         // If path_start is -1, remaining is host:port or host
     } else {
         result.path = remaining.substring(path_start);
@@ -85,7 +88,9 @@ NetworkMQTT::NetworkMQTT(const char* macAddress)
     _instance = this;
     _clientIdStr = MQTT_CLIENT_ID_PREFIX;
     _clientIdStr += _macAddressStr;
+
     _network_client_for_mqtt = &_ethernet_client;
+
     _mqttClient.onMessage(NetworkMQTT::_internalMessageReceived);
     CogCore::Debug<const char*>("NetworkMQTT: Instance created.\n");
 }
@@ -160,6 +165,7 @@ void NetworkMQTT::_setupSecureClient(const ParsedUri* ws_uri_details) {
 
     if (use_websocket) {
         CogCore::Debug<const char*>("Setting up WebSocket layer...\n");
+
         _ws_client = new EthernetWebSocketClient(); // Instantiate the client
 
         // The underlying client (base_client_for_ws_or_final_client) must be connected before handshake.
@@ -225,10 +231,12 @@ bool NetworkMQTT::connect() {
     if (_mqttClient.connected()) {
         return true;
     }
+
     _lastReconnectAttemptMillis = millis();
 
     String target_host_str = MQTT_BROKER_IP; // Default
     uint16_t target_port_val = (uint16_t)atoi(MQTT_BROKER_PORT);  // Default
+
 
     ParsedUri uri_details;
     String ws_uri_str = MQTT_BROKER_WEBSOCKET_URI;
@@ -301,7 +309,9 @@ bool NetworkMQTT::connect() {
 void NetworkMQTT::_reconnect() {
     if (millis() - _lastReconnectAttemptMillis > _reconnectIntervalMillis) {
         CogCore::Debug<const char*>("Attempting MQTT reconnection (non-blocking)...\n");
+
         connect();
+
     }
 }
 
@@ -345,9 +355,11 @@ bool NetworkMQTT::subscribe(const char* topic, uint8_t qos) {
 
 void NetworkMQTT::loop() {
     if (!_mqttClient.connected()) {
+
         _reconnect();
     }
     _mqttClient.loop();
+
 }
 
 bool NetworkMQTT::isConnected() {

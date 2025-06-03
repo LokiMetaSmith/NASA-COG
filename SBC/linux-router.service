@@ -1,0 +1,16 @@
+[Unit]
+Description=Start linux-router script
+After=network.target
+Wants=network.target
+
+[Service]
+#User=root  # Or a specific user if the script doesn't require root
+#WorkingDirectory=/usr/local/etc/linux-router/  # Or the directory where lnxrouter is located
+ExecStart=/usr/local/bin/lnxrouter -i enp1s0 -o enp3s0 -6 -g 192.168.5.254 
+Restart=always
+RestartSec=1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

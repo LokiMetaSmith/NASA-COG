@@ -14,18 +14,20 @@
 
 // MQTT Broker WebSocket URI (e.g., "ws://broker.example.com:80/mqtt" or "wss://broker.example.com:443/mqtt")
 // Leave blank if not using WebSockets. If filled, this may take precedence over MQTT_BROKER_IP and MQTT_BROKER_PORT for connection.
-#define MQTT_BROKER_WEBSOCKET_URI ""
+#define MQTT_BROKER_WEBSOCKET_URI "" 
 
 // Standard MQTT Secure port (MQTTS over TCP, typically 8883)
 // Used if MQTT_BROKER_WEBSOCKET_URI is blank and a secure TCP connection is desired.
-#define MQTT_BROKER_SECURE_PORT 8883
+#define MQTT_BROKER_SECURE_PORT 8883 
+
 
 // MQTT Credentials (optional, leave blank if not used)
 #define MQTT_USERNAME ""
 #define MQTT_PASSWORD ""
 
 // MQTT Client ID prefix (MAC address will be appended)
-#define MQTT_CLIENT_ID_PREFIX "OEDCS-"
+#define MQTT_CLIENT_ID_PREFIX "OEDCS-" 
+
 
 // LWT (Last Will and Testament) Configuration
 #define LWT_TOPIC_SUFFIX "/status" // MAC address will be prepended, e.g., devices/XX:XX:XX:XX:XX:XX/status
