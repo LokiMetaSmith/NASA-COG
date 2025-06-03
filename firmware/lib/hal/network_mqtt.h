@@ -6,9 +6,26 @@
 #include "certificates.h" // For CA, client cert, client key
 #include <Client.h>       // Base Client interface for network operations
 #include <Ethernet.h>     // For EthernetClient, assuming W5x00 hardware
+#include <EthernetSSLClient.h> // From EthernetWebServer_SSL library
 
-// Forward declaration for a potential TLS client wrapper (e.g., BearSSLClient)
-// class BearSSLClient; // This would typically wrap _ethernet_client
+// For BearSSL types, hoping EthernetSSLClient.h or a common header makes them available.
+// If not, direct BearSSL includes might be needed, or we rely on SSLClientParameters.
+// #include <bearssl/bearssl_x509.h> // For br_x509_trust_anchor, etc.
+// #include <bearssl/bearssl_rsa.h>  // For br_rsa_private_key, etc.
+// Using types that are commonly exposed by BearSSL wrappers.
+// #include <WiFiClientSecureBearSSL.h> // Commented out: May not be suitable for non-WiFi projects.
+                                     // BearSSL types like X509List and PrivateKey might need to be
+                                     // included directly or are expected to be part of EthernetSSLClient's environment/helpers.
+                                     // EthernetWebServer_SSL examples use SSLClientParameters which abstracts these.
+#include <EthernetWebSocketClient.h> // Assuming this is the WSS client from khoih-prog's library suite
+
+// Forward declare BearSSL types if full headers are not included or are problematic.
+// This is a workaround if the types are not easily accessible otherwise.
+namespace BearSSL {
+    class X509List;
+    class PrivateKey;
+    // class PublicKey; // If needed
+}
 
 class NetworkMQTT {
 public:
@@ -34,6 +51,20 @@ public:
 
 private:
     EthernetClient _ethernet_client; // Base Ethernet client for W5x00 hardware
+    EthernetSSLClient* _ssl_client = nullptr; // Secure client for TLS layer
+    EthernetWebSocketClient* _ws_client = nullptr; // WebSocket client, may wrap _ssl_client or _ethernet_client
+
+    // BearSSL objects to hold parsed certificates and key.
+    // These types might come from a BearSSL helper header included by EthernetSSLClient or a core ESP32/ESP8266 SSL header.
+    // For SAMD/Due with EthernetWebServer_SSL, these specific types (BearSSL::X509List, BearSSL::PrivateKey)
+    // are typically available if using ESP32/ESP8266 core's BearSSL wrappers.
+    // EthernetWebServer_SSL itself uses SSLClientParameters which can load from PEM directly.
+    // Storing them as parsed objects could be useful if they need to be applied multiple times or inspected.
+    // However, the SSLClientParameters approach might be simpler if direct parsing in constructor is complex.
+    // For now, declaring them, but their usage might simplify to direct PEM usage with SSLClientParameters.
+    BearSSL::X509List _TA_list;          // For CA certificate (Trust Anchors)
+    BearSSL::X509List _client_cert_list; // For Client certificate
+    BearSSL::PrivateKey _client_key;        // For Client private key
 
     // For TLS, _ethernet_client would be wrapped by a TLS-capable client.
     // Example: BearSSLClient _tls_client;

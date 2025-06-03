@@ -13,46 +13,94 @@
 
 #include "network_mqtt.h"
 #include <debug.h> // For CogCore::Debug
-// util.h might not be needed here if macString is handled via _macAddressStr
+#include <EthernetClient.h> 
 
 // Initialize static members
 NetworkMQTT* NetworkMQTT::_instance = nullptr;
 
+// Helper for URI parsing (basic)
+struct ParsedUri {
+    String scheme;
+    String host;
+    uint16_t port;
+    String path;
+    bool valid = false;
+};
+
+void parseWebSocketUri(const String& uri_str, ParsedUri& result) {
+    result.valid = false;
+    if (uri_str.isEmpty()) return;
+
+    int scheme_end = uri_str.indexOf("://");
+    if (scheme_end == -1) {
+        CogCore::Debug<const char*>("parseUri: Invalid URI, missing '://'.\n");
+        return;
+    }
+    result.scheme = uri_str.substring(0, scheme_end);
+    if (result.scheme != "ws" && result.scheme != "wss") {
+        CogCore::Debug<const char*>("parseUri: Invalid scheme, must be 'ws' or 'wss'. Scheme: ");
+        // CogCore::Debug<const char*>(result.scheme.c_str()); // Requires String.c_str()
+        CogCore::Debug<const char*>("
+");
+        return;
+    }
+
+    String remaining = uri_str.substring(scheme_end + 3);
+    int path_start = remaining.indexOf('/');
+    if (path_start == -1) { // Path is required for WebSockets. Default to "/" if not like "host.com:port"
+        result.path = "/"; 
+        // If path_start is -1, remaining is host:port or host
+    } else {
+        result.path = remaining.substring(path_start);
+    }
+    
+    String host_port_str = (path_start == -1) ? remaining : remaining.substring(0, path_start);
+    int port_colon = host_port_str.indexOf(':');
+    if (port_colon != -1) {
+        result.host = host_port_str.substring(0, port_colon);
+        String port_str = host_port_str.substring(port_colon + 1);
+        if (port_str.length() > 0) result.port = port_str.toInt();
+    } else {
+        result.host = host_port_str;
+        // Default port if not specified
+    }
+    // Set default port if not parsed or zero
+    if (result.port == 0) {
+        result.port = (result.scheme == "wss") ? 443 : 80;
+    }
+
+    if (result.host.isEmpty() || result.port == 0) {
+        CogCore::Debug<const char*>("parseUri: Failed to parse host or port.\n");
+        return;
+    }
+    result.valid = true;
+}
+
+
 NetworkMQTT::NetworkMQTT(const char* macAddress)
     : _macAddressStr(macAddress),
-      // Initialize MQTTClient with buffer sizes.
-      // Read buffer 1024 for incoming messages, write buffer 256 (default) or 1024 for outgoing.
-      // Let's use 1024 for read based on previous findings about report size, and 256 for write.
-      _mqttClient(1024, 256) {
-    _instance = this; // Store instance for static callback
-
-    // Construct client ID
+      _ssl_client(nullptr),
+      _ws_client(nullptr),
+      _mqttClient(1024, 256) { // Read:1024, Write:256
+    _instance = this;
     _clientIdStr = MQTT_CLIENT_ID_PREFIX;
     _clientIdStr += _macAddressStr;
-
-    // For now, network_client_for_mqtt points to the plain EthernetClient.
-    // TLS setup would happen in _setupSecureClient and potentially reassign this pointer
-    // or configure _ethernet_client to become a TLS client itself (less likely with stock Ethernet library).
     _network_client_for_mqtt = &_ethernet_client; 
-
     _mqttClient.onMessage(NetworkMQTT::_internalMessageReceived);
+    CogCore::Debug<const char*>("NetworkMQTT: Instance created.\n");
 }
 
 NetworkMQTT::~NetworkMQTT() {
     if (_mqttClient.connected()) {
         _mqttClient.disconnect();
     }
-    // If _network_client_for_mqtt was dynamically allocated (e.g. a TLS client wrapper), delete it here.
-    // Since it currently points to _ethernet_client (a member), no explicit deletion here.
+    delete _ws_client; _ws_client = nullptr;
+    delete _ssl_client; _ssl_client = nullptr;
 }
 
 void NetworkMQTT::_internalMessageReceived(String &topic, String &payload) {
     if (_instance && _instance->_onMessageCallback) {
         _instance->_onMessageCallback(topic, payload);
-    } else {
-        CogCore::Debug<const char*>("MQTT message received but no callback set or instance not found. Topic: ");
-        // CogCore::Debug<const char*>(topic.c_str()); // String.c_str() if needed by Debug
-        // Payload might be large, consider logging only a part or its length
     }
 }
 
@@ -60,60 +108,85 @@ void NetworkMQTT::onMessage(std::function<void(String &topic, String &payload)> 
     _onMessageCallback = callback;
 }
 
-void NetworkMQTT::_setupSecureClient() {
-    // Placeholder: Actual TLS and WebSocket setup for EthernetClient (W5x00) is complex
-    // and requires a TLS library (e.g., BearSSL) and potentially a WebSocket client wrapper.
-    // 
-    // If MQTT_BROKER_WEBSOCKET_URI is configured in mqtt_config.h and is not empty:
-    // 1. Parse the URI to extract hostname, port, path, and scheme (ws or wss).
-    // 2. If "wss" (secure WebSocket):
-    //    - Initialize the TLS client (e.g., BearSSLClient) with CA cert, client cert, client key.
-    //    - Wrap the TLS client with a WebSocket client, configuring it with the hostname, port, and path.
-    //    - _network_client_for_mqtt would point to this WebSocket client.
-    // 3. If "ws" (non-secure WebSocket):
-    //    - Wrap the _ethernet_client with a WebSocket client.
-    //    - _network_client_for_mqtt would point to this WebSocket client.
-    //
-    // If MQTT_BROKER_WEBSOCKET_URI is blank, and a secure TCP connection is desired (e.g., port 8883):
-    // 1. Initialize the TLS client with certs.
-    //    - _network_client_for_mqtt would point to this TLS client.
-    //
-    // Otherwise (defaulting to non-secure TCP):
-    //    _network_client_for_mqtt = &_ethernet_client; // Already done by default
-    CogCore::Debug<const char*>("_setupSecureClient: Placeholder. Using plain EthernetClient for now. Secure connection and WebSockets require further implementation.\n");
-    _network_client_for_mqtt = &_ethernet_client; // Default to plain Ethernet
+void NetworkMQTT::_setupSecureClient(const ParsedUri* ws_uri_details) {
+    delete _ws_client; _ws_client = nullptr;
+    delete _ssl_client; _ssl_client = nullptr;
+    _network_client_for_mqtt = &_ethernet_client; // Default
 
-    // The following is the original placeholder content, kept for reference during development if needed.
-    // CogCore::Debug<const char*>("Attempting to set up secure client (TLS/Certificates)...\n");
-    // This is where platform-specific TLS setup would occur.
-    // For Arduino Due with W5x00 Ethernet, this typically involves:
-    // 1. A TLS library like BearSSL.
-    // 2. A wrapper client (e.g., BearSSLClient) that uses EthernetClient for network I/O
-    //    and BearSSL for TLS processing.
-    // 3. Loading CA certificate, client certificate, and client private key into the TLS client.
+    bool needs_tls = false;
+    bool use_websocket = (ws_uri_details && ws_uri_details->valid);
 
-    // Example placeholder steps (actual implementation depends heavily on chosen TLS library):
-    // BearSSLClient* _tls_client = new BearSSLClient(&_ethernet_client); // Hypothetical
-    // _tls_client->setCACert(ca_cert_pem);
-    // _tls_client->setCertificate(client_cert_pem);
-    // _tls_client->setPrivateKey(client_key_pem);
-    // _network_client_for_mqtt = _tls_client; // MQTTClient will use this TLS client
+    if (use_websocket) {
+        if (ws_uri_details->scheme == "wss") {
+            needs_tls = true;
+            CogCore::Debug<const char*>("WSS: TLS will be used for WebSocket.\n");
+        } else {
+            CogCore::Debug<const char*>("WS: Plain TCP will be used for WebSocket.\n");
+        }
+    } else { // Not using WebSockets, check for MQTTS (secure TCP)
+        uint16_t configured_tcp_port = (uint16_t)atoi(MQTT_BROKER_PORT);
+        uint16_t secure_mqtt_tcp_port = (uint16_t)atoi(MQTT_BROKER_SECURE_PORT);
+        if (configured_tcp_port == secure_mqtt_tcp_port && secure_mqtt_tcp_port != 0) {
+            needs_tls = true;
+            CogCore::Debug<const char*>("MQTTS: TLS will be used for TCP connection.\n");
+        }
+    }
 
-    // For WebSockets (MQTTS over WSS):
-    // The _tls_client would also need to be configured for WebSockets.
-    // e.g., _tls_client->setWebSocketPath("/mqtt"); // Or similar, if supported
-    // Or _mqttClient.setUseWebSocket(true); // If arduino-mqtt has such an option
+    Client* base_client_for_ws_or_final_client = &_ethernet_client;
 
-    CogCore::Debug<const char*>("Secure client setup (TLS/Certs) is currently a PLACEHOLDER.\n");
-    CogCore::Debug<const char*>("Plain Ethernet will be used if MQTT_BROKER_PORT is 1883.\n");
-    CogCore::Debug<const char*>("For TLS, ensure MQTT_BROKER_PORT is the secure port (e.g., 8883) and _setupSecureClient is implemented.\n");
+    if (needs_tls) {
+        CogCore::Debug<const char*>("Setting up TLS layer...\n");
+        if (strlen(ca_cert_pem) < 100) { // Basic check
+            CogCore::Debug<const char*>("TLS Error: CA certificate missing/placeholder. Server auth may fail.\n");
+            // Potentially allow insecure if a flag is set - NOT RECOMMENDED. For now, proceed.
+        }
+        _ssl_client = new EthernetSSLClient(_ethernet_client, ca_cert_pem, strlen(ca_cert_pem));
+        // Example: _ssl_client->setInsecure(); // To skip server validation (NOT FOR PRODUCTION)
 
-    // If MQTT_BROKER_PORT implies TLS (e.g., 8883), but TLS is not implemented, connection will fail.
-    // For now, _network_client_for_mqtt remains &_ethernet_client.
-    // If you have a BearSSLClient or similar, you would assign it to _network_client_for_mqtt here.
-    // CogCore::Debug<const char*>("Secure client setup (TLS/Certs) is currently a PLACEHOLDER.\n");
-    // CogCore::Debug<const char*>("Plain Ethernet will be used if MQTT_BROKER_PORT is 1883.\n");
-    // CogCore::Debug<const char*>("For TLS, ensure MQTT_BROKER_PORT is the secure port (e.g., 8883) and _setupSecureClient is implemented.\n");
+        if (strlen(client_cert_pem) > 100 && strlen(client_key_pem) > 100) { // Basic check
+            CogCore::Debug<const char*>("Configuring mTLS with client certificate and key...\n");
+            SSLClientParameters mTLSParams = SSLClientParameters::fromPEM(client_cert_pem, strlen(client_cert_pem), client_key_pem, strlen(client_key_pem));
+            if (!_ssl_client->setMutualAuthParams(mTLSParams)) {
+                 CogCore::Debug<const char*>("TLS Warning: Failed to set mTLS parameters.\n");
+            } else {
+                 CogCore::Debug<const char*>("TLS: mTLS parameters set.\n");
+            }
+        } else {
+            CogCore::Debug<const char*>("TLS: Client certificate/key not provided or placeholders. Skipping mTLS.\n");
+        }
+        _network_client_for_mqtt = _ssl_client;
+        base_client_for_ws_or_final_client = _ssl_client; // WebSocket would wrap this
+    }
+
+    if (use_websocket) {
+        CogCore::Debug<const char*>("Setting up WebSocket layer...\n");
+        // _ws_client = new EthernetWebSocketClient(*base_client_for_ws_or_final_client);
+        // Placeholder for actual WebSocket handshake:
+        // bool handshake_success = _ws_client->handshake(ws_uri_details->host, ws_uri_details->path);
+        // if (handshake_success) {
+        //    _network_client_for_mqtt = _ws_client;
+        //    CogCore::Debug<const char*>("WebSocket handshake successful.\n");
+        // } else {
+        //    CogCore::Debug<const char*>("WebSocket handshake FAILED.\n");
+        //    delete _ws_client; _ws_client = nullptr;
+        //    if (needs_tls && _ssl_client) _ssl_client->stop(); else _ethernet_client.stop();
+        //    // Fallback to what _network_client_for_mqtt was before attempting WS or just fail by not changing it
+        //    // For robustness, ensure _network_client_for_mqtt is valid or connect() fails.
+        // }
+        CogCore::Debug<const char*>("WebSocket client handshake is a PLACEHOLDER. Full WS/WSS MQTT will likely fail or use plain TCP/TLS if WS handshake isn't integrated.\n");
+        // If handshake fails, _network_client_for_mqtt should ideally be reset or connection should abort.
+        // For now, if ws_uri is set, we expect _network_client_for_mqtt to be a WS client.
+        // This part requires actual WebSocketClient API usage.
+    }
+    
+    // Final client assignment report
+    if (_network_client_for_mqtt == _ws_client && use_websocket) {
+         CogCore::Debug<const char*>("Network client configured for WebSocket (WS/WSS) - (Placeholder Handshake).\n");
+    } else if (_network_client_for_mqtt == _ssl_client && needs_tls) {
+        CogCore::Debug<const char*>("Network client configured for MQTTS (TLS over TCP).\n");
+    } else {
+        CogCore::Debug<const char*>("Network client configured for plain MQTT (TCP).\n");
+    }
 }
 
 
@@ -121,77 +194,74 @@ bool NetworkMQTT::connect() {
     if (_mqttClient.connected()) {
         return true;
     }
+    _lastReconnectAttemptMillis = millis(); 
 
-    _lastReconnectAttemptMillis = millis(); // Update attempt time
+    String target_host_str = MQTT_BROKER_IP; // Default
+    uint16_t target_port_val = (uint16_t)atoi(MQTT_BROKER_PORT);  // Default
+    
+    ParsedUri uri_details;
+    String ws_uri_str = MQTT_BROKER_WEBSOCKET_URI;
+    bool is_websocket_configured = false;
 
-    // Call placeholder for TLS setup. In a real scenario, this would configure _network_client_for_mqtt.
-    _setupSecureClient(); 
-
-    // Determine host, port, and client based on configuration (WebSocket, MQTTS, or plain MQTT)
-    // This logic would ideally be in _setupSecureClient() which prepares _network_client_for_mqtt
-    // and potentially extracts host/port if not using IP/Port directly.
-    const char* targetHost = MQTT_BROKER_IP; // Default
-    uint16_t targetPort = MQTT_BROKER_PORT;  // Default
-
-    // Basic logic sketch (would be more robust in full implementation):
-    if (strlen(MQTT_BROKER_WEBSOCKET_URI) > 0) {
-        // TODO: Parse MQTT_BROKER_WEBSOCKET_URI to get host, port, path, and scheme (ws/wss)
-        // For now, this part is conceptual. Assume _setupSecureClient prepares the _network_client_for_mqtt
-        // and _mqttClient.begin() would use a host/port derived from the URI or specific settings.
-        // Example: if using WSS, targetPort would be extracted WSS port or default 443.
-        // The Client passed to _mqttClient.begin() must be a WebSocket client (secure or not).
-        // arduino-mqtt's begin() might need a path for WebSockets, or the WebSocket client handles it.
-        // e.g. _mqttClient.setPath("/ws"); or similar if the library supports it directly.
-        // This often means the _network_client_for_mqtt itself is a WebSocketClient instance.
-        CogCore::Debug<const char*>("Connecting (WebSocket URI configured - conceptual, host/port may need parsing from URI)...\n");
-        // targetHost and targetPort would be parsed from MQTT_BROKER_WEBSOCKET_URI
-        // _mqttClient.setPath("/mqtt"); // Example if arduino-mqtt client has a path setter for websockets
-    } else if (targetPort == MQTT_BROKER_SECURE_PORT && targetPort != MQTT_BROKER_PORT) { 
-        // Heuristic: if MQTT_BROKER_PORT is set to the secure port, assume MQTTS.
-        // MQTT_BROKER_SECURE_PORT is defined, so use it if current port matches it
-        // (and it's not the same as the non-secure port, implying deliberate secure choice).
-        CogCore::Debug<const char*>("Connecting (Secure TCP MQTTS)...\n");
-    } else {
-        CogCore::Debug<const char*>("Connecting (Plain TCP MQTT)...\n");
+    if (!ws_uri_str.isEmpty()) {
+        parseWebSocketUri(ws_uri_str, uri_details);
+        if (uri_details.valid) {
+            is_websocket_configured = true;
+            target_host_str = uri_details.host;
+            target_port_val = uri_details.port;
+            CogCore::Debug<const char*>("WebSocket URI will be used. Host: "); CogCore::Debug<const char*>(target_host_str.c_str());
+            CogCore::Debug<const char*>(" Port: "); CogCore::Debug<int>(target_port_val); CogCore::Debug<const char*>("
+");
+        } else {
+            CogCore::Debug<const char*>("Invalid WebSocket URI configured, falling back to TCP IP/Port.\n");
+        }
     }
     
-    // Set MQTT broker, port. The client used here (_network_client_for_mqtt) must be ready.
-    _mqttClient.begin(targetHost, targetPort, *_network_client_for_mqtt);
+    _setupSecureClient(is_websocket_configured ? &uri_details : nullptr);
+
+    // Re-check port if not WebSocket, as _setupSecureClient might have decided on MQTTS
+    if (!is_websocket_configured && _network_client_for_mqtt == _ssl_client && _ssl_client != nullptr) {
+        target_port_val = (uint16_t)atoi(MQTT_BROKER_SECURE_PORT);
+        CogCore::Debug<const char*>("MQTTS mode: Using secure port: "); CogCore::Debug<int>(target_port_val); CogCore::Debug<const char*>("
+");
+    }
+
+    // For arduino-mqtt (256dpi/MQTT):
+    // If using WebSockets, the `Client` instance passed to `_mqttClient.begin()` must already be
+    // a fully connected and handshaked WebSocket stream. `arduino-mqtt` itself does not
+    // perform the WebSocket handshake or handle HTTP upgrade/paths.
+    // The `_network_client_for_mqtt` (which would be `_ws_client` if WS is functional)
+    // must therefore manage the WebSocket connection state and path internally.
+    // The `target_host_str` and `target_port_val` are for the MQTT broker, which the
+    // WebSocket tunnel established by `_ws_client` would connect to.
+    // If `_ws_client` needs the path (e.g. "/mqtt") for its handshake, that's part of its setup.
+    CogCore::Debug<const char*>("MQTTClient.begin with Host: "); CogCore::Debug<const char*>(target_host_str.c_str());
+    CogCore::Debug<const char*>(" Port: "); CogCore::Debug<int>(target_port_val); CogCore::Debug<const char*>("
+");
+    _mqttClient.begin(target_host_str.c_str(), target_port_val, *_network_client_for_mqtt);
     
-    // Set Last Will and Testament (LWT)
     String lwtTopicStr = MQTT_DEVICE_BASE_TOPIC;
     lwtTopicStr += _macAddressStr;
     lwtTopicStr += LWT_TOPIC_SUFFIX;
     _mqttClient.setWill(lwtTopicStr.c_str(), LWT_MESSAGE_OFFLINE, LWT_RETAIN, LWT_QOS);
 
-    CogCore::Debug<const char*>("Attempting MQTT connection (arduino-mqtt). ClientID: ");
-    CogCore::Debug<const char*>(_clientIdStr.c_str()); // Use member _clientIdStr
-    CogCore::Debug<const char*>("...
+    CogCore::Debug<const char*>("Attempting MQTT connect (_mqttClient.connect). ClientID: ");
+    CogCore::Debug<const char*>(_clientIdStr.c_str()); CogCore::Debug<const char*>("
 ");
 
     bool success;
     if (strlen(MQTT_USERNAME) > 0) {
-        CogCore::Debug<const char*>("Connecting with MQTT credentials. User: ");
-        CogCore::Debug<const char*>(MQTT_USERNAME);
-        CogCore::Debug<const char*>("...
-");
         success = _mqttClient.connect(_clientIdStr.c_str(), MQTT_USERNAME, MQTT_PASSWORD);
     } else {
-        CogCore::Debug<const char*>("Connecting without MQTT credentials.
-");
         success = _mqttClient.connect(_clientIdStr.c_str());
     }
 
     if (success) {
-        CogCore::Debug<const char*>("MQTT connected (arduino-mqtt).
-");
-        // Publish "online" status to LWT topic
+        CogCore::Debug<const char*>("MQTT connected (arduino-mqtt).\n");
         publish(lwtTopicStr.c_str(), LWT_MESSAGE_ONLINE, LWT_RETAIN, LWT_QOS);
-        // Resubscribe logic might be needed here if subscriptions are used
     } else {
         CogCore::Debug<const char*>("MQTT connection failed (arduino-mqtt), error code: ");
-        CogCore::Debug<int>(_mqttClient.lastError()); // arduino-mqtt uses lastError()
-        CogCore::Debug<const char*>("
+        CogCore::Debug<int>(_mqttClient.lastError()); CogCore::Debug<const char*>("
 ");
     }
     return _mqttClient.connected();
@@ -199,34 +269,25 @@ bool NetworkMQTT::connect() {
 
 void NetworkMQTT::_reconnect() {
     if (millis() - _lastReconnectAttemptMillis > _reconnectIntervalMillis) {
-        CogCore::Debug<const char*>("Attempting MQTT reconnection (arduino-mqtt, non-blocking)...
-");
-        // No need to call _setupSecureClient() again if client object is persistent and already configured.
-        // connect() will handle broker details and actual connection.
-        connect(); // connect() updates _lastReconnectAttemptMillis and handles all logic
+        CogCore::Debug<const char*>("Attempting MQTT reconnection (non-blocking)...\n");
+        connect(); 
     }
 }
 
 bool NetworkMQTT::publish(const char* topic, const char* payload, bool retained, uint8_t qos) {
     if (!isConnected()) {
-        // _reconnect(); // Don't call directly, loop() will handle it to maintain non-blocking
-        CogCore::Debug<const char*>("MQTT publish failed: Not connected. Will attempt reconnect in loop.
-");
+        CogCore::Debug<const char*>("MQTT publish failed: Not connected. Will attempt reconnect in loop.\n");
         return false;
     }
-    // arduino-mqtt publish API: topic, message, retained, qos
     if (_mqttClient.publish(topic, payload, retained, qos)) {
         CogCore::Debug<const char*>("MQTT message published (arduino-mqtt). Topic: ");
-        CogCore::Debug<const char*>(topic);
-        CogCore::Debug<const char*>("
+        CogCore::Debug<const char*>(topic); CogCore::Debug<const char*>("
 ");
         return true;
     } else {
         CogCore::Debug<const char*>("MQTT message publish failed (arduino-mqtt). Topic: ");
-        CogCore::Debug<const char*>(topic);
-        CogCore::Debug<const char*>(" Error: ");
-        CogCore::Debug<int>(_mqttClient.lastError());
-        CogCore::Debug<const char*>("
+        CogCore::Debug<const char*>(topic); CogCore::Debug<const char*>(" Error: ");
+        CogCore::Debug<int>(_mqttClient.lastError()); CogCore::Debug<const char*>("
 ");
         return false;
     }
@@ -234,24 +295,18 @@ bool NetworkMQTT::publish(const char* topic, const char* payload, bool retained,
 
 bool NetworkMQTT::subscribe(const char* topic, uint8_t qos) {
     if (!isConnected()) {
-        // _reconnect(); // Let loop() handle reconnection
-        CogCore::Debug<const char*>("MQTT subscribe failed: Not connected. Will attempt reconnect in loop.
-");
+        CogCore::Debug<const char*>("MQTT subscribe failed: Not connected. Will attempt reconnect in loop.\n");
         return false;
     }
-    // arduino-mqtt subscribe API: topic, qos
     if (_mqttClient.subscribe(topic, qos)) {
         CogCore::Debug<const char*>("Subscribed to MQTT topic (arduino-mqtt): ");
-        CogCore::Debug<const char*>(topic);
-        CogCore::Debug<const char*>("
+        CogCore::Debug<const char*>(topic); CogCore::Debug<const char*>("
 ");
         return true;
     } else {
         CogCore::Debug<const char*>("Failed to subscribe to MQTT topic (arduino-mqtt): ");
-        CogCore::Debug<const char*>(topic);
-        CogCore::Debug<const char*>(" Error: ");
-        CogCore::Debug<int>(_mqttClient.lastError());
-        CogCore::Debug<const char*>("
+        CogCore::Debug<const char*>(topic); CogCore::Debug<const char*>(" Error: ");
+        CogCore::Debug<int>(_mqttClient.lastError()); CogCore::Debug<const char*>("
 ");
         return false;
     }
@@ -259,9 +314,9 @@ bool NetworkMQTT::subscribe(const char* topic, uint8_t qos) {
 
 void NetworkMQTT::loop() {
     if (!_mqttClient.connected()) {
-        _reconnect(); // Attempt non-blocking reconnection
+        _reconnect(); 
     }
-    _mqttClient.loop(); // Essential for arduino-mqtt to process messages and keepalives
+    _mqttClient.loop(); 
 }
 
 bool NetworkMQTT::isConnected() {
