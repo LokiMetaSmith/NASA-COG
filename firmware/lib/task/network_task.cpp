@@ -23,16 +23,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include <string.h>
 #include <machine.h>
 
-#include <SPI.h>         // needed for Arduino versions later than 0018
-#include <Ethernet.h>
-#include <EthernetUdp.h>         // UDP library from: bjoern@cs.stanford.edu 12/30/2008
-#include "utility/w5100.h"
-#include <network_udp.h>
-#include <flash.h>
+#include <SPI.h>         // needed for Arduino versions later than 0018. Kept for Ethernet.
+#include <Ethernet.h>    // Kept as Ethernet hardware might still be used by derived classes (like OEDCSNetworkTask via NetworkMQTT).
+// #include <EthernetUdp.h>      // Removed
+// #include "utility/w5100.h"   // Removed
+// #include <network_udp.h>      // Removed
+#include <flash.h>       // Kept as it might be used for other non-UDP purposes.
 
-// This is defined in network_udp.h. It is true global;
-// hopefully it is only referenced here.
-extern byte packetBuffer[buffMax];
+// extern byte packetBuffer[buffMax]; // Removed
 
 using namespace CogCore;
 
@@ -40,74 +38,31 @@ namespace CogApp
 {
 
   bool NetworkTask::_init() {
-	//  SPI.begin()
-  //SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
-    for (uint8_t i = 0; i < 10 && net_udp.networkDown; i++) {
-      switch(net_udp.networkStart()) {
-      case 0: net_udp.networkDown = 0; break;
-      case 1: CogCore::Debug<const char *>("W5x00 init failed\n"); break;
-      case 2: CogCore::Debug<const char *>("No ethernet boad\n"); break;
-      case 3: CogCore::Debug<const char *>("No link\n"); break;
-      case 4: CogCore::Debug<const char *>("No DHCP\n"); break;
-      case 5: CogCore::Debug<const char *>("UDP failed on port\n"); break;
-      }
-    }
+    // All NetworkUDP specific initialization has been removed.
+    // This includes net_udp.networkStart() and the initial "MachineStart" UDP message.
+    // OEDCSNetworkTask now handles its own initialization for MQTT including
+    // Ethernet setup and sending its own "MachineStart" message via MQTT.
 
-    if (net_udp.networkDown) {
-      // Be sure to call safeDelay or watchdogReset
-      // while(1) {
-	CogCore::Debug<const char *>("CRITICAL ERROR! CONFIGURED FOR ETHERNET, BUT NONE FOUND!\n");
-        //        watchdogReset();
-        //        delay(5000);
-      // WARNING --- there is a danger that this
-      // prevents the system from coming up at all
-      // if we have not connectivity...that might not be
-      // the best behavior, but by our current understanding
-      // it is safe.
-      // REQUEST_EXTERNAL_RESET ; //this will reset processor
-      // }
-    } else {
-      CogCore::Debug<const char *>("Network started\n\n");
-    }
+    // If there's any generic, non-UDP network initialization that ALL network tasks
+    // might need, it could go here. Otherwise, this method might become trivial
+    // or be entirely handled by derived tasks.
 
-    // Because this is called frequently, we need not worry about rollover...
-    unsigned long current_epoch_time = net_udp.epoch + t_millis() / 1000;
-    char buffer[1024];
-    strcpy(buffer, "\"MachineStart\": ");
-    switch(getResetCause()) {
-    case 0: strcat(buffer, "\"GENERAL\""); break;
-    case 1: strcat(buffer, "\"BACKUP\""); break;
-    case 2: strcat(buffer, "\"WATCHDOG\""); break;
-    case 3: strcat(buffer, "\"SOFTWARE\""); break;
-    case 4: strcat(buffer, "\"USER\""); break;
-    }
-
-    net_udp.sendData(buffer, current_epoch_time, 2000);
-  //  SPI.endTransaction();
-	//SPI.end();
+    // For now, it does nothing and returns true.
+    // CogCore::Debug<const char *>("NetworkTask::_init() called. Was previously UDP network init.\n");
     return true;
   }
 
   bool NetworkTask::_run()  {
-    if (DEBUG_UDP > 1) {
-      Debug<const char *>("The NetworkUDPTask was run\n");
+    // All NetworkUDP specific runtime checks (net_udp.networkCheck()) have been removed.
+    // Derived tasks like OEDCSNetworkTask are responsible for their own runtime loop logic
+    // (e.g., mqtt_client.loop()).
+
+    if (DEBUG_UDP > 1) { // This flag's name (DEBUG_UDP) is now potentially misleading.
+      Debug<const char *>("NetworkTask::_run() called. Was previously UDP network check.\n");
     }
-	//SPI.begin()
-    // SPI.beginTransaction(SPISettings(14000000, MSBFIRST, SPI_MODE0));
-    switch(net_udp.networkCheck()) {
-    case 1:
-    case 2:
-      CogCore::Debug<const char *>("Lost network link\n");
-      net_udp.networkDown++;
-      break;
-    case 3:
-      CogCore::Debug<const char *>("Lost IP address\n");
-      net_udp.networkDown++;
-      break;
-    case 100: net_udp.networkDown = 0;
-      break;
-    }
-    //SPI.endTransaction();
-	//SPI.end();
+
+    // This base method is now very minimal.
+    // It could be used for common periodic checks if any apply to all network tasks.
+    return true;
   }
 }
