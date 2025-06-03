@@ -48,7 +48,9 @@ bool syncNTPTime() {
             CogCore::Debug<const char*>("NTP: DNS lookup or beginPacket failed for time server.
 ");
             delay(1000); // Wait a bit before retrying
-            watchdogReset(); 
+
+            watchdogReset();
+
             continue;
         }
         Udp.write(ntp_packet_buffer, NTP_PACKET_SIZE);

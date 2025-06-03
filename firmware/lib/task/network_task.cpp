@@ -42,7 +42,7 @@ namespace CogApp
     // This includes net_udp.networkStart() and the initial "MachineStart" UDP message.
     // OEDCSNetworkTask now handles its own initialization for MQTT including
     // Ethernet setup and sending its own "MachineStart" message via MQTT.
-    
+
     // If there's any generic, non-UDP network initialization that ALL network tasks
     // might need, it could go here. Otherwise, this method might become trivial
     // or be entirely handled by derived tasks.
@@ -60,7 +60,7 @@ namespace CogApp
     if (DEBUG_UDP > 1) { // This flag's name (DEBUG_UDP) is now potentially misleading.
       Debug<const char *>("NetworkTask::_run() called. Was previously UDP network check.\n");
     }
-    
+
     // This base method is now very minimal.
     // It could be used for common periodic checks if any apply to all network tasks.
     return true;

@@ -34,11 +34,12 @@ namespace CogApp
   public:
     // int DEBUG_UDP = 0; // Remove or comment out - This was in NetworkTask.h
     int DEBUG_MQTT = 0; // Add this
-    
+
+
     bool _init() override; // Added declaration as per subtask instructions
     bool logReport(MachineStatusReport* report);
     bool _run() override;
-  
+
   private:
     EthernetClient* _eth_client = nullptr;
     NetworkMQTT* _net_mqtt = nullptr;
