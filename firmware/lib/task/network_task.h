@@ -40,7 +40,9 @@ namespace CogApp
     // DEBUG_UDP == 1 means debug logging,
     // DEBUG_UDP == 2 means debug script retreival
     // This flag might need to be renamed or moved if specific to a particular network type.
-    int DEBUG_UDP = 0; 
+
+    int DEBUG_UDP = 0;
+
     // NetworkUDP net_udp; // Removed
     bool _init() override;
     bool _run() override;

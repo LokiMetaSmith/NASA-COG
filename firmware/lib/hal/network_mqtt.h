@@ -39,7 +39,7 @@ public:
     bool subscribe(const char* topic, uint8_t qos = 0);
     void loop(); // Handles keepalives and processes incoming messages
     bool isConnected();
-    
+
     // Callback for incoming messages, signature adapted for arduino-mqtt
     // The library typically uses `void messageReceived(String &topic, String &payload)`
     // or a lambda: `_mqttClient.onMessage([this](String &topic, String &payload) { ... });`
@@ -82,13 +82,13 @@ private:
 
     String _macAddressStr; // Stored MAC address
     String _clientIdStr;   // Constructed client ID
-    
+
     // LWT parameters are now set directly using _mqttClient.setWill()
     // String _lwtTopicStr; // No longer needed as member, constructed locally
     // const char* _lwtMessageOffline = LWT_MESSAGE_OFFLINE; // From mqtt_config.h
     // const uint8_t _lwtQos = LWT_QOS; // From mqtt_config.h
     // const bool _lwtRetain = LWT_RETAIN; // From mqtt_config.h
-    
+
     // For non-blocking reconnection attempts
     unsigned long _lastReconnectAttemptMillis = 0;
     // Using define from mqtt_config.h if available, or keep local
@@ -96,7 +96,7 @@ private:
 
     void _reconnect();
     void _setupSecureClient(); // Placeholder for TLS client configuration
-    
+
     // Callback from MQTTClient
     std::function<void(String &topic, String &payload)> _onMessageCallback;
     static void _internalMessageReceived(String &topic, String &payload); // Static wrapper

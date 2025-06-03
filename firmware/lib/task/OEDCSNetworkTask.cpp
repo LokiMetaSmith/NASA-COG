@@ -44,7 +44,9 @@ namespace CogApp
   // Helper function
   const char* getResetCauseString() {
       // Assuming getResetCause() is available globally or via a core utility
-      switch(getResetCause()) { 
+
+      switch(getResetCause()) {
+
           case 0: return "GENERAL";
           case 1: return "BACKUP";
           case 2: return "WATCHDOG";
@@ -125,7 +127,7 @@ bool OEDCSNetworkTask::_init() { // Renaming to match existing class structure i
     _eth_client = new EthernetClient();
 
     delete _net_mqtt;   // Delete previous instance
-    
+
     // MQTT Broker details are now taken from mqtt_config.h
     // const char* mqttServer = "YOUR_MQTT_BROKER_IP"; // Removed
     // uint16_t mqttPort = 1883; // Removed
@@ -140,6 +142,7 @@ bool OEDCSNetworkTask::_init() { // Renaming to match existing class structure i
         CogCore::Debug<const char*>(macString);
         CogCore::Debug<const char*>("'). MQTT not initialized.\n");
         // _net_mqtt remains nullptr
+
     }
 
     if (_net_mqtt) {
@@ -151,7 +154,7 @@ bool OEDCSNetworkTask::_init() { // Renaming to match existing class structure i
             // Send "MachineStart" event message
             char machineStartMsg[128];
             sprintf(machineStartMsg, "{\"event\": \"MachineStart\", \"cause\": \"%s\"}", getResetCauseString());
-            
+
             char machineEventTopic[128]; // Increased buffer size for topic
             // Ensure macString is valid before using in sprintf
             if (strlen(macString) == 17) {
@@ -164,7 +167,8 @@ bool OEDCSNetworkTask::_init() { // Renaming to match existing class structure i
             CogCore::Debug<const char*>("MQTT connection failed in _init. Will retry in loop.\n");
         }
     }
-    
+
+
     // NTP Time Sync:
     // The original NetworkUDP::networkStart() called getTime() to get NTP time.
     // This is important for accurate timestamps. This logic needs to be integrated,
@@ -194,17 +198,19 @@ bool OEDCSNetworkTask::_init() { // Renaming to match existing class structure i
         // Potentially, could call _init() again, but be careful about re-running Ethernet.begin etc.
         // A better approach would be a separate MQTT re-init function.
         // For now, if _net_mqtt is null, logReport will fail.
-        if (DEBUG_MQTT > 0) { 
+
+        if (DEBUG_MQTT > 0) {
              CogCore::Debug<const char*>("OEDCSNetworkTask::_run(): MQTT client not initialized.\n");
         }
     }
-    
+
     // The core responsibility of this task is to log the report.
-    return logReport(getConfig()->report); 
+    return logReport(getConfig()->report);
   }
 
   bool OEDCSNetworkTask::logReport(MachineStatusReport* report)  {
-    if (DEBUG_MQTT > 1) { 
+    if (DEBUG_MQTT > 1) {
+
         CogCore::Debug<const char*>("OEDCSNetworkTask::logReport called\n");
     }
 
@@ -232,17 +238,19 @@ bool OEDCSNetworkTask::_init() { // Renaming to match existing class structure i
     char buffer[1024]; // Increased from 256, but verify actual max report size.
                        // The previous UDP code used 4096. This might be an issue for standard MQTT.
                        // Max report size vs PubSubClient's MQTT_MAX_PACKET_SIZE needs careful review.
-    buffer[0] = 0; 
+
+    buffer[0] = 0;
     getConfig()->createJSONReport(report, buffer); // Populates buffer with JSON
 
-    if (DEBUG_MQTT > 0) { 
+    if (DEBUG_MQTT > 0) {
         CogCore::Debug<const char*>("Publishing to MQTT. Topic: ");
         CogCore::Debug<const char*>(topic);
         // Avoid printing buffer directly if too large or contains sensitive data
-        // CogCore::Debug<const char*>(" Payload: "); CogCore::Debug<const char*>(buffer); 
+        // CogCore::Debug<const char*>(" Payload: "); CogCore::Debug<const char*>(buffer);
         CogCore::Debug<const char*>("\n");
     }
-    
+
+
     bool success = _net_mqtt->publish(topic, buffer);
     if (!success) {
         CogCore::Debug<const char*>("MQTT publish failed in logReport.\n");
