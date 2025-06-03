@@ -22,15 +22,28 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <core.h>
 #include <machine.h>
-#include <network_udp.h>
-#include <network_task.h>
+// #include <network_udp.h> // Replaced by network_mqtt.h
+#include "network_mqtt.h" // Use quotes for local lib includes
+#include <network_task.h> // Assuming this base class might still be used or refactored later
+
+class EthernetClient; // Forward declaration
 
 namespace CogApp
 {
   class OEDCSNetworkTask : public NetworkTask {
   public:
+    // int DEBUG_UDP = 0; // Remove or comment out - This was in NetworkTask.h
+    int DEBUG_MQTT = 0; // Add this
+
+    bool _init() override; // Added declaration as per subtask instructions
     bool logReport(MachineStatusReport* report);
     bool _run() override;
+
+  private:
+    EthernetClient* _eth_client = nullptr;
+    NetworkMQTT* _net_mqtt = nullptr;
+    // Note: The original net_udp was likely in the NetworkTask base class.
+    // This change assumes OEDCSNetworkTask will now manage its own network client (MQTT).
   };
 
 }
