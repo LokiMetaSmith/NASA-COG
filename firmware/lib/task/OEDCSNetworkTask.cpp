@@ -131,8 +131,10 @@ bool OEDCSNetworkTask::_init() { // Renaming to match existing class structure i
     // uint16_t mqttPort = 1883; // Removed
 
     if (strlen(macString) == 17) { // Basic check for "XX:XX:XX:XX:XX:XX"
-        // Constructor for NetworkMQTT now only takes EthernetClient and macString
-        _net_mqtt = new NetworkMQTT(*_eth_client, macString);
+        // Constructor for NetworkMQTT now takes only macString.
+        // _eth_client from OEDCSNetworkTask is no longer passed to NetworkMQTT.
+        // NetworkMQTT now manages its own EthernetClient instance.
+        _net_mqtt = new NetworkMQTT(macString);
     } else {
         CogCore::Debug<const char*>("CRITICAL: macString invalid ('");
         CogCore::Debug<const char*>(macString);
